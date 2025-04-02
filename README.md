@@ -39,6 +39,60 @@ npm run dev
 ```
 
 <br/>
+
+## Deployment 🚀
+
+This project includes scripts for versioned deployment and rollback functionality.
+
+<p>1. Make deployment scripts executable (only once after cloning):</p>
+
+```bash
+# Option 1: Make the prepare script executable first
+chmod +x prepare-scripts.sh
+./prepare-scripts.sh
+
+# Option 2: Use bash to run without changing permissions
+bash prepare-scripts.sh
+```
+
+<p>2. Run the setup script to prepare your environment (only once per server):</p>
+
+```bash
+./setup.sh
+```
+
+<p>3. Build your project:</p>
+
+```bash
+npm run build
+```
+
+<p>4. Deploy a new version:</p>
+
+```bash
+./deploy.sh
+```
+
+This will:
+- Create a new versioned release (e.g., `1-20230701`)
+- Copy files from the `dist` directory to the release folder
+- Update the symbolic link to point to the new version
+- Keep only the 5 most recent versions
+
+<p>5. If needed, rollback to a previous version:</p>
+
+```bash
+# Rollback to the previous version
+./rollback.sh
+
+# Rollback to a specific version by number
+./rollback.sh 2
+
+# Rollback to a specific version by full name
+./rollback.sh 2-20230620
+```
+
+<br/>
 <br/>
 
 ## Development Workflow 🔄
