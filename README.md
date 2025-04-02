@@ -65,8 +65,6 @@ npm run release
 
 This automatically determines the next version based on your commits, updates package.json, and generates a CHANGELOG.md file.
 
-For more details, see [CONTRIBUTING.md](./CONTRIBUTING.md).
-
 ## Resources 📙
 
 <p>The resources used to create this project are:</p>
