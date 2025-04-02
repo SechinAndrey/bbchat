@@ -1,10 +1,3 @@
-> [!IMPORTANT]  
-> Will begin implementing the new styles specified in the figma design file.
-
-<br>
-
-<image src="src/assets/images/thumbnail.png" style="border-radius:16px;margin-bottom:5px;"/>
-
 ## Features ⚡
 
 This template is packed with a lot of features including:
@@ -48,6 +41,32 @@ npm run dev
 <br/>
 <br/>
 
+## Development Workflow 🔄
+
+This project follows structured development practices:
+
+### Commit Conventions
+
+We use [Conventional Commits](https://www.conventionalcommits.org/) for standardized commit messages. To make a commit:
+
+```bash
+npm run commit
+```
+
+This will guide you through creating a properly formatted commit message.
+
+### Versioning
+
+For versioning and changelog generation:
+
+```bash
+npm run release
+```
+
+This automatically determines the next version based on your commits, updates package.json, and generates a CHANGELOG.md file.
+
+For more details, see [CONTRIBUTING.md](./CONTRIBUTING.md).
+
 ## Resources 📙
 
 <p>The resources used to create this project are:</p>
@@ -59,3 +78,5 @@ npm run dev
 - <a href="https://vueuse.org/">vueuse</a>
 - <a href="https://wavesurfer-js.org/">Wavesurfer-js</a>
 - <a href="https://github.com/Akryum/floating-vue">floating-vue</a>
+- <a href="https://commitizen.github.io/cz-cli/">Commitizen</a>
+- <a href="https://github.com/conventional-changelog/standard-version">Standard-version</a>
