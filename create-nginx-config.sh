@@ -161,33 +161,19 @@ check_nginx() {
         return 1
     fi
 
-    # Проверяем наличие директорий конфигурации
+    # Определяем директории конфигурации
     # Сначала проверяем стандартную структуру sites-available/sites-enabled
     if [ -d "/etc/nginx/sites-available" ] && [ -d "/etc/nginx/sites-enabled" ]; then
-        # Проверяем, включена ли директория sites-enabled в nginx.conf
-        if grep -q "include /etc/nginx/sites-enabled" /etc/nginx/nginx.conf; then
-            NGINX_CONF_DIR="/etc/nginx/sites-available"
-            NGINX_ENABLED_DIR="/etc/nginx/sites-enabled"
-            export USING_CONFD=false
-            return 0
-        else
-            echo "Предупреждение: Директории sites-available и sites-enabled существуют,"
-            echo "но не включены в конфигурацию nginx.conf."
-            return 1
-        fi
-    # Если стандартная структура не найдена, проверяем наличие conf.d
+        NGINX_CONF_DIR="/etc/nginx/sites-available"
+        NGINX_ENABLED_DIR="/etc/nginx/sites-enabled"
+        export USING_CONFD=false
+        return 0
+    # Если стандартная структура не найдена, используем conf.d
     elif [ -d "/etc/nginx/conf.d" ]; then
-        # Проверяем, включена ли директория conf.d в nginx.conf
-        if grep -q "include /etc/nginx/conf.d" /etc/nginx/nginx.conf; then
-            NGINX_CONF_DIR="/etc/nginx/conf.d"
-            NGINX_ENABLED_DIR="/etc/nginx/conf.d"
-            export USING_CONFD=true
-            return 0
-        else
-            echo "Предупреждение: Директория conf.d существует,"
-            echo "но не включена в конфигурацию nginx.conf."
-            return 1
-        fi
+        NGINX_CONF_DIR="/etc/nginx/conf.d"
+        NGINX_ENABLED_DIR="/etc/nginx/conf.d"
+        export USING_CONFD=true
+        return 0
     else
         echo "Предупреждение: Не найдена стандартная структура директорий Nginx."
         return 1
