@@ -148,34 +148,63 @@ echo "Конфигурационный файл создан в $CONFIG_FILE"
 
 # Функция для проверки наличия Nginx
 check_nginx() {
+    # Проверяем, установлен ли Nginx
     if ! command -v nginx &> /dev/null; then
         echo "Предупреждение: Nginx не установлен на этой системе."
         return 1
     fi
 
-    # Проверяем наличие директорий конфигурации
-    NGINX_CONF_DIR="/etc/nginx/sites-available"
-    NGINX_ENABLED_DIR="/etc/nginx/sites-enabled"
-
-    if [ ! -d "$NGINX_CONF_DIR" ] || [ ! -d "$NGINX_ENABLED_DIR" ]; then
-        echo "Предупреждение: Стандартная структура директорий Nginx не найдена."
+    # Проверяем, запущен ли Nginx
+    if ! systemctl is-active --quiet nginx; then
+        echo "Предупреждение: Nginx установлен, но не запущен."
+        echo "Запустите его командой: sudo systemctl start nginx"
         return 1
     fi
 
-    return 0
+    # Проверяем наличие директорий конфигурации
+    # Сначала проверяем стандартную структуру sites-available/sites-enabled
+    if [ -d "/etc/nginx/sites-available" ] && [ -d "/etc/nginx/sites-enabled" ]; then
+        # Проверяем, включена ли директория sites-enabled в nginx.conf
+        if grep -q "include /etc/nginx/sites-enabled" /etc/nginx/nginx.conf; then
+            NGINX_CONF_DIR="/etc/nginx/sites-available"
+            NGINX_ENABLED_DIR="/etc/nginx/sites-enabled"
+            export USING_CONFD=false
+            return 0
+        else
+            echo "Предупреждение: Директории sites-available и sites-enabled существуют,"
+            echo "но не включены в конфигурацию nginx.conf."
+            return 1
+        fi
+    # Если стандартная структура не найдена, проверяем наличие conf.d
+    elif [ -d "/etc/nginx/conf.d" ]; then
+        # Проверяем, включена ли директория conf.d в nginx.conf
+        if grep -q "include /etc/nginx/conf.d" /etc/nginx/nginx.conf; then
+            NGINX_CONF_DIR="/etc/nginx/conf.d"
+            NGINX_ENABLED_DIR="/etc/nginx/conf.d"
+            export USING_CONFD=true
+            return 0
+        else
+            echo "Предупреждение: Директория conf.d существует,"
+            echo "но не включена в конфигурацию nginx.conf."
+            return 1
+        fi
+    else
+        echo "Предупреждение: Не найдена стандартная структура директорий Nginx."
+        return 1
+    fi
 }
 
 # Функция для установки конфигурации
 install_config() {
-    NGINX_CONF_DIR="/etc/nginx/sites-available"
-    NGINX_ENABLED_DIR="/etc/nginx/sites-enabled"
+    # Переменные NGINX_CONF_DIR и NGINX_ENABLED_DIR уже установлены в check_nginx
+    # Не нужно их переопределять здесь
 
     # Копируем конфигурационный файл
     echo "Копируем конфигурационный файл в $NGINX_CONF_DIR/$CONFIG_NAME.conf..."
     sudo cp "$CONFIG_FILE" "$NGINX_CONF_DIR/$CONFIG_NAME.conf"
 
-    # Создаем символическую ссылку, если она еще не существует
-    if [ ! -L "$NGINX_ENABLED_DIR/$CONFIG_NAME.conf" ]; then
+    # Создаем символическую ссылку только если используем стандартную структуру
+    if [ "$USING_CONFD" = false ] && [ ! -L "$NGINX_ENABLED_DIR/$CONFIG_NAME.conf" ]; then
         echo "Создаем символическую ссылку в $NGINX_ENABLED_DIR..."
         sudo ln -s "$NGINX_CONF_DIR/$CONFIG_NAME.conf" "$NGINX_ENABLED_DIR/$CONFIG_NAME.conf"
     fi
@@ -218,36 +247,25 @@ else
     echo ""
     echo "Варианты действий:"
     echo ""
-    echo "1. Установить Nginx (если он не установлен):"
-    echo "   sudo apt update && sudo apt install nginx"
-    echo ""
+    if ! command -v nginx &> /dev/null; then
+        echo "1. Nginx не установлен. Установите его с помощью менеджера пакетов вашей системы."
+        echo "   Например: sudo apt install nginx"
+        echo ""
+    fi
     echo "2. Создать необходимые директории (если они отсутствуют):"
     echo "   sudo mkdir -p /etc/nginx/sites-available /etc/nginx/sites-enabled"
+    echo "   И добавьте в nginx.conf строку: include /etc/nginx/sites-enabled/*.conf;"
     echo ""
     echo "3. Установить конфигурацию вручную:"
-    echo "   sudo cp $CONFIG_FILE /etc/nginx/sites-available/$CONFIG_NAME.conf"
-    echo "   sudo ln -s /etc/nginx/sites-available/$CONFIG_NAME.conf /etc/nginx/sites-enabled/"
+    if [ -d "/etc/nginx/conf.d" ]; then
+        echo "   sudo cp $CONFIG_FILE /etc/nginx/conf.d/$CONFIG_NAME.conf"
+    else
+        echo "   sudo cp $CONFIG_FILE /etc/nginx/sites-available/$CONFIG_NAME.conf"
+        echo "   sudo ln -s /etc/nginx/sites-available/$CONFIG_NAME.conf /etc/nginx/sites-enabled/"
+    fi
     echo "   sudo nginx -t && sudo systemctl reload nginx"
     echo ""
     echo "4. Если вы используете другую структуру конфигурации Nginx:"
     echo "   Скопируйте содержимое файла $CONFIG_FILE в соответствующее место."
     echo ""
-
-    # Спрашиваем пользователя, хочет ли он установить Nginx
-    read -p "Хотите установить Nginx сейчас? (y/n): " INSTALL_NGINX
-    if [[ "$INSTALL_NGINX" =~ ^[Yy]$ ]]; then
-        echo "Устанавливаем Nginx..."
-        sudo apt update && sudo apt install nginx
-
-        if [ $? -eq 0 ]; then
-            echo "Nginx успешно установлен."
-            echo "Создаем необходимые директории..."
-            sudo mkdir -p /etc/nginx/sites-available /etc/nginx/sites-enabled
-
-            # Пробуем установить конфигурацию
-            install_config
-        else
-            echo "Ошибка при установке Nginx. Пожалуйста, установите его вручную."
-        fi
-    fi
 fi
