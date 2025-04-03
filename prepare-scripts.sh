@@ -4,10 +4,9 @@
 # Запустите этот скрипт один раз после клонирования репозитория
 
 echo "Устанавливаем права на выполнение для скриптов..."
-chmod +x setup.sh
-chmod +x deploy-versioned.sh
-chmod +x rollback.sh
-chmod +x make-scripts-executable.sh
+chmod +x ./setup.sh
+chmod +x ./deploy.sh
+chmod +x ./rollback.sh
 
 echo "Готово! Теперь все скрипты можно запускать."
 echo "Для полной настройки окружения выполните: ./setup.sh"
