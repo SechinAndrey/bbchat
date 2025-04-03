@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# create-nginx-config.sh - Скрипт для создания конфигурации Nginx
-# Создает конфигурационный файл для Nginx и устанавливает его
+# nginx-iframe-config.sh - Скрипт для создания конфигурации Nginx с поддержкой iframe
+# Создает конфигурационный файл для Nginx, разрешающий встраивание в iframe
 
 # Проверка прав sudo
 check_sudo() {
@@ -38,6 +38,7 @@ SERVER_IP=""
 PORT=""
 USE_PORT=false
 USE_IP=false
+ALLOWED_ORIGINS="*"  # По умолчанию разрешаем все домены
 
 # Проверяем права sudo в начале работы скрипта
 check_sudo
@@ -51,12 +52,12 @@ show_help() {
     echo "  -n, --name NAME      Имя сервера (по умолчанию: localhost)"
     echo "  -i, --ip IP          IP-адрес сервера (альтернатива имени)"
     echo "  -p, --port PORT      Порт для прослушивания (по умолчанию: 80/443)"
+    echo "  -o, --origins ORIGINS Разрешенные домены для CORS (по умолчанию: *)"
     echo ""
     echo "Примеры:"
-    echo "  $0 --name example.com              # Создать конфиг для example.com"
-    echo "  $0 --ip 192.168.1.100              # Создать конфиг для IP-адреса"
-    echo "  $0 --port 8080                     # Использовать порт 8080"
-    echo "  $0 --ip 192.168.1.100 --port 8080  # Использовать IP:8080"
+    echo "  $0 --name example.com                                # Создать конфиг для example.com"
+    echo "  $0 --ip 192.168.1.100 --port 8080                    # Использовать IP:8080"
+    echo "  $0 --origins 'https://example.com https://test.com'  # Разрешить только указанные домены"
 }
 
 # Обработка аргументов командной строки
@@ -83,6 +84,11 @@ while [[ $# -gt 0 ]]; do
         -p|--port)
             PORT="$2"
             USE_PORT=true
+            shift
+            shift
+            ;;
+        -o|--origins)
+            ALLOWED_ORIGINS="$2"
             shift
             shift
             ;;
@@ -123,14 +129,35 @@ server {
     root $DEPLOY_PATH/html;
     index index.html;
 
+    # Разрешаем CORS для всех запросов
+    add_header 'Access-Control-Allow-Origin' '$ALLOWED_ORIGINS' always;
+    add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS' always;
+    add_header 'Access-Control-Allow-Headers' 'DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range' always;
+    
+    # Разрешаем встраивание в iframe
+    add_header 'X-Frame-Options' 'ALLOWALL' always;
+    add_header 'Content-Security-Policy' "frame-ancestors $ALLOWED_ORIGINS" always;
+
     location / {
         try_files \$uri \$uri/ /index.html;
+        
+        # Для OPTIONS запросов (preflight)
+        if (\$request_method = 'OPTIONS') {
+            add_header 'Access-Control-Allow-Origin' '$ALLOWED_ORIGINS' always;
+            add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS' always;
+            add_header 'Access-Control-Allow-Headers' 'DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range' always;
+            add_header 'Access-Control-Max-Age' 1728000;
+            add_header 'Content-Type' 'text/plain; charset=utf-8';
+            add_header 'Content-Length' 0;
+            return 204;
+        }
     }
 
     # Кэширование статических файлов
     location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
         expires 30d;
         add_header Cache-Control "public, no-transform";
+        add_header 'Access-Control-Allow-Origin' '$ALLOWED_ORIGINS' always;
     }
 
     # Запрет доступа к скрытым файлам
@@ -208,8 +235,12 @@ install_config() {
         echo "Настройка завершена успешно!"
         if [ "$USE_PORT" = true ]; then
             echo "Ваш сайт должен быть доступен по адресу: http://$SERVER_NAME:$PORT"
+            echo "Теперь вы можете встраивать его в iframe на другом сайте:"
+            echo "<iframe src=\"http://$SERVER_NAME:$PORT\" width=\"800\" height=\"600\"></iframe>"
         else
             echo "Ваш сайт должен быть доступен по адресу: http://$SERVER_NAME"
+            echo "Теперь вы можете встраивать его в iframe на другом сайте:"
+            echo "<iframe src=\"http://$SERVER_NAME\" width=\"800\" height=\"600\"></iframe>"
         fi
         echo ""
 
