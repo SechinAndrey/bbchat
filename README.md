@@ -92,6 +92,24 @@ This will:
 ./rollback.sh 2-20230620
 ```
 
+<p>6. Configure Nginx for web access:</p>
+
+```bash
+# Configure with your IP address (for testing)
+./create-nginx-config.sh --ip 192.168.1.100
+
+# Configure with your domain name
+./create-nginx-config.sh --name your-domain.com
+
+# Configure with custom port (useful when multiple sites on same server)
+./create-nginx-config.sh --ip 192.168.1.100 --port 8080
+
+# Get help
+./create-nginx-config.sh --help
+```
+
+This will create and install an Nginx configuration file, allowing you to access your application through a web browser. You can start with an IP address for testing and later switch to a domain name when it's available.
+
 <br/>
 <br/>
 
