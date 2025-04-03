@@ -171,11 +171,13 @@ fi
 # Формируем listen директиву в зависимости от наличия порта и HTTPS
 if [ "$USE_HTTPS" = true ]; then
     if [ "$USE_PORT" = true ]; then
-        LISTEN_DIRECTIVE="listen $PORT ssl http2;"
+        LISTEN_DIRECTIVE="listen $PORT ssl;
+    http2 on;"
         SERVER_PORT=":$PORT"
     else
-        LISTEN_DIRECTIVE="listen 443 ssl http2;
-    listen [::]:443 ssl http2;"
+        LISTEN_DIRECTIVE="listen 443 ssl;
+    listen [::]:443 ssl;
+    http2 on;"
         SERVER_PORT=""
     fi
 
@@ -214,6 +216,9 @@ CONFIG_FILE="/tmp/$CONFIG_NAME.conf"
 
 # Создаем SSL конфигурацию, если нужно
 if [ "$USE_HTTPS" = true ]; then
+    # Генерируем уникальное имя для shared memory zone, чтобы избежать конфликтов
+    SSL_ZONE_NAME="SSL_${CONFIG_NAME}"
+
     SSL_CONFIG="
     # SSL настройки
     ssl_certificate $SSL_CERT_PATH;
@@ -222,7 +227,7 @@ if [ "$USE_HTTPS" = true ]; then
     ssl_prefer_server_ciphers on;
     ssl_ciphers 'ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384';
     ssl_session_timeout 1d;
-    ssl_session_cache shared:SSL:10m;
+    ssl_session_cache shared:${SSL_ZONE_NAME}:10m;
     ssl_session_tickets off;
     ssl_stapling on;
     ssl_stapling_verify on;
