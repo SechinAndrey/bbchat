@@ -39,6 +39,9 @@ PORT=""
 USE_PORT=false
 USE_IP=false
 ALLOWED_ORIGINS="*"  # По умолчанию разрешаем все домены
+USE_HTTPS=false      # По умолчанию используем HTTP
+SSL_CERT_PATH=""
+SSL_KEY_PATH=""
 
 # Проверяем права sudo в начале работы скрипта
 check_sudo
@@ -53,11 +56,16 @@ show_help() {
     echo "  -i, --ip IP          IP-адрес сервера (альтернатива имени)"
     echo "  -p, --port PORT      Порт для прослушивания (по умолчанию: 80/443)"
     echo "  -o, --origins ORIGINS Разрешенные домены для CORS (по умолчанию: *)"
+    echo "  -s, --https          Включить поддержку HTTPS (самоподписанный сертификат)"
+    echo "  --cert PATH          Путь к SSL сертификату (для существующего сертификата)"
+    echo "  --key PATH           Путь к SSL ключу (для существующего сертификата)"
     echo ""
     echo "Примеры:"
     echo "  $0 --name example.com                                # Создать конфиг для example.com"
     echo "  $0 --ip 192.168.1.100 --port 8080                    # Использовать IP:8080"
     echo "  $0 --origins 'https://example.com https://test.com'  # Разрешить только указанные домены"
+    echo "  $0 --name example.com --https                        # Включить HTTPS с самоподписанным сертификатом"
+    echo "  $0 --name example.com --cert /path/to/cert.pem --key /path/to/key.pem  # Использовать существующие сертификаты"
 }
 
 # Обработка аргументов командной строки
@@ -92,6 +100,22 @@ while [[ $# -gt 0 ]]; do
             shift
             shift
             ;;
+        -s|--https)
+            USE_HTTPS=true
+            shift
+            ;;
+        --cert)
+            SSL_CERT_PATH="$2"
+            USE_HTTPS=true
+            shift
+            shift
+            ;;
+        --key)
+            SSL_KEY_PATH="$2"
+            USE_HTTPS=true
+            shift
+            shift
+            ;;
         *)
             echo "Неизвестная опция: $1"
             show_help
@@ -100,14 +124,80 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-# Формируем listen директиву в зависимости от наличия порта
-if [ "$USE_PORT" = true ]; then
-    LISTEN_DIRECTIVE="listen $PORT;"
-    SERVER_PORT=":$PORT"
+# Функция для создания самоподписанных сертификатов
+create_self_signed_cert() {
+    local domain=$1
+    local cert_dir="/etc/nginx/ssl/$domain"
+
+    echo "Создаем самоподписанный SSL сертификат для $domain..."
+
+    # Создаем директорию для сертификатов
+    sudo mkdir -p "$cert_dir"
+
+    # Генерируем самоподписанный сертификат
+    sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+        -keyout "$cert_dir/privkey.pem" \
+        -out "$cert_dir/fullchain.pem" \
+        -subj "/CN=$domain" \
+        -addext "subjectAltName=DNS:$domain"
+
+    if [ $? -eq 0 ]; then
+        echo "Сертификаты успешно созданы в $cert_dir"
+        SSL_CERT_PATH="$cert_dir/fullchain.pem"
+        SSL_KEY_PATH="$cert_dir/privkey.pem"
+        return 0
+    else
+        echo "Ошибка при создании сертификатов"
+        return 1
+    fi
+}
+
+# Проверяем и создаем сертификаты, если нужно
+if [ "$USE_HTTPS" = true ]; then
+    # Если пути к сертификатам не указаны, создаем самоподписанные
+    if [ -z "$SSL_CERT_PATH" ] || [ -z "$SSL_KEY_PATH" ]; then
+        create_self_signed_cert "$SERVER_NAME"
+    fi
+
+    # Проверяем наличие сертификатов
+    if [ ! -f "$SSL_CERT_PATH" ] || [ ! -f "$SSL_KEY_PATH" ]; then
+        echo "Ошибка: SSL сертификаты не найдены по указанным путям:"
+        echo "Сертификат: $SSL_CERT_PATH"
+        echo "Ключ: $SSL_KEY_PATH"
+        exit 1
+    fi
+fi
+
+# Формируем listen директиву в зависимости от наличия порта и HTTPS
+if [ "$USE_HTTPS" = true ]; then
+    if [ "$USE_PORT" = true ]; then
+        LISTEN_DIRECTIVE="listen $PORT ssl http2;"
+        SERVER_PORT=":$PORT"
+    else
+        LISTEN_DIRECTIVE="listen 443 ssl http2;
+    listen [::]:443 ssl http2;"
+        SERVER_PORT=""
+    fi
+
+    # Добавляем редирект с HTTP на HTTPS
+    REDIRECT_CONFIG="
+server {
+    listen 80;
+    server_name $SERVER_NAME;
+
+    # Редирект на HTTPS
+    return 301 https://\$host\$request_uri;
+}"
 else
-    LISTEN_DIRECTIVE="listen 80;
+    if [ "$USE_PORT" = true ]; then
+        LISTEN_DIRECTIVE="listen $PORT;"
+        SERVER_PORT=":$PORT"
+    else
+        LISTEN_DIRECTIVE="listen 80;
     listen [::]:80;"
-    SERVER_PORT=""
+        SERVER_PORT=""
+    fi
+    REDIRECT_CONFIG=""
 fi
 
 # Определяем имя конфигурационного файла
@@ -121,11 +211,33 @@ fi
 
 # Создаем конфигурационный файл
 CONFIG_FILE="/tmp/$CONFIG_NAME.conf"
+
+# Создаем SSL конфигурацию, если нужно
+if [ "$USE_HTTPS" = true ]; then
+    SSL_CONFIG="
+    # SSL настройки
+    ssl_certificate $SSL_CERT_PATH;
+    ssl_certificate_key $SSL_KEY_PATH;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_prefer_server_ciphers on;
+    ssl_ciphers 'ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384';
+    ssl_session_timeout 1d;
+    ssl_session_cache shared:SSL:10m;
+    ssl_session_tickets off;
+    ssl_stapling on;
+    ssl_stapling_verify on;
+    "
+else
+    SSL_CONFIG=""
+fi
+
 cat > "$CONFIG_FILE" << EOF
+$REDIRECT_CONFIG
+
 server {
     $LISTEN_DIRECTIVE
     server_name $SERVER_NAME;
-
+$SSL_CONFIG
     root $DEPLOY_PATH/html;
     index index.html;
 
@@ -133,14 +245,14 @@ server {
     add_header 'Access-Control-Allow-Origin' '$ALLOWED_ORIGINS' always;
     add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS' always;
     add_header 'Access-Control-Allow-Headers' 'DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range' always;
-    
+
     # Разрешаем встраивание в iframe
     add_header 'X-Frame-Options' 'ALLOWALL' always;
     add_header 'Content-Security-Policy' "frame-ancestors $ALLOWED_ORIGINS" always;
 
     location / {
         try_files \$uri \$uri/ /index.html;
-        
+
         # Для OPTIONS запросов (preflight)
         if (\$request_method = 'OPTIONS') {
             add_header 'Access-Control-Allow-Origin' '$ALLOWED_ORIGINS' always;
@@ -233,14 +345,30 @@ install_config() {
 
         echo ""
         echo "Настройка завершена успешно!"
-        if [ "$USE_PORT" = true ]; then
-            echo "Ваш сайт должен быть доступен по адресу: http://$SERVER_NAME:$PORT"
-            echo "Теперь вы можете встраивать его в iframe на другом сайте:"
-            echo "<iframe src=\"http://$SERVER_NAME:$PORT\" width=\"800\" height=\"600\"></iframe>"
+
+        # Формируем URL в зависимости от настроек
+        if [ "$USE_HTTPS" = true ]; then
+            PROTOCOL="https"
         else
-            echo "Ваш сайт должен быть доступен по адресу: http://$SERVER_NAME"
+            PROTOCOL="http"
+        fi
+
+        if [ "$USE_PORT" = true ] && [ "$USE_HTTPS" = false ]; then
+            # Порт указываем только для HTTP, для HTTPS используем стандартный 443
+            echo "Ваш сайт должен быть доступен по адресу: $PROTOCOL://$SERVER_NAME:$PORT"
             echo "Теперь вы можете встраивать его в iframe на другом сайте:"
-            echo "<iframe src=\"http://$SERVER_NAME\" width=\"800\" height=\"600\"></iframe>"
+            echo "<iframe src=\"$PROTOCOL://$SERVER_NAME:$PORT\" width=\"800\" height=\"600\"></iframe>"
+        else
+            echo "Ваш сайт должен быть доступен по адресу: $PROTOCOL://$SERVER_NAME"
+            echo "Теперь вы можете встраивать его в iframe на другом сайте:"
+            echo "<iframe src=\"$PROTOCOL://$SERVER_NAME\" width=\"800\" height=\"600\"></iframe>"
+        fi
+
+        if [ "$USE_HTTPS" = true ] && [ -z "$SSL_CERT_PATH" ]; then
+            echo ""
+            echo "ВНИМАНИЕ: Вы используете самоподписанный сертификат."
+            echo "Браузеры будут показывать предупреждение о небезопасном соединении."
+            echo "Для продакшн-среды рекомендуется использовать Let's Encrypt или другой доверенный сертификат."
         fi
         echo ""
 
