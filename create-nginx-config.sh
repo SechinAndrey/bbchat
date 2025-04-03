@@ -22,11 +22,6 @@ check_sudo() {
             echo "Ошибка: не удалось получить права sudo."
             exit 1
         fi
-
-        # Обновляем таймаут sudo в фоновом режиме
-        (while true; do sudo -n true; sleep 50; done) &
-        SUDO_PID=$!
-        trap "kill -9 $SUDO_PID" EXIT
     fi
 }
 
@@ -180,7 +175,17 @@ if [ "$USE_HTTPS" = true ]; then
     fi
 
     # Добавляем редирект с HTTP на HTTPS
-    REDIRECT_CONFIG="
+    if [ "$USE_PORT" = true ]; then
+        REDIRECT_CONFIG="
+server {
+    listen 80;
+    server_name $SERVER_NAME;
+
+    # Редирект на HTTPS с указанным портом
+    return 301 https://\$host:$PORT\$request_uri;
+}"
+    else
+        REDIRECT_CONFIG="
 server {
     listen 80;
     server_name $SERVER_NAME;
@@ -188,6 +193,7 @@ server {
     # Редирект на HTTPS
     return 301 https://\$host\$request_uri;
 }"
+    fi
 else
     if [ "$USE_PORT" = true ]; then
         LISTEN_DIRECTIVE="listen $PORT;"
@@ -356,8 +362,8 @@ install_config() {
             PROTOCOL="http"
         fi
 
-        if [ "$USE_PORT" = true ] && [ "$USE_HTTPS" = false ]; then
-            # Порт указываем только для HTTP, для HTTPS используем стандартный 443
+        if [ "$USE_PORT" = true ]; then
+            # Показываем порт в URL, если он был указан
             echo "Ваш сайт должен быть доступен по адресу: $PROTOCOL://$SERVER_NAME:$PORT"
             echo "Теперь вы можете встраивать его в iframe на другом сайте:"
             echo "<iframe src=\"$PROTOCOL://$SERVER_NAME:$PORT\" width=\"800\" height=\"600\"></iframe>"
