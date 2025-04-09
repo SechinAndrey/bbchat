@@ -17,7 +17,7 @@ const password = ref("");
       <!--header-->
       <div class="mb-6 flex flex-col">
         <img
-          src="@src/core/assets/vectors/logo-gradient.svg"
+          src="@src/shared/assets/vectors/logo-gradient.svg"
           class="w-[1.375rem] h-[1.125rem] mb-4 opacity-70"
           alt="bird logo"
         />
@@ -35,14 +35,14 @@ const password = ref("");
           class="mb-5"
         />
         <PasswordInput
+          :value="password"
+          label="Password"
+          placeholder="Enter your password"
           @value-changed="
             (value) => {
               password = value;
             }
           "
-          :value="password"
-          label="Password"
-          placeholder="Enter your password"
         />
       </div>
 
@@ -72,7 +72,7 @@ const password = ref("");
         <Button class="outlined-primary outlined-text w-full mb-5">
           <span class="flex">
             <img
-              src="@src/core/assets/vectors/google-logo.svg"
+              src="@src/shared/assets/vectors/google-logo.svg"
               class="mr-3"
               alt="google logo"
             />

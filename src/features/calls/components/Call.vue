@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
-import { ICall } from "@src/core/types/types.ts";
-import { getCallName, getOtherMembers } from "@src/core/helpers/utils.ts";
+import { ICall } from "@src/shared/types/types.ts";
+import { getCallName, getOtherMembers } from "@src/shared/utils/utils.ts";
 
 import {
   PhoneIcon,
@@ -10,7 +10,7 @@ import {
   PhoneArrowUpRightIcon,
   PhoneXMarkIcon,
 } from "@heroicons/vue/24/solid";
-import CallAvatar from "@src/core/components/shared/blocks/CallAvatar.vue";
+import CallAvatar from "@src/shared/components/blocks/CallAvatar.vue";
 
 const props = defineProps<{
   call: ICall;

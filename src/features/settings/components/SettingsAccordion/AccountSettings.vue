@@ -3,7 +3,7 @@ import type { Ref } from "vue";
 
 import { ref } from "vue";
 
-import useStore from "@src/core/store/store";
+import useStore from "@src/shared/store/store.ts";
 
 import AccordionButton from "@src/ui/data-display/AccordionButton.vue";
 import Button from "@src/ui/inputs/Button.vue";

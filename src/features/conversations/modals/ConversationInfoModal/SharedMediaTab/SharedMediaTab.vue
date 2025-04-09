@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { IContact, IConversation, IMessage } from "@src/core/types/types.ts";
+import type { IContact, IConversation, IMessage } from "@src/shared/types/types.ts";
 import { computed } from "vue";
 
-import { hasAttachments } from "@src/core/helpers/utils.ts";
+import { hasAttachments } from "@src/shared/utils/utils.ts";
 
 import { ArrowUturnLeftIcon } from "@heroicons/vue/24/outline";
 import MediaItem from "@src/features/conversations/modals/ConversationInfoModal/SharedMediaTab/MediaItem.vue";

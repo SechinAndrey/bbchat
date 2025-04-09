@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import type { Ref } from "vue";
-import type { IAttachment, IConversation } from "@src/core/types/types.ts";
+import type { IAttachment, IConversation } from "@src/shared/types/types.ts";
 
 import { computed, inject, onMounted, onUnmounted, ref, watch } from "vue";
 
-import { hasAttachments } from "@src/core/helpers/utils.ts";
+import { hasAttachments } from "@src/shared/utils/utils.ts";
 import { useFocusTrap } from "@vueuse/integrations/useFocusTrap";
 import VideoPlayer from "@src/ui/data-display/VideoPlayer.vue";
 import IconButton from "@src/ui/inputs/IconButton.vue";

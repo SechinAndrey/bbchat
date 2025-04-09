@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import useStore from "@src/core/store/store";
+import useStore from "@src/shared/store/store.ts";
 
 import FadeTransition from "@src/ui/transitions/FadeTransition.vue";
 import Navigation from "@src/layout/navigation/Navigation.vue";
 import Sidebar from "@src/layout/sidebar/Sidebar.vue";
-import { getActiveConversationId } from "@src/core/helpers/utils.ts";
+import { getActiveConversationId } from "@src/shared/utils/utils.ts";
 
 const store = useStore();
 </script>

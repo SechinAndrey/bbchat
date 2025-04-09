@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import type { IConversation } from "@src/core/types/types.ts";
+import type { IConversation } from "@src/shared/types/types.ts";
 import type { Ref } from "vue";
 
 import { onMounted, ref, watch } from "vue";
 
-import useStore from "@src/core/store/store";
-import { getActiveConversationId, getName } from "@src/core/helpers/utils.ts";
+import useStore from "@src/shared/store/store.ts";
+import { getActiveConversationId, getName } from "@src/shared/utils/utils.ts";
 
 import { PencilSquareIcon } from "@heroicons/vue/24/outline";
 import ComposeModal from "@src/features/conversations/modals/ComposeModal/ComposeModal.vue";

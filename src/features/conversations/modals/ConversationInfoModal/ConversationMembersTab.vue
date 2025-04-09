@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import type { IConversation } from "@src/core/types/types.ts";
+import type { IConversation } from "@src/shared/types/types.ts";
 import type { Ref } from "vue";
 
 import { ref } from "vue";
 
-import useStore from "@src/core/store/store";
+import useStore from "@src/shared/store/store.ts";
 
 import { EllipsisVerticalIcon } from "@heroicons/vue/24/outline";
 import { ArrowUturnLeftIcon } from "@heroicons/vue/24/solid";
-import ContactItem from "@src/core/components/shared/blocks/ContactItem.vue";
+import ContactItem from "@src/shared/components/blocks/ContactItem.vue";
 import IconButton from "@src/ui/inputs/IconButton.vue";
 import SearchInput from "@src/ui/inputs/SearchInput.vue";
 import Dropdown from "@src/ui/navigation/Dropdown/Dropdown.vue";

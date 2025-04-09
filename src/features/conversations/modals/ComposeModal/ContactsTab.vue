@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import useStore from "@src/core/store/store";
+import useStore from "@src/shared/store/store.ts";
 
 import NoContacts from "@src/ui/states/empty-states/NoContacts.vue";
 import Circle2Lines from "@src/ui/states/loading-states/Circle2Lines.vue";
 import SearchInput from "@src/ui/inputs/SearchInput.vue";
-import ContactItem from "@src/core/components/shared/blocks/ContactItem.vue";
+import ContactItem from "@src/shared/components/blocks/ContactItem.vue";
 import ScrollBox from "@src/ui/utils/ScrollBox.vue";
 
 const store = useStore();

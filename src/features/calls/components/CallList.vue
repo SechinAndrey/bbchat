@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ICall } from "@src/core/types/types.ts";
+import type { ICall } from "@src/shared/types/types.ts";
 import Call from "@src/features/calls/components/Call.vue";
 
 const props = defineProps<{

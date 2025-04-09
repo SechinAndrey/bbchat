@@ -4,13 +4,13 @@ import type {
   IMessage,
   IPreviewData,
   IRecording,
-} from "@src/core/types/types.ts";
+} from "@src/shared/types/types.ts";
 import type { Ref } from "vue";
 
 import linkifyStr from "linkify-string";
 import { inject, ref } from "vue";
 
-import { getFullName, getMessageById } from "@src/core/helpers/utils.ts";
+import { getFullName, getMessageById } from "@src/shared/utils/utils.ts";
 
 import Attachments from "@src/features/chat/components/ChatMiddle/Message/Attachments.vue";
 import LinkPreview from "@src/features/chat/components/ChatMiddle/Message/LinkPreview.vue";

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ICall } from "@src/core/types/types.ts";
+import type { ICall } from "@src/shared/types/types.ts";
 
 import { computed } from "vue";
 
@@ -10,7 +10,7 @@ import {
   PhoneXMarkIcon,
   UserGroupIcon,
 } from "@heroicons/vue/24/outline";
-import IconAndText from "@src/core/components/shared/blocks/IconAndText.vue";
+import IconAndText from "@src/shared/components/blocks/IconAndText.vue";
 import Button from "@src/ui/inputs/Button.vue";
 
 const props = defineProps<{

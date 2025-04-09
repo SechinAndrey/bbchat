@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import type { IAttachment, IConversation, IRecording } from "@src/core/types/types.ts";
+import type { IAttachment, IConversation, IRecording } from "@src/shared/types/types.ts";
 import type { Ref } from "vue";
 import { computed, ref } from "vue";
 
-import useStore from "@src/core/store/store";
+import useStore from "@src/shared/store/store.ts";
 import {
   getActiveConversationId,
   getAvatar,
@@ -11,7 +11,7 @@ import {
   getName,
   hasAttachments,
   shorten,
-} from "@src/core/helpers/utils.ts";
+} from "@src/shared/utils/utils.ts";
 import router from "@src/router";
 
 import {

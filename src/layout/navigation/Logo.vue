@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import useStore from "@src/core/store/store";
+import useStore from "@src/shared/store/store.ts";
 import { ForwardIcon } from "@heroicons/vue/24/outline";
 
 let SkipLinkFocused = ref(false);
@@ -13,13 +13,13 @@ const store = useStore();
     <a
       href="#mainContent"
       title="Skip to main content"
-      @blur="SkipLinkFocused = false"
-      @focus="SkipLinkFocused = true"
       class="outline-none"
       :class="{
         absolute: !SkipLinkFocused,
         'right-[625rem]': !SkipLinkFocused,
       }"
+      @blur="SkipLinkFocused = false"
+      @focus="SkipLinkFocused = true"
     >
       <ForwardIcon class="w-7 h-6 text-indigo-300" />
     </a>
@@ -31,13 +31,13 @@ const store = useStore();
     >
       <img
         v-if="!store.settings.darkMode"
-        src="@src/core/assets/vectors/logo.svg"
+        src="@src/shared/assets/vectors/logo.svg"
         class="w-8 h-7"
         alt="gray bird logo"
       />
       <img
         v-else
-        src="@src/core/assets/vectors/logo-white.svg"
+        src="@src/shared/assets/vectors/logo-white.svg"
         class="w-8 h-7 opacity-40"
         alt="white bird logo"
       />

@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import type { Ref } from "vue";
-import type { IEmoji } from "@src/core/types/types.ts";
+import type { IEmoji } from "@src/shared/types/types.ts";
 
 import { watch, ref, onMounted } from "vue";
-import useStore from "@src/core/store/store";
-import { unicodeToEmoji } from "@src/core/helpers/utils.ts";
+import useStore from "@src/shared/store/store.ts";
+import { unicodeToEmoji } from "@src/shared/utils/utils.ts";
 
 import emojis from "@src/ui/inputs/EmojiPicker/emojis.json";
 import ScrollBox from "@src/ui/utils/ScrollBox.vue";

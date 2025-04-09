@@ -53,7 +53,7 @@ import LabeledTextInput from "@src/ui/inputs/LabeledTextInput.vue";
     <Button class="outlined-primary outlined-text w-full mb-5">
       <span class="flex">
         <img
-          src="@src/core/assets/vectors/google-logo.svg"
+          src="@src/shared/assets/vectors/google-logo.svg"
           class="mr-3"
           alt="google-logo"
         />

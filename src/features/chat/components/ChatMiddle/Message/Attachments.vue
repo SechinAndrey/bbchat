@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { IAttachment, IMessage } from "@src/core/types/types.ts";
+import type { IAttachment, IMessage } from "@src/shared/types/types.ts";
 import type { Ref } from "vue";
 
 import { computed, ref } from "vue";

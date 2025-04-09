@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import type { IContactGroup } from "@src/core/types/types.ts";
+import type { IContactGroup } from "@src/shared/types/types.ts";
 import type { Ref } from "vue";
 
 import { ref } from "vue";
 
-import { getFullName } from "@src/core/helpers/utils.ts";
+import { getFullName } from "@src/shared/utils/utils.ts";
 
 import {
   EllipsisVerticalIcon,

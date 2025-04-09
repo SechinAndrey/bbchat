@@ -41,7 +41,7 @@ const changeActiveSection = (event: {
       <!--header-->
       <div class="mb-6 flex flex-col">
         <img
-          src="@src/core/assets/vectors/logo-gradient.svg"
+          src="@src/shared/assets/vectors/logo-gradient.svg"
           class="w-[1.375rem] h-[1.125rem] mb-5 opacity-70"
         />
         <p class="heading-2 text-color mb-4">Get started with Avian</p>

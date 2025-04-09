@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { ICall } from "@src/core/types/types.ts";
+import type { ICall } from "@src/shared/types/types.ts";
 import { Ref, ref } from "vue";
 
-import useStore from "@src/core/store/store";
+import useStore from "@src/shared/store/store.ts";
 
 import { PlusCircleIcon } from "@heroicons/vue/24/outline";
 import CallInfoModal from "@src/features/calls/modals/CallInfoModal/CallInfoModal.vue";

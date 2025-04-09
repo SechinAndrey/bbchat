@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { UserPlusIcon } from "@heroicons/vue/24/outline";
-import type { IContactGroup } from "@src/core/types/types.ts";
+import type { IContactGroup } from "@src/shared/types/types.ts";
 import type { Ref } from "vue";
 import { ref, watch } from "vue";
 
-import useStore from "@src/core/store/store";
+import useStore from "@src/shared/store/store.ts";
 
 import AddContactModal from "@src/features/contacts/modals/AddContactModal.vue";
 import NoContacts from "@src/ui/states/empty-states/NoContacts.vue";

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { IRecording } from "@src/core/types/types.ts";
+import type { IRecording } from "@src/shared/types/types.ts";
 import type { Ref } from "vue";
 
 import { ref, onMounted, onUnmounted } from "vue";

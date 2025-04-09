@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { attachments } from "@src/core/store/defaults.ts";
+import { attachments } from "@src/shared/store/defaults.ts";
 
 import Attachment from "@src/features/media/modals/AttachmentsModal/Attachment.vue";
 import Button from "@src/ui/inputs/Button.vue";

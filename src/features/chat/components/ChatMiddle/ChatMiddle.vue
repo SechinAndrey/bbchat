@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import type { IConversation, IMessage } from "@src/core/types/types.ts";
+import type { IConversation, IMessage } from "@src/shared/types/types.ts";
 import type { Ref } from "vue";
 
 import { inject, onMounted, ref } from "vue";
 
-import useStore from "@src/core/store/store";
+import useStore from "@src/shared/store/store.ts";
 
 import Message from "@src/features/chat/components/ChatMiddle/Message/Message.vue";
 import TimelineDivider from "@src/features/chat/components/ChatMiddle/TimelineDivider.vue";

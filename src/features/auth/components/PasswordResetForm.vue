@@ -15,7 +15,7 @@ const confirmNewPassword = ref("");
       <!--header-->
       <div class="mb-6 flex flex-col">
         <img
-          src="@src/core/assets/vectors/logo-gradient.svg"
+          src="@src/shared/assets/vectors/logo-gradient.svg"
           class="w-[1.375rem] h-[1.125rem] mb-4 opacity-70"
           alt="bird logo"
         />
@@ -30,40 +30,40 @@ const confirmNewPassword = ref("");
       <div class="mb-6">
         <PasswordInput
           :value="oldPassword"
-          @valueChanged="
-            (value) => {
-              oldPassword = value;
-            }
-          "
           bordered
           label="Old Password"
           placeholder="Enter your password"
           class="mb-5"
+          @value-changed="
+            (value) => {
+              oldPassword = value;
+            }
+          "
         />
 
         <PasswordInput
           :value="newPassword"
-          @valueChanged="
-            (value) => {
-              newPassword = value;
-            }
-          "
           bordered
           label="New Password"
           placeholder="Enter your password"
           class="mb-5"
+          @value-changed="
+            (value) => {
+              newPassword = value;
+            }
+          "
         />
 
         <PasswordInput
           :value="confirmNewPassword"
-          @valueChanged="
+          bordered
+          label="Confirm New Password"
+          placeholder="Enter your password"
+          @value-changed="
             (value) => {
               confirmNewPassword = value;
             }
           "
-          bordered
-          label="Confirm New Password"
-          placeholder="Enter your password"
         />
       </div>
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import cloudPatternPath from "@src/core/assets/images/clouds.png";
-import blurPath from "@src/core/assets/images/blur.png";
+import cloudPatternPath from "@src/shared/assets/images/clouds.png";
+import blurPath from "@src/shared/assets/images/blur.png";
 </script>
 
 <template>

@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import type { Ref } from "vue";
-import type { IConversation } from "@src/core/types/types.ts";
+import type { IConversation } from "@src/shared/types/types.ts";
 
-import useStore from "@src/core/store/store";
+import useStore from "@src/shared/store/store.ts";
 import { ref, inject, onMounted } from "vue";
-import { getConversationIndex } from "@src/core/helpers/utils.ts";
+import { getConversationIndex } from "@src/shared/utils/utils.ts";
 
 import {
   CheckIcon,

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import GreenChecks from "@src/core/assets/vectors/green_checks.svg";
-import GrayChecks from "@src/core/assets/vectors/gray_checks.svg";
+import GreenChecks from "@src/shared/assets/vectors/green_checks.svg";
+import GrayChecks from "@src/shared/assets/vectors/gray_checks.svg";
 
 const props = defineProps<{
   state: string;

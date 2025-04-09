@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { IConversation } from "@src/core/types/types.ts";
+import type { IConversation } from "@src/shared/types/types.ts";
 
 import NoMessage from "@src/ui/states/empty-states/NoMessage.vue";
 import Button from "@src/ui/inputs/Button.vue";

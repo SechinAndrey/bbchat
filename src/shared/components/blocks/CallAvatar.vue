@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { IContact } from "@src/core/types/types.ts";
+import type { IContact } from "@src/shared/types/types.ts";
 
 const props = defineProps<{
   member: IContact;

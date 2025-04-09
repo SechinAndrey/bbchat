@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import type { IContact, IConversation } from "@src/core/types/types.ts";
+import type { IContact, IConversation } from "@src/shared/types/types.ts";
 
 import { computed, ref } from "vue";
 
-import { getAvatar, getName, getOddContact } from "@src/core/helpers/utils.ts";
+import { getAvatar, getName, getOddContact } from "@src/shared/utils/utils.ts";
 
 import {
   ArrowLeftOnRectangleIcon,
@@ -16,7 +16,7 @@ import {
   UserIcon,
 } from "@heroicons/vue/24/outline";
 import { ArrowUturnLeftIcon } from "@heroicons/vue/24/solid";
-import IconAndText from "@src/core/components/shared/blocks/IconAndText.vue";
+import IconAndText from "@src/shared/components/blocks/IconAndText.vue";
 import ImageViewer from "@src/features/conversations/modals/ConversationInfoModal/ConversationInfoTab/ImageViewer.vue";
 import Button from "@src/ui/inputs/Button.vue";
 import IconButton from "@src/ui/inputs/IconButton.vue";

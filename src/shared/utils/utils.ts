@@ -1,11 +1,11 @@
-import useStore from "@src/core/store/store";
+import useStore from "@src/shared/store/store.ts";
 import type {
   ICall,
   IContact,
   IConversation,
   IMessage,
   IRecording,
-} from "@src/core/types/types.ts";
+} from "@src/shared/types/types.ts";
 import { useRoute } from "vue-router";
 
 /**

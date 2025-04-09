@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import type { Ref } from "vue";
-import type { IContact } from "@src/core/types/types.ts";
+import type { IContact } from "@src/shared/types/types.ts";
 
 import { ref } from "vue";
 
-import useStore from "@src/core/store/store";
+import useStore from "@src/shared/store/store.ts";
 
 import Circle2Lines from "@src/ui/states/loading-states/Circle2Lines.vue";
 import SearchInput from "@src/ui/inputs/SearchInput.vue";
-import ContactItem from "@src/core/components/shared/blocks/ContactItem.vue";
+import ContactItem from "@src/shared/components/blocks/ContactItem.vue";
 import Button from "@src/ui/inputs/Button.vue";
 import Checkbox from "@src/ui/inputs/Checkbox.vue";
 import ScrollBox from "@src/ui/utils/ScrollBox.vue";
