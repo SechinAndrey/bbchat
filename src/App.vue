@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from "vue";
 
-import useStore from "@src/store/store";
-import { fetchData } from "@src/store/defaults";
+import useStore from "@src/core/store/store";
+import { fetchData } from "@src/core/store/defaults.ts";
 
-import FadeTransition from "@src/components/ui/transitions/FadeTransition.vue";
+import FadeTransition from "@src/ui/transitions/FadeTransition.vue";
 
 // Refactoring code:
 // todo reorganize component structure
