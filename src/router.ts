@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import AccessView from "@src/pages/access/AccessView.vue";
 import HomeView from "@src/pages/home/HomeView.vue";
 import PasswordResetView from "@src/pages/password-reset/PasswordResetView.vue";
+import UIKitView from "@src/pages/ui-kit/UIKitView.vue";
 import Chat from "@src/features/chat/components/Chat.vue";
 
 const routes = [
@@ -33,6 +34,11 @@ const routes = [
     path: "/reset/",
     name: "Password Reset",
     component: PasswordResetView,
+  },
+  {
+    path: "/ui-kit/",
+    name: "UI Kit",
+    component: UIKitView,
   },
 ];
 
