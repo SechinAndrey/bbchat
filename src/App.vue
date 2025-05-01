@@ -2,7 +2,7 @@
 import { ref, onMounted, onUnmounted } from "vue";
 
 import useStore from "@src/shared/store/store.ts";
-import { fetchData } from "@src/shared/store/defaults.ts";
+import { chatApiService } from "@src/api/api-service.ts";
 
 import FadeTransition from "@src/ui/transitions/FadeTransition.vue";
 
@@ -39,21 +39,7 @@ store.$subscribe((_mutation, state) => {
 
 // here we load the data from the server.
 onMounted(async () => {
-  store.status = "loading";
-
-  // fake server call
-  setTimeout(() => {
-    store.delayLoading = false;
-  });
-  const request = await fetchData();
-
-  store.$patch({
-    status: "success",
-    user: request.data.user,
-    conversations: request.data.conversations,
-    notifications: request.data.notifications,
-    archivedConversations: request.data.archivedConversations,
-  });
+  await store.initializeData();
 });
 
 // the app height

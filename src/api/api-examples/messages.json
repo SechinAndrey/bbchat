@@ -1,0 +1,59 @@
+[
+  {
+      "_id": 1,
+      "roomId": 1,
+      "content": "",
+      "senderId": "user123",
+      "username": "Иван Петров",
+      "date": "01.05.2025",
+      "timestamp": "10:15",
+      "files": [
+          {
+              "name": "sample_image.jpg",
+              "url": "https://example.com/media/files/sample_image.jpg",
+              "type": "jpg",
+              "audio": false
+          }
+      ]
+  },
+  {
+      "_id": 2,
+      "roomId": 1,
+      "content": "Привет! Как дела?",
+      "senderId": "user456",
+      "username": "Мария Сидорова",
+      "date": "01.05.2025",
+      "timestamp": "10:20",
+      "files": []
+  },
+  {
+      "_id": 3,
+      "roomId": 1,
+      "content": "Привет из чата! 👋",
+      "senderId": "user456",
+      "username": "Мария Сидорова",
+      "date": "01.05.2025",
+      "timestamp": "10:25",
+      "files": []
+  },
+  {
+      "_id": 4,
+      "roomId": 1,
+      "content": "Всё отлично, спасибо!",
+      "senderId": "user123",
+      "username": "Иван Петров",
+      "date": "01.05.2025",
+      "timestamp": "10:30",
+      "files": []
+  },
+  {
+      "_id": 5,
+      "roomId": 1,
+      "content": "Встретимся сегодня в 18:00?\nНа обычном месте.",
+      "senderId": "user456",
+      "username": "Мария Сидорова",
+      "date": "01.05.2025",
+      "timestamp": "10:35",
+      "files": []
+  }
+]

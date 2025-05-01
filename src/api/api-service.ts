@@ -1,0 +1,195 @@
+/**
+ * WIP api service
+ */
+
+import type {
+  ApiUser,
+  ApiRoom,
+  ApiMessage,
+  ApiMessengers,
+  ApiNotification,
+  ApiCall
+} from './types';
+import { adaptApiDataToUI } from './adapters';
+import mockData from '@src/shared/store/real-api-example.ts';
+
+/**
+ * Use mock data until real API is ready
+ */
+export class ChatApiService {
+  private baseUrl: string;
+  private currentUserId: number | string;
+
+  constructor(baseUrl = 'https://api.example.com', currentUserId = "262") {
+    this.baseUrl = baseUrl;
+    this.currentUserId = currentUserId;
+  }
+
+  /**
+   * Gets information about the current user
+   * @returns Promise with user data
+   */
+  async getCurrentUser(): Promise<ApiUser> {
+    // In the real API there will be a server request here
+    // return fetch(`${this.baseUrl}/api/user`).then(res => res.json());
+
+    // Return mock data
+    return Promise.resolve(mockData.apiData.user);
+  }
+
+  /**
+   * Gets the list of user's rooms
+   * @returns Promise with the list of rooms
+   */
+  async getRooms(): Promise<ApiRoom[]> {
+    // In the real API there will be a server request here
+    // return fetch(`${this.baseUrl}/api/rooms`).then(res => res.json());
+
+    // Return mock data
+    return Promise.resolve(mockData.apiData.rooms);
+  }
+
+  /**
+   * Gets messages for a room
+   * @param roomId Room ID
+   * @returns Promise with the list of messages
+   */
+  async getMessages(roomId?: number): Promise<ApiMessage[]> {
+    // In the real API there will be a server request here
+    // const url = roomId ? `${this.baseUrl}/api/messages?roomId=${roomId}` : `${this.baseUrl}/api/messages`;
+    // return fetch(url).then(res => res.json());
+
+    // Return mock data
+    let messages = mockData.apiData.messages;
+
+    // If room ID is specified, filter messages
+    if (roomId) {
+      messages = messages.filter(msg => msg.roomId === roomId);
+    }
+
+    return Promise.resolve(messages);
+  }
+
+  /**
+   * Gets the list of available messengers
+   * @returns Promise with the list of messengers
+   */
+  async getMessengers(): Promise<ApiMessengers> {
+    // In the real API there will be a server request here
+    // return fetch(`${this.baseUrl}/api/messengers`).then(res => res.json());
+
+    // Return mock data
+    return Promise.resolve(mockData.apiData.messengers);
+  }
+
+  /**
+   * Gets the list of user notifications
+   * @returns Promise with the list of notifications
+   */
+  async getNotifications(): Promise<ApiNotification[]> {
+    // In the real API there will be a server request here
+    // return fetch(`${this.baseUrl}/api/notifications`).then(res => res.json());
+
+    // Return mock data
+    return Promise.resolve(mockData.apiData.notifications);
+  }
+
+  /**
+   * Gets the user's call history
+   * @returns Promise with the list of calls
+   */
+  async getCalls(): Promise<ApiCall[]> {
+    // In the real API there will be a server request here
+    // return fetch(`${this.baseUrl}/api/calls`).then(res => res.json());
+
+    // Return mock data
+    return Promise.resolve(mockData.apiData.calls);
+  }
+
+  /**
+   * Gets information about the current active call, if any
+   * @returns Promise with call information or null
+   */
+  async getActiveCall(): Promise<ApiCall | null> {
+    // In the real API there will be a server request here
+    // return fetch(`${this.baseUrl}/api/calls/active`).then(res => res.json());
+
+    // Return mock data (can be null if there's no active call)
+    return Promise.resolve(mockData.apiData.activeCall || null);
+  }
+
+  /**
+   * Gets all data required for the application to work
+   * @returns Promise with application data in UI format
+   */
+  async getAllData() {
+    try {
+      // Get data in parallel to speed up loading
+      const [user, rooms, messages, notifications, calls, activeCall] = await Promise.all([
+        this.getCurrentUser(),
+        this.getRooms(),
+        this.getMessages(),
+        this.getNotifications(),
+        this.getCalls(),
+        this.getActiveCall()
+      ]);
+
+      // Convert API data to UI format
+      const adaptedData = adaptApiDataToUI(
+        { user, rooms, messages, notifications, calls, activeCall },
+        this.currentUserId
+      );
+
+      return adaptedData;
+    } catch (error) {
+      console.error("Error getting data:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Sends a message
+   * @param roomId Room ID
+   * @param content Message text
+   * @param files Attached files
+   * @returns Promise with the sent message
+   */
+  async sendMessage(roomId: number, content: string, files: File[] = []): Promise<ApiMessage> {
+    // Possible real API request
+    // const formData = new FormData();
+    // formData.append('roomId', roomId.toString());
+    // formData.append('content', content);
+    // files.forEach(file => formData.append('files', file));
+
+    // return fetch(`${this.baseUrl}/api/messages`, {
+    //   method: 'POST',
+    //   body: formData
+    // }).then(res => res.json());
+
+    // mock message
+    const newMessage: ApiMessage = {
+      _id: Date.now(),
+      roomId,
+      content,
+      senderId: this.currentUserId.toString(),
+      username: mockData.apiData.user.name,
+      date: new Date().toLocaleDateString(),
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      files: files.map((file, index) => ({
+        name: file.name,
+        url: URL.createObjectURL(file),
+        type: file.type.split('/')[1] || 'file',
+        audio: file.type.includes('audio'),
+        size: `${Math.round(file.size / 1024)} KB`
+      })),
+      state: 'sent'
+    };
+
+
+    return Promise.resolve(newMessage);
+  }
+}
+
+export const chatApiService = new ChatApiService();
+
+export default chatApiService;

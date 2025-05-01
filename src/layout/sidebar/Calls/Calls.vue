@@ -93,9 +93,10 @@ const handleOpenInfoModal = (call: ICall) => {
 
     <!--call info modal-->
     <CallInfoModal
+      v-if="selectedCall"
       :open="openInfoModal"
       :close-modal="() => (openInfoModal = false)"
-      :call="<ICall>selectedCall"
+      :call="selectedCall"
     />
 
     <!--start call modal-->

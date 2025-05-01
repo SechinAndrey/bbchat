@@ -4,9 +4,9 @@ import type { IConversation } from "@src/shared/types/types.ts";
 import { inject, ref } from "vue";
 
 import router from "@src/router";
-import { activeCall } from "@src/shared/store/defaults.ts";
 import useStore from "@src/shared/store/store.ts";
 import { getAvatar, getName } from "@src/shared/utils/utils.ts";
+import mockData from "@src/shared/store/real-api-example.ts";
 
 import {
   ChevronLeftIcon,
@@ -59,7 +59,7 @@ const handleCloseConversation = () => {
 
 // (event) open the voice call modal and expand call
 const handleOpenVoiceCallModal = () => {
-  store.activeCall = activeCall;
+  store.activeCall = mockData.activeCall;
   store.callMinimized = false;
 
   // wait for the transition to ongoing status to end

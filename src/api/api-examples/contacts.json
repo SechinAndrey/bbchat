@@ -1,0 +1,32 @@
+[
+  {
+    "_id": "contact1",
+    "username": "Александр Иванов",
+    "avatar": "https://example.com/media/contacts/avatar1.jpg",
+    "phone": "+380501112233"
+  },
+  {
+    "_id": "contact2",
+    "username": "Екатерина Смирнова",
+    "avatar": "https://example.com/media/contacts/avatar2.jpg",
+    "phone": "+380672223344"
+  },
+  {
+    "_id": "contact3",
+    "username": "Дмитрий Козлов",
+    "avatar": "https://example.com/media/contacts/avatar3.jpg",
+    "phone": "+380733334455"
+  },
+  {
+    "_id": "contact4",
+    "username": "Мария Сидорова",
+    "avatar": "https://example.com/media/contacts/avatar4.jpg",
+    "phone": "+380634445566"
+  },
+  {
+    "_id": "contact5",
+    "username": "Сергей Николаев",
+    "avatar": "https://example.com/media/contacts/avatar5.jpg",
+    "phone": "+380955556677"
+  }
+]

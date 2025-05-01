@@ -1,0 +1,20 @@
+{
+  "id": 123,
+  "role_id": 2,
+  "name": "Иван Петров",
+  "email": "ivan.petrov@example.com",
+  "email_key": null,
+  "type_reg": null,
+  "company": "ООО «Пример»",
+  "inn": "7700123456",
+  "nds": null,
+  "phone": "+380671112233",
+  "avatar": "users/default.png",
+  "email_verified_at": "2025-04-15T14:30:00.000000Z",
+  "settings": {
+    "locale": "ru"
+  },
+  "folder_id": "12AaBbCcDdEeFf123456",
+  "created_at": "2025-01-10T09:00:00.000000Z",
+  "updated_at": "2025-05-01T08:15:00.000000Z"
+}
