@@ -17,6 +17,47 @@ import FadeTransition from "@src/ui/transitions/FadeTransition.vue";
 import ArchivedButton from "@src/features/conversations/components/ArchivedButton.vue";
 import ConversationsList from "@src/features/conversations/components/ConversationsList.vue";
 import SidebarHeader from "@src/layout/sidebar/SidebarHeader.vue";
+import Tabs from "@src/ui/navigation/Tabs/Tabs.vue";
+import Tab from "@src/ui/navigation/Tabs/Tab.vue";
+import SlideTransition from "@src/ui/transitions/SlideTransition.vue";
+
+// active tab name
+const TAB = {
+  open: "open",
+  closed: "closed",
+  all: "all",
+} as const;
+type TabName = typeof TAB[keyof typeof TAB];
+const activeTab = ref<TabName>(TAB.open);
+const TAB_ORDER: Tab[] = [TAB.open, TAB.closed, TAB.all];
+
+// slide animation
+const SLIDE = {
+  left: "slide-left",
+  right: "slide-right",  
+} as const;
+
+type SlideType = typeof SLIDE[keyof typeof SLIDE];
+const animation = ref<SlideType>(SLIDE.right);
+
+
+watch(activeTab, (newTab, oldTab) => {
+  const directionMap: Record<string, 'LEFT' | 'RIGHT'> = {
+    'open->closed': 'LEFT',
+    'closed->all': 'LEFT',
+    'open->all': 'LEFT',
+
+    'all->closed': 'RIGHT',
+    'closed->open': 'RIGHT',
+    'all->open': 'RIGHT',
+  };
+
+  const key = `${oldTab}->${newTab}`;
+  const direction = directionMap[key] ?? 'LEFT'; // fallback
+
+  animation.value = direction === 'LEFT' ? SLIDE.left : SLIDE.right;
+});
+
 
 const store = useStore();
 
@@ -29,6 +70,7 @@ const openArchive = ref(false);
 
 // the filtered list of conversations.
 const filteredConversations: Ref<IConversation[]> = ref(store.conversations);
+
 
 // filter the list of conversation based on search text.
 watch([keyword, openArchive], () => {
@@ -53,6 +95,8 @@ watch([keyword, openArchive], () => {
   }
 });
 
+
+
 // (event) close the compose modal.
 const closeComposeModal = () => {
   composeOpen.value = false;
@@ -72,7 +116,7 @@ onMounted(() => {
   <div>
     <SidebarHeader>
       <!--title-->
-      <template v-slot:title>Messages</template>
+      <template v-slot:title>Чаты</template>
 
       <!--side actions-->
       <template v-slot:actions>
@@ -87,6 +131,25 @@ onMounted(() => {
       </template>
     </SidebarHeader>
 
+    <Tabs class="mx-5 xs:mb-6 md:mb-5">
+      <Tab
+        :active="activeTab === TAB.open"
+        name="Открытые"
+        @click="activeTab = TAB.open"
+      />
+      <Tab
+        :active="activeTab === TAB.closed"
+        name="Закрытые"
+        @click="activeTab = TAB.closed"
+      />
+      <Tab
+        :active="activeTab === TAB.all"
+        name="Все"
+        @click="activeTab = TAB.all"
+      />
+    </Tabs>
+
+
     <!--search bar-->
     <div class="px-5 xs:pb-6 md:pb-5">
       <SearchInput
@@ -100,45 +163,71 @@ onMounted(() => {
     </div>
 
     <!--conversations-->
-    <div
-      role="list"
-      aria-label="conversations"
-      class="w-full h-full scroll-smooth scrollbar-hidden"
-      style="overflow-x: visible; overflow-y: scroll"
-    >
-      <Circle2Lines
-        v-if="store.status === 'loading' || store.delayLoading"
-        v-for="item in 6"
-      />
-
-      <div v-else>
-        <ArchivedButton
-          v-if="store.archivedConversations.length > 0"
-          :open="openArchive"
-          @click="openArchive = !openArchive"
+    <SlideTransition :animation="animation">
+      <div
+        role="list"
+        aria-label="conversations"
+        class="w-full h-full scroll-smooth scrollbar-hidden"
+        style="overflow-x: visible; overflow-y: scroll"
+        v-if="activeTab === TAB.open"
+      >
+        <Circle2Lines
+          v-if="store.status === 'loading' || store.delayLoading"
+          v-for="item in 6"
         />
 
-        <div
-          v-if="
-            store.status === 'success' &&
-            !store.delayLoading &&
-            filteredConversations.length > 0
-          "
-        >
-          <FadeTransition>
-            <component
-              :is="ConversationsList"
-              :filtered-conversations="filteredConversations"
-              :key="openArchive ? 'archive' : 'active'"
-            />
-          </FadeTransition>
-        </div>
-
         <div v-else>
-          <NoConversation v-if="store.archivedConversations.length === 0" />
+          <ArchivedButton
+            v-if="store.archivedConversations.length > 0"
+            :open="openArchive"
+            @click="openArchive = !openArchive"
+          />
+
+          <div
+            v-if="
+              store.status === 'success' &&
+              !store.delayLoading &&
+              filteredConversations.length > 0
+            "
+          >
+            <FadeTransition>
+              <ConversationsList
+                :filtered-conversations="filteredConversations"
+                :key="openArchive ? 'archive' : 'active'"
+              />
+            </FadeTransition>
+          </div>
+
+          <div v-else>
+            <NoConversation v-if="store.archivedConversations.length === 0" />
+          </div>
         </div>
       </div>
-    </div>
+
+
+      <div
+        role="list"
+        aria-label="conversations"
+        class="w-full h-full scroll-smooth scrollbar-hidden"
+        style="overflow-x: visible; overflow-y: scroll"
+        v-if="activeTab === TAB.closed"
+      >
+        <Circle2Lines
+          v-for="item in 6"
+        />
+
+      </div>
+
+      <div
+        role="list"
+        aria-label="conversations"
+        class="w-full h-full scroll-smooth scrollbar-hidden"
+        style="overflow-x: visible; overflow-y: scroll"
+        v-if="activeTab === TAB.all"
+      >
+        <NoConversation />
+      </div>
+    </SlideTransition>
 
     <!--compose modal-->
     <ComposeModal :open="composeOpen" :close-modal="closeComposeModal" />
