@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import type { IContact, IConversation } from "@src/shared/types/types.ts";
+import type { IContact, IConversation } from "@src/shared/types/types";
 
 import { computed, ref } from "vue";
 
-import { getAvatar, getName, getOddContact } from "@src/shared/utils/utils.ts";
+import { getAvatar, getName, getOddContact } from "@src/shared/utils/utils";
 
 import {
   ArrowLeftOnRectangleIcon,

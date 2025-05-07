@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ArrowUturnLeftIcon } from "@heroicons/vue/24/solid";
 
-import type { ICall } from "@src/shared/types/types.ts";
+import type { ICall } from "@src/shared/types/types";
 
 import SearchInput from "@src/ui/inputs/SearchInput.vue";
 import ContactItem from "@src/shared/components/blocks/ContactItem.vue";

@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { ICall, IContact } from "@src/shared/types/types.ts";
+import type { ICall, IContact } from "@src/shared/types/types";
 
-import { getCallName } from "@src/shared/utils/utils.ts";
+import { getCallName } from "@src/shared/utils/utils";
 
 import { PhoneIcon, XMarkIcon } from "@heroicons/vue/24/solid";
 import CallAvatar from "@src/shared/components/blocks/CallAvatar.vue";

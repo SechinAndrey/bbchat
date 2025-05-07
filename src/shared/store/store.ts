@@ -2,8 +2,8 @@ import { defineStore } from "pinia";
 import type { Ref } from "vue";
 import { computed, ref } from "vue";
 
-import defaults from "@src/shared/store/real-api-example.ts";
-import { chatApiService } from "@src/api/api-service.ts";
+import defaults from "@src/shared/store/real-api-example";
+import { chatApiService } from "@src/api/api-service";
 
 import type {
   IConversation,
@@ -13,7 +13,7 @@ import type {
   ICall,
   ISettings,
   IEmoji,
-} from "@src/shared/types/types.ts";
+} from "@src/shared/types/types";
 
 const useStore = defineStore("chat", () => {
   // local storage

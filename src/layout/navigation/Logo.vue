@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import useStore from "@src/shared/store/store.ts";
+import useStore from "@src/shared/store/store";
 import { ForwardIcon } from "@heroicons/vue/24/outline";
 
 let SkipLinkFocused = ref(false);

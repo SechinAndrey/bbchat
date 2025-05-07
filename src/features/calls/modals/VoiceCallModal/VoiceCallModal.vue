@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 
-import useStore from "@src/shared/store/store.ts";
-import { getOtherMembers } from "@src/shared/utils/utils.ts";
+import useStore from "@src/shared/store/store";
+import { getOtherMembers } from "@src/shared/utils/utils";
 
 import IncomingTab from "@src/features/calls/modals/VoiceCallModal/IncomingTab.vue";
 import OngoingTab from "@src/features/calls/modals/VoiceCallModal/OngoingTab.vue";

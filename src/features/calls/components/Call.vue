@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
-import { ICall } from "@src/shared/types/types.ts";
-import { getCallName, getOtherMembers } from "@src/shared/utils/utils.ts";
+import { ICall } from "@src/shared/types/types";
+import { getCallName, getOtherMembers } from "@src/shared/utils/utils";
 
 import {
   PhoneIcon,

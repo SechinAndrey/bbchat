@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import type { IContact } from "@src/shared/types/types.ts";
+import type { IContact } from "@src/shared/types/types";
 import type { Ref } from "vue";
 
 import { ref } from "vue";
 
-import useStore from "@src/shared/store/store.ts";
+import useStore from "@src/shared/store/store";
 
 import Button from "@src/ui/inputs/Button.vue";
 import Checkbox from "@src/ui/inputs/Checkbox.vue";

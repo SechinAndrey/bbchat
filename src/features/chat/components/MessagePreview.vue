@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { IAttachment, IMessage } from "@src/shared/types/types.ts";
+import type { IAttachment, IMessage } from "@src/shared/types/types";
 
-import useStore from "@src/shared/store/store.ts";
-import { getFullName, hasAttachments, shorten } from "@src/shared/utils/utils.ts";
+import useStore from "@src/shared/store/store";
+import { getFullName, hasAttachments, shorten } from "@src/shared/utils/utils";
 
 const props = defineProps<{
   message: IMessage;

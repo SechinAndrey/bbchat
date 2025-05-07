@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from "vue";
 
-import useStore from "@src/shared/store/store.ts";
-import { chatApiService } from "@src/api/api-service.ts";
+import useStore from "@src/shared/store/store";
+import { chatApiService } from "@src/api/api-service";
 
 import FadeTransition from "@src/ui/transitions/FadeTransition.vue";
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { INotification } from "@src/shared/types/types.ts";
+import type { INotification } from "@src/shared/types/types";
 
 import {
   ArrowPathIcon,

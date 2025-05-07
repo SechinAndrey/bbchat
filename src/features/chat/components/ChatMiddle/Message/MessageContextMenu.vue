@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import type { IConversation, IMessage } from "@src/shared/types/types.ts";
+import type { IConversation, IMessage } from "@src/shared/types/types";
 import { inject } from "vue";
 
-import useStore from "@src/shared/store/store.ts";
-import { getConversationIndex } from "@src/shared/utils/utils.ts";
+import useStore from "@src/shared/store/store";
+import { getConversationIndex } from "@src/shared/utils/utils";
 
 import {
   ArrowUturnLeftIcon,

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ICall } from "@src/shared/types/types.ts";
+import type { ICall } from "@src/shared/types/types";
 
 import { computed, ref } from "vue";
 

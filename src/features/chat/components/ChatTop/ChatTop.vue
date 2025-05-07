@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import type { IConversation } from "@src/shared/types/types.ts";
+import type { IConversation } from "@src/shared/types/types";
 
 import { inject, ref } from "vue";
 
-import useStore from "@src/shared/store/store.ts";
+import useStore from "@src/shared/store/store";
 
 import ConversationInfoModal from "@src/features/conversations/modals/ConversationInfoModal/ConversationInfoModal.vue";
 import SearchModal from "@src/features/chat/modals/SearchModal/SearchModal.vue";

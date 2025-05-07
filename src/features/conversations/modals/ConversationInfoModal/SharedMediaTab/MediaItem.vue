@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { IAttachment } from "@src/shared/types/types.ts";
+import type { IAttachment } from "@src/shared/types/types";
 
 import {
   DocumentIcon,

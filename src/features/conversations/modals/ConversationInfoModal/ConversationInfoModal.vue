@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Ref } from "vue";
-import type { IContact, IConversation } from "@src/shared/types/types.ts";
+import type { IContact, IConversation } from "@src/shared/types/types";
 
 import { computed, ref } from "vue";
 

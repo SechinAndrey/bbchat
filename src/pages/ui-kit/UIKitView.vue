@@ -131,7 +131,8 @@ const demoContact = {
   avatar: "https://randomuser.me/api/portraits/men/1.jpg",
   phoneNumber: "+1234567890",
   email: "john.doe@example.com",
-  status: "online"
+  status: "online",
+  lastSeen: new Date()
 };
 
 // Demo data for group call
@@ -140,19 +141,25 @@ const demoCallMembers = [
     id: 1,
     firstName: "John",
     lastName: "Doe",
-    avatar: "https://randomuser.me/api/portraits/men/1.jpg"
+    avatar: "https://randomuser.me/api/portraits/men/1.jpg",
+    email: "john.doe@example.com",
+    lastSeen: new Date()
   },
   {
     id: 2,
     firstName: "Jane",
     lastName: "Smith",
-    avatar: "https://randomuser.me/api/portraits/women/2.jpg"
+    avatar: "https://randomuser.me/api/portraits/women/2.jpg",
+    email: "jane.smith@example.com",
+    lastSeen: new Date()
   },
   {
     id: 3,
     firstName: "Alex",
     lastName: "Johnson",
-    avatar: "https://randomuser.me/api/portraits/men/3.jpg"
+    avatar: "https://randomuser.me/api/portraits/men/3.jpg",
+    email: "alex.johnson@example.com",
+    lastSeen: new Date()
   }
 ];
 

@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import type { Ref } from "vue";
 
-import useStore from "@src/shared/store/store.ts";
+import useStore from "@src/shared/store/store";
 import { computed, provide, ref } from "vue";
 
-import { getActiveConversationId } from "@src/shared/utils/utils.ts";
+import { getActiveConversationId } from "@src/shared/utils/utils";
 
 import NoChatSelected from "@src/ui/states/empty-states/NoChatSelected.vue";
 import Spinner from "@src/ui/states/loading-states/Spinner.vue";

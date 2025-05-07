@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import useStore from "@src/shared/store/store.ts";
+import useStore from "@src/shared/store/store";
 
 import NoContacts from "@src/ui/states/empty-states/NoContacts.vue";
 import Circle2Lines from "@src/ui/states/loading-states/Circle2Lines.vue";

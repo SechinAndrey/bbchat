@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import type { IConversation } from "@src/shared/types/types.ts";
+import type { IConversation } from "@src/shared/types/types";
 
 import { inject } from "vue";
 
-import { getConversationIndex } from "@src/shared/utils/utils.ts";
-import useStore from "@src/shared/store/store.ts";
+import { getConversationIndex } from "@src/shared/utils/utils";
+import useStore from "@src/shared/store/store";
 
 import { XCircleIcon } from "@heroicons/vue/24/outline";
 import IconButton from "@src/ui/inputs/IconButton.vue";

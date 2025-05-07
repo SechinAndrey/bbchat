@@ -11,7 +11,7 @@ import type {
   ApiCall
 } from './types';
 import { adaptApiDataToUI } from './adapters';
-import mockData from '@src/shared/store/real-api-example.ts';
+import mockData from '@src/shared/store/real-api-example';
 
 /**
  * Use mock data until real API is ready
@@ -108,14 +108,14 @@ export class ChatApiService {
 
   /**
    * Gets information about the current active call, if any
-   * @returns Promise with call information or null
+   * @returns Promise with call information or undefined
    */
-  async getActiveCall(): Promise<ApiCall | null> {
+  async getActiveCall(): Promise<ApiCall | undefined> {
     // In the real API there will be a server request here
     // return fetch(`${this.baseUrl}/api/calls/active`).then(res => res.json());
 
-    // Return mock data (can be null if there's no active call)
-    return Promise.resolve(mockData.apiData.activeCall || null);
+    // Return mock data (can be undefined if there's no active call)
+    return Promise.resolve(mockData.apiData.activeCall || undefined);
   }
 
   /**

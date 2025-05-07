@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import type { IConversation } from "@src/shared/types/types.ts";
+import type { IConversation } from "@src/shared/types/types";
 
 import { inject, ref } from "vue";
 
 import router from "@src/router";
-import useStore from "@src/shared/store/store.ts";
-import { getAvatar, getName } from "@src/shared/utils/utils.ts";
-import mockData from "@src/shared/store/real-api-example.ts";
+import useStore from "@src/shared/store/store";
+import { getAvatar, getName } from "@src/shared/utils/utils";
+import mockData from "@src/shared/store/real-api-example";
 
 import {
   ChevronLeftIcon,

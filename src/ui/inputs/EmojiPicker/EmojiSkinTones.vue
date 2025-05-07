@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import FadeTransition from "@src/ui/transitions/FadeTransition.vue";
-import useStore from "@src/shared/store/store.ts";
+import useStore from "@src/shared/store/store";
 
 const store = useStore();
 const select = ref(false);

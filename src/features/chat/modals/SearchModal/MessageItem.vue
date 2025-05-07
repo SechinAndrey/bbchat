@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { IMessage } from "@src/shared/types/types.ts";
+import type { IMessage } from "@src/shared/types/types";
 
-import { getFullName } from "@src/shared/utils/utils.ts";
+import { getFullName } from "@src/shared/utils/utils";
 
 const props = defineProps<{
   message: IMessage;

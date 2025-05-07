@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import type { Ref } from "vue";
-import type { IContact } from "@src/shared/types/types.ts";
+import type { IContact } from "@src/shared/types/types";
 
 import { ref } from "vue";
 
-import useStore from "@src/shared/store/store.ts";
+import useStore from "@src/shared/store/store";
 
 import Circle2Lines from "@src/ui/states/loading-states/Circle2Lines.vue";
 import SearchInput from "@src/ui/inputs/SearchInput.vue";

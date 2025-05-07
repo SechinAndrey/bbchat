@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import useStore from "@src/shared/store/store.ts";
+import useStore from "@src/shared/store/store";
 
 import AccordionButton from "@src/ui/data-display/AccordionButton.vue";
 import Collapse from "@src/ui/utils/Collapse.vue";

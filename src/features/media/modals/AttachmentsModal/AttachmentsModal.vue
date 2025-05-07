@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import mockData from "@src/shared/store/real-api-example.ts";
+import mockData from "@src/shared/store/real-api-example";
 const attachments = mockData.apiData.messages
   .filter(msg => msg.files.length > 0)
   .map((msg, index) => msg.files.map((file, fileIndex) => ({

@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import type { IConversation } from "@src/shared/types/types.ts";
+import type { IConversation } from "@src/shared/types/types";
 import type { Ref } from "vue";
 
 import { ref } from "vue";
 
-import useStore from "@src/shared/store/store.ts";
+import useStore from "@src/shared/store/store";
 
 import { EllipsisVerticalIcon } from "@heroicons/vue/24/outline";
 import { ArrowUturnLeftIcon } from "@heroicons/vue/24/solid";

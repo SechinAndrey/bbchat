@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import type { IConversation } from "@src/shared/types/types.ts";
+import type { IConversation } from "@src/shared/types/types";
 import type { Ref } from "vue";
 
 import { onMounted, ref, watch } from "vue";
 
-import useStore from "@src/shared/store/store.ts";
-import { getActiveConversationId, getName } from "@src/shared/utils/utils.ts";
+import useStore from "@src/shared/store/store";
+import { getActiveConversationId, getName } from "@src/shared/utils/utils";
 
 import { PencilSquareIcon } from "@heroicons/vue/24/outline";
 import ComposeModal from "@src/features/conversations/modals/ComposeModal/ComposeModal.vue";
@@ -29,7 +29,7 @@ const TAB = {
 } as const;
 type TabName = typeof TAB[keyof typeof TAB];
 const activeTab = ref<TabName>(TAB.open);
-const TAB_ORDER: Tab[] = [TAB.open, TAB.closed, TAB.all];
+const TAB_ORDER: (typeof TAB)[keyof typeof TAB][] = [TAB.open, TAB.closed, TAB.all];
 
 // slide animation
 const SLIDE = {
