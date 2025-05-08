@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref, Component } from "vue";
+import { ref } from "vue";
+import type { Component } from "vue";
 
 // Import sidebar navigation
 import UIKitSidebar from "./UIKitSidebar.vue";
@@ -11,6 +12,7 @@ import BlocksTab from "./components/BlocksTab.vue";
 import StatesTab from "./components/StatesTab.vue";
 import TransitionsTab from "./components/TransitionsTab.vue";
 import ModalsTab from "./components/ModalsTab.vue";
+import DropdownTab from "./components/DropdownTab.vue";
 
 
 const activeTab = ref("inputs");
@@ -26,7 +28,8 @@ const tabComponents: Record<string, Component> = {
   blocks: BlocksTab,
   states: StatesTab,
   transitions: TransitionsTab,
-  modals: ModalsTab
+  modals: ModalsTab,
+  dropdown: DropdownTab
 };
 </script>
 

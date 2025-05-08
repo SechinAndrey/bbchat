@@ -8,7 +8,8 @@ import {
   SquaresPlusIcon,
   BeakerIcon,
   ArrowPathIcon,
-  WindowIcon
+  WindowIcon,
+  ListBulletIcon
 } from "@heroicons/vue/24/outline";
 
 const props = defineProps({
@@ -23,7 +24,8 @@ const navigationItems = [
   { id: 'blocks', name: 'Blocks', icon: SquaresPlusIcon },
   { id: 'states', name: 'States', icon: BeakerIcon },
   { id: 'transitions', name: 'Transitions', icon: ArrowPathIcon },
-  { id: 'modals', name: 'Modals', icon: WindowIcon }
+  { id: 'modals', name: 'Modals', icon: WindowIcon },
+  { id: 'dropdown', name: 'Dropdowns', icon: ListBulletIcon }
 ];
 
 const handleTabChange = function(tabId: string): void {
