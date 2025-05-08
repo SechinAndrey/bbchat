@@ -1,12 +1,52 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { useRouter } from "vue-router";
 
 import Button from "@src/ui/inputs/Button.vue";
 import LabeledTextInput from "@src/ui/inputs/LabeledTextInput.vue";
 import PasswordInput from "@src/ui/inputs/PasswordInput.vue";
 import { RouterLink } from "vue-router";
+import { useAuthStore } from "@src/features/auth/store/auth-store";
 
+const router = useRouter();
+const authStore = useAuthStore();
+
+const email = ref("");
 const password = ref("");
+const isLoading = ref(false);
+const loginError = ref("");
+
+const handleLogin = async () => {
+  if (!email.value || !password.value) {
+    loginError.value = "Please fill in all fields";
+    return;
+  }
+
+  isLoading.value = true;
+  loginError.value = "";
+
+  try {
+    const success = await authStore.login({
+      email: email.value,
+      password: password.value,
+    });
+
+    if (success) {
+      router.push("/chat/");
+    } else {
+      loginError.value =
+        authStore.error || "Login failed. Please check your credentials.";
+    }
+  } catch (error) {
+    if (error instanceof Error) {
+      loginError.value = error.message;
+    } else {
+      loginError.value = "Unknown error";
+    }
+  } finally {
+    isLoading.value = false;
+  }
+};
 </script>
 
 <template>
@@ -23,26 +63,32 @@ const password = ref("");
         />
         <p class="heading-2 text-color mb-4">Welcome back</p>
         <p class="body-3 text-color text-opacity-75 font-light">
-          Create an account a start messaging now!
+          Sign in to start messaging!
         </p>
+      </div>
+
+      <!-- Error message -->
+      <div
+        v-if="loginError"
+        class="mb-4 p-3 bg-red-100 dark:bg-red-900 rounded text-red-600 dark:text-red-200"
+      >
+        {{ loginError }}
       </div>
 
       <!--form-->
       <div class="mb-6">
         <LabeledTextInput
+          v-model="email"
           label="Email"
           placeholder="Enter your email"
           class="mb-5"
+          @value-changed="(val) => (email = val)"
         />
         <PasswordInput
           :value="password"
           label="Password"
           placeholder="Enter your password"
-          @value-changed="
-            (value) => {
-              password = value;
-            }
-          "
+          @value-changed="(val) => (password = val)"
         />
       </div>
 
@@ -50,10 +96,11 @@ const password = ref("");
       <div class="mb-6">
         <Button
           class="contained-primary contained-text w-full mb-4"
-          link
-          to="/chat/no-chat/"
-          >Sign in</Button
+          :loading="isLoading"
+          @click="handleLogin"
         >
+          Sign in
+        </Button>
       </div>
 
       <!--divider-->
@@ -76,14 +123,14 @@ const password = ref("");
               class="mr-3"
               alt="google logo"
             />
-            Sign in with google
+            Sign in with Google
           </span>
         </Button>
 
         <!--bottom text-->
         <div class="flex justify-center">
           <p class="body-2 text-color">
-            Don’t have an account?
+            Don't have an account?
             <RouterLink
               to="/access/sign-up/"
               class="text-indigo-400 opacity-100"

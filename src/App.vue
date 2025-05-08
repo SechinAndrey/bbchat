@@ -2,7 +2,8 @@
 import { ref, onMounted, onUnmounted } from "vue";
 
 import useStore from "@src/shared/store/store";
-import { chatApiService } from "@src/api/api-service";
+import { useAuthStore } from "@src/features/auth/store/auth-store";
+import { setupErrorInterceptor } from "@src/features/auth/services/error-interceptor";
 
 import FadeTransition from "@src/ui/transitions/FadeTransition.vue";
 
@@ -31,6 +32,9 @@ import FadeTransition from "@src/ui/transitions/FadeTransition.vue";
 // todo add chunking.
 
 const store = useStore();
+const authStore = useAuthStore();
+
+setupErrorInterceptor();
 
 // update localStorage with state changes
 store.$subscribe((_mutation, state) => {
@@ -39,7 +43,11 @@ store.$subscribe((_mutation, state) => {
 
 // here we load the data from the server.
 onMounted(async () => {
-  await store.initializeData();
+  authStore.init();
+
+  if (authStore.isAuthenticated) {
+    await store.initializeData();
+  }
 });
 
 // the app height

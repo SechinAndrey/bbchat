@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
+import { authService } from "@src/features/auth/services/auth-service";
 import AccessView from "@src/pages/access/AccessView.vue";
 import HomeView from "@src/pages/home/HomeView.vue";
 import PasswordResetView from "@src/pages/password-reset/PasswordResetView.vue";
@@ -11,17 +12,20 @@ const routes = [
     name: "Home",
     alias: "/",
     component: HomeView,
+    meta: { requiresAuth: true },
     children: [
       {
         path: "/chat/",
         alias: "/",
         name: "No-Chat",
         component: Chat,
+        meta: { requiresAuth: true },
       },
       {
         path: "/chat/:id/",
         name: "Chat",
         component: Chat,
+        meta: { requiresAuth: true },
       },
     ],
   },
@@ -47,14 +51,22 @@ const router = createRouter({
   history: createWebHistory(),
   routes,
 });
-
-// (router gaurd) when navigating in mobile screen from chat to chatlist,
-// don't navigate to the previous chat navigate to the chatlist.
 router.beforeEach((to, from, next) => {
-  //console.log(window.innerWidth);
-  if (from.name === "Chat" && to.name === "Chat" && window.innerWidth <= 967)
-    next({ name: "No-Chat" });
-  else next();
+  const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
+
+  if (requiresAuth && !authService.isAuthenticated()) {
+    next({ path: "/access/sign-in/", query: { redirect: to.fullPath } });
+  } else {
+    if (
+      from.name === "Chat" &&
+      to.name === "Chat" &&
+      window.innerWidth <= 967
+    ) {
+      next({ name: "No-Chat" });
+    } else {
+      next();
+    }
+  }
 });
 
 export default router;

@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import useStore from "@src/shared/store/store";
+import { useAuthStore } from "@src/features/auth/store/auth-store";
+import { useRouter } from "vue-router";
 
 import {
   ArrowLeftOnRectangleIcon,
@@ -18,6 +20,15 @@ const props = defineProps<{
 }>();
 
 const store = useStore();
+const authStore = useAuthStore();
+const router = useRouter();
+
+// Handle logout
+const handleLogout = () => {
+  authStore.logout();
+  props.handleCloseDropdown();
+  router.push('/access/sign-in/');
+};
 
 // (event) close dropdown menu when clicking outside
 const handleCloseOnClickOutside = (event: Event) => {
@@ -41,7 +52,7 @@ const handleCloseOnClickOutside = (event: Event) => {
       :style="{
         'box-shadow': !store.settings.darkMode
           ? '0 .125rem .3125rem rgba(193, 202, 255, 0.5),.125rem 0 .3125rem rgba(193, 202, 255, 0.5),-0.125rem 0 .3125rem rgba(193, 202, 255, 0.5),0 -0.125rem .3125rem rgba(193, 202, 255, 0.5)'
-          : '0 .125rem .3125rem rgba(0, 70, 128, 0.5),.125rem 0 .3125rem rgba(0, 70, 128, 0.5),-0.125rem 0 .3125rem rgba(0, 70, 128, 0.5),0 -0.125rem .3125rem rgba(0, 70, 128, 0.5)',
+          : '0 .125rem .3125rem rgba(0, 70, 128, 0.5),.125rem 0 .3125rem rgba(0, 70, 128, 0.5),-0.125rem 0 .3125рем rgba(0, 70, 128, 0.5),0 -0.125rem .3125рем rgba(0, 70, 128, 0.5)',
       }"
       :aria-expanded="showDropdown"
       aria-controls="profile-menu"
@@ -94,16 +105,15 @@ const handleCloseOnClickOutside = (event: Event) => {
         Password Change
       </RouterLink>
 
-      <RouterLink
-        to="/access/sign-in/"
+      <button
         class="dropdown-link dropdown-link-danger"
         aria-label="logout"
         role="menuitem"
-        @click.prevent="props.handleCloseDropdown"
+        @click="handleLogout"
       >
         <ArrowLeftOnRectangleIcon class="h-5 w-5 mr-3" />
         Logout
-      </RouterLink>
+      </button>
     </Dropdown>
   </div>
 </template>
