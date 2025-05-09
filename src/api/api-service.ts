@@ -3,7 +3,7 @@
  */
 
 import { AxiosRequestConfig } from "axios";
-import { setAuthToken } from "@src/api/axios-instance";
+import apiClient, { setAuthToken } from "@src/api/axios-instance";
 import type {
   ApiUser,
   ApiRoom,
@@ -60,17 +60,15 @@ export class ChatApiService {
    * @returns Promise with user data
    */
   async getCurrentUser(): Promise<ApiUser> {
-    // In a real API this would use apiClient
-    // try {
-    //   const response = await apiClient.get('/api/user');
-    //   return response.data;
-    // } catch (error) {
-    //   console.error('Error fetching user:', error);
-    //   throw error;
-    // }
+    try {
+      const response = await apiClient.get("/api/sanctum/user");
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching user:", error);
 
-    // Return mock data
-    return Promise.resolve(mockData.apiData.user);
+      // Fallback to mock data if API fails
+      return mockData.apiData.user;
+    }
   }
 
   /**

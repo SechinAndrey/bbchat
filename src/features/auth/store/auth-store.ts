@@ -1,6 +1,9 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 import { authService } from "../services/auth-service";
+import chatApiService from "@src/api/api-service";
+import { adaptUser } from "@src/api/adapters";
+import type { IUser } from "@src/shared/types/types";
 
 interface LoginCredentials {
   email: string;
@@ -12,6 +15,9 @@ export const useAuthStore = defineStore("auth", () => {
   const token = ref<string | null>(authService.getToken());
   const loading = ref<boolean>(false);
   const error = ref<string | null>(null);
+  const currentUser = ref<IUser | null>(null);
+  const userLoading = ref<boolean>(false);
+  const userError = ref<string | null>(null);
 
   // Computed properties
   const isAuthenticated = computed(() => !!token.value);
@@ -24,6 +30,9 @@ export const useAuthStore = defineStore("auth", () => {
     try {
       const newToken = await authService.login(credentials);
       token.value = newToken;
+
+      await fetchCurrentUser();
+
       return true;
     } catch (err) {
       error.value =
@@ -36,14 +45,37 @@ export const useAuthStore = defineStore("auth", () => {
     }
   }
 
+  async function fetchCurrentUser() {
+    if (!token.value) return null;
+
+    userLoading.value = true;
+    userError.value = null;
+
+    try {
+      const apiUserData = await chatApiService.getCurrentUser();
+      const userData = adaptUser(apiUserData);
+      currentUser.value = userData;
+
+      return userData;
+    } catch (err) {
+      userError.value =
+        err instanceof Error ? err.message : "Error fetching user data";
+      return null;
+    } finally {
+      userLoading.value = false;
+    }
+  }
+
   function logout() {
     authService.logout();
     token.value = null;
+    currentUser.value = null;
   }
 
   function init() {
     if (token.value) {
       authService.setupAuthInterceptor();
+      fetchCurrentUser();
     }
   }
 
@@ -51,11 +83,15 @@ export const useAuthStore = defineStore("auth", () => {
     token,
     loading,
     error,
+    currentUser,
+    userLoading,
+    userError,
 
     isAuthenticated,
 
     login,
     logout,
     init,
+    fetchCurrentUser,
   };
 });

@@ -2,7 +2,7 @@
 import type { Ref } from "vue";
 
 import useStore from "@src/shared/store/store";
-import { computed, provide, ref } from "vue";
+import { computed, provide, ref, watch } from "vue";
 
 import { getActiveConversationId } from "@src/shared/utils/utils";
 
@@ -13,24 +13,32 @@ import ChatMiddle from "@src/features/chat/components/ChatMiddle/ChatMiddle.vue"
 import ChatTop from "@src/features/chat/components/ChatTop/ChatTop.vue";
 
 const store = useStore();
+const isConversationLoading = ref(false);
 
 // search the selected conversation using activeConversationId.
 const activeConversation = computed(() => {
-  let activeConversation = store.conversations.find(
-    (conversation) => conversation.id === getActiveConversationId(),
+  const conversationId = getActiveConversationId();
+  if (!conversationId) return undefined;
+  
+  let conversation = store.conversations.find(
+    (conversation) => conversation.id === conversationId,
   );
 
-  if (activeConversation) {
-    return activeConversation;
-  } else {
-    return store.archivedConversations.find(
-      (conversation) => conversation.id === getActiveConversationId(),
+  // Если не нашли, ищем в архивных диалогах
+  if (!conversation) {
+    conversation = store.archivedConversations.find(
+      (conversation) => conversation.id === conversationId,
     );
   }
+  
+  return conversation;
 });
 
-// provide the active conversation to all children.
-provide("activeConversation", activeConversation.value);
+watch(activeConversation, (newConversation) => {
+  if (newConversation) {
+    provide("activeConversation", newConversation);
+  }
+}, { immediate: true });
 
 // determines whether select mode is enabled.
 const selectMode = ref(false);
@@ -95,13 +103,14 @@ const handleCloseSelect = () => {
 </script>
 
 <template>
-  <Spinner v-if="store.status === 'loading' || store.delayLoading" />
+  <Spinner v-if="store.status === 'loading' || store.delayLoading || isConversationLoading" />
 
   <div
     v-else-if="getActiveConversationId() && activeConversation"
     class="h-full flex flex-col scrollbar-hidden"
   >
     <ChatTop
+      :active-conversation="activeConversation"
       :select-all="selectAll"
       :select-mode="selectMode"
       :handle-select-all="handleSelectAll"
@@ -109,11 +118,12 @@ const handleCloseSelect = () => {
       :handle-close-select="handleCloseSelect"
     />
     <ChatMiddle
+      :active-conversation="activeConversation"
       :selected-messages="selectedMessages"
       :handle-select-message="handleSelectMessage"
       :handle-deselect-message="handleDeselectMessage"
     />
-    <ChatBottom />
+    <ChatBottom :active-conversation="activeConversation" />
   </div>
 
   <NoChatSelected v-else />
