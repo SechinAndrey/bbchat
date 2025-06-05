@@ -18,7 +18,7 @@ const props = defineProps<{
 <template>
   <Modal :open="props.open" :close-modal="props.closeModal">
     <template v-slot:content>
-      <div class="w-[18.75rem] py-6 bg-white dark:bg-gray-800 rounded">
+      <div class="w-[18.75rem] py-6 bg-surface dark:bg-surface rounded">
         <!--header-->
         <div class="mb-6 px-5 flex justify-between items-center">
           <p id="modal-title" class="heading-1 text-color" tabindex="0">

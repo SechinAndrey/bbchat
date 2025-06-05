@@ -23,24 +23,24 @@ const props = defineProps<{
       <div
         class="w-7 h-7 flex justify-center items-center rounded-full transition duration-500"
         :class="{
-          'bg-blue-100 dark:bg-blue-600':
+          'bg-secondary/20 dark:bg-secondary/20':
             notification.flag === 'account-update',
-          'bg-yellow-100 dark:bg-yellow-600': notification.flag === 'security',
-          'bg-green-100 dark:bg-green-600':
+          'bg-warning/20 dark:bg-warning/20': notification.flag === 'security',
+          'bg-success/20 dark:bg-success/20':
             notification.flag === 'added-to-group',
         }"
       >
         <ArrowPathIcon
           v-if="notification.flag === 'account-update'"
-          class="w-5 h-5 stroke-1 text-blue-500 dark:text-white transition duration-500"
+          class="w-5 h-5 stroke-1 text-secondary dark:text-white transition duration-500"
         />
         <LockClosedIcon
           v-else-if="notification.flag === 'security'"
-          class="w-5 h-5 stroke-1 text-yellow-500 dark:text-white transition duration-500"
+          class="w-5 h-5 stroke-1 text-warning dark:text-white transition duration-500"
         />
         <PlusCircleIcon
           v-else-if="notification.flag === 'added-to-group'"
-          class="w-5 h-5 stroke-1 text-green-500 dark:text-white transition duration-500"
+          class="w-5 h-5 stroke-1 text-success dark:text-white transition duration-500"
         />
       </div>
     </div>

@@ -2,6 +2,7 @@
 import { ref } from "vue";
 
 import useStore from "@src/shared/store/store";
+import { useTheme } from "@src/shared/components/theme/useTheme";
 
 import {
   BellIcon,
@@ -17,6 +18,7 @@ import Logo from "@src/layout/navigation/Logo.vue";
 import NavLink from "@src/layout/navigation/NavLink.vue";
 
 const store = useStore();
+const { toggleDarkMode, isDarkMode } = useTheme();
 
 const showDropdown = ref(false);
 
@@ -28,7 +30,7 @@ const handleActiveSidebarComponentChange = (value: string) => {
 
 <template>
   <div
-    class="xs:w-full md:w-11 md:h-full md:py-7 xs:py-5 px-5 flex xs:flex-row md:flex-col items-center transition-all duration-500"
+    class="xs:w-full md:w-11 md:h-full md:py-7 xs:py-5 px-5 flex xs:flex-row md:flex-col items-center transition-all duration-500 bg-theme-nav"
   >
     <!--logo-->
     <Logo />
@@ -110,9 +112,9 @@ const handleActiveSidebarComponentChange = (value: string) => {
           <!--toggle dark mode button-->
           <li>
             <NavLink
-              :icon="store.settings.darkMode ? SunIcon : MoonIcon"
+              :icon="isDarkMode.value ? SunIcon : MoonIcon"
               title="Night mode"
-              @click="store.settings.darkMode = !store.settings.darkMode"
+              @click="toggleDarkMode"
             />
           </li>
           <!--settings button-->
@@ -129,7 +131,7 @@ const handleActiveSidebarComponentChange = (value: string) => {
 
       <!--separator-->
       <hr
-        class="xs:hidden md:block mb-6 border-gray-100 dark:border-gray-600"
+        class="xs:hidden md:block mb-6 border-neutral dark:border-neutral"
       />
 
       <!--user avatar-->

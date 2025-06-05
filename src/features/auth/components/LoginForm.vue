@@ -70,7 +70,7 @@ const handleLogin = async () => {
       <!-- Error message -->
       <div
         v-if="loginError"
-        class="mb-4 p-3 bg-red-100 dark:bg-red-900 rounded text-red-600 dark:text-red-200"
+        class="mb-4 p-3 bg-danger/20 dark:bg-danger/20 rounded text-danger dark:text-danger"
       >
         {{ loginError }}
       </div>
@@ -133,7 +133,7 @@ const handleLogin = async () => {
             Don't have an account?
             <RouterLink
               to="/access/sign-up/"
-              class="text-indigo-400 opacity-100"
+              class="text-primary opacity-100"
             >
               Sign up
             </RouterLink>

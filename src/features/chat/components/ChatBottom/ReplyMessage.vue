@@ -36,7 +36,7 @@ const handleRemoveReplyMessage = () => {
 <template>
   <SlideTransition animation="shelf-up">
     <div
-      class="absolute bottom-0 w-full px-5 py-2 bg-white dark:bg-gray-800 flex items-center justify-between transition-all duration-200"
+      class="absolute bottom-0 w-full px-5 py-2 bg-theme-surface flex items-center justify-between transition-all duration-200"
       v-if="activeConversation?.replyMessage"
     >
       <!--selected message overview-->

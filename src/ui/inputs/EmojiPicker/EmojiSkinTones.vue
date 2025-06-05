@@ -6,12 +6,14 @@ import useStore from "@src/shared/store/store";
 const store = useStore();
 const select = ref(false);
 
+// Используем CSS-переменные для цветов тонов кожи
+// Это специфические цвета, которые не должны меняться с темой
 const skinToneColor: any = {
-  "1f3ff": "bg-[#60463A]",
-  "1f3fe": "bg-[#A86637]",
-  "1f3fd": "bg-[#C88E62]",
-  "1f3fc": "bg-[#FFDFBD]",
-  neutral: "bg-[#FFD225]",
+  "1f3ff": "skin-tone-dark",
+  "1f3fe": "skin-tone-medium-dark",
+  "1f3fd": "skin-tone-medium",
+  "1f3fc": "skin-tone-medium-light",
+  neutral: "skin-tone-light",
 };
 
 // (event) change the skin tone of the emojis
@@ -28,23 +30,23 @@ const handleChangeSkinTone = (tone: string) => {
       <FadeTransition>
         <div v-if="select" class="h-5 max-h-fit">
           <button
-            class="w-6 h-5 bg-[#60463A] hover:scale-110 duration-200 ease-in"
+            class="w-6 h-5 skin-tone-dark hover:scale-110 duration-200 ease-in"
             @click="handleChangeSkinTone('1f3ff')"
           ></button>
           <button
-            class="w-6 h-5 bg-[#A86637] hover:scale-110 duration-200 ease-in"
+            class="w-6 h-5 skin-tone-medium-dark hover:scale-110 duration-200 ease-in"
             @click="handleChangeSkinTone('1f3fe')"
           ></button>
           <button
-            class="w-6 h-5 bg-[#C88E62] hover:scale-110 duration-200 ease-in"
+            class="w-6 h-5 skin-tone-medium hover:scale-110 duration-200 ease-in"
             @click="handleChangeSkinTone('1f3fd')"
           ></button>
           <button
-            class="w-6 h-5 bg-[#FFDFBD] hover:scale-110 duration-200 ease-in"
+            class="w-6 h-5 skin-tone-medium-light hover:scale-110 duration-200 ease-in"
             @click="handleChangeSkinTone('1f3fc')"
           ></button>
           <button
-            class="w-6 h-5 bg-[#FFD225] hover:scale-110 duration-200 ease-in"
+            class="w-6 h-5 skin-tone-light hover:scale-110 duration-200 ease-in"
             @click="handleChangeSkinTone('neutral')"
           ></button>
         </div>
@@ -62,3 +64,21 @@ const handleChangeSkinTone = (tone: string) => {
     </div>
   </div>
 </template>
+
+<style scoped>
+.skin-tone-dark {
+  background-color: #60463A;
+}
+.skin-tone-medium-dark {
+  background-color: #A86637;
+}
+.skin-tone-medium {
+  background-color: #C88E62;
+}
+.skin-tone-medium-light {
+  background-color: #FFDFBD;
+}
+.skin-tone-light {
+  background-color: #FFD225;
+}
+</style>

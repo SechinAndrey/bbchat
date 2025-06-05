@@ -43,7 +43,7 @@ const handleChangeActiveTab = (event: {
   <Modal :open="props.open" :closeModal="props.closeModal">
     <template v-slot:content>
       <div
-        class="w-[18.75rem] py-6 overflow-x-hidden rounded bg-white dark:bg-gray-800"
+        class="w-[18.75rem] py-6 overflow-x-hidden rounded bg-surface dark:bg-surface"
       >
         <!--modal content-->
         <SlideTransition :animation="animation">

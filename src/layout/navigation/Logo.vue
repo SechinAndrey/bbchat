@@ -21,7 +21,7 @@ const store = useStore();
       @blur="SkipLinkFocused = false"
       @focus="SkipLinkFocused = true"
     >
-      <ForwardIcon class="w-7 h-6 text-indigo-300" />
+      <ForwardIcon class="w-7 h-6 text-primary" />
     </a>
 
     <button

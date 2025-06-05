@@ -1,0 +1,156 @@
+:root {
+  --color-primary-light: #a5b4fc; /* indigo-300 */
+  --color-primary-hover-light: #818cf8; /* indigo-400 */
+  --color-primary-focus-light: #818cf8; /* indigo-400 */
+  --color-primary-active-light: #6366f1; /* indigo-500 */
+  
+  --color-success-light: #4ade80; /* green-400 */
+  --color-success-hover-light: #22c55e; /* green-500 */
+  --color-success-focus-light: #22c55e; /* green-500 */
+  --color-success-active-light: #16a34a; /* green-600 */
+  
+  --color-danger-light: #fca5a5; /* red-300 */
+  --color-danger-hover-light: #f87171; /* red-400 */
+  --color-danger-focus-light: #f87171; /* red-400 */
+  --color-danger-active-light: #ef4444; /* red-500 */
+  
+  --color-secondary-light: #93c5fd; /* blue-300 */
+  --color-secondary-hover-light: #60a5fa; /* blue-400 */
+  --color-secondary-focus-light: #60a5fa; /* blue-400 */
+  --color-secondary-active-light: #3b82f6; /* blue-500 */
+  
+  --color-warning-light: #fde047; /* yellow-300 */
+  --color-warning-hover-light: #facc15; /* yellow-400 */
+  --color-warning-focus-light: #facc15; /* yellow-400 */
+  --color-warning-active-light: #eab308; /* yellow-500 */
+  
+  --color-neutral-light: #f3f4f6; /* gray-100 */
+  --color-neutral-hover-light: #e5e7eb; /* gray-200 */
+  --color-neutral-focus-light: #d1d5db; /* gray-300 */
+  --color-neutral-active-light: #9ca3af; /* gray-400 */
+
+  --text-primary-light: rgba(0, 0, 0, 0.7); /* text-black text-opacity-70 */
+  --text-secondary-light: rgba(0, 0, 0, 0.5); /* text-black text-opacity-50 */
+  
+  /* Базовые цвета для темной темы */
+  --color-primary-dark: #818cf8; /* indigo-400 */
+  --color-primary-hover-dark: #6366f1; /* indigo-500 */
+  --color-primary-focus-dark: #6366f1; /* indigo-500 */
+  --color-primary-active-dark: #4f46e5; /* indigo-600 */
+  
+  --color-success-dark: #22c55e; /* green-500 */
+  --color-success-hover-dark: #16a34a; /* green-600 */
+  --color-success-focus-dark: #16a34a; /* green-600 */
+  --color-success-active-dark: #15803d; /* green-700 */
+  
+  --color-danger-dark: #f87171; /* red-400 */
+  --color-danger-hover-dark: #ef4444; /* red-500 */
+  --color-danger-focus-dark: #ef4444; /* red-500 */
+  --color-danger-active-dark: #dc2626; /* red-600 */
+  
+  --color-secondary-dark: #60a5fa; /* blue-400 */
+  --color-secondary-hover-dark: #3b82f6; /* blue-500 */
+  --color-secondary-focus-dark: #3b82f6; /* blue-500 */
+  --color-secondary-active-dark: #2563eb; /* blue-600 */
+  
+  --color-warning-dark: #facc15; /* yellow-400 */
+  --color-warning-hover-dark: #eab308; /* yellow-500 */
+  --color-warning-focus-dark: #eab308; /* yellow-500 */
+  --color-warning-active-dark: #ca8a04; /* yellow-600 */
+  
+  --color-neutral-dark: #374151; /* gray-700 */
+  --color-neutral-hover-dark: #4b5563; /* gray-600 */
+  --color-neutral-focus-dark: #6b7280; /* gray-500 */
+  --color-neutral-active-dark: #9ca3af; /* gray-400 */
+
+  --text-primary-dark: rgba(255, 255, 255, 0.7); /* text-white text-opacity-70 */
+  --text-secondary-dark: rgba(255, 255, 255, 0.5); /* text-white text-opacity-50 */
+
+
+  --bg-light: #ffffff;
+  --bg-dark: #1f2937; /* gray-800 */
+  
+  --bg-surface-light: #f9fafb; /* gray-50 */
+  --bg-surface-dark: #111827; /* gray-900 */
+  
+  --bg-surface-variant-light: #f3f4f6; /* gray-100 */
+  --bg-surface-variant-dark: #374151; /* gray-700 */
+}
+
+:root {
+  --color-primary: var(--color-primary-light);
+  --color-primary-hover: var(--color-primary-hover-light);
+  --color-primary-focus: var(--color-primary-focus-light);
+  --color-primary-active: var(--color-primary-active-light);
+  
+  --color-success: var(--color-success-light);
+  --color-success-hover: var(--color-success-hover-light);
+  --color-success-focus: var(--color-success-focus-light);
+  --color-success-active: var(--color-success-active-light);
+  
+  --color-danger: var(--color-danger-light);
+  --color-danger-hover: var(--color-danger-hover-light);
+  --color-danger-focus: var(--color-danger-focus-light);
+  --color-danger-active: var(--color-danger-active-light);
+  
+  --color-secondary: var(--color-secondary-light);
+  --color-secondary-hover: var(--color-secondary-hover-light);
+  --color-secondary-focus: var(--color-secondary-focus-light);
+  --color-secondary-active: var(--color-secondary-active-light);
+  
+  --color-warning: var(--color-warning-light);
+  --color-warning-hover: var(--color-warning-hover-light);
+  --color-warning-focus: var(--color-warning-focus-light);
+  --color-warning-active: var(--color-warning-active-light);
+  
+  --color-neutral: var(--color-neutral-light);
+  --color-neutral-hover: var(--color-neutral-hover-light);
+  --color-neutral-focus: var(--color-neutral-focus-light);
+  --color-neutral-active: var(--color-neutral-active-light);
+  
+  --text-primary: var(--text-primary-light);
+  --text-secondary: var(--text-secondary-light);
+  
+  --bg: var(--bg-light);
+  --bg-surface: var(--bg-surface-light);
+  --bg-surface-variant: var(--bg-surface-variant-light);
+}
+
+.dark {
+  --color-primary: var(--color-primary-dark);
+  --color-primary-hover: var(--color-primary-hover-dark);
+  --color-primary-focus: var(--color-primary-focus-dark);
+  --color-primary-active: var(--color-primary-active-dark);
+  
+  --color-success: var(--color-success-dark);
+  --color-success-hover: var(--color-success-hover-dark);
+  --color-success-focus: var(--color-success-focus-dark);
+  --color-success-active: var(--color-success-active-dark);
+  
+  --color-danger: var(--color-danger-dark);
+  --color-danger-hover: var(--color-danger-hover-dark);
+  --color-danger-focus: var(--color-danger-focus-dark);
+  --color-danger-active: var(--color-danger-active-dark);
+  
+  --color-secondary: var(--color-secondary-dark);
+  --color-secondary-hover: var(--color-secondary-hover-dark);
+  --color-secondary-focus: var(--color-secondary-focus-dark);
+  --color-secondary-active: var(--color-secondary-active-dark);
+  
+  --color-warning: var(--color-warning-dark);
+  --color-warning-hover: var(--color-warning-hover-dark);
+  --color-warning-focus: var(--color-warning-focus-dark);
+  --color-warning-active: var(--color-warning-active-dark);
+  
+  --color-neutral: var(--color-neutral-dark);
+  --color-neutral-hover: var(--color-neutral-hover-dark);
+  --color-neutral-focus: var(--color-neutral-focus-dark);
+  --color-neutral-active: var(--color-neutral-active-dark);
+  
+  --text-primary: var(--text-primary-dark);
+  --text-secondary: var(--text-secondary-dark);
+  
+  --bg: var(--bg-dark);
+  --bg-surface: var(--bg-surface-dark);
+  --bg-surface-variant: var(--bg-surface-variant-dark);
+}

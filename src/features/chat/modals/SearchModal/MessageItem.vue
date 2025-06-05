@@ -10,7 +10,7 @@ const props = defineProps<{
 
 <template>
   <button
-    class="w-full p-5 flex outline-none hover:bg-indigo-100 focus:bg-indigo-100 active:bg-indigo-200 dark:hover:bg-gray-600 dark:focus:bg-gray-600 duration-200"
+    class="w-full p-5 flex outline-none hover:bg-primary-hover/10 focus:bg-primary-hover/10 active:bg-primary-hover/20 dark:hover:bg-gray-600 dark:focus:bg-gray-600 duration-200"
   >
     <!--profile image-->
     <div class="mr-4">

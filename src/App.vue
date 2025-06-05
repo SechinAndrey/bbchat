@@ -4,6 +4,7 @@ import { ref, onMounted, onUnmounted, computed } from "vue";
 import useStore from "@src/shared/store/store";
 import { useAuthStore } from "@src/features/auth/store/auth-store";
 import { setupErrorInterceptor } from "@src/features/auth/services/error-interceptor";
+import ThemeProvider from "@src/shared/components/theme/ThemeProvider.vue";
 
 import FadeTransition from "@src/ui/transitions/FadeTransition.vue";
 
@@ -42,6 +43,10 @@ const initError = ref<string | null>(null);
 const isAppReady = computed(() => {
   return !appInitializing.value && (!authStore.isAuthenticated || store.status === 'success');
 });
+
+const handleReload = () => {
+  window.location.reload();
+};
 
 // update localStorage with state changes
 store.$subscribe((_mutation, state) => {
@@ -88,9 +93,9 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div :class="{ dark: store.settings.darkMode }">
+  <ThemeProvider>
     <div
-      class="bg-white dark:bg-gray-800 transition-colors duration-500"
+      class="bg-theme-bg transition-colors duration-500"
       :style="{ height: height }"
     >
       <div v-if="appInitializing || (authStore.isAuthenticated && store.status === 'loading')" 
@@ -105,14 +110,14 @@ onUnmounted(() => {
       
       <div v-else-if="initError" class="flex justify-center items-center h-full">
         <div class="text-center">
-          <div class="text-red-500 mb-3">
+          <div class="text-danger mb-3">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
             </svg>
           </div>
-          <p class="text-red-600 dark:text-red-400">{{ initError }}</p>
-          <button @click="window.location.reload()" 
-                  class="mt-4 px-4 py-2 bg-primary text-white rounded hover:bg-primary-dark transition">
+          <p class="text-danger dark:text-danger">{{ initError }}</p>
+          <button @click="handleReload" 
+                  class="mt-4 px-4 py-2 bg-primary text-white rounded hover:bg-primary-hover transition">
             Попробовать снова
           </button>
         </div>
@@ -124,5 +129,5 @@ onUnmounted(() => {
         </FadeTransition>
       </router-view>
     </div>
-  </div>
+  </ThemeProvider>
 </template>

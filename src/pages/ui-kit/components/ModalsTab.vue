@@ -25,7 +25,7 @@ const toggleModal = function() {
             Open Modal
           </Button>
         </div>
-        <div class="mt-4 p-4 bg-gray-50 dark:bg-gray-700 rounded">
+        <div class="mt-4 p-4 bg-surface-variant rounded">
           <p class="body-2 text-color">Basic modal dialog</p>
           <p class="body-3 text-color mt-2">Features include a slide transition, focus trap, and ability to close with ESC key or clicking outside.</p>
         </div>

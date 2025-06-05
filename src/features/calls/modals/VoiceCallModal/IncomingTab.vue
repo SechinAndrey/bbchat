@@ -33,7 +33,7 @@ const props = defineProps<{
         {{ getCallName(activeCall) }}
       </p>
 
-      <p class="body-3 outline-none text-green-300" tabindex="0">
+      <p class="body-3 outline-none text-success" tabindex="0">
         {{ activeCall.direction }}
       </p>
     </div>
@@ -46,7 +46,7 @@ const props = defineProps<{
       >
         <PhoneIcon class="w-[1rem] h-[1rem]" />
         <span
-          class="animate-ping absolute inline-flex w-[2.1875rem] h-[2.1875rem] rounded-full bg-green-400 opacity-75"
+          class="animate-ping absolute inline-flex w-[2.1875rem] h-[2.1875rem] rounded-full bg-success opacity-75"
         ></span>
       </IconButton>
 
@@ -61,7 +61,7 @@ const props = defineProps<{
       >
         <XMarkIcon class="w-[1rem] h-[1rem]" />
         <span
-          class="animate-ping absolute inline-flex w-[2.1875rem] h-[2.1875rem] rounded-full bg-red-400 opacity-75"
+          class="animate-ping absolute inline-flex w-[2.1875rem] h-[2.1875rem] rounded-full bg-danger opacity-75"
         ></span>
       </IconButton>
     </div>

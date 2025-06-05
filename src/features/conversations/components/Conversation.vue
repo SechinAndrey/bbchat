@@ -91,9 +91,9 @@ const isActive = computed(
           handleSelectConversation();
         }
       "
-      class="w-full h-[5.75rem] px-5 py-6 mb-3 flex rounded focus:bg-indigo-50 dark:active:bg-gray-600 dark:focus:bg-gray-600 dark:hover:bg-gray-600 hover:bg-indigo-50 active:bg-indigo-100 focus:outline-none transition duration-500 ease-out"
+      class="w-full h-[5.75rem] px-5 py-6 mb-3 flex rounded focus:bg-primary-hover/10 dark:active:bg-gray-600 dark:focus:bg-gray-600 dark:hover:bg-gray-600 hover:bg-primary-hover/10 active:bg-primary-hover/20 focus:outline-none transition duration-500 ease-out"
       :class="{
-        'md:bg-indigo-50': isActive,
+        'md:bg-primary-hover/10': isActive,
         'md:dark:bg-gray-600': isActive,
       }"
     >
@@ -130,7 +130,7 @@ const isActive = computed(
                 props.conversation.draftMessage &&
                 props.conversation.id !== getActiveConversationId()
               "
-              class="body-2 flex justify-start items-center text-red-400"
+              class="body-2 flex justify-start items-center text-danger"
             >
               draft: {{ shorten(props.conversation.draftMessage) }}
             </p>
@@ -144,9 +144,9 @@ const isActive = computed(
             >
               <MicrophoneIcon
                 class="w-4 h-4 mr-2 text-black opacity-60 dark:text-white dark:opacity-70"
-                :class="{ 'text-indigo-400': props.conversation.unread }"
+                :class="{ 'text-primary': props.conversation.unread }"
               />
-              <span :class="{ 'text-indigo-400': props.conversation.unread }">
+              <span :class="{ 'text-primary': props.conversation.unread }">
                 Recording
                 {{ (lastMessage.content as IRecording).duration }}
               </span>
@@ -156,9 +156,9 @@ const isActive = computed(
             <p
               v-else-if="hasAttachments(lastMessage)"
               class="body-2 text-color flex justify-start items-center"
-              :class="{ 'text-indigo-400': props.conversation.unread }"
+              :class="{ 'text-primary': props.conversation.unread }"
             >
-              <span :class="{ 'text-indigo-400': props.conversation.unread }">
+              <span :class="{ 'text-primary': props.conversation.unread }">
                 {{ (lastMessage?.attachments as IAttachment[])[0].name }}
               </span>
             </p>
@@ -167,9 +167,9 @@ const isActive = computed(
             <p
               v-else
               class="body-2 text-color flex justify-start items-center"
-              :class="{ 'text-indigo-400': props.conversation.unread }"
+              :class="{ 'text-primary': props.conversation.unread }"
             >
-              <span :class="{ 'text-indigo-400': props.conversation.unread }">
+              <span :class="{ 'text-primary': props.conversation.unread }">
                 {{ shorten(lastMessage) }}
               </span>
             </p>
@@ -177,7 +177,7 @@ const isActive = computed(
 
           <div v-if="props.conversation.unread">
             <div
-              class="w-[1.125rem] h-[1.125rem] flex justify-center items-center rounded-[50%] bg-indigo-300"
+              class="w-[1.125rem] h-[1.125rem] flex justify-center items-center rounded-[50%] bg-primary"
             >
               <p class="body-1 text-white">
                 {{ props.conversation.unread }}

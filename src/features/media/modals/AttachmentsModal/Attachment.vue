@@ -19,14 +19,14 @@ const props = defineProps<{
   <div href="#" class="flex px-5 py-4 transition-all duration-300">
     <!--icon-->
     <div
-      class="w-8 h-8 mr-4 rounded-full flex justify-center items-center bg-gray-100 dark:bg-gray-600"
+      class="w-8 h-8 mr-4 rounded-full flex justify-center items-center bg-surface-variant"
     >
       <PhotoIcon
-        class="stroke-1 h-5 w-5 text-black opacity-60 dark:text-white dark:opacity-70"
+        class="stroke-1 h-5 w-5 text-muted"
         v-if="attachment.type === 'image'"
       />
       <VideoCameraIcon
-        class="stroke-1 h-5 w-5 text-black opacity-60 dark:text-white dark:opacity-70"
+        class="stroke-1 h-5 w-5 text-muted"
         v-else-if="attachment.type === 'video'"
       />
       <DocumentIcon

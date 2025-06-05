@@ -1,0 +1,14 @@
+
+@import "./variables.css";
+
+
+@import "./indigo-theme.css";
+@import "./green-theme.css";
+
+:root {
+  --nav-bg: var(--nav-bg-light);
+}
+
+.dark {
+  --nav-bg: var(--nav-bg-dark);
+}

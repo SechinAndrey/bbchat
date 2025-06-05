@@ -51,7 +51,7 @@ const handleCallStatusChange = (status: string) => {
   <Modal :open="props.open" :close-modal="() => props.closeModal(false)">
     <template v-slot:content>
       <div
-        class="rounded bg-white dark:bg-gray-800 transition-all duration-300"
+        class="rounded bg-surface dark:bg-surface transition-all duration-300"
         :style="{ width: modalSize }"
       >
         <FadeTransition>

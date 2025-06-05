@@ -37,7 +37,7 @@ const props = defineProps<{
         {{ getCallName(activeCall) }}
       </p>
 
-      <p class="body-3 outline-none text-green-300" tabindex="0">
+      <p class="body-3 outline-none text-success" tabindex="0">
         {{ activeCall.direction }}
       </p>
     </div>
@@ -75,10 +75,10 @@ const props = defineProps<{
 
     <!--call actions-->
     <div
-      class="relative w-full h-[3.125rem] rounded-b flex justify-center bg-gray-50 dark:bg-gray-700"
+      class="relative w-full h-[3.125rem] rounded-b flex justify-center bg-surface-variant dark:bg-surface-variant"
     >
       <div class="absolute bottom-[1.1875rem]">
-        <div class="p-3 rounded-full bg-white dark:bg-gray-800">
+        <div class="p-3 rounded-full bg-surface dark:bg-surface">
           <IconButton
             @click="
               () => {

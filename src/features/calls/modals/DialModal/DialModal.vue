@@ -51,7 +51,7 @@ const handleSelectedContactsChange = (contact: IContact) => {
 <template>
   <Modal :open="props.open" :closeModal="props.closeModal">
     <template v-slot:content>
-      <div class="w-[18.75rem] py-6 bg-white dark:bg-gray-800 rounded">
+      <div class="w-[18.75rem] py-6 bg-theme-surface dark:bg-theme-surface rounded">
         <!--modal header-->
         <div class="flex justify-between items-center mb-6 px-5">
           <p id="modal-title" class="heading-1 text-color" tabindex="0">

@@ -26,7 +26,7 @@ const props = defineProps<{
 
   <div
     v-else-if="props.membersLength > 2 && index === 1"
-    class="absolute top-0 left-[1.25rem] flex justify-center items-center rounded-full bg-gray-50 dark:bg-gray-700"
+    class="absolute top-0 left-[1.25rem] flex justify-center items-center rounded-full bg-surface-variant"
     :class="props.large ? ['w-[6.25rem]', 'h-[6.25rem]'] : ['w-7', 'h-7']"
   >
     <p class="body-4 text-color">{{ props.membersLength - 1 }}+</p>

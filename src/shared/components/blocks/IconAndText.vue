@@ -16,11 +16,11 @@ const props = defineProps<{
 
 const colorClasses = computed(() => {
   if (props.color === "danger") {
-    return "text-red-400 group-hover:text-red-500";
+    return "text-danger group-hover:text-danger-hover";
   } else {
     return `text-black dark:text-white opacity-50 dark:opacity-70
-        group-hover:text-indigo-500 group-active:text-indigo-600 
-        dark:group-hover:text-indigo-300 dark:group-active:text-indigo-400`;
+        group-hover:text-primary group-active:text-primary-active 
+        dark:group-hover:text-primary dark:group-active:text-primary-active`;
   }
 });
 </script>

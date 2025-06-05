@@ -104,7 +104,7 @@ onMounted(() => {
         </IconButton>
 
         <!--recording timer-->
-        <p v-if="recording" class="body-1 text-indigo-300">00:11</p>
+        <p v-if="recording" class="body-1 text-primary">00:11</p>
       </div>
 
       <!--message textarea-->
@@ -134,7 +134,7 @@ onMounted(() => {
               <XCircleIcon v-if="showPicker" class="w-[1.25rem] h-[1.25rem]" />
               <FaceSmileIcon
                 v-else
-                class="w-[1.25rem] h-[1.25rem] text-gray-400 group-hover:text-indigo-300"
+                class="w-[1.25rem] h-[1.25rem] text-gray-400 group-hover:text-primary"
               />
             </IconButton>
 
@@ -168,10 +168,10 @@ onMounted(() => {
           title="finish recording"
           aria-label="finish recording"
           @click="handleToggleRecording"
-          class="relative group w-7 h-7 flex justify-center items-center outline-none rounded-full bg-indigo-300 hover:bg-green-300 dark:hover:bg-green-400 dark:focus:bg-green-400 focus:outline-none transition-all duration-200"
+          class="relative group w-7 h-7 flex justify-center items-center outline-none rounded-full bg-primary hover:bg-success dark:hover:bg-success dark:focus:bg-success focus:outline-none transition-all duration-200"
         >
           <span
-            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-300 group-hover:bg-green-300 opacity-40"
+            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary group-hover:bg-success opacity-40"
           >
           </span>
 

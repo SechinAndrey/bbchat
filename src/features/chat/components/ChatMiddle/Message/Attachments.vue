@@ -208,15 +208,15 @@ const isNumber = (
               class="w-8 h-8 mr-4 flex justify-center rounded-full outline-none items-center duration-200"
               :class="
                 props.self
-                  ? ['bg-indigo-300']
+                  ? ['bg-primary']
                   : [
-                      'bg-indigo-50',
-                      'hover:bg-indigo-100',
-                      'active:bg-indigo-200',
-                      'dark:bg-gray-400',
-                      'dark:hover:bg-gray-300',
-                      'dark:focus:bg-gray-300',
-                      'dark:active:bg-gray-200',
+                      'bg-primary-hover/10',
+                      'hover:bg-primary-hover/20',
+                      'active:bg-primary-hover/30',
+                      'bg-surface-variant',
+                      'hover:bg-surface-variant/80',
+                      'focus:bg-surface-variant/80',
+                      'active:bg-surface-variant/60',
                     ]
               "
             >
@@ -225,7 +225,7 @@ const isNumber = (
                 :class="
                   props.self
                     ? ['text-white']
-                    : ['text-blue-500', 'dark:text-gray-50']
+                    : ['text-secondary']
                 "
               />
             </button>

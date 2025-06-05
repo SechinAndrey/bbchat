@@ -91,6 +91,7 @@ export interface ISettings {
   borderedTheme: boolean;
   allowNotifications: boolean;
   keepNotifications: boolean;
+  theme: string;
 }
 
 export interface ICall {

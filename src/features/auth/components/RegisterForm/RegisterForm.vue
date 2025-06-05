@@ -62,7 +62,7 @@ const changeActiveSection = (event: {
       <div class="flex justify-center">
         <p class="body-2 text-color">
           Already have an account?
-          <RouterLink to="/access/sign-in/" class="text-indigo-400 opacity-100">
+          <RouterLink to="/access/sign-in/" class="text-primary opacity-100">
             Sign in
           </RouterLink>
         </p>

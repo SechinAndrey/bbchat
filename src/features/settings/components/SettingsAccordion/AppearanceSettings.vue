@@ -4,6 +4,7 @@ import useStore from "@src/shared/store/store";
 import AccordionButton from "@src/ui/data-display/AccordionButton.vue";
 import Collapse from "@src/ui/utils/Collapse.vue";
 import SettingsSwitch from "@src/features/settings/components/SettingsAccordion/SettingsSwitch.vue";
+import ThemeSelector from "@src/features/settings/components/SettingsAccordion/ThemeSelector.vue";
 
 const props = defineProps<{
   collapsed: boolean;
@@ -28,6 +29,8 @@ const store = useStore();
   </AccordionButton>
 
   <Collapse id="appearance-settings-collapse" :collapsed="props.collapsed">
+    <ThemeSelector />
+    
     <SettingsSwitch
       title="Dark Mode"
       description="Apply a theme with dark colors"

@@ -128,7 +128,7 @@ const handleClickOutside = (event: Event) => {
             v-if="(props.conversation.admins as number[]).includes(contact.id)"
           >
             <div class="ml-3">
-              <p class="body-4 text-indigo-400">admin</p>
+              <p class="body-4 text-primary">admin</p>
             </div>
           </template>
 

@@ -107,16 +107,16 @@ const replyMessage = getMessageById(activeConversation, props.message.replyTo);
           @contextmenu.prevent="handleShowContextMenu"
           class="group max-w-[31.25rem] p-5 rounded-b transition duration-500"
           :class="{
-            'rounded-tl ml-4 order-2 bg-indigo-50 dark:bg-gray-600':
+            'rounded-tl ml-4 order-2 bg-primary-hover/10':
               props.self && !props.selected,
 
-            'rounded-tr mr-4 bg-gray-50 dark:bg-gray-600':
+            'rounded-tr mr-4 bg-surface-variant':
               !props.self && !props.selected,
 
-            'rounded-tl ml-4 order-2 bg-indigo-200 dark:bg-indigo-500':
+            'rounded-tl ml-4 order-2 bg-primary-hover/30':
               props.self && props.selected,
 
-            'rounded-tr mr-4 bg-indigo-200 dark:bg-indigo-500':
+            'rounded-tr mr-4 bg-primary-hover/30':
               !props.self && props.selected,
           }"
         >
@@ -136,7 +136,7 @@ const replyMessage = getMessageById(activeConversation, props.message.replyTo);
               linkifyStr(props.message.content as string, {
                 className: props.self
                   ? 'text-black opacity-50'
-                  : 'text-indigo-500 dark:text-indigo-300',
+                  : 'text-primary dark:text-primary',
                 format: {
                   url: (value) =>
                     value.length > 50 ? value.slice(0, 50) + `…` : value,

@@ -72,7 +72,7 @@ const imageUrl = computed(() => {
         class="ic-btn-outlined-danger p-2"
       >
         <ArrowUturnLeftIcon
-          class="w-5 h-5 text-black opacity-50 dark:text-white dark:opacity-70 group-focus:text-red-500 dark:group-focus:text-white group-hover:text-red-500 group-hover:opacity-100 dark:group-hover:text-white"
+          class="w-5 h-5 text-black opacity-50 dark:text-white dark:opacity-70 group-focus:text-danger dark:group-focus:text-white group-hover:text-danger group-hover:opacity-100 dark:group-hover:text-white"
         />
       </IconButton>
     </div>

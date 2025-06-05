@@ -15,6 +15,55 @@ module.exports = {
     },
 
     extend: {
+      colors: {
+        primary: {
+          DEFAULT: "var(--color-primary)",
+          hover: "var(--color-primary-hover)",
+          focus: "var(--color-primary-focus)",
+          active: "var(--color-primary-active)",
+        },
+        success: {
+          DEFAULT: "var(--color-success)",
+          hover: "var(--color-success-hover)",
+          focus: "var(--color-success-focus)",
+          active: "var(--color-success-active)",
+        },
+        danger: {
+          DEFAULT: "var(--color-danger)",
+          hover: "var(--color-danger-hover)",
+          focus: "var(--color-danger-focus)",
+          active: "var(--color-danger-active)",
+        },
+        secondary: {
+          DEFAULT: "var(--color-secondary)",
+          hover: "var(--color-secondary-hover)",
+          focus: "var(--color-secondary-focus)",
+          active: "var(--color-secondary-active)",
+        },
+        warning: {
+          DEFAULT: "var(--color-warning)",
+          hover: "var(--color-warning-hover)",
+          focus: "var(--color-warning-focus)",
+          active: "var(--color-warning-active)",
+        },
+        neutral: {
+          DEFAULT: "var(--color-neutral)",
+          hover: "var(--color-neutral-hover)",
+          focus: "var(--color-neutral-focus)",
+          active: "var(--color-neutral-active)",
+        },
+        theme: {
+          bg: "var(--bg)",
+          surface: "var(--bg-surface)",
+          "surface-variant": "var(--bg-surface-variant)",
+          nav: "var(--nav-bg)",
+        },
+        text: {
+          primary: "var(--text-primary)",
+          secondary: "var(--text-secondary)",
+        },
+      },
+
       spacing: {
         0: "0",
         1: ".125rem",
@@ -48,9 +97,13 @@ module.exports = {
       opacity: {
         0: "0",
         20: "0.20",
+        30: "0.30",
         40: "0.40",
+        50: "0.54",
         60: "0.63",
+        70: "0.70",
         80: "0.80",
+        90: "0.90",
         100: "1",
       },
 
@@ -64,6 +117,7 @@ module.exports = {
           "0rem .625rem 1.25rem 0rem rgba(3,3,3,0.1), 0rem .1875rem .375rem 0rem rgba(3,3,3,0.1)",
         "shadow-xl":
           "0rem .9375rem 1.5625rem 0rem rgba(3,3,3,0.1), 0rem .3125rem .625rem 0rem rgba(3,3,3,0.1)",
+        cxl: "0 .125rem .3125rem rgba(193, 202, 255, 0.5), .125rem 0 .3125rem rgba(193, 202, 255, 0.5), -0.125rem 0 .3125rem rgba(193, 202, 255, 0.5), 0 -0.125rem .3125rem rgba(193, 202, 255, 0.5)",
       },
 
       keyframes: {
@@ -84,17 +138,6 @@ module.exports = {
 
       animation: {
         gradient: "gradient 15s ease infinite",
-      },
-
-      opacity: {
-        30: "0.30",
-        50: "0.54",
-        70: "0.70",
-        90: "0.90",
-      },
-
-      boxShadow: {
-        cxl: "0 .125rem .3125rem rgba(193, 202, 255, 0.5), .125rem 0 .3125rem rgba(193, 202, 255, 0.5), -0.125rem 0 .3125rem rgba(193, 202, 255, 0.5), 0 -0.125rem .3125rem rgba(193, 202, 255, 0.5)",
       },
     },
   },

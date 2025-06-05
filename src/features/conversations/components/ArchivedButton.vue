@@ -17,22 +17,22 @@ const store = useStore();
       :class="
         props.open
           ? [
-              'bg-red-300',
-              'hover:bg-red-400',
-              'focus:bg-red-400',
-              'active:bg-red-400',
-              'dark:bg-red-400',
-              'dark:hover:bg-red-300',
-              'dark:focus:bg-red-300',
-              'dark:active:bg-red-300',
+              'bg-danger',
+              'hover:bg-danger-hover',
+              'focus:bg-danger-focus',
+              'active:bg-danger-active',
+              'dark:bg-danger',
+              'dark:hover:bg-danger-hover',
+              'dark:focus:bg-danger-focus',
+              'dark:active:bg-danger-active',
             ]
           : [
-              'focus:bg-indigo-50',
+              'focus:bg-primary-hover/10',
               'dark:active:bg-gray-600',
               'dark:focus:bg-gray-600',
               'dark:hover:bg-gray-600',
-              ' hover:bg-indigo-50',
-              'active:bg-indigo-100',
+              ' hover:bg-primary-hover/10',
+              'active:bg-primary-hover/20',
             ]
       "
       tabindex="0"
@@ -40,10 +40,10 @@ const store = useStore();
       <!--archived icon-->
       <div class="mr-4" :class="{ hidden: props.open }">
         <div
-          class="w-7 h-7 flex justify-center items-center rounded-full bg-gray-50 dark:bg-gray-500 transition duration-500"
+          class="w-7 h-7 flex justify-center items-center rounded-full bg-surface-variant transition duration-500"
         >
           <ArchiveBoxIcon
-            class="w-5 h-5 stroke-1 text-gray-500 dark:text-white transition duration-500"
+            class="w-5 h-5 stroke-1 text-muted transition duration-500"
           />
         </div>
       </div>

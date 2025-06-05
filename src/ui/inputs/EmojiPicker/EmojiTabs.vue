@@ -13,6 +13,17 @@ import {
 const props = defineProps<{
   active: string;
 }>();
+
+// Используем классы, основанные на переменных темы вместо хардкодных цветов
+const activeClasses = {
+  border: 'border-primary',
+  text: 'text-primary'
+};
+
+const inactiveClasses = {
+  border: 'border-transparent',
+  text: 'text-gray-500 dark:text-white dark:opacity-60'
+};
 </script>
 
 <template>
@@ -22,8 +33,8 @@ const props = defineProps<{
       class="pb-[.3125rem] border-b transition-colors duration-200"
       :class="[
         props.active === 'people'
-          ? 'border-indigo-400 rounded-1'
-          : 'border-transparent',
+          ? activeClasses.border
+          : inactiveClasses.border,
       ]"
     >
       <IconButton
@@ -35,8 +46,8 @@ const props = defineProps<{
           class="w-5 h-5 transition-colors duration-200"
           :class="[
             props.active === 'people'
-              ? ['text-indigo-400 dark:text-indigo-400']
-              : ['text-gray-500 dark:text-white dark:opacity-60'],
+              ? activeClasses.text
+              : inactiveClasses.text,
           ]"
         />
       </IconButton>
@@ -47,8 +58,8 @@ const props = defineProps<{
       class="pb-[.3125rem] border-b transition-colors duration-200"
       :class="[
         props.active === 'nature'
-          ? 'border-indigo-400 rounded-1'
-          : 'border-transparent',
+          ? activeClasses.border
+          : inactiveClasses.border,
       ]"
     >
       <IconButton
@@ -60,8 +71,8 @@ const props = defineProps<{
           class="w-5 h-5 transition-colors duration-200"
           :class="[
             props.active === 'nature'
-              ? ['text-indigo-400 dark:text-indigo-400']
-              : ['text-gray-500 dark:text-white dark:opacity-60'],
+              ? activeClasses.text
+              : inactiveClasses.text,
           ]"
         />
       </IconButton>
@@ -72,8 +83,8 @@ const props = defineProps<{
       class="pb-[.3125rem] border-b transition-colors duration-200"
       :class="[
         props.active === 'food'
-          ? 'border-indigo-400 rounded-1'
-          : 'border-transparent',
+          ? activeClasses.border
+          : inactiveClasses.border,
       ]"
     >
       <IconButton
@@ -85,8 +96,8 @@ const props = defineProps<{
           class="w-5 h-5 transition-colors duration-200"
           :class="[
             props.active === 'food'
-              ? ['text-indigo-400 dark:text-indigo-400']
-              : ['text-gray-500 dark:text-white dark:opacity-60'],
+              ? activeClasses.text
+              : inactiveClasses.text,
           ]"
         />
       </IconButton>
@@ -97,8 +108,8 @@ const props = defineProps<{
       class="pb-[.3125rem] border-b transition-colors duration-200"
       :class="[
         props.active === 'activity'
-          ? 'border-indigo-400 rounded-1'
-          : 'border-transparent',
+          ? activeClasses.border
+          : inactiveClasses.border,
       ]"
     >
       <IconButton
@@ -110,8 +121,8 @@ const props = defineProps<{
           class="w-5 h-5 transition-colors duration-200"
           :class="[
             props.active === 'activity'
-              ? ['text-indigo-400 dark:text-indigo-400']
-              : ['text-gray-500 dark:text-white dark:opacity-60'],
+              ? activeClasses.text
+              : inactiveClasses.text,
           ]"
         />
       </IconButton>
@@ -122,8 +133,8 @@ const props = defineProps<{
       class="pb-[.3125rem] border-b transition-colors duration-200"
       :class="[
         props.active === 'objects'
-          ? 'border-indigo-400 rounded-1'
-          : 'border-transparent',
+          ? activeClasses.border
+          : inactiveClasses.border,
       ]"
     >
       <IconButton @click="$emit('tab-change', 'objects')">
@@ -131,8 +142,8 @@ const props = defineProps<{
           class="w-5 h-5 transition-colors duration-200"
           :class="[
             props.active === 'objects'
-              ? ['text-indigo-400 dark:text-indigo-400']
-              : ['text-gray-500 dark:text-white dark:opacity-60'],
+              ? activeClasses.text
+              : inactiveClasses.text,
           ]"
         />
       </IconButton>
@@ -143,8 +154,8 @@ const props = defineProps<{
       class="pb-[.3125rem] border-b transition-colors duration-200"
       :class="[
         props.active === 'travel'
-          ? 'border-indigo-400 rounded-1'
-          : 'border-transparent',
+          ? activeClasses.border
+          : inactiveClasses.border,
       ]"
     >
       <IconButton
@@ -156,8 +167,8 @@ const props = defineProps<{
           class="w-5 h-5 transition-colors duration-200"
           :class="[
             props.active === 'travel'
-              ? ['text-indigo-400 dark:text-indigo-400']
-              : ['text-gray-500 dark:text-white dark:opacity-60'],
+              ? activeClasses.text
+              : inactiveClasses.text,
           ]"
         />
       </IconButton>
@@ -168,8 +179,8 @@ const props = defineProps<{
       class="pb-[.3125rem] border-b transition-colors duration-200"
       :class="[
         props.active === 'flags'
-          ? 'border-indigo-400 rounded-1'
-          : 'border-transparent',
+          ? activeClasses.border
+          : inactiveClasses.border,
       ]"
     >
       <IconButton
@@ -181,8 +192,8 @@ const props = defineProps<{
           class="w-5 h-5 transition-colors duration-200"
           :class="[
             props.active === 'flags'
-              ? ['text-indigo-400 dark:text-indigo-400']
-              : ['text-gray-500 dark:text-white dark:opacity-60'],
+              ? activeClasses.text
+              : inactiveClasses.text,
           ]"
         />
       </IconButton>

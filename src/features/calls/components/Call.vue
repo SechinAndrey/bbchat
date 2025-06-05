@@ -40,9 +40,9 @@ const handleOpenInfoModal = () => {
       class="w-full h-[5.75rem] px-5 py-6 mb-3 flex rounded focus:outline-none transition duration-500 ease-out"
       :class="
         props.active
-          ? ['border border-dashed border-green-100 dark:border-green-800']
+          ? ['border border-dashed border-success dark:border-success']
           : [
-              'focus:bg-indigo-50 dark:active:bg-gray-600 dark:focus:bg-gray-600 dark:hover:bg-gray-600 hover:bg-indigo-50 active:bg-indigo-100',
+              'focus:bg-primary-hover/10 dark:active:bg-gray-600 dark:focus:bg-gray-600 dark:hover:bg-gray-600 hover:bg-primary-hover/10 active:bg-primary-hover/20',
             ]
       "
       tabindex="0"
@@ -97,7 +97,7 @@ const handleOpenInfoModal = () => {
             <button
               v-if="props.active"
               @click="props.endCall"
-              class="p-[.3125rem] flex justify-center items-center rounded-full outline-none bg-red-400 hover:bg-red-500 active:bg-red-600 transition-all duration-500 ease"
+              class="p-[.3125rem] flex justify-center items-center rounded-full outline-none bg-danger hover:bg-danger-hover active:bg-danger-active transition-all duration-500 ease"
             >
               <PhoneIcon class="w-[.875rem] h-[.875rem] text-white" />
             </button>
@@ -106,15 +106,15 @@ const handleOpenInfoModal = () => {
             <div v-else class="mr-2">
               <PhoneXMarkIcon
                 v-if="props.call.status === 'missed'"
-                class="w-[.875rem] h-[.875rem] text-red-300 dark:text-red-400"
+                class="w-[.875rem] h-[.875rem] text-danger dark:text-danger"
               />
               <PhoneArrowUpRightIcon
                 v-else-if="props.call.status === 'sent'"
-                class="w-[.875rem] h-[.875rem] text-green-300 dark:text-green-400"
+                class="w-[.875rem] h-[.875rem] text-success dark:text-success"
               />
               <PhoneArrowDownLeftIcon
                 v-else-if="props.call.status === 'received'"
-                class="w-[.875rem] h-[.875rem] text-green-300 dark:text-green-400"
+                class="w-[.875rem] h-[.875rem] text-success dark:text-success"
               />
             </div>
           </div>
@@ -124,7 +124,7 @@ const handleOpenInfoModal = () => {
           <!--recording length-->
           <p
             v-if="props.active"
-            class="body-2 flex justify-start items-center text-indigo-300"
+            class="body-2 flex justify-start items-center text-primary"
           >
             {{ props.call.length }}
           </p>

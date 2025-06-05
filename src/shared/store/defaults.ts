@@ -8,6 +8,7 @@ export const defaultSettings = [
     borderedTheme: false,
     allowNotifications: false,
     keepNotifications: false,
+    theme: "indigo",
   },
 ];
 

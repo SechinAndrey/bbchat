@@ -61,7 +61,8 @@ function handleSliderChange(value: number) {
 }
 
 function handleCheckboxToggle(field: string) {
-  filters.value[field] = !filters.value[field];
+  const filtersObj = filters.value as any;
+  filtersObj[field] = !filtersObj[field];
 }
 </script>
 
@@ -106,7 +107,7 @@ function handleCheckboxToggle(field: string) {
           </Dropdown>
         </div>
         
-        <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded">
+        <div class="p-4 bg-surface-variant rounded">
           <p class="body-2 text-color">Simple dropdown menu with options</p>
           <p class="body-3 text-color mt-2">
             Supports active items, disabled items, and can open in different directions.
@@ -146,7 +147,7 @@ function handleCheckboxToggle(field: string) {
           </Dropdown>
         </div>
         
-        <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded">
+        <div class="p-4 bg-surface-variant rounded">
           <p class="body-2 text-color">Dropdown menu with different triggers</p>
           <p class="body-3 text-color mt-2">
             Menu can be opened by click or by hovering over the activator.
@@ -254,7 +255,7 @@ function handleCheckboxToggle(field: string) {
           </Dropdown>
         </div>
         
-        <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded">
+        <div class="p-4 bg-surface-variant rounded">
           <p class="body-2 text-color">Advanced filter menu with input elements</p>
           <p class="body-3 text-color mt-2">
             This example demonstrates how various input elements can be integrated 
@@ -311,7 +312,7 @@ function handleCheckboxToggle(field: string) {
           </Dropdown>
         </div>
         
-        <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded">
+        <div class="p-4 bg-surface-variant rounded">
           <p class="body-2 text-color">Different positioning options</p>
           <p class="body-3 text-color mt-2">
             Dropdown menu can open in four different directions: top, right, bottom, and left.
@@ -339,7 +340,7 @@ function handleCheckboxToggle(field: string) {
           </Dropdown>
         </div>
         
-        <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded">
+        <div class="p-4 bg-surface-variant rounded">
           <p class="body-2 text-color">Dropdown with danger actions</p>
           <p class="body-3 text-color mt-2">
             Dangerous actions are highlighted in red to draw attention.

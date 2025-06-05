@@ -55,7 +55,7 @@ const toggleMobileMenu = function() {
           <a href="#" 
              @click.prevent="handleTabChange(item.id); toggleMobileMenu()" 
              class="block px-4 py-2 text-sm text-color hover:bg-gray-100 dark:hover:bg-gray-600"
-             :class="{ 'bg-gray-100 dark:bg-gray-600': activeTab === item.id }">
+             :class="{ 'bg-primary-hover/10 dark:bg-primary-hover/30': activeTab === item.id }">
             <div class="flex items-center">
               <component :is="item.icon" class="w-5 h-5 mr-2" />
               {{ item.name }}
@@ -74,7 +74,7 @@ const toggleMobileMenu = function() {
             @click="handleTabChange(item.id)"
             class="text-left px-3 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out"
             :class="activeTab === item.id 
-                ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-200' 
+                ? 'bg-primary-hover/10 text-primary dark:bg-primary-hover/30 dark:text-primary' 
                 : 'text-color hover:bg-gray-100 dark:hover:bg-gray-700'"
           >
             <div class="flex items-center">

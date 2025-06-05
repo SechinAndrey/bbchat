@@ -1,0 +1,16 @@
+.theme-indigo {
+  --color-primary-light: #a5b4fc; /* indigo-300 */
+  --color-primary-hover-light: #818cf8; /* indigo-400 */
+  --color-primary-focus-light: #818cf8; /* indigo-400 */
+  --color-primary-active-light: #6366f1; /* indigo-500 */
+
+
+  --color-primary-dark: #818cf8; /* indigo-400 */
+  --color-primary-hover-dark: #6366f1; /* indigo-500 */
+  --color-primary-focus-dark: #6366f1; /* indigo-500 */
+  --color-primary-active-dark: #4f46e5; /* indigo-600 */
+
+
+  --nav-bg-light: #ffffff;
+  --nav-bg-dark: #1f2937; /* gray-800 */
+}

@@ -127,7 +127,7 @@ const handleOpenVoiceCallModal = () => {
         class="ic-btn-ghost-primary w-7 h-7 mr-3"
       >
         <MagnifyingGlassIcon
-          class="w-[1.25rem] h-[1.25rem] text-gray-400 group-hover:text-indigo-300"
+          class="w-[1.25rem] h-[1.25rem] text-gray-400 group-hover:text-primary"
         />
       </IconButton>
 
