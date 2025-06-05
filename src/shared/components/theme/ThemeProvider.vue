@@ -1,6 +1,6 @@
 <script lang="ts">
 export const themeKey = Symbol('theme');
-export type Theme = 'indigo' | 'green';
+export type Theme = 'indigo' | 'board';
 </script>
 
 <script setup lang="ts">
@@ -18,7 +18,7 @@ const setTheme = (theme: Theme) => {
 };
 
 const applyTheme = (theme: Theme) => {
-  document.documentElement.classList.remove('theme-indigo', 'theme-green');
+  document.documentElement.classList.remove('theme-indigo', 'theme-board');
   document.documentElement.classList.add(`theme-${theme}`);
 };
 

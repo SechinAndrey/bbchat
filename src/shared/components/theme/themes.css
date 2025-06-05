@@ -3,7 +3,7 @@
 
 
 @import "./indigo-theme.css";
-@import "./green-theme.css";
+@import "./board-theme.css";
 
 :root {
   --nav-bg: var(--nav-bg-light);

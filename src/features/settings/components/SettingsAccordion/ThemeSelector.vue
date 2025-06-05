@@ -44,24 +44,24 @@ const { currentTheme, setTheme } = useTheme();
       <div 
         class="theme-option flex-1 cursor-pointer p-3 rounded-xl border-2 transition-all duration-300 relative overflow-hidden"
         :class="{
-          'border-primary bg-primary bg-opacity-10': currentTheme.value === 'green',
-          'border-neutral-200 hover:border-primary hover:bg-primary hover:bg-opacity-5': currentTheme.value !== 'green'
+          'border-primary bg-primary bg-opacity-10': currentTheme.value === 'board',
+          'border-neutral-200 hover:border-primary hover:bg-primary hover:bg-opacity-5': currentTheme.value !== 'board'
         }"
-        @click="setTheme('green')"
+        @click="setTheme('board')"
       >
         <div class="absolute inset-0 opacity-10">
-          <div class="w-full h-full gradient-green"></div>
+          <div class="w-full h-full gradient-board"></div>
         </div>
         
         <div class="relative z-10 flex items-center justify-center flex-col">
           <div class="w-8 h-8 rounded-full mb-2 border-2 border-white shadow-sm overflow-hidden">
-            <div class="w-full h-full gradient-green"></div>
+            <div class="w-full h-full gradient-board"></div>
           </div>
           
-          <span class="body-3 text-color font-medium">Зеленая</span>
+          <span class="body-3 text-color font-medium">Доска</span>
           
           <div 
-            v-if="currentTheme.value === 'green'"
+            v-if="currentTheme.value === 'board'"
             class="absolute top-2 right-2 w-4 h-4 bg-primary rounded-full flex items-center justify-center"
           >
             <CheckIcon class="w-2.5 h-2.5 text-white" />
@@ -101,7 +101,7 @@ const { currentTheme, setTheme } = useTheme();
   background: linear-gradient(135deg, #a5b4fc 0%, #818cf8 50%, #6366f1 100%);
 }
 
-.gradient-green {
+.gradient-board {
   background: linear-gradient(135deg, #86efac 0%, #4ade80 50%, #22c55e 100%);
 }
 
