@@ -8,8 +8,8 @@ import type {
   ApiMessage,
   ApiMessageFile,
   ApiNotification,
-  ApiCall
-} from '@src/api/types';
+  ApiCall,
+} from "@src/api/types";
 
 // User mock
 export const userMock: ApiUser = {
@@ -28,7 +28,7 @@ export const userMock: ApiUser = {
   settings: { locale: "ru" },
   folder_id: "folder-ivan-101",
   created_at: "2024-01-01T10:00:00.000Z",
-  updated_at: "2025-04-16T09:00:00.000Z"
+  updated_at: "2025-04-16T09:00:00.000Z",
 };
 
 // Message files mock
@@ -41,7 +41,7 @@ const messageFilesMock: ApiMessageFile[] = [
     /* BACKEND: size - file size */
     size: "2.1 MB",
     /* BACKEND: thumbnail - video preview */
-    thumbnail: "https://random.imagecdn.app/100/75"
+    thumbnail: "https://random.imagecdn.app/100/75",
   },
   {
     name: "presentation.pdf",
@@ -49,7 +49,7 @@ const messageFilesMock: ApiMessageFile[] = [
     type: "pdf",
     audio: false,
     /* BACKEND: size - file size */
-    size: "0.5 MB"
+    size: "0.5 MB",
   },
   {
     name: "voice-message.mp3",
@@ -57,8 +57,8 @@ const messageFilesMock: ApiMessageFile[] = [
     type: "mp3",
     audio: true,
     /* BACKEND: size - file size */
-    size: "1.2 MB"
-  }
+    size: "1.2 MB",
+  },
 ];
 
 // Messages mock
@@ -73,7 +73,7 @@ export const messagesMock: ApiMessage[] = [
     timestamp: "09:00",
     files: [],
     /* BACKEND: state - message status */
-    state: "read"
+    state: "read",
   },
   {
     _id: 2,
@@ -85,7 +85,7 @@ export const messagesMock: ApiMessage[] = [
     timestamp: "09:01",
     files: [messageFilesMock[0]],
     /* BACKEND: state - message status */
-    state: "read"
+    state: "read",
   },
   {
     _id: 3,
@@ -103,8 +103,8 @@ export const messagesMock: ApiMessage[] = [
       title: "Dummy PDF",
       description: "Тестовый PDF-файл для проверки.",
       domain: "w3.org",
-      link: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"
-    }
+      link: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+    },
   },
   {
     _id: 4,
@@ -116,7 +116,7 @@ export const messagesMock: ApiMessage[] = [
     timestamp: "10:17",
     files: [],
     /* BACKEND: state - message status */
-    state: "read"
+    state: "read",
   },
   {
     _id: 5,
@@ -128,8 +128,8 @@ export const messagesMock: ApiMessage[] = [
     timestamp: "11:00",
     files: [messageFilesMock[2]],
     /* BACKEND: state - message status */
-    state: "sent"
-  }
+    state: "sent",
+  },
 ];
 
 // Rooms mock
@@ -143,19 +143,19 @@ export const roomsMock: ApiRoom[] = [
     users: [
       {
         _id: "user_101",
-        username: "Иван Петров"
+        username: "Иван Петров",
       },
       {
         _id: "user_102",
-        username: "Мария Смирнова"
-      }
+        username: "Мария Смирнова",
+      },
     ],
     /* BACKEND: unread - number of unread messages */
     unread: 0,
     /* BACKEND: type - room type */
     type: "couple",
     /* BACKEND: lastActivity - last activity time */
-    lastActivity: "16.04.2025 09:01"
+    lastActivity: "16.04.2025 09:01",
   },
   {
     roomId: 2,
@@ -166,19 +166,19 @@ export const roomsMock: ApiRoom[] = [
     users: [
       {
         _id: "user_101",
-        username: "Иван Петров"
+        username: "Иван Петров",
       },
       {
         _id: "user_103",
-        username: "Алексей Кузнецов"
-      }
+        username: "Алексей Кузнецов",
+      },
     ],
     /* BACKEND: unread - number of unread messages */
     unread: 1,
     /* BACKEND: type - room type */
     type: "couple",
     /* BACKEND: lastActivity - last activity time */
-    lastActivity: "16.04.2025 10:17"
+    lastActivity: "16.04.2025 10:17",
   },
   {
     roomId: 3,
@@ -189,31 +189,31 @@ export const roomsMock: ApiRoom[] = [
     users: [
       {
         _id: "user_101",
-        username: "Иван Петров"
+        username: "Иван Петров",
       },
       {
         _id: "user_104",
-        username: "Ольга Иванова"
+        username: "Ольга Иванова",
       },
       {
         _id: "user_105",
-        username: "Дмитрий Орлов"
-      }
+        username: "Дмитрий Орлов",
+      },
     ],
     /* BACKEND: unread - number of unread messages */
     unread: 2,
     /* BACKEND: type - room type */
     type: "group",
     /* BACKEND: lastActivity - last activity time */
-    lastActivity: "16.04.2025 11:00"
-  }
+    lastActivity: "16.04.2025 11:00",
+  },
 ];
 
 // Messengers mock
 export const messengersMock = {
   telegram: 1,
   viber: 2,
-  whatsapp: 3
+  whatsapp: 3,
 };
 
 // Contacts for calls and other functions
@@ -224,7 +224,7 @@ const contactsMock = [
     lastName: "Петров",
     email: "ivan.petrov@example.com",
     avatar: "https://randomuser.me/api/portraits/men/32.jpg",
-    lastSeen: new Date()
+    lastSeen: new Date(),
   },
   {
     id: 102,
@@ -232,7 +232,7 @@ const contactsMock = [
     lastName: "Смирнова",
     email: "maria@example.com",
     avatar: "https://randomuser.me/api/portraits/women/44.jpg",
-    lastSeen: new Date()
+    lastSeen: new Date(),
   },
   {
     id: 103,
@@ -240,7 +240,7 @@ const contactsMock = [
     lastName: "Кузнецов",
     email: "aleksey@example.com",
     avatar: "https://randomuser.me/api/portraits/men/45.jpg",
-    lastSeen: new Date()
+    lastSeen: new Date(),
   },
   {
     id: 104,
@@ -248,7 +248,7 @@ const contactsMock = [
     lastName: "Иванова",
     email: "olga@example.com",
     avatar: "https://randomuser.me/api/portraits/women/65.jpg",
-    lastSeen: new Date()
+    lastSeen: new Date(),
   },
   {
     id: 105,
@@ -256,8 +256,8 @@ const contactsMock = [
     lastName: "Орлов",
     email: "dmitry@example.com",
     avatar: "https://randomuser.me/api/portraits/men/22.jpg",
-    lastSeen: new Date()
-  }
+    lastSeen: new Date(),
+  },
 ];
 
 // Mock for calls (call history)
@@ -269,7 +269,7 @@ export const callsMock: ApiCall[] = [
     date: "15.04.2025",
     length: "00:00",
     members: [contactsMock[0], contactsMock[1]],
-    adminIds: [101]
+    adminIds: [101],
   },
   {
     type: "voice",
@@ -278,7 +278,7 @@ export const callsMock: ApiCall[] = [
     date: "14.04.2025",
     length: "02:45",
     members: [contactsMock[0], contactsMock[2]],
-    adminIds: [101]
+    adminIds: [101],
   },
   {
     type: "voice",
@@ -287,8 +287,8 @@ export const callsMock: ApiCall[] = [
     date: "13.04.2025",
     length: "05:12",
     members: [contactsMock[0], contactsMock[3], contactsMock[4]],
-    adminIds: [104]
-  }
+    adminIds: [104],
+  },
 ];
 
 // Mock for activeCall (current active call)
@@ -299,7 +299,7 @@ export const activeCallMock: ApiCall = {
   date: "16.04.2025",
   length: "00:00",
   members: [contactsMock[0], contactsMock[1]],
-  adminIds: [101]
+  adminIds: [101],
 };
 
 // Mock for notifications
@@ -307,18 +307,18 @@ export const notificationsMock: ApiNotification[] = [
   {
     flag: "security",
     title: "Недавний вход",
-    message: "Был выполнен вход в ваш аккаунт с нового устройства"
+    message: "Был выполнен вход в ваш аккаунт с нового устройства",
   },
   {
     flag: "added-to-group",
     title: "Новая группа",
-    message: "Вас добавили в новую группу"
+    message: "Вас добавили в новую группу",
   },
   {
     flag: "account-update",
     title: "Сброс пароля",
-    message: "Ваш пароль был успешно сброшен"
-  }
+    message: "Ваш пароль был успешно сброшен",
+  },
 ];
 
 // Mock for archived conversations
@@ -333,7 +333,7 @@ export const defaultSettingsMock = {
   darkMode: false,
   borderedTheme: false,
   allowNotifications: true,
-  keepNotifications: false
+  keepNotifications: false,
 };
 
 export default {
@@ -352,6 +352,6 @@ export default {
     messengers: messengersMock,
     notifications: notificationsMock,
     calls: callsMock,
-    activeCall: activeCallMock
-  }
+    activeCall: activeCallMock,
+  },
 };

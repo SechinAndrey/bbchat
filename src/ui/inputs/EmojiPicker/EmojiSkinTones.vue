@@ -67,18 +67,18 @@ const handleChangeSkinTone = (tone: string) => {
 
 <style scoped>
 .skin-tone-dark {
-  background-color: #60463A;
+  background-color: #60463a;
 }
 .skin-tone-medium-dark {
-  background-color: #A86637;
+  background-color: #a86637;
 }
 .skin-tone-medium {
-  background-color: #C88E62;
+  background-color: #c88e62;
 }
 .skin-tone-medium-light {
-  background-color: #FFDFBD;
+  background-color: #ffdfbd;
 }
 .skin-tone-light {
-  background-color: #FFD225;
+  background-color: #ffd225;
 }
 </style>

@@ -41,7 +41,10 @@ const appInitializing = ref(true);
 const initError = ref<string | null>(null);
 
 const isAppReady = computed(() => {
-  return !appInitializing.value && (!authStore.isAuthenticated || store.status === 'success');
+  return (
+    !appInitializing.value &&
+    (!authStore.isAuthenticated || store.status === "success")
+  );
 });
 
 const handleReload = () => {
@@ -56,7 +59,7 @@ store.$subscribe((_mutation, state) => {
 onMounted(async () => {
   try {
     appInitializing.value = true;
-  
+
     authStore.init();
 
     if (authStore.isAuthenticated) {
@@ -98,31 +101,54 @@ onUnmounted(() => {
       class="bg-theme-bg transition-colors duration-500"
       :style="{ height: height }"
     >
-      <div v-if="appInitializing || (authStore.isAuthenticated && store.status === 'loading')" 
-           class="flex justify-center items-center h-full">
+      <div
+        v-if="
+          appInitializing ||
+          (authStore.isAuthenticated && store.status === 'loading')
+        "
+        class="flex justify-center items-center h-full"
+      >
         <div class="text-center">
           <div class="spinner-border text-primary mb-3" role="status">
-            <div class="w-12 h-12 rounded-full border-4 border-primary border-t-transparent animate-spin"></div>
+            <div
+              class="w-12 h-12 rounded-full border-4 border-primary border-t-transparent animate-spin"
+            ></div>
           </div>
           <p class="text-gray-600 dark:text-gray-400">Загрузка приложения...</p>
         </div>
       </div>
-      
-      <div v-else-if="initError" class="flex justify-center items-center h-full">
+
+      <div
+        v-else-if="initError"
+        class="flex justify-center items-center h-full"
+      >
         <div class="text-center">
           <div class="text-danger mb-3">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-12 w-12 mx-auto"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+              />
             </svg>
           </div>
           <p class="text-danger dark:text-danger">{{ initError }}</p>
-          <button @click="handleReload" 
-                  class="mt-4 px-4 py-2 bg-primary text-white rounded hover:bg-primary-hover transition">
+          <button
+            @click="handleReload"
+            class="mt-4 px-4 py-2 bg-primary text-white rounded hover:bg-primary-hover transition"
+          >
             Попробовать снова
           </button>
         </div>
       </div>
-      
+
       <router-view v-else v-slot="{ Component }">
         <FadeTransition>
           <component :is="Component" />

@@ -27,37 +27,39 @@ const TAB = {
   closed: "closed",
   all: "all",
 } as const;
-type TabName = typeof TAB[keyof typeof TAB];
+type TabName = (typeof TAB)[keyof typeof TAB];
 const activeTab = ref<TabName>(TAB.open);
-const TAB_ORDER: (typeof TAB)[keyof typeof TAB][] = [TAB.open, TAB.closed, TAB.all];
+const TAB_ORDER: (typeof TAB)[keyof typeof TAB][] = [
+  TAB.open,
+  TAB.closed,
+  TAB.all,
+];
 
 // slide animation
 const SLIDE = {
   left: "slide-left",
-  right: "slide-right",  
+  right: "slide-right",
 } as const;
 
-type SlideType = typeof SLIDE[keyof typeof SLIDE];
+type SlideType = (typeof SLIDE)[keyof typeof SLIDE];
 const animation = ref<SlideType>(SLIDE.right);
 
-
 watch(activeTab, (newTab, oldTab) => {
-  const directionMap: Record<string, 'LEFT' | 'RIGHT'> = {
-    'open->closed': 'LEFT',
-    'closed->all': 'LEFT',
-    'open->all': 'LEFT',
+  const directionMap: Record<string, "LEFT" | "RIGHT"> = {
+    "open->closed": "LEFT",
+    "closed->all": "LEFT",
+    "open->all": "LEFT",
 
-    'all->closed': 'RIGHT',
-    'closed->open': 'RIGHT',
-    'all->open': 'RIGHT',
+    "all->closed": "RIGHT",
+    "closed->open": "RIGHT",
+    "all->open": "RIGHT",
   };
 
   const key = `${oldTab}->${newTab}`;
-  const direction = directionMap[key] ?? 'LEFT'; // fallback
+  const direction = directionMap[key] ?? "LEFT"; // fallback
 
-  animation.value = direction === 'LEFT' ? SLIDE.left : SLIDE.right;
+  animation.value = direction === "LEFT" ? SLIDE.left : SLIDE.right;
 });
-
 
 const store = useStore();
 
@@ -71,31 +73,26 @@ const openArchive = ref(false);
 // the filtered list of conversations.
 const filteredConversations: Ref<IConversation[]> = ref(store.conversations);
 
-
 // filter the list of conversation based on search text.
 watch([keyword, openArchive], () => {
   if (openArchive.value) {
     // search conversations
     filteredConversations.value =
-      store.archivedConversations?.filter(
-        (conversation) =>
-          getName(conversation)
-            ?.toLowerCase()
-            .includes(keyword.value.toLowerCase()),
+      store.archivedConversations?.filter((conversation) =>
+        getName(conversation)
+          ?.toLowerCase()
+          .includes(keyword.value.toLowerCase()),
       ) || [];
   } else {
     // search archived conversations
     filteredConversations.value =
-      store.conversations?.filter(
-        (conversation) =>
-          getName(conversation)
-            ?.toLowerCase()
-            .includes(keyword.value.toLowerCase()),
+      store.conversations?.filter((conversation) =>
+        getName(conversation)
+          ?.toLowerCase()
+          .includes(keyword.value.toLowerCase()),
       ) || [];
   }
 });
-
-
 
 // (event) close the compose modal.
 const closeComposeModal = () => {
@@ -148,7 +145,6 @@ onMounted(() => {
         @click="activeTab = TAB.all"
       />
     </Tabs>
-
 
     <!--search bar-->
     <div class="px-5 xs:pb-6 md:pb-5">
@@ -204,7 +200,6 @@ onMounted(() => {
         </div>
       </div>
 
-
       <div
         role="list"
         aria-label="conversations"
@@ -212,10 +207,7 @@ onMounted(() => {
         style="overflow-x: visible; overflow-y: scroll"
         v-if="activeTab === TAB.closed"
       >
-        <Circle2Lines
-          v-for="item in 6"
-        />
-
+        <Circle2Lines v-for="item in 6" />
       </div>
 
       <div

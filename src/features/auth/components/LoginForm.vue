@@ -131,10 +131,7 @@ const handleLogin = async () => {
         <div class="flex justify-center">
           <p class="body-2 text-color">
             Don't have an account?
-            <RouterLink
-              to="/access/sign-up/"
-              class="text-primary opacity-100"
-            >
+            <RouterLink to="/access/sign-up/" class="text-primary opacity-100">
               Sign up
             </RouterLink>
           </p>

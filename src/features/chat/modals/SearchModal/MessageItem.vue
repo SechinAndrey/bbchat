@@ -27,15 +27,13 @@ const props = defineProps<{
           {{ getFullName(props.message.sender) }}
         </p>
 
-        <p class="body-2 text-color"> Wow really cool </p>
+        <p class="body-2 text-color">Wow really cool</p>
       </div>
     </div>
 
     <!--message date-->
     <div>
-      <p class="body-4 text-color ">
-         1/5/2019
-      </p>
+      <p class="body-4 text-color">1/5/2019</p>
     </div>
   </button>
 </template>

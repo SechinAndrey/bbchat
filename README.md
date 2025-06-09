@@ -74,6 +74,7 @@ npm run build
 ```
 
 This will:
+
 - Create a new versioned release (e.g., `1-20230701`)
 - Copy files from the `dist` directory to the release folder
 - Update the symbolic link to point to the new version

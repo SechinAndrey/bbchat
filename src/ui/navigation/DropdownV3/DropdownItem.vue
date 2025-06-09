@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed } from "vue";
 
 interface Props {
   active?: boolean;
@@ -14,43 +14,45 @@ const props = withDefaults(defineProps<Props>(), {
   active: false,
   disabled: false,
   danger: false,
-  value: undefined
+  value: undefined,
 });
 
-const emit = defineEmits(['click']);
+const emit = defineEmits(["click"]);
 
 const itemClasses = computed(() => [
-  'dropdown-link',
-  props.danger ? 'dropdown-link-danger' : 'dropdown-link-primary',
-  { 
-    'opacity-50 cursor-not-allowed': props.disabled,
-    'bg-gray-100 dark:bg-gray-600': props.active
-  }
+  "dropdown-link",
+  props.danger ? "dropdown-link-danger" : "dropdown-link-primary",
+  {
+    "opacity-50 cursor-not-allowed": props.disabled,
+    "bg-gray-100 dark:bg-gray-600": props.active,
+  },
 ]);
 
 function handleClick(event: MouseEvent) {
   if (props.disabled) return;
-  
+
   if (props.handleClick) {
     props.handleClick();
   }
-  
-  emit('click', {
+
+  emit("click", {
     event,
-    value: props.value
+    value: props.value,
   });
-  
+
   // Send click event to parent component
   const parentEl = event.currentTarget as HTMLElement;
-  parentEl.dispatchEvent(new CustomEvent('dropdown-item-click', {
-    bubbles: true,
-    detail: { value: props.value }
-  }));
+  parentEl.dispatchEvent(
+    new CustomEvent("dropdown-item-click", {
+      bubbles: true,
+      detail: { value: props.value },
+    }),
+  );
 }
 </script>
 
 <template>
-  <button 
+  <button
     :class="itemClasses"
     @click="handleClick"
     role="menuitem"
@@ -89,11 +91,11 @@ function handleClick(event: MouseEvent) {
   .dropdown-item {
     color: #e2e8f0;
   }
-  
+
   .dropdown-item:hover:not(.dropdown-item-disabled) {
     background-color: #4a5568;
   }
-  
+
   .dropdown-item-active {
     background-color: #2c5282;
     color: #90cdf4;

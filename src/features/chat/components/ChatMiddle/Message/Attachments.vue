@@ -222,11 +222,7 @@ const isNumber = (
             >
               <ArrowDownTrayIcon
                 class="stroke-2 h-5 w-5"
-                :class="
-                  props.self
-                    ? ['text-white']
-                    : ['text-secondary']
-                "
+                :class="props.self ? ['text-white'] : ['text-secondary']"
               />
             </button>
 

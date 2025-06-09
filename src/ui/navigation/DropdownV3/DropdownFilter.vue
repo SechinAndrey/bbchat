@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { defineEmits } from 'vue';
+import { defineEmits } from "vue";
 
-const emit = defineEmits(['apply', 'reset']);
+const emit = defineEmits(["apply", "reset"]);
 
 function handleApply() {
-  emit('apply');
+  emit("apply");
 }
 
 function handleReset() {
-  emit('reset');
+  emit("reset");
 }
 </script>
 
@@ -17,7 +17,7 @@ function handleReset() {
     <div class="dropdown-filter-content">
       <slot></slot>
     </div>
-    
+
     <div class="dropdown-filter-actions">
       <slot name="actions">
         <button class="filter-button reset-button" @click="handleReset">
@@ -82,12 +82,12 @@ function handleReset() {
   .dropdown-filter-actions {
     border-top-color: #4a5568;
   }
-  
+
   .reset-button {
     color: #e2e8f0;
     border-color: #4a5568;
   }
-  
+
   .reset-button:hover {
     background-color: #4a5568;
   }

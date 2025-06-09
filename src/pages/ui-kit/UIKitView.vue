@@ -14,11 +14,9 @@ import TransitionsTab from "./components/TransitionsTab.vue";
 import ModalsTab from "./components/ModalsTab.vue";
 import DropdownTab from "./components/DropdownTab.vue";
 
-
 const activeTab = ref("inputs");
 
-
-const handleTabChange = function(tabId: string): void {
+const handleTabChange = function (tabId: string): void {
   activeTab.value = tabId;
 };
 
@@ -29,7 +27,7 @@ const tabComponents: Record<string, Component> = {
   states: StatesTab,
   transitions: TransitionsTab,
   modals: ModalsTab,
-  dropdown: DropdownTab
+  dropdown: DropdownTab,
 };
 </script>
 
@@ -37,10 +35,11 @@ const tabComponents: Record<string, Component> = {
   <div class="w-full min-h-screen bg-white dark:bg-gray-800">
     <div class="flex flex-col md:flex-row">
       <!-- Sidebar navigation (hidden on mobile, replaced with dropdown) -->
-      <div class="md:w-64 md:sticky md:top-0 md:h-screen md:overflow-y-auto p-6">
+      <div
+        class="md:w-64 md:sticky md:top-0 md:h-screen md:overflow-y-auto p-6"
+      >
         <UIKitSidebar :active-tab="activeTab" @tab-change="handleTabChange" />
       </div>
-      
 
       <div class="flex-1 p-6 md:p-8">
         <component :is="tabComponents[activeTab]" />

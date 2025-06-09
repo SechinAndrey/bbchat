@@ -19,7 +19,7 @@ const isConversationLoading = ref(false);
 const activeConversation = computed(() => {
   const conversationId = getActiveConversationId();
   if (!conversationId) return undefined;
-  
+
   let conversation = store.conversations.find(
     (conversation) => conversation.id === conversationId,
   );
@@ -30,15 +30,19 @@ const activeConversation = computed(() => {
       (conversation) => conversation.id === conversationId,
     );
   }
-  
+
   return conversation;
 });
 
-watch(activeConversation, (newConversation) => {
-  if (newConversation) {
-    provide("activeConversation", newConversation);
-  }
-}, { immediate: true });
+watch(
+  activeConversation,
+  (newConversation) => {
+    if (newConversation) {
+      provide("activeConversation", newConversation);
+    }
+  },
+  { immediate: true },
+);
 
 // determines whether select mode is enabled.
 const selectMode = ref(false);
@@ -103,7 +107,11 @@ const handleCloseSelect = () => {
 </script>
 
 <template>
-  <Spinner v-if="store.status === 'loading' || store.delayLoading || isConversationLoading" />
+  <Spinner
+    v-if="
+      store.status === 'loading' || store.delayLoading || isConversationLoading
+    "
+  />
 
   <div
     v-else-if="getActiveConversationId() && activeConversation"

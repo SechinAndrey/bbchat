@@ -59,7 +59,7 @@ export const getAvatar = (conversation: IConversation) => {
  * @param conversation
  * @returns String
  */
-export const getName = (conversation: IConversation , hyphen?: boolean) => {
+export const getName = (conversation: IConversation, hyphen?: boolean) => {
   if (["group", "broadcast"].includes(conversation.type)) {
     if (hyphen) {
       return (conversation.name as string).split(" ").join("-");
@@ -125,7 +125,7 @@ export const getActiveConversationId = () => {
     }
     return undefined;
   } catch (error) {
-    console.error('Error in getActiveConversationId:', error);
+    console.error("Error in getActiveConversationId:", error);
     return undefined;
   }
 };
@@ -136,7 +136,7 @@ export const getActiveConversationId = () => {
  * @returns A number indicating the index of the conversation.
  */
 export const getConversationIndex = (
-  conversationId: number
+  conversationId: number,
 ): number | undefined => {
   let conversationIndex;
   const store = useStore();
@@ -181,7 +181,7 @@ export const getOtherMembers = (call: ICall) => {
 export const getCallName = (
   call: ICall,
   full?: boolean,
-  maxLength: number = 20
+  maxLength: number = 20,
 ) => {
   let members = getOtherMembers(call);
   let callName: string = "";
@@ -203,7 +203,7 @@ export const getCallName = (
 
 export const getMessageById = (
   conversation: IConversation,
-  messageId?: number
+  messageId?: number,
 ) => {
   if (messageId) {
     return conversation.messages.find((message) => message.id === messageId);

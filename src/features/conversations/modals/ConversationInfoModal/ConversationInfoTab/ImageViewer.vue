@@ -42,7 +42,7 @@ const props = defineProps<{
             <div
               class="w-full h-full px-5 flex items-center justify-center basis[90%]"
             >
-              <img :src="(props.imageUrl as string)" alt="avatar" />
+              <img :src="props.imageUrl as string" alt="avatar" />
             </div>
           </div>
         </div>

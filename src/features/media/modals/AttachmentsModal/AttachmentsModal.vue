@@ -1,15 +1,21 @@
 <script setup lang="ts">
 import mockData from "@src/shared/store/real-api-example";
 const attachments = mockData.apiData.messages
-  .filter(msg => msg.files.length > 0)
-  .map((msg, index) => msg.files.map((file, fileIndex) => ({
-    id: index * 100 + fileIndex,
-    type: file.audio ? 'audio' : file.type.match(/mp4|avi|mov/i) ? 'video' : 'image',
-    name: file.name,
-    size: file.size || '0 MB',
-    url: file.url,
-    thumbnail: file.thumbnail || file.url
-  })))
+  .filter((msg) => msg.files.length > 0)
+  .map((msg, index) =>
+    msg.files.map((file, fileIndex) => ({
+      id: index * 100 + fileIndex,
+      type: file.audio
+        ? "audio"
+        : file.type.match(/mp4|avi|mov/i)
+          ? "video"
+          : "image",
+      name: file.name,
+      size: file.size || "0 MB",
+      url: file.url,
+      thumbnail: file.thumbnail || file.url,
+    })),
+  )
   .flat();
 
 import Attachment from "@src/features/media/modals/AttachmentsModal/Attachment.vue";

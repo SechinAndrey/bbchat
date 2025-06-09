@@ -30,7 +30,7 @@ const store = useStore();
 
   <Collapse id="appearance-settings-collapse" :collapsed="props.collapsed">
     <ThemeSelector />
-    
+
     <SettingsSwitch
       title="Dark Mode"
       description="Apply a theme with dark colors"

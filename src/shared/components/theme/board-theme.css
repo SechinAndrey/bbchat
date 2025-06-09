@@ -4,16 +4,14 @@
   --color-primary-focus-light: #818cf8; /* indigo-400 */
   --color-primary-active-light: #6366f1; /* indigo-500 */
 
-
   --color-primary-dark: #818cf8; /* indigo-400 */
   --color-primary-hover-dark: #6366f1; /* indigo-500 */
   --color-primary-focus-dark: #6366f1; /* indigo-500 */
   --color-primary-active-dark: #4f46e5; /* indigo-600 */
 
+  --nav-bg-light: #3d445c;
+  --nav-bg-dark: #3d445c;
 
-  --nav-bg-light: #3D445C;
-  --nav-bg-dark: #3D445C;
-
-  --color-neutral-light: #FFFFFF1A;
-  --color-neutral-dark: #FFFFFF1A;
+  --color-neutral-light: #ffffff1a;
+  --color-neutral-dark: #ffffff1a;
 }

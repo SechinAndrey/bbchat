@@ -15,11 +15,11 @@ const accordionCollapsed = ref(false);
 const carouselOpen = ref(false);
 const carouselStartingId = ref(1);
 
-const toggleAccordion = function() {
+const toggleAccordion = function () {
   accordionCollapsed.value = !accordionCollapsed.value;
 };
 
-const toggleCarousel = function() {
+const toggleCarousel = function () {
   carouselOpen.value = !carouselOpen.value;
 };
 
@@ -28,22 +28,22 @@ const demoAttachments = [
     id: 1,
     type: "image",
     url: "https://picsum.photos/800/600",
-    name: "Sample Image 1"
+    name: "Sample Image 1",
   },
   {
     id: 2,
     type: "image",
     url: "https://picsum.photos/800/601",
-    name: "Sample Image 2"
-  }
+    name: "Sample Image 2",
+  },
 ];
 
 provide("activeConversation", {
   messages: [
     {
-      attachments: demoAttachments
-    }
-  ]
+      attachments: demoAttachments,
+    },
+  ],
 });
 </script>
 
@@ -60,11 +60,19 @@ provide("activeConversation", {
           chevron
           @click="toggleAccordion"
         >
-          <span class="body-2 text-color">Click to {{ accordionCollapsed ? 'expand' : 'collapse' }}</span>
+          <span class="body-2 text-color"
+            >Click to {{ accordionCollapsed ? "expand" : "collapse" }}</span
+          >
         </AccordionButton>
-        <div v-if="!accordionCollapsed" class="mt-4 p-4 bg-gray-50 dark:bg-gray-700 rounded">
+        <div
+          v-if="!accordionCollapsed"
+          class="mt-4 p-4 bg-gray-50 dark:bg-gray-700 rounded"
+        >
           <p class="body-2 text-color">Accordion content</p>
-          <p class="body-3 text-color mt-2">This is hidden content that can be revealed by clicking the accordion header.</p>
+          <p class="body-3 text-color mt-2">
+            This is hidden content that can be revealed by clicking the
+            accordion header.
+          </p>
         </div>
       </div>
     </section>
@@ -82,8 +90,13 @@ provide("activeConversation", {
           />
         </div>
         <div class="mt-4 p-4 bg-gray-50 dark:bg-gray-700 rounded">
-          <p class="body-2 text-color">Custom video player with playback controls</p>
-          <p class="body-3 text-color mt-2">Features include play/pause, volume control, progress bar, and fullscreen toggle</p>
+          <p class="body-2 text-color">
+            Custom video player with playback controls
+          </p>
+          <p class="body-3 text-color mt-2">
+            Features include play/pause, volume control, progress bar, and
+            fullscreen toggle
+          </p>
         </div>
       </div>
     </section>
@@ -110,13 +123,20 @@ provide("activeConversation", {
       <h3 class="heading-2 text-color mb-4">Media Carousel</h3>
       <div class="p-4 border rounded dark:border-gray-600">
         <div class="flex justify-center mb-4">
-          <Button class="contained-primary contained-text" @click="toggleCarousel">
+          <Button
+            class="contained-primary contained-text"
+            @click="toggleCarousel"
+          >
             Open Image Carousel
           </Button>
         </div>
         <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded">
           <p class="body-2 text-color">Media Carousel</p>
-          <p class="body-3 text-color mt-2">A fullscreen carousel for displaying images and videos. Features include zoom control, navigation between items, and keyboard shortcuts.</p>
+          <p class="body-3 text-color mt-2">
+            A fullscreen carousel for displaying images and videos. Features
+            include zoom control, navigation between items, and keyboard
+            shortcuts.
+          </p>
           <div class="mt-2">
             <h5 class="body-3 font-medium text-color">Keyboard Controls:</h5>
             <ul class="list-disc pl-5 body-3 text-color">
@@ -147,7 +167,10 @@ provide("activeConversation", {
           />
         </div>
         <div class="mt-2 p-4 bg-gray-50 dark:bg-gray-700 rounded">
-          <p class="body-3 text-color">The Toolbar component provides controls for zooming images and closing the carousel.</p>
+          <p class="body-3 text-color">
+            The Toolbar component provides controls for zooming images and
+            closing the carousel.
+          </p>
         </div>
       </div>
     </section>

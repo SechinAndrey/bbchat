@@ -7,70 +7,74 @@ The `Dropdown` component is a versatile dropdown menu that can be used to displa
 ## Importing Components
 
 ```js
-import { Dropdown, DropdownItem, DropdownFilter } from '@src/ui/navigation/DropdownV3';
+import {
+  Dropdown,
+  DropdownItem,
+  DropdownFilter,
+} from "@src/ui/navigation/DropdownV3";
 ```
 
 ## Dropdown Component
 
 ### Props
 
-| Name | Type | Default | Description |
-|----------|-----|--------------|----------|
-| position | 'top' \| 'bottom' \| 'left' \| 'right' | 'bottom' | Direction in which the dropdown opens |
-| trigger | 'hover' \| 'click' | 'click' | Method to activate the dropdown |
-| closeOnSelect | boolean | true | Whether to close the dropdown when an item is selected |
-| disabled | boolean | false | Disable the dropdown |
+| Name          | Type                                   | Default  | Description                                            |
+| ------------- | -------------------------------------- | -------- | ------------------------------------------------------ |
+| position      | 'top' \| 'bottom' \| 'left' \| 'right' | 'bottom' | Direction in which the dropdown opens                  |
+| trigger       | 'hover' \| 'click'                     | 'click'  | Method to activate the dropdown                        |
+| closeOnSelect | boolean                                | true     | Whether to close the dropdown when an item is selected |
+| disabled      | boolean                                | false    | Disable the dropdown                                   |
 
 ### Events
 
-| Name | Parameters | Description |
-|----------|-----------|----------|
-| open | - | Triggered when the dropdown opens |
-| close | - | Triggered when the dropdown closes |
+| Name  | Parameters | Description                        |
+| ----- | ---------- | ---------------------------------- |
+| open  | -          | Triggered when the dropdown opens  |
+| close | -          | Triggered when the dropdown closes |
 
 ### Slots
 
-| Name | Description |
-|----------|----------|
-| activator | Dropdown activator content. If not specified, the default button is displayed |
-| default | Dropdown content (usually DropdownItem or DropdownFilter components are placed here) |
+| Name      | Description                                                                          |
+| --------- | ------------------------------------------------------------------------------------ |
+| activator | Dropdown activator content. If not specified, the default button is displayed        |
+| default   | Dropdown content (usually DropdownItem or DropdownFilter components are placed here) |
 
 ## DropdownItem Component
 
 ### Props
 
-| Name | Type | Default | Description |
-|----------|-----|--------------|----------|
-| active | boolean | false | Whether the item is active (highlighted) |
-| disabled | boolean | false | Whether the item is disabled |
-| value | any | undefined | Value associated with the item |
+| Name     | Type    | Default   | Description                              |
+| -------- | ------- | --------- | ---------------------------------------- |
+| active   | boolean | false     | Whether the item is active (highlighted) |
+| disabled | boolean | false     | Whether the item is disabled             |
+| value    | any     | undefined | Value associated with the item           |
 
 ### Events
 
-| Name | Parameters | Description |
-|----------|-----------|----------|
+| Name  | Parameters                        | Description                        |
+| ----- | --------------------------------- | ---------------------------------- |
 | click | { event: MouseEvent, value: any } | Triggered when the item is clicked |
 
 ### Slots
 
-| Name | Description |
-|----------|----------|
+| Name    | Description           |
+| ------- | --------------------- |
 | default | Dropdown item content |
 
 ## DropdownFilter Component
 
 ### Events
 
-| Name | Parameters | Description |
-|----------|-----------|----------|
-| apply | - | Triggered when the "Apply" button is clicked |
-| reset | - | Triggered when the "Reset" button is clicked |
+| Name  | Parameters | Description                                  |
+| ----- | ---------- | -------------------------------------------- |
+| apply | -          | Triggered when the "Apply" button is clicked |
+| reset | -          | Triggered when the "Reset" button is clicked |
 
 ### Slots
 
-| Name | Description |
-|----------|----------|
-| default | Main filter content (checkboxes, radio buttons, etc.) |
+| Name    | Description                                                                                                                |
+| ------- | -------------------------------------------------------------------------------------------------------------------------- |
+| default | Main filter content (checkboxes, radio buttons, etc.)                                                                      |
 | actions | Custom actions (buttons) at the bottom of the filter. If not specified, standard "Apply" and "Reset" buttons are displayed |
 
 ## Usage Examples
@@ -93,9 +97,9 @@ import { Dropdown, DropdownItem, DropdownFilter } from '@src/ui/navigation/Dropd
 
 ```vue
 <script setup>
-import { ref } from 'vue';
+import { ref } from "vue";
 
-const selectedOption = ref('option1');
+const selectedOption = ref("option1");
 
 function selectOption(option) {
   selectedOption.value = option;
@@ -107,9 +111,9 @@ function selectOption(option) {
     <template #activator>
       <Button>{{ selectedOption }}</Button>
     </template>
-    
-    <DropdownItem 
-      v-for="option in ['option1', 'option2', 'option3']" 
+
+    <DropdownItem
+      v-for="option in ['option1', 'option2', 'option3']"
       :key="option"
       :active="selectedOption === option"
       :value="option"
@@ -125,22 +129,22 @@ function selectOption(option) {
 
 ```vue
 <script setup>
-import { ref } from 'vue';
+import { ref } from "vue";
 
 const filters = ref({
   category1: false,
-  category2: false
+  category2: false,
 });
 
 function applyFilters() {
   // Filter application logic
-  console.log('Applied filters:', filters.value);
+  console.log("Applied filters:", filters.value);
 }
 
 function resetFilters() {
   filters.value = {
     category1: false,
-    category2: false
+    category2: false,
   };
 }
 </script>
@@ -150,16 +154,16 @@ function resetFilters() {
     <template #activator>
       <Button>Filters</Button>
     </template>
-    
+
     <DropdownFilter @apply="applyFilters" @reset="resetFilters">
       <div class="filter-group">
         <h4>Categories</h4>
         <label>
-          <input type="checkbox" v-model="filters.category1">
+          <input type="checkbox" v-model="filters.category1" />
           Category 1
         </label>
         <label>
-          <input type="checkbox" v-model="filters.category2">
+          <input type="checkbox" v-model="filters.category2" />
           Category 2
         </label>
       </div>

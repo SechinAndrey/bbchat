@@ -19,22 +19,22 @@ import {
   MagnifyingGlassIcon,
   XMarkIcon,
   Cog6ToothIcon,
-  TrashIcon
+  TrashIcon,
 } from "@heroicons/vue/24/outline";
 
 const checkboxValue = ref(false);
 const switchValue = ref(false);
 const sliderValue = ref(50);
 
-const handleCheckboxToggle = function() {
+const handleCheckboxToggle = function () {
   checkboxValue.value = !checkboxValue.value;
 };
 
-const handleSwitchToggle = function(value: boolean) {
+const handleSwitchToggle = function (value: boolean) {
   switchValue.value = value;
 };
 
-const handleSliderChange = function(value: number) {
+const handleSliderChange = function (value: number) {
   sliderValue.value = value;
 };
 </script>
@@ -49,11 +49,15 @@ const handleSliderChange = function(value: number) {
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div class="p-4 border rounded dark:border-gray-600">
           <h4 class="body-2 text-color mb-2">Primary Button</h4>
-          <Button class="contained-primary contained-text">Primary Button</Button>
+          <Button class="contained-primary contained-text"
+            >Primary Button</Button
+          >
         </div>
         <div class="p-4 border rounded dark:border-gray-600">
           <h4 class="body-2 text-color mb-2">Success Button</h4>
-          <Button class="contained-success contained-text">Success Button</Button>
+          <Button class="contained-success contained-text"
+            >Success Button</Button
+          >
         </div>
         <div class="p-4 border rounded dark:border-gray-600">
           <h4 class="body-2 text-color mb-2">Danger Button</h4>
@@ -203,8 +207,14 @@ const handleSliderChange = function(value: number) {
         <div class="p-4 border rounded dark:border-gray-600">
           <h4 class="body-2 text-color mb-2">Checkbox (Interactive)</h4>
           <div class="flex items-center">
-            <Checkbox :value="checkboxValue" :handle-check="handleCheckboxToggle" class="mr-2" />
-            <span class="body-2 text-color">{{ checkboxValue ? 'Checked' : 'Unchecked' }}</span>
+            <Checkbox
+              :value="checkboxValue"
+              :handle-check="handleCheckboxToggle"
+              class="mr-2"
+            />
+            <span class="body-2 text-color">{{
+              checkboxValue ? "Checked" : "Unchecked"
+            }}</span>
           </div>
         </div>
       </div>
@@ -226,8 +236,14 @@ const handleSliderChange = function(value: number) {
         <div class="p-4 border rounded dark:border-gray-600">
           <h4 class="body-2 text-color mb-2">Switch (Interactive)</h4>
           <div class="flex items-center">
-            <SwitchInput :value="switchValue" @switch-clicked="handleSwitchToggle" class="mr-2" />
-            <span class="body-2 text-color">{{ switchValue ? 'On' : 'Off' }}</span>
+            <SwitchInput
+              :value="switchValue"
+              @switch-clicked="handleSwitchToggle"
+              class="mr-2"
+            />
+            <span class="body-2 text-color">{{
+              switchValue ? "On" : "Off"
+            }}</span>
           </div>
         </div>
       </div>
@@ -239,7 +255,10 @@ const handleSliderChange = function(value: number) {
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div class="p-4 border rounded dark:border-gray-600">
           <h4 class="body-2 text-color mb-2">Slider ({{ sliderValue }}%)</h4>
-          <RangeSlider :percentage="sliderValue" @value-changed="handleSliderChange" />
+          <RangeSlider
+            :percentage="sliderValue"
+            @value-changed="handleSliderChange"
+          />
         </div>
         <div class="p-4 border rounded dark:border-gray-600">
           <h4 class="body-2 text-color mb-2">File Upload</h4>

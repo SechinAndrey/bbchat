@@ -16,13 +16,13 @@ const props = defineProps<{
 
 // Используем классы, основанные на переменных темы вместо хардкодных цветов
 const activeClasses = {
-  border: 'border-primary',
-  text: 'text-primary'
+  border: "border-primary",
+  text: "text-primary",
 };
 
 const inactiveClasses = {
-  border: 'border-transparent',
-  text: 'text-gray-500 dark:text-white dark:opacity-60'
+  border: "border-transparent",
+  text: "text-gray-500 dark:text-white dark:opacity-60",
 };
 </script>
 
@@ -82,9 +82,7 @@ const inactiveClasses = {
     <div
       class="pb-[.3125rem] border-b transition-colors duration-200"
       :class="[
-        props.active === 'food'
-          ? activeClasses.border
-          : inactiveClasses.border,
+        props.active === 'food' ? activeClasses.border : inactiveClasses.border,
       ]"
     >
       <IconButton
@@ -95,9 +93,7 @@ const inactiveClasses = {
         <CakeIcon
           class="w-5 h-5 transition-colors duration-200"
           :class="[
-            props.active === 'food'
-              ? activeClasses.text
-              : inactiveClasses.text,
+            props.active === 'food' ? activeClasses.text : inactiveClasses.text,
           ]"
         />
       </IconButton>
