@@ -11,6 +11,9 @@
   --color-primary-active-dark: #4f46e5; /* indigo-600 */
 
 
-  --nav-bg-light: #ffffff;
-  --nav-bg-dark: #1f2937; /* gray-800 */
+  --nav-bg-light: #3D445C;
+  --nav-bg-dark: #3D445C;
+
+  --color-neutral-light: #FFFFFF1A;
+  --color-neutral-dark: #FFFFFF1A;
 }

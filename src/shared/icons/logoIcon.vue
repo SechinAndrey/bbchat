@@ -1,0 +1,7 @@
+<template>
+  <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" fill="none">
+    <path fill="#26C0E6" d="M34 9H16v13h9v7h-1v2h5v-2h-1v-7h6V9Z" />
+    <path fill="#E49813" d="M31 4 8 0v3h2v14l20-3V6h1V4Z" />
+    <path fill="#ED7141" d="M29 13H2v17l13-2v4l-3 1v3l8-2v-2h-1v-4l10-2V13Z" />
+  </svg>
+</template>

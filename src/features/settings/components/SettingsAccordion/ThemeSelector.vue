@@ -58,7 +58,7 @@ const { currentTheme, setTheme } = useTheme();
             <div class="w-full h-full gradient-board"></div>
           </div>
           
-          <span class="body-3 text-color font-medium">Доска</span>
+          <span class="body-3 text-color font-medium">Board</span>
           
           <div 
             v-if="currentTheme.value === 'board'"

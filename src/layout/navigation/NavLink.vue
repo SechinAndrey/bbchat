@@ -12,7 +12,7 @@ const props = defineProps<{
 <template>
   <div class="xs:mb-0 md:mb-6">
     <button
-      class="group relative focus:outline-none"
+      class="group relative block focus:outline-none"
       :title="props.title"
       :aria-label="
         props.notifications

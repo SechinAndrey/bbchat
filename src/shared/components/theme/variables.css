@@ -75,6 +75,9 @@
   
   --bg-surface-variant-light: #f3f4f6; /* gray-100 */
   --bg-surface-variant-dark: #374151; /* gray-700 */
+
+  --cbg-10-light: rgba(255, 255, 255, 0.1);
+  --cbg-10-dark: rgba(31, 41, 55, 0.1);
 }
 
 :root {
@@ -114,6 +117,8 @@
   --bg: var(--bg-light);
   --bg-surface: var(--bg-surface-light);
   --bg-surface-variant: var(--bg-surface-variant-light);
+
+  --cbg-10: var(--cbg-10-light);
 }
 
 .dark {
@@ -153,4 +158,6 @@
   --bg: var(--bg-dark);
   --bg-surface: var(--bg-surface-dark);
   --bg-surface-variant: var(--bg-surface-variant-dark);
+
+  --cbg-10: var(--cbg-10-dark);
 }

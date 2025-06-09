@@ -62,6 +62,9 @@ module.exports = {
           primary: "var(--text-primary)",
           secondary: "var(--text-secondary)",
         },
+        cbg: {
+          10: "var(--cbg-10)",
+        },
       },
 
       spacing: {

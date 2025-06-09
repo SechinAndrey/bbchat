@@ -5,17 +5,16 @@ import useStore from "@src/shared/store/store";
 import { useTheme } from "@src/shared/components/theme/useTheme";
 
 import {
-  BellIcon,
-  ChatBubbleOvalLeftIcon,
   Cog6ToothIcon,
   MoonIcon,
-  PhoneIcon,
   SunIcon,
-  UserIcon,
+  ChatBubbleLeftRightIcon,
+  UsersIcon,
 } from "@heroicons/vue/24/solid";
 import AccountDropdown from "@src/layout/navigation/AccountDropdown.vue";
-import Logo from "@src/layout/navigation/Logo.vue";
+import logoIcon from "@src/shared/icons/logoIcon.vue";
 import NavLink from "@src/layout/navigation/NavLink.vue";
+import NavItem from "@src/layout/navigation/NavItem.vue";
 
 const store = useStore();
 const { toggleDarkMode, isDarkMode } = useTheme();
@@ -30,66 +29,37 @@ const handleActiveSidebarComponentChange = (value: string) => {
 
 <template>
   <div
-    class="xs:w-full md:w-11 md:h-full md:py-7 xs:py-5 px-5 flex xs:flex-row md:flex-col items-center transition-all duration-500 bg-theme-nav"
+    class="xs:w-full md:w-[3.75rem] md:h-full md:py-7 xs:py-5 px-4 flex xs:flex-row md:flex-col items-center transition-all duration-500 bg-theme-nav"
   >
     <!--logo-->
-    <Logo />
+    <logoIcon class="xs:hidden md:block mb-6" />
 
     <!--main navigation-->
-    <div class="grow">
+    <div class="grow w-full">
+      <!--separator-->
+      <hr
+        class="xs:hidden w-full md:block mb-6 border-neutral dark:border-neutral"
+      />
+
       <nav aria-label="Main navigation">
         <ul class="xs:flex md:block xs:justify-between xs:items-center">
-          <!--message button-->
-          <li>
-            <NavLink
-              :icon="ChatBubbleOvalLeftIcon"
-              title="Conversations"
+          <li class="md:mb-4">
+            <NavItem
               @click="() => handleActiveSidebarComponentChange('messages')"
               :active="store.activeSidebarComponent === 'messages'"
-            />
+              textColor="text-white"
+            >
+              <ChatBubbleLeftRightIcon />
+            </NavItem>
           </li>
-
-          <!--contacts list button-->
-          <li>
-            <NavLink
-              :icon="UserIcon"
-              title="Contacts"
+          <li class="md:mb-4">
+            <NavItem
               @click="() => handleActiveSidebarComponentChange('contacts')"
               :active="store.activeSidebarComponent === 'contacts'"
-            />
-          </li>
-
-          <!--dropdown button small screen-->
-          <li>
-            <AccountDropdown
-              id="small-profile-menu"
-              class="xs:block md:hidden"
-              aria-labelledby="small-profile-menu-button"
-              :show-dropdown="showDropdown"
-              :handle-show-dropdown="() => (showDropdown = true)"
-              :handle-close-dropdown="() => (showDropdown = false)"
-            />
-          </li>
-
-          <!--notifications button-->
-          <li class="xs:hidden md:inline">
-            <NavLink
-              :icon="BellIcon"
-              title="Notifications"
-              :notifications="3"
-              @click="() => handleActiveSidebarComponentChange('notifications')"
-              :active="store.activeSidebarComponent === 'notifications'"
-            />
-          </li>
-
-          <!--voice call button-->
-          <li>
-            <NavLink
-              :icon="PhoneIcon"
-              title="Call log"
-              @click="() => handleActiveSidebarComponentChange('phone')"
-              :active="store.activeSidebarComponent === 'phone'"
-            />
+              textColor="text-white"
+            >
+              <UsersIcon />
+            </NavItem>
           </li>
 
           <!--settings button small screen-->
@@ -101,17 +71,30 @@ const handleActiveSidebarComponentChange = (value: string) => {
               :active="store.activeSidebarComponent === 'settings'"
             />
           </li>
+
+          <li>
+            <!--user avatar PC-->
+            <AccountDropdown
+              id="profile-menu"
+              class="xs:flex md:hidden flex w-full"
+              aria-labelledby="profile-menu-button"
+              :show-dropdown="showDropdown"
+              :handle-show-dropdown="() => (showDropdown = true)"
+              :handle-close-dropdown="() => (showDropdown = false)"
+            />
+          </li>
         </ul>
       </nav>
     </div>
 
     <!--secondary navigation-->
-    <div>
+    <div class="md:w-full">
       <nav aria-label="Extra navigation" class="xs:hidden md:block">
         <ul>
           <!--toggle dark mode button-->
           <li>
             <NavLink
+              class="flex justify-center"
               :icon="isDarkMode.value ? SunIcon : MoonIcon"
               title="Night mode"
               @click="toggleDarkMode"
@@ -120,6 +103,7 @@ const handleActiveSidebarComponentChange = (value: string) => {
           <!--settings button-->
           <li>
             <NavLink
+              class="flex justify-center"
               :icon="Cog6ToothIcon"
               title="Settings"
               @click="() => handleActiveSidebarComponentChange('settings')"
@@ -130,14 +114,12 @@ const handleActiveSidebarComponentChange = (value: string) => {
       </nav>
 
       <!--separator-->
-      <hr
-        class="xs:hidden md:block mb-6 border-neutral dark:border-neutral"
-      />
+      <hr class="xs:hidden md:block mb-6 border-neutral dark:border-neutral" />
 
-      <!--user avatar-->
+      <!--user avatar MOBILE-->
       <AccountDropdown
         id="profile-menu"
-        class="xs:hidden md:block"
+        class="xs:hidden md:flex flex w-full"
         aria-labelledby="profile-menu-button"
         :show-dropdown="showDropdown"
         :handle-show-dropdown="() => (showDropdown = true)"

@@ -10,7 +10,11 @@
     "commit": "cz",
     "release": "standard-version",
     "release:preview": "standard-version --dry-run",
-    "release:preview:detailed": "standard-version --dry-run --verbose"
+    "release:preview:detailed": "standard-version --dry-run --verbose",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "eslint . --ext .vue,.js,.ts,.jsx,.tsx",
+    "lint:fix": "eslint . --ext .vue,.js,.ts,.jsx,.tsx --fix"
   },
   "dependencies": {
     "@capacitor/android": "^7.2.0",
