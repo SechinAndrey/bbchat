@@ -7,11 +7,11 @@ const props = defineProps<{
 
 <template>
   <button
-    class="p-4 flex-auto rounded-sm outline-none focus:outline-none transition-all duration-200"
+    class="p-3 flex-1 rounded-sm outline-none focus:outline-none transition-all duration-200"
     :class="
       props.active
         ? ['bg-primary', 'text-white']
-        : ['text-foreground', 'opacity-60']
+        : ['text-theme-text', 'opacity-60']
     "
   >
     <p class="body-5">{{ props.name }}</p>

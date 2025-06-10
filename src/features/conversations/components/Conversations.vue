@@ -24,16 +24,11 @@ import SlideTransition from "@src/ui/transitions/SlideTransition.vue";
 // active tab name
 const TAB = {
   open: "open",
-  closed: "closed",
   all: "all",
 } as const;
 type TabName = (typeof TAB)[keyof typeof TAB];
 const activeTab = ref<TabName>(TAB.open);
-const TAB_ORDER: (typeof TAB)[keyof typeof TAB][] = [
-  TAB.open,
-  TAB.closed,
-  TAB.all,
-];
+const TAB_ORDER: (typeof TAB)[keyof typeof TAB][] = [TAB.open, TAB.all];
 
 // slide animation
 const SLIDE = {
@@ -46,13 +41,8 @@ const animation = ref<SlideType>(SLIDE.right);
 
 watch(activeTab, (newTab, oldTab) => {
   const directionMap: Record<string, "LEFT" | "RIGHT"> = {
-    "open->closed": "LEFT",
-    "closed->all": "LEFT",
-    "open->all": "LEFT",
-
-    "all->closed": "RIGHT",
-    "closed->open": "RIGHT",
-    "all->open": "RIGHT",
+    "all->open": "LEFT",
+    "open->all": "RIGHT",
   };
 
   const key = `${oldTab}->${newTab}`;
@@ -110,7 +100,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div>
+  <div class="bg-theme-conversations">
     <SidebarHeader>
       <!--title-->
       <template v-slot:title>Чаты</template>
@@ -128,26 +118,8 @@ onMounted(() => {
       </template>
     </SidebarHeader>
 
-    <Tabs class="mx-5 xs:mb-6 md:mb-5">
-      <Tab
-        :active="activeTab === TAB.open"
-        name="Открытые"
-        @click="activeTab = TAB.open"
-      />
-      <Tab
-        :active="activeTab === TAB.closed"
-        name="Закрытые"
-        @click="activeTab = TAB.closed"
-      />
-      <Tab
-        :active="activeTab === TAB.all"
-        name="Все"
-        @click="activeTab = TAB.all"
-      />
-    </Tabs>
-
     <!--search bar-->
-    <div class="px-5 xs:pb-6 md:pb-5">
+    <div class="px-5 pb-4">
       <SearchInput
         @value-changed="
           (value) => {
@@ -158,6 +130,19 @@ onMounted(() => {
       />
     </div>
 
+    <Tabs class="mx-5 mb-4">
+      <Tab
+        :active="activeTab === TAB.all"
+        name="Все"
+        @click="activeTab = TAB.all"
+      />
+      <Tab
+        :active="activeTab === TAB.open"
+        name="Открытые"
+        @click="activeTab = TAB.open"
+      />
+    </Tabs>
+
     <!--conversations-->
     <SlideTransition :animation="animation">
       <div
@@ -165,7 +150,7 @@ onMounted(() => {
         aria-label="conversations"
         class="w-full h-full scroll-smooth scrollbar-hidden"
         style="overflow-x: visible; overflow-y: scroll"
-        v-if="activeTab === TAB.open"
+        v-if="activeTab === TAB.all"
       >
         <Circle2Lines
           v-if="store.status === 'loading' || store.delayLoading"
@@ -205,19 +190,39 @@ onMounted(() => {
         aria-label="conversations"
         class="w-full h-full scroll-smooth scrollbar-hidden"
         style="overflow-x: visible; overflow-y: scroll"
-        v-if="activeTab === TAB.closed"
+        v-if="activeTab === TAB.open"
       >
-        <Circle2Lines v-for="item in 6" />
-      </div>
+        <Circle2Lines
+          v-if="store.status === 'loading' || store.delayLoading"
+          v-for="item in 6"
+        />
 
-      <div
-        role="list"
-        aria-label="conversations"
-        class="w-full h-full scroll-smooth scrollbar-hidden"
-        style="overflow-x: visible; overflow-y: scroll"
-        v-if="activeTab === TAB.all"
-      >
-        <NoConversation />
+        <div v-else>
+          <ArchivedButton
+            v-if="store.archivedConversations.length > 0"
+            :open="openArchive"
+            @click="openArchive = !openArchive"
+          />
+
+          <div
+            v-if="
+              store.status === 'success' &&
+              !store.delayLoading &&
+              filteredConversations.length > 0
+            "
+          >
+            <FadeTransition>
+              <ConversationsList
+                :filtered-conversations="filteredConversations"
+                :key="openArchive ? 'archive' : 'active'"
+              />
+            </FadeTransition>
+          </div>
+
+          <div v-else>
+            <NoConversation v-if="store.archivedConversations.length === 0" />
+          </div>
+        </div>
       </div>
     </SlideTransition>
 

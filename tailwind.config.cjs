@@ -54,8 +54,10 @@ module.exports = {
         },
         theme: {
           bg: "var(--bg)",
+          text: "var(--text)",
           surface: "var(--bg-surface)",
           "surface-variant": "var(--bg-surface-variant)",
+          conversations: "var(--bg-conversations)",
           nav: "var(--nav-bg)",
         },
         text: {
@@ -114,12 +116,9 @@ module.exports = {
         "shadow-sm": "0rem .0625rem .1875rem 0rem rgba(5,5,5,0.10)",
         shadow:
           "rgb(145 158 171 / 20%) 0rem .0625rem .1875rem 0rem , rgb(145 158 171 / 12%) 0rem .0625rem .125rem -0.25rem",
-        "shadow-md":
-          "0rem .1875rem .25rem 0rem rgba(3,3,3,0.1), 0rem .125rem .25rem 0rem rgba(3,3,3,0.1)",
-        "shadow-lg":
-          "0rem .625rem 1.25rem 0rem rgba(3,3,3,0.1), 0rem .1875rem .375rem 0rem rgba(3,3,3,0.1)",
-        "shadow-xl":
-          "0rem .9375rem 1.5625rem 0rem rgba(3,3,3,0.1), 0rem .3125rem .625rem 0rem rgba(3,3,3,0.1)",
+        "shadow-md": "0rem .1875rem .25rem 0rem rgba(3,3,3,0.1), 0rem .125rem .25rem 0rem rgba(3,3,3,0.1)",
+        "shadow-lg": "0rem .625rem 1.25rem 0rem rgba(3,3,3,0.1), 0rem .1875rem .375rem 0rem rgba(3,3,3,0.1)",
+        "shadow-xl": "0rem .9375rem 1.5625rem 0rem rgba(3,3,3,0.1), 0rem .3125rem .625rem 0rem rgba(3,3,3,0.1)",
         cxl: "0 .125rem .3125rem rgba(193, 202, 255, 0.5), .125rem 0 .3125rem rgba(193, 202, 255, 0.5), -0.125rem 0 .3125rem rgba(193, 202, 255, 0.5), 0 -0.125rem .3125rem rgba(193, 202, 255, 0.5)",
       },
 

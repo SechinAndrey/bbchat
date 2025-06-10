@@ -28,8 +28,7 @@ const lastName = computed(() => store.user?.lastName);
 const { avatarInitials, avatarColor } = useUserAvatar(firstName, lastName);
 
 const avatarUrl = computed(() => {
-  // TODO: wrong path, needs to be fixed on backend side
-  return store.user?.avatar;
+  return import.meta.env.VITE_BASE_API_URL + "/storage/" + store.user?.avatar;
 });
 
 // Handle logout

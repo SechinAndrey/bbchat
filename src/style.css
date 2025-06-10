@@ -182,7 +182,7 @@
   }
 
   .ringed-input {
-    @apply bg-gray-50 border-0 dark:bg-gray-700 focus:ring focus:ring-primary-hover dark:focus:bg-opacity-0 focus:bg-opacity-0;
+    @apply bg-theme-bg border-0 focus:ring focus:ring-primary-hover dark:focus:bg-opacity-0 focus:bg-opacity-0;
   }
 
   /* DropdownLink */

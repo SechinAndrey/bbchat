@@ -5,10 +5,10 @@
       active
         ? 'text-primary-hover'
         : [
-            textColor,
             'xs:text-neutral-active',
-            `dark:${textColor}`,
+            `md:${textColor}`,
             `xs:dark:text-neutral-active`,
+            `md:dark:${textColor}`,
           ]
     "
   >
