@@ -142,7 +142,9 @@ const isActive = computed(
             <!--recording name-->
             <p
               v-else-if="
-                lastMessage.type === 'recording' && lastMessage.content
+                lastMessage &&
+                lastMessage.type === 'recording' &&
+                lastMessage.content
               "
               class="body-2 text-color flex justify-start items-center"
             >
@@ -158,7 +160,7 @@ const isActive = computed(
 
             <!--attachments title-->
             <p
-              v-else-if="hasAttachments(lastMessage)"
+              v-else-if="lastMessage && hasAttachments(lastMessage)"
               class="body-2 text-color flex justify-start items-center"
               :class="{ 'text-primary': props.conversation.unread }"
             >
@@ -169,13 +171,21 @@ const isActive = computed(
 
             <!--last message content -->
             <p
-              v-else
+              v-else-if="lastMessage"
               class="body-2 text-color flex justify-start items-center"
               :class="{ 'text-primary': props.conversation.unread }"
             >
               <span :class="{ 'text-primary': props.conversation.unread }">
                 {{ shorten(lastMessage) }}
               </span>
+            </p>
+
+            <!--no messages yet-->
+            <p
+              v-else
+              class="body-2 text-color flex justify-start items-center text-gray-500"
+            >
+              <span>No messages yet</span>
             </p>
           </div>
 

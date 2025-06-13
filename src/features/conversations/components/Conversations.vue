@@ -2,10 +2,11 @@
 import type { IConversation } from "@src/shared/types/types";
 import type { Ref } from "vue";
 
-import { onMounted, ref, watch } from "vue";
+import { onMounted, ref, watch, computed } from "vue";
 
-import useStore from "@src/shared/store/store";
-import { getActiveConversationId, getName } from "@src/shared/utils/utils";
+// import useStore from "@src/shared/store/store"; // Removed old store
+import { useConversationsStore } from "@src/features/conversations/store/conversations-store"; // Added new store
+import { getName } from "@src/shared/utils/utils"; // Removed getActiveConversationId as it's not used
 
 import { PencilSquareIcon } from "@heroicons/vue/24/outline";
 import ComposeModal from "@src/features/conversations/modals/ComposeModal/ComposeModal.vue";
@@ -14,7 +15,7 @@ import Circle2Lines from "@src/ui/states/loading-states/Circle2Lines.vue";
 import IconButton from "@src/ui/inputs/IconButton.vue";
 import SearchInput from "@src/ui/inputs/SearchInput.vue";
 import FadeTransition from "@src/ui/transitions/FadeTransition.vue";
-import ArchivedButton from "@src/features/conversations/components/ArchivedButton.vue";
+// import ArchivedButton from "@src/features/conversations/components/ArchivedButton.vue"; // Removed archive-related component
 import ConversationsList from "@src/features/conversations/components/ConversationsList.vue";
 import SidebarHeader from "@src/layout/sidebar/SidebarHeader.vue";
 import Tabs from "@src/ui/navigation/Tabs/Tabs.vue";
@@ -27,7 +28,7 @@ const TAB = {
   all: "all",
 } as const;
 type TabName = (typeof TAB)[keyof typeof TAB];
-const activeTab = ref<TabName>(TAB.open);
+const activeTab = ref<TabName>(TAB.all);
 const TAB_ORDER: (typeof TAB)[keyof typeof TAB][] = [TAB.open, TAB.all];
 
 // slide animation
@@ -46,56 +47,58 @@ watch(activeTab, (newTab, oldTab) => {
   };
 
   const key = `${oldTab}->${newTab}`;
-  const direction = directionMap[key] ?? "LEFT"; // fallback
+  const direction = directionMap[key] ?? "LEFT";
 
   animation.value = direction === "LEFT" ? SLIDE.left : SLIDE.right;
 });
 
-const store = useStore();
+const conversationsStore = useConversationsStore();
 
 const keyword: Ref<string> = ref("");
-
 const composeOpen = ref(false);
 
-// determines whether the archive is open or not
-const openArchive = ref(false);
+const allConversationsFromStore = computed(
+  () => conversationsStore.allConversations,
+);
 
 // the filtered list of conversations.
-const filteredConversations: Ref<IConversation[]> = ref(store.conversations);
+const filteredConversations: Ref<IConversation[]> = ref([]);
 
 // filter the list of conversation based on search text.
-watch([keyword, openArchive], () => {
-  if (openArchive.value) {
-    // search conversations
-    filteredConversations.value =
-      store.archivedConversations?.filter((conversation) =>
-        getName(conversation)
-          ?.toLowerCase()
-          .includes(keyword.value.toLowerCase()),
-      ) || [];
-  } else {
-    // search archived conversations
-    filteredConversations.value =
-      store.conversations?.filter((conversation) =>
-        getName(conversation)
-          ?.toLowerCase()
-          .includes(keyword.value.toLowerCase()),
-      ) || [];
-  }
-});
+watch(
+  [keyword, allConversationsFromStore, activeTab], // Added activeTab
+  () => {
+    let conversationsToFilter: IConversation[] = [];
+
+    // Determine which list of conversations to use based on the active tab
+    // For now, 'open' tab uses the same list as 'all'.
+    // This will need to be updated when 'open' tab has its own logic.
+    if (activeTab.value === TAB.all || activeTab.value === TAB.open) {
+      conversationsToFilter = allConversationsFromStore.value || [];
+    }
+    // Removed archive-related logic
+
+    if (conversationsToFilter) {
+      filteredConversations.value = conversationsToFilter.filter(
+        (conversation) =>
+          getName(conversation)
+            ?.toLowerCase()
+            .includes(keyword.value.toLowerCase()),
+      );
+    } else {
+      filteredConversations.value = [];
+    }
+  },
+  { immediate: true, deep: true }, // Added deep: true for allConversationsFromStore
+);
 
 // (event) close the compose modal.
 const closeComposeModal = () => {
   composeOpen.value = false;
 };
 
-// if the active conversation is in the archive
-// then open the archive
 onMounted(() => {
-  let conversation = store.archivedConversations.find(
-    (conversation) => conversation.id === getActiveConversationId(),
-  );
-  if (conversation) openArchive.value = true;
+  conversationsStore.fetchAllConversations();
 });
 </script>
 
@@ -153,34 +156,45 @@ onMounted(() => {
         v-if="activeTab === TAB.all"
       >
         <Circle2Lines
-          v-if="store.status === 'loading' || store.delayLoading"
+          v-if="conversationsStore.isLoadingAll"
           v-for="item in 6"
+          :key="'loading-all-' + item"
         />
 
+        <div v-else-if="conversationsStore.error.all">
+          <p class="text-red-500 p-4">
+            Error: {{ conversationsStore.error.all }}
+          </p>
+        </div>
+
         <div v-else>
-          <ArchivedButton
+          <!-- <ArchivedButton // Removed archive-related component
             v-if="store.archivedConversations.length > 0"
             :open="openArchive"
             @click="openArchive = !openArchive"
-          />
+          /> -->
 
           <div
             v-if="
-              store.status === 'success' &&
-              !store.delayLoading &&
+              !conversationsStore.isLoadingAll &&
+              !conversationsStore.error.all &&
               filteredConversations.length > 0
             "
           >
             <FadeTransition>
               <ConversationsList
                 :filtered-conversations="filteredConversations"
-                :key="openArchive ? 'archive' : 'active'"
+                key="active"
               />
             </FadeTransition>
           </div>
 
-          <div v-else>
-            <NoConversation v-if="store.archivedConversations.length === 0" />
+          <div
+            v-else-if="
+              !conversationsStore.isLoadingAll && !conversationsStore.error.all
+            "
+          >
+            <NoConversation />
           </div>
         </div>
       </div>
@@ -192,36 +206,43 @@ onMounted(() => {
         style="overflow-x: visible; overflow-y: scroll"
         v-if="activeTab === TAB.open"
       >
+        <!-- Placeholder for "open" conversations tab. 
+             This will need logic to filter conversations based on their status, 
+             which is not yet available in the provided IConversation or ApiLead/ApiClient types.
+             For now, it will show the same as "all" or be empty.
+        -->
         <Circle2Lines
-          v-if="store.status === 'loading' || store.delayLoading"
+          v-if="
+            conversationsStore.isLoadingLeads ||
+            conversationsStore.isLoadingClients
+          "
           v-for="item in 6"
+          :key="'loading-open-' + item"
         />
-
+        <!-- 
+          TODO: Implement logic for 'open' conversations. 
+          This might involve fetching a different list or filtering 'allConversations'.
+          For now, let's assume it might use leadConversations or clientConversations,
+          or a filtered version of allConversations.
+          Displaying a message until proper logic is implemented.
+        -->
+        <div
+          v-else-if="
+            conversationsStore.error.leads || conversationsStore.error.clients
+          "
+        >
+          <p class="text-red-500 p-4">Error loading open conversations.</p>
+        </div>
+        <div v-else-if="filteredConversations.length > 0">
+          <FadeTransition>
+            <ConversationsList
+              :filtered-conversations="filteredConversations"
+              key="open-active"
+            />
+          </FadeTransition>
+        </div>
         <div v-else>
-          <ArchivedButton
-            v-if="store.archivedConversations.length > 0"
-            :open="openArchive"
-            @click="openArchive = !openArchive"
-          />
-
-          <div
-            v-if="
-              store.status === 'success' &&
-              !store.delayLoading &&
-              filteredConversations.length > 0
-            "
-          >
-            <FadeTransition>
-              <ConversationsList
-                :filtered-conversations="filteredConversations"
-                :key="openArchive ? 'archive' : 'active'"
-              />
-            </FadeTransition>
-          </div>
-
-          <div v-else>
-            <NoConversation v-if="store.archivedConversations.length === 0" />
-          </div>
+          <NoConversation />
         </div>
       </div>
     </SlideTransition>

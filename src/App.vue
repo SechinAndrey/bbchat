@@ -7,6 +7,7 @@ import { setupErrorInterceptor } from "@src/features/auth/services/error-interce
 import ThemeProvider from "@src/shared/components/theme/ThemeProvider.vue";
 
 import FadeTransition from "@src/ui/transitions/FadeTransition.vue";
+import { useConversationsStore } from "./features/conversations/store/conversations-store";
 
 // Refactoring code:
 // todo reorganize component structure
@@ -34,6 +35,7 @@ import FadeTransition from "@src/ui/transitions/FadeTransition.vue";
 
 const store = useStore();
 const authStore = useAuthStore();
+const conversationsStore = useConversationsStore();
 
 setupErrorInterceptor();
 
@@ -87,6 +89,7 @@ const resizeWindow = () => {
 // and add the resize event when the component mounts.
 onMounted(() => {
   window.addEventListener("resize", resizeWindow);
+  conversationsStore.fetchAllConversations();
 });
 
 // remove the event when un-mounting the component.

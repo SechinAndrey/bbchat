@@ -2,6 +2,7 @@
 import type { Ref } from "vue";
 
 import useStore from "@src/shared/store/store";
+import { useConversationsStore } from "@src/features/conversations/store/conversations-store";
 import { computed, provide, ref, watch } from "vue";
 
 import { getActiveConversationId } from "@src/shared/utils/utils";
@@ -13,6 +14,7 @@ import ChatMiddle from "@src/features/chat/components/ChatMiddle/ChatMiddle.vue"
 import ChatTop from "@src/features/chat/components/ChatTop/ChatTop.vue";
 
 const store = useStore();
+const conversationsStore = useConversationsStore();
 const isConversationLoading = ref(false);
 
 // search the selected conversation using activeConversationId.
@@ -20,11 +22,10 @@ const activeConversation = computed(() => {
   const conversationId = getActiveConversationId();
   if (!conversationId) return undefined;
 
-  let conversation = store.conversations.find(
+  let conversation = conversationsStore.allConversations.find(
     (conversation) => conversation.id === conversationId,
   );
 
-  // Если не нашли, ищем в архивных диалогах
   if (!conversation) {
     conversation = store.archivedConversations.find(
       (conversation) => conversation.id === conversationId,

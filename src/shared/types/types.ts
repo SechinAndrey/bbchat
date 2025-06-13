@@ -63,7 +63,7 @@ export interface IConversation {
   avatar?: string;
   admins?: number[];
   contacts: IContact[];
-  messages: IMessage[];
+  messages: IMessage[]; // Array of messages in the conversation
   pinnedMessage?: IMessage;
   pinnedMessageHidden?: boolean;
   replyMessage?: IMessage;
