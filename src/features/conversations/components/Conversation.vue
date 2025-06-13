@@ -5,7 +5,7 @@ import type {
   IRecording,
 } from "@src/shared/types/types";
 import type { Ref } from "vue";
-import { computed, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 
 import useStore from "@src/shared/store/store";
 import {
@@ -17,6 +17,7 @@ import {
   shorten,
 } from "@src/shared/utils/utils";
 import router from "@src/router";
+import route from "@src/router";
 
 import {
   ArchiveBoxArrowDownIcon,
@@ -25,7 +26,6 @@ import {
   TrashIcon,
 } from "@heroicons/vue/24/outline";
 import Dropdown from "@src/ui/navigation/Dropdown/Dropdown.vue";
-import DropdownLink from "@src/ui/navigation/Dropdown/DropdownLink.vue";
 
 const props = defineProps<{
   conversation: IConversation;
@@ -81,10 +81,17 @@ const handleRemoveUnread = () => {
 const isActive = computed(
   () => getActiveConversationId() === props.conversation.id,
 );
+
+const isSelected = computed(() => {
+  return (
+    route.currentRoute.value.path === `/chat/${props.conversation.id}/` ||
+    route.currentRoute.value.path === `/chat/${props.conversation.id}`
+  );
+});
 </script>
 
 <template>
-  <div class="select-none">
+  <div class="select-none" :class="{ 'bg-theme-bg': isSelected }">
     <button
       :aria-label="'conversation with' + getName(props.conversation)"
       tabindex="0"
