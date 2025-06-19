@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import useStore from "@src/shared/store/store";
 import { useAuthStore } from "@src/features/auth/store/auth-store";
 import { useRouter } from "vue-router";
 import { computed } from "vue";
-import { useUserAvatar } from "@src/shared/composables/useUserAvatar";
+import { useAvatarInitials } from "@src/shared/composables/useAvatarInitials";
 
 import {
   ArrowPathIcon,
@@ -19,17 +18,12 @@ const props = defineProps<{
   id: string;
 }>();
 
-const store = useStore();
 const authStore = useAuthStore();
 const router = useRouter();
 
-const firstName = computed(() => store.user?.firstName);
-const lastName = computed(() => store.user?.lastName);
-const { avatarInitials, avatarColor } = useUserAvatar(firstName, lastName);
-
-const avatarUrl = computed(() => {
-  return import.meta.env.VITE_BASE_API_URL + "/storage/" + store.user?.avatar;
-});
+const firstName = computed(() => authStore.currentUser?.firstName);
+const lastName = computed(() => authStore.currentUser?.lastName);
+const { avatarInitials, avatarColor } = useAvatarInitials(firstName, lastName);
 
 // Handle logout
 const handleLogout = () => {
@@ -57,18 +51,18 @@ const handleCloseOnClickOutside = (event: Event) => {
       :id="props.id + '-button'"
       @click="handleShowDropdown"
       class="rounded-full active:scale-110 focus:outline-none focus:scale-110 transition duration-200 ease-out"
-      :class="avatarColor"
       :aria-expanded="showDropdown"
       aria-controls="profile-menu"
       aria-label="toggle profile menu"
     >
       <div
         id="user-avatar"
-        :style="{ backgroundImage: `url(${avatarUrl})` }"
+        :style="{ backgroundImage: `url(${authStore.currentUser?.avatar})` }"
         class="xs:w-6 xs:h-6 md:w-[2.25rem] md:h-[2.25rem] rounded-full bg-cover bg-center"
+        :class="avatarColor"
       >
         <span
-          v-if="!store.user?.avatar"
+          v-if="!authStore.currentUser?.avatar"
           class="flex items-center justify-center w-full h-full text-sm font-semibold text-white bg-primary rounded-full"
         >
           {{ avatarInitials }}

@@ -1,3 +1,4 @@
+import type { ApiUser } from "@src/api/types";
 import apiClient, { setAuthToken } from "@src/api/axios-instance";
 
 // Types for authentication
@@ -29,7 +30,7 @@ export class AuthService {
   async login(credentials: LoginCredentials): Promise<string> {
     try {
       const response = await apiClient.post<AuthResponse>(
-        `${this.baseUrl}/api/sanctum/token`,
+        `${this.baseUrl}/sanctum/token`,
         credentials,
         {
           headers: {
@@ -44,6 +45,19 @@ export class AuthService {
     } catch (error) {
       console.error("Error during authentication:", error);
       throw error;
+    }
+  }
+
+  /**
+   * Gets information about the current user
+   * @returns Promise with user data
+   */
+  async getCurrentUser(): Promise<ApiUser | undefined> {
+    try {
+      const response = await apiClient.get("/sanctum/user");
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching user:", error);
     }
   }
 

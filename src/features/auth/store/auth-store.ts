@@ -1,7 +1,6 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 import { authService } from "../services/auth-service";
-import chatApiService from "@src/api/api-service";
 import { adaptUser } from "@src/api/adapters";
 import type { IUser } from "@src/shared/types/types";
 
@@ -52,7 +51,11 @@ export const useAuthStore = defineStore("auth", () => {
     userError.value = null;
 
     try {
-      const apiUserData = await chatApiService.getCurrentUser();
+      const apiUserData = await authService.getCurrentUser();
+      if (!apiUserData) {
+        userError.value = "User not found";
+        return null;
+      }
       const userData = adaptUser(apiUserData);
       currentUser.value = userData;
 

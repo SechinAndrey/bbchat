@@ -36,6 +36,11 @@ export interface IAttachment {
   file?: File;
 }
 
+export interface IMessageContent {
+  text: string;
+  [key: string]: unknown;
+}
+
 export interface IRecording {
   id: number;
   size: string;
@@ -47,7 +52,7 @@ export interface IRecording {
 export interface IMessage {
   id: number;
   type?: string;
-  content?: string | IRecording;
+  content?: string | IRecording | IMessageContent;
   date: string;
   sender: IContact;
   replyTo?: number;

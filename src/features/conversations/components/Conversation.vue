@@ -17,7 +17,7 @@ import {
   shorten,
 } from "@src/shared/utils/utils";
 import router from "@src/router";
-
+import route from "@src/router";
 import {
   ArchiveBoxArrowDownIcon,
   InformationCircleIcon,
@@ -25,7 +25,7 @@ import {
   TrashIcon,
 } from "@heroicons/vue/24/outline";
 import Dropdown from "@src/ui/navigation/Dropdown/Dropdown.vue";
-import DropdownLink from "@src/ui/navigation/Dropdown/DropdownLink.vue";
+import { useAvatarInitials } from "@src/shared/composables/useAvatarInitials";
 
 const props = defineProps<{
   conversation: IConversation;
@@ -34,6 +34,17 @@ const props = defineProps<{
 const store = useStore();
 
 const showContextMenu = ref(false);
+
+const name = getName(props.conversation) || "";
+const [firstName, lastName] = name.split(" ");
+const { avatarInitials, avatarColor } = useAvatarInitials(
+  computed(() => firstName || null),
+  computed(() => lastName || null),
+);
+
+const avatar = computed(() => {
+  return getAvatar(props.conversation);
+});
 
 const contextMenuCoordinations: Ref<{ x: number; y: number } | undefined> =
   ref();
@@ -81,10 +92,17 @@ const handleRemoveUnread = () => {
 const isActive = computed(
   () => getActiveConversationId() === props.conversation.id,
 );
+
+const isSelected = computed(() => {
+  return (
+    route.currentRoute.value.path === `/chat/${props.conversation.id}/` ||
+    route.currentRoute.value.path === `/chat/${props.conversation.id}`
+  );
+});
 </script>
 
 <template>
-  <div class="select-none">
+  <div class="select-none" :class="{ 'bg-theme-bg': isSelected }">
     <button
       :aria-label="'conversation with' + getName(props.conversation)"
       tabindex="0"
@@ -104,9 +122,17 @@ const isActive = computed(
       <!--profile image-->
       <div class="mr-4">
         <div
-          :style="{ backgroundImage: `url(${getAvatar(props.conversation)})` }"
+          :style="{ backgroundImage: `url(${avatar})` }"
           class="w-7 h-7 rounded-full bg-cover bg-center"
-        ></div>
+          :class="avatarColor"
+        >
+          <span
+            v-if="!avatar"
+            class="flex items-center justify-center w-full h-full text-sm font-semibold text-white rounded-full"
+          >
+            {{ avatarInitials }}
+          </span>
+        </div>
       </div>
 
       <div class="w-full flex flex-col">
@@ -142,7 +168,9 @@ const isActive = computed(
             <!--recording name-->
             <p
               v-else-if="
-                lastMessage.type === 'recording' && lastMessage.content
+                lastMessage &&
+                lastMessage.type === 'recording' &&
+                lastMessage.content
               "
               class="body-2 text-color flex justify-start items-center"
             >
@@ -158,7 +186,7 @@ const isActive = computed(
 
             <!--attachments title-->
             <p
-              v-else-if="hasAttachments(lastMessage)"
+              v-else-if="lastMessage && hasAttachments(lastMessage)"
               class="body-2 text-color flex justify-start items-center"
               :class="{ 'text-primary': props.conversation.unread }"
             >
@@ -169,7 +197,7 @@ const isActive = computed(
 
             <!--last message content -->
             <p
-              v-else
+              v-else-if="lastMessage"
               class="body-2 text-color flex justify-start items-center"
               :class="{ 'text-primary': props.conversation.unread }"
             >

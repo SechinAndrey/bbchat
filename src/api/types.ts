@@ -151,3 +151,209 @@ export interface ApiResponses {
   /* BACKEND: activeCall - current active call */
   activeCall?: ApiCall;
 }
+
+//---------------------------------------------
+// New typesf for 16.07.2025 api version
+//---------------------------------------------
+
+export interface ApiMessageType {
+  id: number;
+  name: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ApiMessageContent {
+  id: number;
+  type_id: number;
+  user_id: number;
+  current_lead_id: number;
+  original_lead_id: number;
+  current_client_id: number | null;
+  original_client_id: number | null;
+  name: string;
+  message?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ApiMessageContentBinotel {
+  id: number;
+  binotel_id?: number | null;
+  contragent_id: number;
+  contragent_type: string;
+  contact_id: number | null;
+  user_id: number;
+  phone: string | null;
+  call_type?: number | null; // 0 - incoming, 1 - outgoing
+  is_new: number;
+  waitsec: number;
+  billsec: number;
+  disposition: string | null;
+  link: string | null;
+  transcription_status_id: number;
+  created_at: string;
+  updated_at: string;
+  transcription?: unknown;
+}
+
+export interface ApiCommunicationMessage {
+  id: number;
+  type: ApiMessageType;
+  content: ApiMessageContent | ApiMessageContentBinotel;
+  date: string;
+  lead_id: number;
+  client_id: number | null;
+  user_id: number;
+  replyTo: number | null;
+  previewData: unknown;
+  attachments: unknown;
+  state: string;
+}
+
+export interface ApiContact {
+  id: number;
+  name: string;
+  fio: string;
+  firstName: string;
+  lastName: string;
+  avatar: string | null;
+  email: string | null;
+  phone: string | null;
+  tg_name: string | null;
+  lastSeen: string | null;
+}
+
+export interface ApiCommunicationLead {
+  id: number;
+  user_id: number;
+  name: string;
+  fio: string | null;
+  avatar: string | null;
+  contacts: ApiContact[];
+  class_id: number | null;
+  email: string | null;
+  phone: string | null;
+  tg_name: string | null;
+  visible: number | null;
+  communication_status_id: number;
+  type: string | null;
+  messages: ApiCommunicationMessage[] | null;
+  pinnedMessage: ApiCommunicationMessage | null;
+  pinnedMessageHidden: boolean | null;
+  replyMessage: ApiCommunicationMessage | null;
+  unread: number;
+  draftMessage: string;
+}
+
+export interface ApiCommunicationClient {
+  id: number;
+  user_id: number;
+  name: string;
+  fio: string | null;
+  u0437: string | null;
+  avatar: string | null;
+  class_id: number | null;
+  actual_class_id: number | null;
+  contacts: ApiContact[];
+  email: string | null;
+  phone: string | null;
+  tg_name: string | null;
+  visible: number | null;
+  communication_status_id: number | null;
+  type: string | null;
+  messages: ApiCommunicationMessage[] | null;
+  pinnedMessage: ApiCommunicationMessage | null;
+  pinnedMessageHidden: boolean | null;
+  replyMessage: ApiCommunicationMessage | null;
+  unread: number;
+  draftMessage: string | null;
+}
+
+export interface ApiCommunicationResponse {
+  leads: ApiCommunicationLead[];
+  clients: ApiCommunicationClient[];
+}
+
+// -----------------
+
+export interface ApiCommunicationLeadFull {
+  id: number;
+  user_id: number;
+  name: string;
+  fio: string | null;
+  email: string | null;
+  phone: string | null;
+  tg_name: string | null;
+  city: string | null;
+  channel: string | null;
+  source: string | null;
+  social: string | null;
+  from_form: number | null;
+  have_supervision: number | null;
+  comment: string | null;
+  messages: ApiMessage[] | null;
+  info: unknown;
+  utm: unknown;
+  utm_channel: unknown;
+  ga_client_id: unknown;
+  jivo_number: unknown;
+  binotel_id: unknown;
+  helpcrunch_id: unknown;
+  chaport_id: unknown;
+  visible: number | null;
+  status_id: number | null;
+  communication_status_id: number | null;
+  call_me_datetime: string | null;
+  rejection_id: number | null;
+  rejection_reason_id: number | null;
+  excluded_from_statistics_date: string | null;
+  created_at: string | null;
+  updated_at: string | null;
+  deleted_at: string | null;
+  class_id: number | null;
+  key_call_attempt_count: number | null;
+  last_key_call_attempt_at: string | null;
+}
+
+// eslint-disable-next-line
+export interface ApiCommunicationClientFull extends ApiCommunicationLeadFull {}
+
+export interface ApiMessageFull {
+  id: number;
+  type_id: number;
+  user_id: number;
+  lead_id: number;
+  client_id: number | null;
+  chaport_message_id: number | null;
+  call_id: number | null;
+  echat_message_id: number | null;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
+  lead: ApiCommunicationLeadFull | null;
+  client: ApiCommunicationClientFull | null;
+  type: ApiMessageType;
+  user: {
+    id: number;
+    role_id: number;
+    name: string;
+    email: string;
+    email_key: string | null;
+    type_reg: string | null;
+    company: string | null;
+    inn: string | null;
+    nds: string | null;
+    phone: string;
+    avatar: string;
+    email_verified_at: string | null;
+    settings: {
+      locale: string;
+    };
+    folder_id: string;
+    created_at: string;
+    updated_at: string;
+  };
+  chaport_messages?: unknown;
+  call?: ApiMessageContentBinotel;
+}

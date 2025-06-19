@@ -5,7 +5,7 @@ interface UseUserAvatarReturn {
   avatarColor: ComputedRef<string>;
 }
 
-export function useUserAvatar(
+export function useAvatarInitials(
   firstName: ComputedRef<string | null | undefined>,
   lastName: ComputedRef<string | null | undefined>,
 ): UseUserAvatarReturn {

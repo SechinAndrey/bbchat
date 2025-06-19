@@ -3,7 +3,6 @@ import type { Ref } from "vue";
 import { computed, ref } from "vue";
 
 import defaults from "@src/shared/store/real-api-example";
-import { chatApiService } from "@src/api/api-service";
 
 import type {
   IConversation,
@@ -79,21 +78,6 @@ const useStore = defineStore("chat", () => {
         delayLoading.value = false;
       }, 500);
 
-      const data = await chatApiService.getAllData();
-
-      setLoadingState("user", false);
-      user.value = data.user;
-
-      setLoadingState("conversations", false);
-      conversations.value = data.conversations;
-
-      setLoadingState("notifications", false);
-      notifications.value = data.notifications;
-
-      setLoadingState("calls", false);
-      calls.value = data.calls;
-      activeCall.value = data.activeCall;
-
       status.value = "success";
       return true;
     } catch (error) {
@@ -154,12 +138,6 @@ const useStore = defineStore("chat", () => {
   ) => {
     try {
       status.value = "loading";
-
-      const apiMessage = await chatApiService.sendMessage(
-        roomId,
-        content,
-        files,
-      );
 
       // update all for now, improve with real api later
       await initializeData();

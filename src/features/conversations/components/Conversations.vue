@@ -2,9 +2,11 @@
 import type { IConversation } from "@src/shared/types/types";
 import type { Ref } from "vue";
 
-import { onMounted, ref, watch } from "vue";
+import { onMounted, ref, watch, computed } from "vue";
 
 import useStore from "@src/shared/store/store";
+import { useAuthStore } from "@src/features/auth/store/auth-store";
+import { useConversationsStore } from "@src/features/conversations/conversations-store";
 import { getActiveConversationId, getName } from "@src/shared/utils/utils";
 
 import { PencilSquareIcon } from "@heroicons/vue/24/outline";
@@ -52,6 +54,9 @@ watch(activeTab, (newTab, oldTab) => {
 });
 
 const store = useStore();
+const authStore = useAuthStore();
+// Initialize new communications store for fetching conversations data
+const conversationsStore = useConversationsStore();
 
 const keyword: Ref<string> = ref("");
 
@@ -60,29 +65,38 @@ const composeOpen = ref(false);
 // determines whether the archive is open or not
 const openArchive = ref(false);
 
-// the filtered list of conversations.
-const filteredConversations: Ref<IConversation[]> = ref(store.conversations);
+// computed filtered list of conversations from the new communications store
+const filteredConversations = computed(() => {
+  const searchTerm = keyword.value.toLowerCase();
 
-// filter the list of conversation based on search text.
-watch([keyword, openArchive], () => {
   if (openArchive.value) {
-    // search conversations
-    filteredConversations.value =
+    // search archived conversations - using legacy store for now until archived conversations are moved to new store
+    return (
       store.archivedConversations?.filter((conversation) =>
-        getName(conversation)
-          ?.toLowerCase()
-          .includes(keyword.value.toLowerCase()),
-      ) || [];
+        getName(conversation)?.toLowerCase().includes(searchTerm),
+      ) || []
+    );
   } else {
-    // search archived conversations
-    filteredConversations.value =
-      store.conversations?.filter((conversation) =>
-        getName(conversation)
-          ?.toLowerCase()
-          .includes(keyword.value.toLowerCase()),
+    // search active conversations from the new communications store
+    const filtered =
+      conversationsStore.conversations?.filter((conversation) =>
+        getName(conversation)?.toLowerCase().includes(searchTerm),
       ) || [];
+
+    return filtered;
   }
 });
+
+// Handle errors from communications store
+watch(
+  () => conversationsStore.hasError,
+  (hasError) => {
+    if (hasError) {
+      console.error("Communications store error:", conversationsStore.error);
+      // You can add toast notification or other error handling here
+    }
+  },
+);
 
 // (event) close the compose modal.
 const closeComposeModal = () => {
@@ -91,7 +105,11 @@ const closeComposeModal = () => {
 
 // if the active conversation is in the archive
 // then open the archive
-onMounted(() => {
+onMounted(async () => {
+  // Initialize conversations from the new communications store
+
+  const success = await conversationsStore.fetchConversations();
+
   let conversation = store.archivedConversations.find(
     (conversation) => conversation.id === getActiveConversationId(),
   );
@@ -153,7 +171,7 @@ onMounted(() => {
         v-if="activeTab === TAB.all"
       >
         <Circle2Lines
-          v-if="store.status === 'loading' || store.delayLoading"
+          v-if="conversationsStore.isLoading || store.delayLoading"
           v-for="item in 6"
         />
 
@@ -166,7 +184,7 @@ onMounted(() => {
 
           <div
             v-if="
-              store.status === 'success' &&
+              !conversationsStore.isLoading &&
               !store.delayLoading &&
               filteredConversations.length > 0
             "
@@ -193,7 +211,7 @@ onMounted(() => {
         v-if="activeTab === TAB.open"
       >
         <Circle2Lines
-          v-if="store.status === 'loading' || store.delayLoading"
+          v-if="conversationsStore.isLoading || store.delayLoading"
           v-for="item in 6"
         />
 
@@ -206,7 +224,7 @@ onMounted(() => {
 
           <div
             v-if="
-              store.status === 'success' &&
+              !conversationsStore.isLoading &&
               !store.delayLoading &&
               filteredConversations.length > 0
             "

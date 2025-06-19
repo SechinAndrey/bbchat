@@ -1,9 +1,11 @@
 import useStore from "@src/shared/store/store";
+import { useAuthStore } from "@src/features/auth/store/auth-store";
 import type {
   ICall,
   IContact,
   IConversation,
   IMessage,
+  IMessageContent,
   IRecording,
 } from "@src/shared/types/types";
 import { useRoute } from "vue-router";
@@ -28,11 +30,14 @@ export const getFullName = (contact: IContact, hyphen?: boolean) => {
  */
 export const getOddContact = (conversation: IConversation) => {
   const store = useStore();
+  const authStore = useAuthStore();
 
   let oddContact;
 
-  for (let contact of conversation.contacts) {
-    if (store.user && contact.id !== store.user.id) {
+  for (const contact of conversation.contacts) {
+    // Check against current user from auth store first, fallback to legacy store
+    const currentUserId = authStore.currentUser?.id || store.user?.id;
+    if (currentUserId && contact.id !== currentUserId) {
       oddContact = contact;
     }
   }
@@ -49,7 +54,7 @@ export const getAvatar = (conversation: IConversation) => {
   if (["group", "broadcast"].includes(conversation.type)) {
     return conversation?.avatar;
   } else {
-    let oddContact = getOddContact(conversation);
+    const oddContact = getOddContact(conversation);
     return oddContact?.avatar;
   }
 };
@@ -67,10 +72,23 @@ export const getName = (conversation: IConversation, hyphen?: boolean) => {
       return conversation.name;
     }
   } else {
-    let oddContact = getOddContact(conversation);
+    // For couple type (leads/clients), first try to use conversation.name
+    if (conversation.name) {
+      if (hyphen) {
+        return conversation.name.split(" ").join("-");
+      } else {
+        return conversation.name;
+      }
+    }
+
+    // Fallback to contact name if conversation.name is not available
+    const oddContact = getOddContact(conversation);
     if (oddContact) {
       return getFullName(oddContact, hyphen);
     }
+
+    // If no name found, return undefined
+    return undefined;
   }
 };
 
@@ -82,7 +100,7 @@ export const getName = (conversation: IConversation, hyphen?: boolean) => {
  * @returns A string that is trimmed according the length provided
  */
 export const shorten = (message: IMessage | string, maxLength: number = 23) => {
-  let text: string | IRecording | undefined;
+  let text: string | IRecording | IMessageContent | undefined;
 
   if (typeof message === "string") {
     text = message;
@@ -90,9 +108,22 @@ export const shorten = (message: IMessage | string, maxLength: number = 23) => {
     text = message.content;
   }
 
-  if (text && typeof text === "string") {
-    let trimmedString = text;
-    if (text.length > maxLength) {
+  // Handle different content types
+  let textToProcess: string | undefined;
+
+  if (typeof text === "string") {
+    textToProcess = text;
+  } else if (text && typeof text === "object" && "text" in text) {
+    // Handle IMessageContent type
+    textToProcess = text.text;
+  } else {
+    // Handle IRecording or other types - return a default message
+    return "Recording";
+  }
+
+  if (textToProcess) {
+    let trimmedString = textToProcess;
+    if (textToProcess.length > maxLength) {
       // trim the string to the maximum length.
       trimmedString = trimmedString.slice(0, maxLength);
       // add three dots to indicate that there is more to the message.
@@ -110,7 +141,7 @@ export const shorten = (message: IMessage | string, maxLength: number = 23) => {
  * @returns A boolean indicating whether the message has attachments
  */
 export const hasAttachments = (message: IMessage) => {
-  let attachments = message.attachments;
+  const attachments = message.attachments;
   return attachments && attachments.length > 0;
 };
 
@@ -158,11 +189,14 @@ export const getConversationIndex = (
  */
 export const getOtherMembers = (call: ICall) => {
   const store = useStore();
-  let members = [];
+  const authStore = useAuthStore();
+  const members = [];
 
   if (call) {
-    for (let member of call.members) {
-      if (store.user && member.id !== store.user.id) {
+    for (const member of call.members) {
+      // Check against current user from auth store first, fallback to legacy store
+      const currentUserId = authStore.currentUser?.id || store.user?.id;
+      if (currentUserId && member.id !== currentUserId) {
         members.push(member);
       }
     }
@@ -183,10 +217,10 @@ export const getCallName = (
   full?: boolean,
   maxLength: number = 20,
 ) => {
-  let members = getOtherMembers(call);
+  const members = getOtherMembers(call);
   let callName: string = "";
 
-  for (let member of members) {
+  for (const member of members) {
     callName += getFullName(member);
 
     if (members.length > 1) {
