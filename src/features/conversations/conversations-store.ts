@@ -1,223 +1,340 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
-import { conversationsService } from "./conversations-service";
-import {
-  adaptApiCommunicationLeadToIConversation,
-  adaptApiCommunicationClientToIConversation,
-} from "@src/api/communication-adapters";
-import type { IConversation } from "@src/shared/types/types";
+import conversationsService from "./conversations-service";
+import type { GetCommunicationsParams } from "./conversations-service";
 import type {
-  ApiCommunicationResponse,
   ApiCommunicationLead,
   ApiCommunicationClient,
+  ApiResponseMeta,
 } from "@src/api/types";
 
 export const useConversationsStore = defineStore("conversations", () => {
   // State
-  const conversations = ref<IConversation[]>([]);
   const leads = ref<ApiCommunicationLead[]>([]);
   const clients = ref<ApiCommunicationClient[]>([]);
-  const loading = ref<boolean>(false);
+  const leadsMeta = ref<ApiResponseMeta | null>(null);
+  const clientsMeta = ref<ApiResponseMeta | null>(null);
+  const isLoading = ref(false);
   const error = ref<string | null>(null);
 
-  // Computed
-  const isLoading = computed(() => loading.value);
-  const hasError = computed(() => !!error.value);
-  const totalConversations = computed(() => conversations.value.length);
-  const unreadCount = computed(() =>
-    conversations.value.reduce((sum, conv) => sum + (conv.unread || 0), 0),
-  );
+  // Filter state
+  const filters = ref<GetCommunicationsParams>({
+    page: 1,
+    search: "",
+    user_id: undefined,
+  });
+
+  // Loading states for specific requests
+  const isLoadingLeads = ref(false);
+  const isLoadingClients = ref(false);
+  const leadsError = ref<string | null>(null);
+  const clientsError = ref<string | null>(null);
+
+  // Getters
+  const hasMoreLeads = computed(() => {
+    if (!leadsMeta.value) return false;
+    return leadsMeta.value.current_page < leadsMeta.value.last_page;
+  });
+
+  const hasMoreClients = computed(() => {
+    if (!clientsMeta.value) return false;
+    return clientsMeta.value.current_page < clientsMeta.value.last_page;
+  });
+
+  const hasMore = computed(() => hasMoreLeads.value || hasMoreClients.value);
+
+  const allCommunications = computed(() => {
+    return [...leads.value, ...clients.value];
+  });
 
   // Actions
-  /**
-   * Fetch all conversations from API and save to store
-   */
-  async function fetchConversations(): Promise<boolean> {
-    loading.value = true;
-    error.value = null;
-
+  const fetchCommunications = async (params?: GetCommunicationsParams) => {
     try {
-      const response: ApiCommunicationResponse =
-        await conversationsService.getCommunications();
+      isLoading.value = true;
+      error.value = null;
 
-      // Save raw API data
-      leads.value = response.leads || [];
-      clients.value = response.clients || [];
+      // Merge provided params with stored filters
+      const mergedParams = { ...filters.value, ...params };
 
-      // adapt leads to IConversation format
-      const adaptedLeads: IConversation[] = leads.value.map((lead) =>
-        adaptApiCommunicationLeadToIConversation(lead),
-      );
-      // adapt clients to IConversation format
-      const adaptedClients: IConversation[] = clients.value.map((client) =>
-        adaptApiCommunicationClientToIConversation(client),
-      );
+      // Update filters with merged params
+      if (params) {
+        filters.value = mergedParams;
+      }
 
-      conversations.value = [...adaptedLeads, ...adaptedClients];
+      const response =
+        await conversationsService.getCommunications(mergedParams);
 
-      return true;
+      // If loading first page or resetting, replace the data
+      if (mergedParams.page === 1) {
+        leads.value = response.leads.data;
+        clients.value = response.clients.data;
+      } else {
+        // Otherwise append to existing data for "load more" functionality
+        leads.value = [...leads.value, ...response.leads.data];
+        clients.value = [...clients.value, ...response.clients.data];
+      }
+
+      // Store pagination metadata
+      leadsMeta.value = response.leads.meta;
+      clientsMeta.value = response.clients.meta;
+
+      return response;
     } catch (err) {
       error.value =
-        err instanceof Error ? err.message : "Failed to fetch conversations";
-      console.error("Error fetching conversations:", err);
-      return false;
+        err instanceof Error ? err.message : "Unknown error occurred";
+      throw err;
     } finally {
-      loading.value = false;
+      isLoading.value = false;
     }
-  }
+  };
 
-  /**
-   * Send message to conversation
-   * @param contragentId - Lead or client ID
-   * @param contragentType - Type: "lead" or "client"
-   * @param message - Message text
-   */
-  async function sendMessage(
-    contragentId: number,
-    contragentType: "lead" | "client",
-    message: string,
-  ): Promise<boolean> {
+  // Fetch only leads
+  const fetchLeads = async (params?: GetCommunicationsParams) => {
     try {
-      const success = await conversationsService.sendMessage({
-        contragent_id: contragentId,
-        contragent_type: contragentType,
-        message,
-      });
+      isLoadingLeads.value = true;
+      leadsError.value = null;
 
-      if (success) {
-        // Refresh conversations after sending message
-        await fetchConversations();
+      // Merge provided params with stored filters
+      const mergedParams = { ...filters.value, ...params };
+
+      // Update filters with merged params
+      if (params) {
+        filters.value = mergedParams;
       }
 
-      return success;
-    } catch (err) {
-      error.value =
-        err instanceof Error ? err.message : "Failed to send message";
-      console.error("Error sending message:", err);
-      return false;
-    }
-  }
+      const response =
+        await conversationsService.getCommunicationsLeads(mergedParams);
 
-  /**
-   * Update draft message for conversation
-   * @param contragentId - Lead or client ID
-   * @param contragentType - Type: "lead" or "client"
-   * @param draftMessage - Draft message text
-   */
-  async function updateDraftMessage(
-    contragentId: number,
-    contragentType: "lead" | "client",
-    draftMessage: string,
-  ): Promise<boolean> {
-    try {
-      await conversationsService.updateDraftMessage(
-        contragentId,
-        contragentType,
-        draftMessage,
-      );
-
-      // Update local state
-      const targetList =
-        contragentType === "lead" ? leads.value : clients.value;
-      const item = targetList.find((item) => item.id === contragentId);
-      if (item) {
-        item.draftMessage = draftMessage;
+      // If loading first page or resetting, replace the data
+      if (mergedParams.page === 1) {
+        leads.value = response.leads.data;
+      } else {
+        // Otherwise append to existing data for "load more" functionality
+        leads.value = [...leads.value, ...response.leads.data];
       }
 
-      return true;
-    } catch (err) {
-      error.value =
-        err instanceof Error ? err.message : "Failed to update draft message";
-      console.error("Error updating draft message:", err);
-      return false;
-    }
-  }
+      // Store pagination metadata
+      leadsMeta.value = response.leads.meta;
 
-  /**
-   * Pin message in conversation
-   * @param messageId - Message ID
-   */
-  async function pinMessage(messageId: number): Promise<boolean> {
+      return response;
+    } catch (err) {
+      leadsError.value =
+        err instanceof Error ? err.message : "Unknown error occurred";
+      throw err;
+    } finally {
+      isLoadingLeads.value = false;
+    }
+  };
+
+  // Fetch only clients
+  const fetchClients = async (params?: GetCommunicationsParams) => {
     try {
-      await conversationsService.pinMessage(messageId);
-      // Refresh conversations to get updated pinned message
-      await fetchConversations();
-      return true;
+      isLoadingClients.value = true;
+      clientsError.value = null;
+
+      // Merge provided params with stored filters
+      const mergedParams = { ...filters.value, ...params };
+
+      // Update filters with merged params
+      if (params) {
+        filters.value = mergedParams;
+      }
+
+      const response =
+        await conversationsService.getCommunicationsClients(mergedParams);
+
+      // If loading first page or resetting, replace the data
+      if (mergedParams.page === 1) {
+        clients.value = response.clients.data;
+      } else {
+        // Otherwise append to existing data for "load more" functionality
+        clients.value = [...clients.value, ...response.clients.data];
+      }
+
+      // Store pagination metadata
+      clientsMeta.value = response.clients.meta;
+
+      return response;
     } catch (err) {
-      error.value =
-        err instanceof Error ? err.message : "Failed to pin message";
-      console.error("Error pinning message:", err);
-      return false;
+      clientsError.value =
+        err instanceof Error ? err.message : "Unknown error occurred";
+      throw err;
+    } finally {
+      isLoadingClients.value = false;
     }
-  }
+  };
 
-  /**
-   * Unpin message in conversation
-   * @param messageId - Message ID
-   */
-  async function unpinMessage(messageId: number): Promise<boolean> {
-    try {
-      await conversationsService.unpinMessage(messageId);
-      // Refresh conversations to get updated pinned message
-      await fetchConversations();
-      return true;
-    } catch (err) {
-      error.value =
-        err instanceof Error ? err.message : "Failed to unpin message";
-      console.error("Error unpinning message:", err);
-      return false;
-    }
-  }
+  const loadMoreCommunications = async () => {
+    if (!hasMore.value || isLoading.value) return;
 
-  /**
-   * Get conversation by ID
-   * @param id - Conversation ID
-   */
-  function getConversationById(id: number): IConversation | undefined {
-    return conversations.value.find((conv) => conv.id === id);
-  }
+    // Increment page number for "load more" functionality
+    const nextPage = filters.value.page ? filters.value.page + 1 : 2;
 
-  /**
-   * Clear error state
-   */
-  function clearError(): void {
-    error.value = null;
-  }
+    return fetchCommunications({
+      ...filters.value,
+      page: nextPage,
+    });
+  };
 
-  /**
-   * Reset store state
-   */
-  function reset(): void {
-    conversations.value = [];
-    leads.value = [];
-    clients.value = [];
-    loading.value = false;
-    error.value = null;
-  }
+  // Load more leads
+  const loadMoreLeads = async () => {
+    if (!hasMoreLeads.value || isLoadingLeads.value) return;
+
+    // Increment page number for "load more" functionality
+    const nextPage = filters.value.page ? filters.value.page + 1 : 2;
+
+    return fetchLeads({
+      ...filters.value,
+      page: nextPage,
+    });
+  };
+
+  // Load more clients
+  const loadMoreClients = async () => {
+    if (!hasMoreClients.value || isLoadingClients.value) return;
+
+    // Increment page number for "load more" functionality
+    const nextPage = filters.value.page ? filters.value.page + 1 : 2;
+
+    return fetchClients({
+      ...filters.value,
+      page: nextPage,
+    });
+  };
+
+  const setSearchFilter = (search: string) => {
+    // Reset to page 1 when changing search
+    filters.value = {
+      ...filters.value,
+      search,
+      page: 1,
+    };
+
+    return fetchCommunications(filters.value);
+  };
+
+  // Search filter for leads only
+  const setLeadsSearchFilter = (search: string) => {
+    // Reset to page 1 when changing search
+    filters.value = {
+      ...filters.value,
+      search,
+      page: 1,
+    };
+
+    return fetchLeads(filters.value);
+  };
+
+  // Search filter for clients only
+  const setClientsSearchFilter = (search: string) => {
+    // Reset to page 1 when changing search
+    filters.value = {
+      ...filters.value,
+      search,
+      page: 1,
+    };
+
+    return fetchClients(filters.value);
+  };
+
+  const setUserFilter = (userId?: number) => {
+    // Reset to page 1 when changing user filter
+    filters.value = {
+      ...filters.value,
+      user_id: userId,
+      page: 1,
+    };
+
+    return fetchCommunications(filters.value);
+  };
+
+  // User filter for leads only
+  const setLeadsUserFilter = (userId?: number) => {
+    // Reset to page 1 when changing user filter
+    filters.value = {
+      ...filters.value,
+      user_id: userId,
+      page: 1,
+    };
+
+    return fetchLeads(filters.value);
+  };
+
+  // User filter for clients only
+  const setClientsUserFilter = (userId?: number) => {
+    // Reset to page 1 when changing user filter
+    filters.value = {
+      ...filters.value,
+      user_id: userId,
+      page: 1,
+    };
+
+    return fetchClients(filters.value);
+  };
+
+  // Helper function to reset filters to default values
+  const getDefaultFilters = (): GetCommunicationsParams => {
+    return {
+      page: 1,
+      search: "",
+      user_id: undefined,
+    };
+  };
+
+  const resetFilters = () => {
+    filters.value = getDefaultFilters();
+    return fetchCommunications(filters.value);
+  };
+
+  // Reset filters for leads only
+  const resetLeadsFilters = () => {
+    filters.value = getDefaultFilters();
+    return fetchLeads(filters.value);
+  };
+
+  // Reset filters for clients only
+  const resetClientsFilters = () => {
+    filters.value = getDefaultFilters();
+    return fetchClients(filters.value);
+  };
 
   return {
     // State
-    conversations,
     leads,
     clients,
-    loading,
-    error,
-
-    // Computed
+    leadsMeta,
+    clientsMeta,
     isLoading,
-    hasError,
-    totalConversations,
-    unreadCount,
+    isLoadingLeads,
+    isLoadingClients,
+    error,
+    leadsError,
+    clientsError,
+    filters,
+
+    // Getters
+    hasMoreLeads,
+    hasMoreClients,
+    hasMore,
+    allCommunications,
 
     // Actions
-    fetchConversations,
-    sendMessage,
-    updateDraftMessage,
-    pinMessage,
-    unpinMessage,
-    getConversationById,
-    clearError,
-    reset,
+    fetchCommunications,
+    loadMoreCommunications,
+    setSearchFilter,
+    setUserFilter,
+    resetFilters,
+    // New actions for leads and clients
+    fetchLeads,
+    fetchClients,
+    loadMoreLeads,
+    loadMoreClients,
+    setLeadsSearchFilter,
+    setClientsSearchFilter,
+    setLeadsUserFilter,
+    setClientsUserFilter,
+    resetLeadsFilters,
+    resetClientsFilters,
   };
 });
 

@@ -270,9 +270,52 @@ export interface ApiCommunicationClient {
   draftMessage: string | null;
 }
 
+export interface ApiResponseLinks {
+  first: string;
+  last: string;
+  next: string | null;
+  prev: string | null;
+}
+
+export interface ApiResponseMeta {
+  current_page: number;
+  from: number;
+  last_page: number;
+  path: string;
+  per_page: number;
+  to: number;
+  total: number;
+}
+
 export interface ApiCommunicationResponse {
-  leads: ApiCommunicationLead[];
-  clients: ApiCommunicationClient[];
+  leads: {
+    data: ApiCommunicationLead[];
+    links: ApiResponseLinks;
+    meta: ApiResponseMeta;
+  };
+  clients: {
+    data: ApiCommunicationClient[];
+    links: ApiResponseLinks;
+    meta: ApiResponseMeta;
+  };
+}
+
+export interface ApiCommunicationLeadsResponse {
+  leads: {
+    data: ApiCommunicationLead[];
+    links: ApiResponseLinks;
+    meta: ApiResponseMeta;
+  };
+  clients: null;
+}
+
+export interface ApiCommunicationClientsResponse {
+  clients: {
+    data: ApiCommunicationClient[];
+    links: ApiResponseLinks;
+    meta: ApiResponseMeta;
+  };
+  leads: null;
 }
 
 // -----------------
@@ -356,4 +399,25 @@ export interface ApiMessageFull {
   };
   chaport_messages?: unknown;
   call?: ApiMessageContentBinotel;
+}
+
+// Global data
+export interface ApiKanbanStatus {
+  id: number;
+  name: string;
+  for_hunters: number;
+  for_all: number;
+  avaliable_statuses: string; // JSON array of status IDs as a string
+}
+
+export interface ApiGlobalDataUser {
+  id: number;
+  name: string;
+  role_id: number;
+}
+
+export interface ApiGlobalDataResponse {
+  users: ApiGlobalDataUser[];
+  usersForClients: ApiGlobalDataUser[];
+  kanbanStatuses: ApiKanbanStatus[];
 }

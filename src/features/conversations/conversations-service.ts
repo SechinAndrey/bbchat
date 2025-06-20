@@ -1,18 +1,29 @@
 import apiClient from "@src/api/axios-instance";
-import type { ApiCommunicationResponse } from "@src/api/types";
+import type {
+  ApiCommunicationResponse,
+  ApiCommunicationLeadsResponse,
+  ApiCommunicationClientsResponse,
+} from "@src/api/types";
 
-/**
- * Service for managing conversations/communications
- */
+export interface GetCommunicationsParams {
+  page?: number;
+  search?: string;
+  user_id?: number;
+}
+
 export class ConversationsService {
   /**
    * Get all communications (leads and clients) for current user
    * @returns Promise with communications data
    */
-  async getCommunications(): Promise<ApiCommunicationResponse> {
+  async getCommunications(
+    params?: GetCommunicationsParams,
+  ): Promise<ApiCommunicationResponse> {
     try {
-      const response =
-        await apiClient.get<ApiCommunicationResponse>("/communications");
+      const response = await apiClient.get<ApiCommunicationResponse>(
+        "/communications",
+        { params },
+      );
       return response.data;
     } catch (error) {
       console.error("Error fetching communications:", error);
@@ -21,75 +32,40 @@ export class ConversationsService {
   }
 
   /**
-   * Send message to lead or client
-   * @param data - Message data
-   * @returns Promise with success status
+   * Get all leads for current user
+   * @returns Promise with leads data
    */
-  async sendMessage(data: {
-    contragent_id: number;
-    contragent_type: "lead" | "client";
-    message: string;
-    type?: string;
-  }): Promise<boolean> {
+  async getCommunicationsLeads(
+    params?: GetCommunicationsParams,
+  ): Promise<ApiCommunicationLeadsResponse> {
     try {
-      await apiClient.post("/communications/messages", data);
-      return true;
-    } catch (error) {
-      console.error("Error sending message:", error);
-      throw new Error("Failed to send message");
-    }
-  }
-
-  /**
-   * Update draft message
-   * @param contragentId - Lead or client ID
-   * @param contragentType - Type: "lead" or "client"
-   * @param draftMessage - Draft message text
-   * @returns Promise<void>
-   */
-  async updateDraftMessage(
-    contragentId: number,
-    contragentType: "lead" | "client",
-    draftMessage: string,
-  ): Promise<void> {
-    try {
-      await apiClient.put(
-        `/communications/${contragentType}s/${contragentId}/draft`,
-        {
-          draftMessage,
-        },
+      const response = await apiClient.get<ApiCommunicationLeadsResponse>(
+        "/communications/leads",
+        { params },
       );
+      return response.data;
     } catch (error) {
-      console.error("Error updating draft message:", error);
-      throw new Error("Failed to update draft message");
+      console.error("Error fetching communications leads:", error);
+      throw new Error("Failed to fetch communications leads");
     }
   }
 
   /**
-   * Pin message in conversation
-   * @param messageId - Message ID
-   * @returns Promise<void>
+   * Get all clients for current user
+   * @returns Promise with clients data
    */
-  async pinMessage(messageId: number): Promise<void> {
+  async getCommunicationsClients(
+    params?: GetCommunicationsParams,
+  ): Promise<ApiCommunicationClientsResponse> {
     try {
-      await apiClient.put(`/communications/messages/${messageId}/pin`);
+      const response = await apiClient.get<ApiCommunicationClientsResponse>(
+        "/communications/clients",
+        { params },
+      );
+      return response.data;
     } catch (error) {
-      console.error("Error pinning message:", error);
-      throw new Error("Failed to pin message");
-    }
-  }
-
-  /**
-   * Unpin message in conversation
-   * @param messageId - Message ID
-   * @returns Promise<void>
-   */
-  async unpinMessage(messageId: number): Promise<void> {
-    try {
-      await apiClient.delete(`/communications/messages/${messageId}/pin`);
-    } catch (error) {
-      console.error("Error unpinning message:", error);
-      throw new Error("Failed to unpin message");
+      console.error("Error fetching communications clients:", error);
+      throw new Error("Failed to fetch communications clients");
     }
   }
 }

@@ -5,11 +5,12 @@ import type { Ref } from "vue";
 import { onMounted, ref, watch, computed } from "vue";
 
 import useStore from "@src/shared/store/store";
+import { useGlobalDataStore } from "@src/shared/store/global-data-store";
 import { useAuthStore } from "@src/features/auth/store/auth-store";
 import { useConversationsStore } from "@src/features/conversations/conversations-store";
 import { getActiveConversationId, getName } from "@src/shared/utils/utils";
 
-import { PencilSquareIcon } from "@heroicons/vue/24/outline";
+import { PencilSquareIcon, UserIcon } from "@heroicons/vue/24/outline";
 import ComposeModal from "@src/features/conversations/modals/ComposeModal/ComposeModal.vue";
 import NoConversation from "@src/ui/states/empty-states/NoConversation.vue";
 import Circle2Lines from "@src/ui/states/loading-states/Circle2Lines.vue";
@@ -22,6 +23,7 @@ import SidebarHeader from "@src/layout/sidebar/SidebarHeader.vue";
 import Tabs from "@src/ui/navigation/Tabs/Tabs.vue";
 import Tab from "@src/ui/navigation/Tabs/Tab.vue";
 import SlideTransition from "@src/ui/transitions/SlideTransition.vue";
+import { Dropdown, DropdownItem } from "@src/ui/navigation/DropdownV3";
 
 // active tab name
 const TAB = {
@@ -54,42 +56,21 @@ watch(activeTab, (newTab, oldTab) => {
 });
 
 const store = useStore();
+const globalDataStore = useGlobalDataStore();
+globalDataStore.fetchGlobalData();
 const authStore = useAuthStore();
 // Initialize new communications store for fetching conversations data
 const conversationsStore = useConversationsStore();
-
+conversationsStore.fetchCommunications();
 const keyword: Ref<string> = ref("");
-
 const composeOpen = ref(false);
 
 // determines whether the archive is open or not
 const openArchive = ref(false);
 
-// computed filtered list of conversations from the new communications store
-const filteredConversations = computed(() => {
-  const searchTerm = keyword.value.toLowerCase();
-
-  if (openArchive.value) {
-    // search archived conversations - using legacy store for now until archived conversations are moved to new store
-    return (
-      store.archivedConversations?.filter((conversation) =>
-        getName(conversation)?.toLowerCase().includes(searchTerm),
-      ) || []
-    );
-  } else {
-    // search active conversations from the new communications store
-    const filtered =
-      conversationsStore.conversations?.filter((conversation) =>
-        getName(conversation)?.toLowerCase().includes(searchTerm),
-      ) || [];
-
-    return filtered;
-  }
-});
-
 // Handle errors from communications store
 watch(
-  () => conversationsStore.hasError,
+  () => conversationsStore.error,
   (hasError) => {
     if (hasError) {
       console.error("Communications store error:", conversationsStore.error);
@@ -108,7 +89,7 @@ const closeComposeModal = () => {
 onMounted(async () => {
   // Initialize conversations from the new communications store
 
-  const success = await conversationsStore.fetchConversations();
+  // const success = await conversationsStore.fetchConversations();
 
   let conversation = store.archivedConversations.find(
     (conversation) => conversation.id === getActiveConversationId(),
@@ -125,14 +106,54 @@ onMounted(async () => {
 
       <!--side actions-->
       <template v-slot:actions>
-        <IconButton
-          class="ic-btn-ghost-primary w-7 h-7"
-          @click="composeOpen = true"
-          aria-label="compose conversation"
-          title="compose conversation"
-        >
-          <PencilSquareIcon class="w-[1.25rem] h-[1.25rem]" />
-        </IconButton>
+        <div class="flex items-center gap-2">
+          <Dropdown>
+            <template #activator>
+              <IconButton
+                class="ic-btn-ghost-primary w-7 h-7"
+                aria-label="compose conversation"
+                title="compose conversation"
+              >
+                <UserIcon class="w-[1.25rem] h-[1.25rem]" />
+              </IconButton>
+            </template>
+
+            <div>
+              <DropdownItem
+                v-for="user in globalDataStore.allUsers"
+                :key="user.id"
+              >
+                {{ user.name }}
+              </DropdownItem>
+            </div>
+          </Dropdown>
+
+          <Dropdown position="bottom" trigger="click">
+            <template #activator>
+              <IconButton
+                class="ic-btn-ghost-primary w-7 h-7"
+                aria-label="compose conversation"
+                title="compose conversation"
+              >
+                🔥
+              </IconButton>
+            </template>
+
+            <DropdownItem> 🔥 Ліди </DropdownItem>
+            <DropdownItem> 👨‍💼 Клієнти </DropdownItem>
+          </Dropdown>
+
+          <div title="Comming soon">
+            <IconButton
+              class="disabled ic-btn-ghost-primary w-7 h-7"
+              @click="composeOpen = true"
+              aria-label="compose conversation"
+              title="compose conversation"
+            >
+              <PencilSquareIcon class="w-[1.25rem] h-[1.25rem]" />
+            </IconButton>
+          </div>
+        </div>
       </template>
     </SidebarHeader>
 
@@ -186,12 +207,12 @@ onMounted(async () => {
             v-if="
               !conversationsStore.isLoading &&
               !store.delayLoading &&
-              filteredConversations.length > 0
+              conversationsStore.allCommunications.length > 0
             "
           >
             <FadeTransition>
               <ConversationsList
-                :filtered-conversations="filteredConversations"
+                :filtered-conversations="conversationsStore.allCommunications"
                 :key="openArchive ? 'archive' : 'active'"
               />
             </FadeTransition>
@@ -226,12 +247,12 @@ onMounted(async () => {
             v-if="
               !conversationsStore.isLoading &&
               !store.delayLoading &&
-              filteredConversations.length > 0
+              conversationsStore.allCommunications.length > 0
             "
           >
             <FadeTransition>
               <ConversationsList
-                :filtered-conversations="filteredConversations"
+                :filtered-conversations="conversationsStore.allCommunications"
                 :key="openArchive ? 'archive' : 'active'"
               />
             </FadeTransition>
