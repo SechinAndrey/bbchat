@@ -111,6 +111,7 @@ function adaptApiCommunicationToIConversation(
         : [],
     pinnedMessageHidden: false,
     draftMessage: "",
+    communicationStatusId: entity.communication_status_id || 0,
   };
 }
 

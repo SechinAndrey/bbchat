@@ -3,7 +3,6 @@ import { ref, computed, onMounted, onUnmounted, nextTick, watch } from "vue";
 import UserIcon from "../../shared/icons/UserIcon.vue";
 import ChevronDownIcon from "../../shared/icons/ChevronDownIcon.vue";
 import Checkbox from "./Checkbox.vue";
-import { Teleport } from "vue";
 
 type Option = {
   value: string | number;
@@ -192,7 +191,7 @@ const handleOptionClick = (option: Option) => {
   <div class="relative" ref="selectElement">
     <button
       @click="toggleDropdown"
-      class="flex items-center justify-between w-full text-left"
+      class="flex items-center justify-between w-full text-left gap-[0.25rem]"
     >
       <span class="flex items-center min-w-0">
         <component

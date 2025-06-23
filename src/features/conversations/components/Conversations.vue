@@ -3,13 +3,12 @@ import type { IConversation } from "@src/shared/types/types";
 import type { Ref } from "vue";
 import type { GetCommunicationsParams } from "../conversations-service";
 
-import { onMounted, ref, watch, computed, onUnmounted } from "vue";
+import { ref, watch, computed } from "vue";
 import { useInfiniteScroll } from "@vueuse/core";
 
-import useStore from "@src/shared/store/store";
 import { useGlobalDataStore } from "@src/shared/store/global-data-store";
 import { useConversationsStore } from "@src/features/conversations/conversations-store";
-import { getActiveConversationId, getName } from "@src/shared/utils/utils";
+import { useAuthStore } from "@src/features/auth/store/auth-store";
 
 import { PencilSquareIcon, UserIcon } from "@heroicons/vue/24/outline";
 import ComposeModal from "@src/features/conversations/modals/ComposeModal/ComposeModal.vue";
@@ -26,9 +25,29 @@ import Tab from "@src/ui/navigation/Tabs/Tab.vue";
 import SlideTransition from "@src/ui/transitions/SlideTransition.vue";
 import Select from "@src/ui/inputs/Select.vue";
 
+// Store instances
+const authStore = useAuthStore();
+const globalDataStore = useGlobalDataStore();
+const conversationsStore = useConversationsStore();
+
+// State refs
 const selectedUser = ref<number | "all">("all");
 const selectedFilter = ref("leads");
+const keyword: Ref<string> = ref("");
+const composeOpen = ref(false);
+const openArchive = ref(false);
 
+const TAB = {
+  all: "all",
+  open: "open",
+};
+const activeTab = ref(TAB.all);
+
+// Destructure from stores
+const { fetchLeads, fetchClients, loadMoreLeads, loadMoreClients } =
+  conversationsStore;
+
+// Computed properties
 const userOptions = computed(() => [
   { value: "all", label: "Всі" },
   ...globalDataStore.allUsers.map((user) => ({
@@ -37,16 +56,16 @@ const userOptions = computed(() => [
   })),
 ]);
 
-const filterOptions = ref([
-  { value: "leads", label: "🔥 Ліди" },
-  { value: "clients", label: "👨‍💼 Клієнти" },
-]);
-
-const conversationsStore = useConversationsStore();
-const { fetchLeads, fetchClients, loadMoreLeads, loadMoreClients } =
-  conversationsStore;
-const keyword: Ref<string> = ref("");
-const composeOpen = ref(false);
+const filterOptions = computed(() => {
+  const options = [{ value: "leads", label: "🔥 Ліди" }];
+  if (
+    authStore.currentUser?.roleId === 1 ||
+    authStore.currentUser?.roleId === 2
+  ) {
+    options.push({ value: "clients", label: "👨‍💼 Клієнти" });
+  }
+  return options;
+});
 
 const apiConversations = computed(() => {
   return selectedFilter.value === "leads"
@@ -76,13 +95,15 @@ const hasMore = computed(() => {
     : conversationsStore.hasMoreClients;
 });
 
+// Watch for data fetching
 watch(
-  [keyword, selectedUser, selectedFilter],
+  [keyword, selectedUser, selectedFilter, activeTab],
   () => {
     const params: GetCommunicationsParams = {
       page: 1,
-      search: keyword.value,
+      search: keyword.value || undefined,
       user_id: selectedUser.value === "all" ? undefined : selectedUser.value,
+      communication_status_id: activeTab.value === TAB.open ? 1 : undefined,
     };
 
     if (selectedFilter.value === "leads") {
@@ -94,6 +115,7 @@ watch(
   { immediate: true },
 );
 
+// Infinite scroll
 const scrollContainer = ref<HTMLElement | null>(null);
 
 const loadMore = () => {
@@ -115,15 +137,7 @@ useInfiniteScroll(
   },
 );
 
-// active tab name
-const TAB = {
-  open: "open",
-  all: "all",
-} as const;
-type TabName = (typeof TAB)[keyof typeof TAB];
-const activeTab = ref<TabName>(TAB.all);
-
-// slide animation
+// Slide animation for tabs
 const SLIDE = {
   left: "slide-left",
   right: "slide-right",
@@ -137,48 +151,28 @@ watch(activeTab, (newTab, oldTab) => {
     "all->open": "LEFT",
     "open->all": "RIGHT",
   };
-
   const key = `${oldTab}->${newTab}`;
-  const direction = directionMap[key] ?? "LEFT"; // fallback
-
+  const direction = directionMap[key] ?? "LEFT";
   animation.value = direction === "LEFT" ? SLIDE.left : SLIDE.right;
 });
 
-const store = useStore();
-const globalDataStore = useGlobalDataStore();
+// Initial data fetch
 globalDataStore.fetchGlobalData();
 
-// determines whether the archive is open or not
-const openArchive = ref(false);
-
-// Handle errors from communications store
+// Error handling
 watch(
   () => conversationsStore.error,
   (hasError) => {
     if (hasError) {
       console.error("Communications store error:", conversationsStore.error);
-      // You can add toast notification or other error handling here
     }
   },
 );
 
-// (event) close the compose modal.
+// Modal control
 const closeComposeModal = () => {
   composeOpen.value = false;
 };
-
-// if the active conversation is in the archive
-// then open the archive
-onMounted(async () => {
-  // Initialize conversations from the new communications store
-
-  // const success = await conversationsStore.fetchConversations();
-
-  let conversation = store.archivedConversations.find(
-    (conversation) => conversation.id === getActiveConversationId(),
-  );
-  if (conversation) openArchive.value = true;
-});
 </script>
 
 <template>
@@ -186,13 +180,14 @@ onMounted(async () => {
     <SidebarHeader>
       <!--title-->
       <template v-slot:title>
-        <div @click="apiClient.get('/communications/clients')">Чаты</div>
+        <div>Чати</div>
       </template>
 
       <!--side actions-->
       <template v-slot:actions>
         <div class="flex items-center gap-3">
           <Select
+            v-if="authStore.currentUser?.roleId === 1"
             v-model="selectedUser"
             :options="userOptions"
             placeholder="Список менеджерiв"
@@ -204,10 +199,9 @@ onMounted(async () => {
           <Select
             v-model="selectedFilter"
             :options="filterOptions"
-            placeholder="🔥"
             :icon="null"
             size="sm"
-            class="w-10"
+            :class="{ 'w-10': authStore.currentUser?.roleId === 1 }"
           />
 
           <div title="Comming soon">
@@ -239,12 +233,12 @@ onMounted(async () => {
     <Tabs class="mx-5 mb-4">
       <Tab
         :active="activeTab === TAB.all"
-        name="Все"
+        name="Всі"
         @click="activeTab = TAB.all"
       />
       <Tab
         :active="activeTab === TAB.open"
-        name="Открытые"
+        name="Відкриті"
         @click="activeTab = TAB.open"
       />
     </Tabs>
@@ -265,11 +259,11 @@ onMounted(async () => {
         />
 
         <div v-else>
-          <ArchivedButton
-            v-if="store.archivedConversations.length > 0"
+          <!-- <ArchivedButton
+            v-if="conversationsStore.archivedConversations?.length > 0"
             :open="openArchive"
             @click="openArchive = !openArchive"
-          />
+          /> -->
 
           <div v-if="currentConversations.length > 0">
             <FadeTransition>
@@ -282,7 +276,7 @@ onMounted(async () => {
           </div>
 
           <div v-else>
-            <NoConversation v-if="store.archivedConversations.length === 0" />
+            <NoConversation />
           </div>
         </div>
       </div>

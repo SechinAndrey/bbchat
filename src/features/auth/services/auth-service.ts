@@ -81,6 +81,7 @@ export class AuthService {
    * @param token - token to save
    */
   saveToken(token: string): void {
+    setAuthToken(token);
     localStorage.setItem(AuthService.TOKEN_KEY, token);
   }
 

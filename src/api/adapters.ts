@@ -63,6 +63,7 @@ export function adaptUser(apiUser: ApiUser): IUser {
 
   return {
     id: apiUser.id,
+    roleId: apiUser.role_id,
     firstName,
     lastName,
     email: apiUser.email,

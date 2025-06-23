@@ -1,5 +1,6 @@
 export interface IUser {
   id: number;
+  roleId: number;
   firstName: string;
   lastName: string;
   email: string;
@@ -74,6 +75,7 @@ export interface IConversation {
   replyMessage?: IMessage;
   unread?: number;
   draftMessage: string;
+  communicationStatusId: number;
 }
 
 export interface IContactGroup {

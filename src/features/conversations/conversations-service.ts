@@ -9,6 +9,7 @@ export interface GetCommunicationsParams {
   page?: number;
   search?: string;
   user_id?: number;
+  communication_status_id?: number;
 }
 
 export class ConversationsService {
