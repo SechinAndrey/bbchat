@@ -1,37 +1,20 @@
 <script setup lang="ts">
 import { CheckIcon } from "@heroicons/vue/24/outline";
 
-const props = defineProps<{
-  value: boolean;
-  inputId?: string;
-  handleCheck?: () => void;
+defineProps<{
+  modelValue: boolean;
 }>();
 </script>
 
 <template>
-  <div class="relative flex justify-center items-center">
-    <input
-      :id="props.inputId"
-      :class="props.value ? ['bg-primary'] : []"
-      type="checkbox"
-      @click="
-        () => {
-          if (props.handleCheck) props.handleCheck();
-          $emit('update', !props.value);
-        }
-      "
-      :checked="props.value"
-      class="h-5 w-5 appearance-none relative cursor-pointer outline-none rounded-[.3125rem] border border-primary transition-all duration-300"
-    />
+  <div class="relative flex h-5 w-5 items-center justify-center">
+    <div
+      class="h-5 w-5 appearance-none rounded-[.3125rem] border border-primary outline-none transition-all duration-300"
+      :class="{ 'bg-primary': modelValue }"
+    ></div>
     <CheckIcon
-      @click="
-        () => {
-          if (props.handleCheck) props.handleCheck();
-          $emit('update', !props.value);
-        }
-      "
-      class="absolute top-[.1875rem] cursor-pointer z-10 left-[.125rem] w-4 h-4 text-white transition-all duration-300"
-      :class="props.value ? [] : ['hidden']"
+      v-if="modelValue"
+      class="pointer-events-none absolute h-4 w-4 text-white"
     />
   </div>
 </template>

@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import type { IConversation } from "@src/shared/types/types";
 import type { Ref } from "vue";
+import type { GetCommunicationsParams } from "../conversations-service";
 
-import { onMounted, ref, watch, computed } from "vue";
+import { onMounted, ref, watch, computed, onUnmounted } from "vue";
+import { useInfiniteScroll } from "@vueuse/core";
 
 import useStore from "@src/shared/store/store";
 import { useGlobalDataStore } from "@src/shared/store/global-data-store";
-import { useAuthStore } from "@src/features/auth/store/auth-store";
 import { useConversationsStore } from "@src/features/conversations/conversations-store";
 import { getActiveConversationId, getName } from "@src/shared/utils/utils";
 
@@ -23,7 +24,96 @@ import SidebarHeader from "@src/layout/sidebar/SidebarHeader.vue";
 import Tabs from "@src/ui/navigation/Tabs/Tabs.vue";
 import Tab from "@src/ui/navigation/Tabs/Tab.vue";
 import SlideTransition from "@src/ui/transitions/SlideTransition.vue";
-import { Dropdown, DropdownItem } from "@src/ui/navigation/DropdownV3";
+import Select from "@src/ui/inputs/Select.vue";
+
+const selectedUser = ref<number | "all">("all");
+const selectedFilter = ref("leads");
+
+const userOptions = computed(() => [
+  { value: "all", label: "Всі" },
+  ...globalDataStore.allUsers.map((user) => ({
+    value: user.id,
+    label: user.name,
+  })),
+]);
+
+const filterOptions = ref([
+  { value: "leads", label: "🔥 Ліди" },
+  { value: "clients", label: "👨‍💼 Клієнти" },
+]);
+
+const conversationsStore = useConversationsStore();
+const { fetchLeads, fetchClients, loadMoreLeads, loadMoreClients } =
+  conversationsStore;
+const keyword: Ref<string> = ref("");
+const composeOpen = ref(false);
+
+const apiConversations = computed(() => {
+  return selectedFilter.value === "leads"
+    ? conversationsStore.leads
+    : conversationsStore.clients;
+});
+
+const currentConversations = computed(() => {
+  return apiConversations.value.map(
+    (conv) =>
+      ({
+        ...(conv as any),
+        type: conv.type || "",
+      }) as IConversation,
+  );
+});
+
+const isLoading = computed(() => {
+  return selectedFilter.value === "leads"
+    ? conversationsStore.isLoadingLeads
+    : conversationsStore.isLoadingClients;
+});
+
+const hasMore = computed(() => {
+  return selectedFilter.value === "leads"
+    ? conversationsStore.hasMoreLeads
+    : conversationsStore.hasMoreClients;
+});
+
+watch(
+  [keyword, selectedUser, selectedFilter],
+  () => {
+    const params: GetCommunicationsParams = {
+      page: 1,
+      search: keyword.value,
+      user_id: selectedUser.value === "all" ? undefined : selectedUser.value,
+    };
+
+    if (selectedFilter.value === "leads") {
+      fetchLeads(params);
+    } else {
+      fetchClients(params);
+    }
+  },
+  { immediate: true },
+);
+
+const scrollContainer = ref<HTMLElement | null>(null);
+
+const loadMore = () => {
+  if (selectedFilter.value === "leads") {
+    loadMoreLeads();
+  } else {
+    loadMoreClients();
+  }
+};
+
+useInfiniteScroll(
+  scrollContainer,
+  () => {
+    loadMore();
+  },
+  {
+    distance: 300,
+    canLoadMore: () => hasMore.value && !isLoading.value,
+  },
+);
 
 // active tab name
 const TAB = {
@@ -31,8 +121,7 @@ const TAB = {
   all: "all",
 } as const;
 type TabName = (typeof TAB)[keyof typeof TAB];
-const activeTab = ref<TabName>(TAB.open);
-const TAB_ORDER: (typeof TAB)[keyof typeof TAB][] = [TAB.open, TAB.all];
+const activeTab = ref<TabName>(TAB.all);
 
 // slide animation
 const SLIDE = {
@@ -58,12 +147,6 @@ watch(activeTab, (newTab, oldTab) => {
 const store = useStore();
 const globalDataStore = useGlobalDataStore();
 globalDataStore.fetchGlobalData();
-const authStore = useAuthStore();
-// Initialize new communications store for fetching conversations data
-const conversationsStore = useConversationsStore();
-conversationsStore.fetchCommunications();
-const keyword: Ref<string> = ref("");
-const composeOpen = ref(false);
 
 // determines whether the archive is open or not
 const openArchive = ref(false);
@@ -102,46 +185,30 @@ onMounted(async () => {
   <div class="bg-theme-conversations">
     <SidebarHeader>
       <!--title-->
-      <template v-slot:title>Чаты</template>
+      <template v-slot:title>
+        <div @click="apiClient.get('/communications/clients')">Чаты</div>
+      </template>
 
       <!--side actions-->
       <template v-slot:actions>
-        <div class="flex items-center gap-2">
-          <Dropdown>
-            <template #activator>
-              <IconButton
-                class="ic-btn-ghost-primary w-7 h-7"
-                aria-label="compose conversation"
-                title="compose conversation"
-              >
-                <UserIcon class="w-[1.25rem] h-[1.25rem]" />
-              </IconButton>
-            </template>
+        <div class="flex items-center gap-3">
+          <Select
+            v-model="selectedUser"
+            :options="userOptions"
+            placeholder="Список менеджерiв"
+            :icon="UserIcon"
+            class="w-12"
+            size="sm"
+          />
 
-            <div>
-              <DropdownItem
-                v-for="user in globalDataStore.allUsers"
-                :key="user.id"
-              >
-                {{ user.name }}
-              </DropdownItem>
-            </div>
-          </Dropdown>
-
-          <Dropdown position="bottom" trigger="click">
-            <template #activator>
-              <IconButton
-                class="ic-btn-ghost-primary w-7 h-7"
-                aria-label="compose conversation"
-                title="compose conversation"
-              >
-                🔥
-              </IconButton>
-            </template>
-
-            <DropdownItem> 🔥 Ліди </DropdownItem>
-            <DropdownItem> 👨‍💼 Клієнти </DropdownItem>
-          </Dropdown>
+          <Select
+            v-model="selectedFilter"
+            :options="filterOptions"
+            placeholder="🔥"
+            :icon="null"
+            size="sm"
+            class="w-10"
+          />
 
           <div title="Comming soon">
             <IconButton
@@ -185,14 +252,15 @@ onMounted(async () => {
     <!--conversations-->
     <SlideTransition :animation="animation">
       <div
+        ref="scrollContainer"
         role="list"
         aria-label="conversations"
         class="w-full h-full scroll-smooth scrollbar-hidden"
         style="overflow-x: visible; overflow-y: scroll"
-        v-if="activeTab === TAB.all"
+        :key="activeTab"
       >
         <Circle2Lines
-          v-if="conversationsStore.isLoading || store.delayLoading"
+          v-if="isLoading && currentConversations.length === 0"
           v-for="item in 6"
         />
 
@@ -203,59 +271,14 @@ onMounted(async () => {
             @click="openArchive = !openArchive"
           />
 
-          <div
-            v-if="
-              !conversationsStore.isLoading &&
-              !store.delayLoading &&
-              conversationsStore.allCommunications.length > 0
-            "
-          >
+          <div v-if="currentConversations.length > 0">
             <FadeTransition>
               <ConversationsList
-                :filtered-conversations="conversationsStore.allCommunications"
+                :filtered-conversations="currentConversations"
                 :key="openArchive ? 'archive' : 'active'"
               />
             </FadeTransition>
-          </div>
-
-          <div v-else>
-            <NoConversation v-if="store.archivedConversations.length === 0" />
-          </div>
-        </div>
-      </div>
-
-      <div
-        role="list"
-        aria-label="conversations"
-        class="w-full h-full scroll-smooth scrollbar-hidden"
-        style="overflow-x: visible; overflow-y: scroll"
-        v-if="activeTab === TAB.open"
-      >
-        <Circle2Lines
-          v-if="conversationsStore.isLoading || store.delayLoading"
-          v-for="item in 6"
-        />
-
-        <div v-else>
-          <ArchivedButton
-            v-if="store.archivedConversations.length > 0"
-            :open="openArchive"
-            @click="openArchive = !openArchive"
-          />
-
-          <div
-            v-if="
-              !conversationsStore.isLoading &&
-              !store.delayLoading &&
-              conversationsStore.allCommunications.length > 0
-            "
-          >
-            <FadeTransition>
-              <ConversationsList
-                :filtered-conversations="conversationsStore.allCommunications"
-                :key="openArchive ? 'archive' : 'active'"
-              />
-            </FadeTransition>
+            <Circle2Lines v-if="isLoading" />
           </div>
 
           <div v-else>

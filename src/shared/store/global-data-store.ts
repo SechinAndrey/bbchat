@@ -9,7 +9,15 @@ export const useGlobalDataStore = defineStore("globalData", () => {
   const error = ref<string | null>(null);
   const allUsers = computed<ApiGlobalDataUser[]>(() => {
     if (!globalData.value) return [];
-    return [...globalData.value.users, ...globalData.value.usersForClients];
+    // combine users and usersForClients into a single array with UNIQUE users by id
+    const usersMap = new Map<string, ApiGlobalDataUser>();
+    globalData.value.users.forEach((user) =>
+      usersMap.set(user.id.toString(), user),
+    );
+    globalData.value.usersForClients.forEach((user) =>
+      usersMap.set(user.id.toString(), user),
+    );
+    return Array.from(usersMap.values());
   });
 
   const fetchGlobalData = async () => {

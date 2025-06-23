@@ -12,6 +12,7 @@ import Checkbox from "@src/ui/inputs/Checkbox.vue";
 import SwitchInput from "@src/ui/inputs/SwitchInput.vue";
 import RangeSlider from "@src/ui/inputs/RangeSlider.vue";
 import DropFileUpload from "@src/ui/inputs/DropFileUpload.vue";
+import Select from "@src/ui/inputs/Select.vue";
 
 import {
   PaperAirplaneIcon,
@@ -25,6 +26,14 @@ import {
 const checkboxValue = ref(false);
 const switchValue = ref(false);
 const sliderValue = ref(50);
+const singleSelectValue = ref(null);
+const multiSelectValue = ref([]);
+const selectOptions = [
+  { value: 1, label: "Перший варіант" },
+  { value: 2, label: "Другий варіант" },
+  { value: 3, label: "Третій варіант" },
+  { value: 4, label: "Четвертий варіант" },
+];
 
 const handleCheckboxToggle = function () {
   checkboxValue.value = !checkboxValue.value;
@@ -263,6 +272,30 @@ const handleSliderChange = function (value: number) {
         <div class="p-4 border rounded dark:border-gray-600">
           <h4 class="body-2 text-color mb-2">File Upload</h4>
           <DropFileUpload label="Upload File" />
+        </div>
+      </div>
+    </section>
+
+    <!-- Selects -->
+    <section class="mb-10">
+      <h3 class="heading-2 text-color mb-4">Selects</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="p-4 border rounded dark:border-gray-600">
+          <h4 class="body-2 text-color mb-2">Single Select</h4>
+          <Select
+            v-model="singleSelectValue"
+            :options="selectOptions"
+            placeholder="Список мемберів"
+          />
+        </div>
+        <div class="p-4 border rounded dark:border-gray-600">
+          <h4 class="body-2 text-color mb-2">Multi Select</h4>
+          <Select
+            v-model="multiSelectValue"
+            :options="selectOptions"
+            multiple
+            placeholder="Список мемберів"
+          />
         </div>
       </div>
     </section>
