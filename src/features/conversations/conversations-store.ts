@@ -2,16 +2,17 @@ import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 import conversationsService from "./conversations-service";
 import type { GetCommunicationsParams } from "./conversations-service";
-import type {
-  ApiCommunicationLead,
-  ApiCommunicationClient,
-  ApiResponseMeta,
-} from "@src/api/types";
+import type { ApiResponseMeta } from "@src/api/types";
+import type { IConversation } from "@src/shared/types/types";
+import {
+  adaptApiCommunicationLeadToIConversation,
+  adaptApiCommunicationClientToIConversation,
+} from "@src/api/communication-adapters";
 
 export const useConversationsStore = defineStore("conversations", () => {
   // State
-  const leads = ref<ApiCommunicationLead[]>([]);
-  const clients = ref<ApiCommunicationClient[]>([]);
+  const leads = ref<IConversation[]>([]);
+  const clients = ref<IConversation[]>([]);
   const leadsMeta = ref<ApiResponseMeta | null>(null);
   const clientsMeta = ref<ApiResponseMeta | null>(null);
   const isLoading = ref(false);
@@ -66,12 +67,24 @@ export const useConversationsStore = defineStore("conversations", () => {
 
       // If loading first page or resetting, replace the data
       if (mergedParams.page === 1) {
-        leads.value = response.leads.data;
-        clients.value = response.clients.data;
+        leads.value = response.leads.data.map(
+          adaptApiCommunicationLeadToIConversation,
+        );
+        clients.value = response.clients.data.map(
+          adaptApiCommunicationClientToIConversation,
+        );
       } else {
         // Otherwise append to existing data for "load more" functionality
-        leads.value = [...leads.value, ...response.leads.data];
-        clients.value = [...clients.value, ...response.clients.data];
+        leads.value = [
+          ...leads.value,
+          ...response.leads.data.map(adaptApiCommunicationLeadToIConversation),
+        ];
+        clients.value = [
+          ...clients.value,
+          ...response.clients.data.map(
+            adaptApiCommunicationClientToIConversation,
+          ),
+        ];
       }
 
       // Store pagination metadata
@@ -107,10 +120,15 @@ export const useConversationsStore = defineStore("conversations", () => {
 
       // If loading first page or resetting, replace the data
       if (mergedParams.page === 1) {
-        leads.value = response.leads.data;
+        leads.value = response.leads.data.map(
+          adaptApiCommunicationLeadToIConversation,
+        );
       } else {
         // Otherwise append to existing data for "load more" functionality
-        leads.value = [...leads.value, ...response.leads.data];
+        leads.value = [
+          ...leads.value,
+          ...response.leads.data.map(adaptApiCommunicationLeadToIConversation),
+        ];
       }
 
       // Store pagination metadata
@@ -145,10 +163,17 @@ export const useConversationsStore = defineStore("conversations", () => {
 
       // If loading first page or resetting, replace the data
       if (mergedParams.page === 1) {
-        clients.value = response.clients.data;
+        clients.value = response.clients.data.map(
+          adaptApiCommunicationClientToIConversation,
+        );
       } else {
         // Otherwise append to existing data for "load more" functionality
-        clients.value = [...clients.value, ...response.clients.data];
+        clients.value = [
+          ...clients.value,
+          ...response.clients.data.map(
+            adaptApiCommunicationClientToIConversation,
+          ),
+        ];
       }
 
       // Store pagination metadata

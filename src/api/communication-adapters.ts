@@ -96,6 +96,7 @@ function adaptApiCommunicationToIConversation(
   return {
     id: entity.id,
     type: entity.type || "couple",
+    entityType,
     name: entity.name || `${entityType}${entity.id}`,
     avatar: entity.avatar || "",
     admins: [],

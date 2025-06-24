@@ -17,13 +17,15 @@ import Circle2Lines from "@src/ui/states/loading-states/Circle2Lines.vue";
 import IconButton from "@src/ui/inputs/IconButton.vue";
 import SearchInput from "@src/ui/inputs/SearchInput.vue";
 import FadeTransition from "@src/ui/transitions/FadeTransition.vue";
-import ArchivedButton from "@src/features/conversations/components/ArchivedButton.vue";
+// import ArchivedButton from "@src/features/conversations/components/ArchivedButton.vue";
 import ConversationsList from "@src/features/conversations/components/ConversationsList.vue";
 import SidebarHeader from "@src/layout/sidebar/SidebarHeader.vue";
 import Tabs from "@src/ui/navigation/Tabs/Tabs.vue";
 import Tab from "@src/ui/navigation/Tabs/Tab.vue";
 import SlideTransition from "@src/ui/transitions/SlideTransition.vue";
 import Select from "@src/ui/inputs/Select.vue";
+import flemeIcon from "@src/ui/icons/flemeIcon.vue";
+import clientIcon from "@src/ui/icons/clientIcon.vue";
 
 // Store instances
 const authStore = useAuthStore();
@@ -57,30 +59,20 @@ const userOptions = computed(() => [
 ]);
 
 const filterOptions = computed(() => {
-  const options = [{ value: "leads", label: "🔥 Ліди" }];
+  const options = [{ value: "leads", label: "Ліди" }];
   if (
     authStore.currentUser?.roleId === 1 ||
     authStore.currentUser?.roleId === 2
   ) {
-    options.push({ value: "clients", label: "👨‍💼 Клієнти" });
+    options.push({ value: "clients", label: "Клієнти" });
   }
   return options;
 });
 
-const apiConversations = computed(() => {
+const conversationsList = computed(() => {
   return selectedFilter.value === "leads"
     ? conversationsStore.leads
     : conversationsStore.clients;
-});
-
-const currentConversations = computed(() => {
-  return apiConversations.value.map(
-    (conv) =>
-      ({
-        ...(conv as any),
-        type: conv.type || "",
-      }) as IConversation,
-  );
 });
 
 const isLoading = computed(() => {
@@ -114,6 +106,10 @@ watch(
   },
   { immediate: true },
 );
+
+const leadClientIcon = computed(() => {
+  return selectedFilter.value === "leads" ? flemeIcon : clientIcon;
+});
 
 // Infinite scroll
 const scrollContainer = ref<HTMLElement | null>(null);
@@ -199,9 +195,9 @@ const closeComposeModal = () => {
           <Select
             v-model="selectedFilter"
             :options="filterOptions"
-            :icon="null"
             size="sm"
             :class="{ 'w-10': authStore.currentUser?.roleId === 1 }"
+            :icon="leadClientIcon"
           />
 
           <div title="Comming soon">
@@ -254,7 +250,7 @@ const closeComposeModal = () => {
         :key="activeTab"
       >
         <Circle2Lines
-          v-if="isLoading && currentConversations.length === 0"
+          v-if="isLoading && conversationsList.length === 0"
           v-for="item in 6"
         />
 
@@ -265,10 +261,10 @@ const closeComposeModal = () => {
             @click="openArchive = !openArchive"
           /> -->
 
-          <div v-if="currentConversations.length > 0">
+          <div v-if="conversationsList.length > 0">
             <FadeTransition>
               <ConversationsList
-                :filtered-conversations="currentConversations"
+                :filtered-conversations="conversationsList"
                 :key="openArchive ? 'archive' : 'active'"
               />
             </FadeTransition>

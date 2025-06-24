@@ -15,6 +15,7 @@ import {
   getName,
   hasAttachments,
   shorten,
+  formatConversationDate,
 } from "@src/shared/utils/utils";
 import router from "@src/router";
 import route from "@src/router";
@@ -26,6 +27,7 @@ import {
 } from "@heroicons/vue/24/outline";
 import Dropdown from "@src/ui/navigation/Dropdown/Dropdown.vue";
 import { useAvatarInitials } from "@src/shared/composables/useAvatarInitials";
+import flemeIcon from "@src/ui/icons/flemeIcon.vue";
 
 const props = defineProps<{
   conversation: IConversation;
@@ -123,12 +125,16 @@ const isSelected = computed(() => {
       <div class="mr-4">
         <div
           :style="{ backgroundImage: `url(${avatar})` }"
-          class="w-7 h-7 rounded-full bg-cover bg-center"
+          class="w-7 h-7 rounded-full bg-cover bg-center flex items-center justify-center"
           :class="avatarColor"
         >
+          <flemeIcon
+            v-if="!avatar && props.conversation.entityType === 'lead'"
+            class="text-orange-500 dark:text-orange-400"
+          />
           <span
-            v-if="!avatar"
-            class="flex items-center justify-center w-full h-full text-sm font-semibold text-white rounded-full"
+            v-else-if="!avatar"
+            class="flex items-center justify-center w-full h-full text-sm font-semibold text-primary rounded-full"
           >
             {{ avatarInitials }}
           </span>
@@ -139,17 +145,23 @@ const isSelected = computed(() => {
         <div class="w-full">
           <!--conversation name-->
           <div class="flex items-start">
-            <div class="grow mb-4 text-start">
+            <div class="grow mb-2 text-start">
               <p class="heading-2 text-color">
                 {{ getName(props.conversation) }}
               </p>
             </div>
 
             <!--last message date-->
-            <p class="body-1 text-color">
-              {{ lastMessage?.date }}
+            <p
+              class="body-1 text-neutral-active whitespace-nowrap text-[0.5625rem]"
+            >
+              {{ formatConversationDate(lastMessage?.date) }}
             </p>
           </div>
+        </div>
+
+        <div class="text-[0.5625rem] text-left">
+          {{ props.conversation.contacts?.at(0)?.firstName }}
         </div>
 
         <div class="flex justify-between">

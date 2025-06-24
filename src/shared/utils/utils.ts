@@ -256,3 +256,45 @@ export const unicodeToEmoji = (unicode: string) => {
     .map((hex) => String.fromCodePoint(hex))
     .join("");
 };
+
+/**
+ * Formats a date for display in the conversation list.
+ * Shows time if the date is today, otherwise shows the date.
+ * @param dateInput {Date | string | number} - The date to format.
+ * @param locale {string} - The locale to use.
+ * @returns {string} - The formatted date string.
+ */
+export const formatConversationDate = (
+  dateInput: Date | string | number | undefined | null,
+  locale: string = "uk-UA",
+): string => {
+  if (!dateInput) {
+    return "";
+  }
+
+  const date = new Date(dateInput);
+  if (isNaN(date.getTime())) {
+    return ""; // Invalid date
+  }
+
+  const now = new Date();
+  const isToday =
+    date.getDate() === now.getDate() &&
+    date.getMonth() === now.getMonth() &&
+    date.getFullYear() === now.getFullYear();
+
+  if (isToday) {
+    return new Intl.DateTimeFormat(locale, {
+      hour: "numeric",
+      minute: "numeric",
+    }).format(date);
+  } else {
+    return new Intl.DateTimeFormat(locale, {
+      day: "numeric",
+      month: "numeric",
+      year: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+    }).format(date);
+  }
+};

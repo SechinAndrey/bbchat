@@ -63,7 +63,7 @@ const handleCloseOnClickOutside = (event: Event) => {
       >
         <span
           v-if="!authStore.currentUser?.avatar"
-          class="flex items-center justify-center w-full h-full text-sm font-semibold text-white bg-primary rounded-full"
+          class="flex items-center justify-center w-full h-full text-sm font-semibold text-primary bg-primary rounded-full"
         >
           {{ avatarInitials }}
         </span>
