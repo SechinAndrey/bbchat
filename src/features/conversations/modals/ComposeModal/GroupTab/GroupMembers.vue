@@ -60,7 +60,7 @@ const handleSelectedContactsChange = (contact: IContact) => {
         :key="index"
       >
         <template v-slot:checkbox>
-          <Checkbox :value="isContactSelected(contact)" />
+          <Checkbox :model-value="isContactSelected(contact)" />
         </template>
       </ContactItem>
 

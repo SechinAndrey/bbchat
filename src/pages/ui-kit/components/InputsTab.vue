@@ -26,7 +26,7 @@ import {
 const checkboxValue = ref(false);
 const switchValue = ref(false);
 const sliderValue = ref(50);
-const singleSelectValue = ref(null);
+const singleSelectValue = ref("");
 const multiSelectValue = ref([]);
 const selectOptions = [
   { value: 1, label: "Перший варіант" },
@@ -202,14 +202,14 @@ const handleSliderChange = function (value: number) {
         <div class="p-4 border rounded dark:border-gray-600">
           <h4 class="body-2 text-color mb-2">Checkbox (Unchecked)</h4>
           <div class="flex items-center">
-            <Checkbox :value="false" class="mr-2" />
+            <Checkbox :model-value="false" class="mr-2" />
             <span class="body-2 text-color">Unchecked</span>
           </div>
         </div>
         <div class="p-4 border rounded dark:border-gray-600">
           <h4 class="body-2 text-color mb-2">Checkbox (Checked)</h4>
           <div class="flex items-center">
-            <Checkbox :value="true" class="mr-2" />
+            <Checkbox :model-value="true" class="mr-2" />
             <span class="body-2 text-color">Checked</span>
           </div>
         </div>
@@ -217,9 +217,9 @@ const handleSliderChange = function (value: number) {
           <h4 class="body-2 text-color mb-2">Checkbox (Interactive)</h4>
           <div class="flex items-center">
             <Checkbox
-              :value="checkboxValue"
-              :handle-check="handleCheckboxToggle"
+              :model-value="checkboxValue"
               class="mr-2"
+              @update:model-value="(v) => (checkboxValue = v)"
             />
             <span class="body-2 text-color">{{
               checkboxValue ? "Checked" : "Unchecked"

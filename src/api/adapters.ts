@@ -9,7 +9,6 @@ import type {
   IConversation,
   IAttachment,
   IRecording,
-  IPreviewData,
   INotification,
   ICall,
 } from "@src/shared/types/types";
@@ -222,6 +221,8 @@ export function adaptRoom(
     messages: roomMessages,
     unread: apiRoom.unread || 0,
     draftMessage: "",
+    entityType: "conversation",
+    communicationStatusId: 1,
     // Add admins for group conversations and broadcasts
     admins: admins,
     // If there's a pinned message, convert it

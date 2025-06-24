@@ -25,10 +25,10 @@ const handleCheck = () => {
   <div v-if="props.selectMode" class="w-full flex justify-between items-center">
     <div class="flex items-center">
       <Checkbox
-        input-id="select-all"
-        :value="props.selectAll"
+        :model-value="selectAll"
         class="mr-3"
-        :handle-check="handleCheck"
+        inputId="select-all-messages"
+        @update:model-value="handleCheck"
       />
       <label for="select-all">
         <p class="body-2 text-color">Select All</p>

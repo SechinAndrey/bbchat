@@ -192,22 +192,22 @@ function handleCheckboxToggle(field: string) {
                   <div class="flex flex-col gap-2">
                     <div class="flex items-center gap-2">
                       <Checkbox
-                        :value="filters.category1"
-                        :handle-check="() => handleCheckboxToggle('category1')"
+                        :model-value="true"
+                        :handleCheck="() => {}"
                       />
                       <span class="body-3 text-color">Category 1</span>
                     </div>
                     <div class="flex items-center gap-2">
                       <Checkbox
-                        :value="filters.category2"
-                        :handle-check="() => handleCheckboxToggle('category2')"
+                        :model-value="false"
+                        :handleCheck="() => {}"
                       />
                       <span class="body-3 text-color">Category 2</span>
                     </div>
                     <div class="flex items-center gap-2">
                       <Checkbox
-                        :value="filters.category3"
-                        :handle-check="() => handleCheckboxToggle('category3')"
+                        :model-value="false"
+                        :handleCheck="() => {}"
                       />
                       <span class="body-3 text-color">Category 3</span>
                     </div>
