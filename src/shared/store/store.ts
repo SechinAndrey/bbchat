@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import type { Ref } from "vue";
 import { computed, ref } from "vue";
+import { useStorage } from "@vueuse/core";
 
 import defaults from "@src/shared/store/real-api-example";
 
@@ -26,6 +27,7 @@ const useStore = defineStore("chat", () => {
     notifications: false,
     calls: false,
   });
+  const rightSidebarOpen = useStorage("rightSidebarOpen", false);
 
   const setLoadingState = (
     resource: keyof typeof loadingStates.value,
@@ -176,6 +178,7 @@ const useStore = defineStore("chat", () => {
     conversationOpen,
     callMinimized,
     openVoiceCall,
+    rightSidebarOpen,
 
     // actions
     sendMessage,

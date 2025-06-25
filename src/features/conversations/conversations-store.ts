@@ -2,7 +2,11 @@ import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 import conversationsService from "./conversations-service";
 import type { GetCommunicationsParams } from "./conversations-service";
-import type { ApiResponseMeta } from "@src/api/types";
+import type {
+  ApiResponseMeta,
+  ApiCommunicationClientFull,
+  ApiCommunicationLeadFull,
+} from "@src/api/types";
 import type { IConversation } from "@src/shared/types/types";
 import {
   adaptApiCommunicationLeadToIConversation,
@@ -17,6 +21,10 @@ export const useConversationsStore = defineStore("conversations", () => {
   const clientsMeta = ref<ApiResponseMeta | null>(null);
   const isLoading = ref(false);
   const error = ref<string | null>(null);
+  const activeConversation = ref<
+    ApiCommunicationLeadFull | ApiCommunicationClientFull | null
+  >(null);
+  const isFetchingActiveConversation = ref(false);
 
   // Filter state
   const filters = ref<GetCommunicationsParams>({
@@ -49,6 +57,28 @@ export const useConversationsStore = defineStore("conversations", () => {
   });
 
   // Actions
+  const fetchConversationById = async (
+    entity: "leads" | "clients",
+    id: number,
+  ) => {
+    isFetchingActiveConversation.value = true;
+    activeConversation.value = null;
+    try {
+      const conversation =
+        await conversationsService.getCommunicationEntityById<
+          ApiCommunicationLeadFull | ApiCommunicationClientFull
+        >(entity, id);
+      activeConversation.value = conversation;
+      return conversation;
+    } catch (err) {
+      error.value =
+        err instanceof Error ? err.message : "Unknown error occurred";
+      throw err;
+    } finally {
+      isFetchingActiveConversation.value = false;
+    }
+  };
+
   const fetchCommunications = async (params?: GetCommunicationsParams) => {
     try {
       isLoading.value = true;
@@ -336,6 +366,8 @@ export const useConversationsStore = defineStore("conversations", () => {
     leadsError,
     clientsError,
     filters,
+    activeConversation,
+    isFetchingActiveConversation,
 
     // Getters
     hasMoreLeads,
@@ -349,6 +381,7 @@ export const useConversationsStore = defineStore("conversations", () => {
     setSearchFilter,
     setUserFilter,
     resetFilters,
+    fetchConversationById,
     // New actions for leads and clients
     fetchLeads,
     fetchClients,

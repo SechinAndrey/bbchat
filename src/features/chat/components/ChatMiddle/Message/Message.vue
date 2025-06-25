@@ -8,7 +8,7 @@ import type {
 import type { Ref } from "vue";
 
 import linkifyStr from "linkify-string";
-import { inject, ref } from "vue";
+import { computed, inject, ref } from "vue";
 
 import { getFullName, getMessageById } from "@src/shared/utils/utils";
 
@@ -78,6 +78,16 @@ const hideAvatar = () => {
   }
 };
 
+const messageText = computed(() => {
+  if (typeof props.message.content == "string") {
+    return props.message.content;
+  } else if (props.message.content.text) {
+    return props.message.content.text;
+  } else {
+    return "";
+  }
+});
+
 // reply message
 const replyMessage = getMessageById(activeConversation, props.message.replyTo);
 </script>
@@ -133,7 +143,7 @@ const replyMessage = getMessageById(activeConversation, props.message.replyTo);
             v-if="props.message.content && props.message.type !== 'recording'"
             class="body-2 outline-none text-black opacity-60 dark:text-white dark:opacity-70"
             v-html="
-              linkifyStr(props.message.content as string, {
+              linkifyStr(messageText, {
                 className: props.self
                   ? 'text-black opacity-50'
                   : 'text-primary dark:text-primary',

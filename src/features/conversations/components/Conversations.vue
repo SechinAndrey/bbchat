@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { IConversation } from "@src/shared/types/types";
 import type { Ref } from "vue";
 import type { GetCommunicationsParams } from "../conversations-service";
 

@@ -22,10 +22,11 @@ const routes = [
         meta: { requiresAuth: true },
       },
       {
-        path: "/chat/:id/",
+        path: "/chat/:entity/:id/",
         name: "Chat",
         component: Chat,
         meta: { requiresAuth: true },
+        props: true,
       },
     ],
   },

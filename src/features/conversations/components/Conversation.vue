@@ -74,7 +74,8 @@ const handleCloseContextMenu = () => {
 // (event) select this conversation.
 const handleSelectConversation = () => {
   showContextMenu.value = false;
-  router.push({ path: `/chat/${props.conversation.id}/` });
+  const entity = props.conversation.entityType === "lead" ? "leads" : "clients";
+  router.push({ path: `/chat/${entity}/${props.conversation.id}/` });
 };
 
 // last message in conversation to display
@@ -96,9 +97,12 @@ const isActive = computed(
 );
 
 const isSelected = computed(() => {
+  const entity = props.conversation.entityType === "lead" ? "leads" : "clients";
+  const path = `/chat/${entity}/${props.conversation.id}/`;
+  const pathWithoutSlash = path.slice(0, -1);
   return (
-    route.currentRoute.value.path === `/chat/${props.conversation.id}/` ||
-    route.currentRoute.value.path === `/chat/${props.conversation.id}`
+    route.currentRoute.value.path === path ||
+    route.currentRoute.value.path === pathWithoutSlash
   );
 });
 </script>

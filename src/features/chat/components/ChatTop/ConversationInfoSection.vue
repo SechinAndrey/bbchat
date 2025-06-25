@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { IConversation } from "@src/shared/types/types";
+// import type { IConversation } from "@src/shared/types/types";
 
 import { inject, ref } from "vue";
 
@@ -10,6 +10,7 @@ import mockData from "@src/shared/store/real-api-example";
 
 import {
   ChevronLeftIcon,
+  ChevronRightIcon,
   EllipsisVerticalIcon,
   InformationCircleIcon,
   MagnifyingGlassIcon,
@@ -19,7 +20,7 @@ import {
 } from "@heroicons/vue/24/outline";
 import IconButton from "@src/ui/inputs/IconButton.vue";
 import Dropdown from "@src/ui/navigation/Dropdown/Dropdown.vue";
-import DropdownLink from "@src/ui/navigation/Dropdown/DropdownLink.vue";
+import useConversationsStore from "@src/features/conversations/conversations-store";
 
 const props = defineProps<{
   handleOpenInfo: () => void;
@@ -27,8 +28,9 @@ const props = defineProps<{
 }>();
 
 const store = useStore();
+const conversationsStore = useConversationsStore();
 
-const activeConversation = <IConversation>inject("activeConversation");
+const activeConversation = inject("activeConversation");
 
 const showDropdown = ref(false);
 
@@ -83,7 +85,10 @@ const handleOpenVoiceCallModal = () => {
       </IconButton>
     </div>
 
-    <div v-if="store.status !== 'loading'" class="flex grow">
+    <div
+      v-if="!conversationsStore.isFetchingActiveConversation"
+      class="flex grow"
+    >
       <!--avatar-->
       <button
         class="mr-5 outline-none"
@@ -118,7 +123,10 @@ const handleOpenVoiceCallModal = () => {
       </div>
     </div>
 
-    <div class="flex" :class="{ hidden: store.status === 'loading' }">
+    <div
+      class="flex"
+      :class="{ hidden: conversationsStore.isFetchingActiveConversation }"
+    >
       <!--search button-->
       <IconButton
         title="search messages"
@@ -131,7 +139,7 @@ const handleOpenVoiceCallModal = () => {
         />
       </IconButton>
 
-      <div class="relative">
+      <div class="relative flex items-center">
         <!--dropdown menu button-->
         <IconButton
           id="open-conversation-menu"
@@ -208,6 +216,20 @@ const handleOpenVoiceCallModal = () => {
             Block contact
           </button>
         </Dropdown>
+
+        <IconButton
+          class="ic-btn-ghost-primary open-top-menu group w-7 h-7"
+          @click="store.rightSidebarOpen = !store.rightSidebarOpen"
+        >
+          <ChevronRightIcon
+            v-if="store.rightSidebarOpen"
+            class="open-top-menu w-[1.25rem] h-[1.25rem]"
+          />
+          <ChevronLeftIcon
+            v-else
+            class="open-top-menu w-[1.25rem] h-[1.25rem]"
+          />
+        </IconButton>
       </div>
     </div>
   </div>

@@ -2,6 +2,7 @@
 import type { Ref } from "vue";
 
 import useStore from "@src/shared/store/store";
+import useConversationsStore from "@src/features/conversations/conversations-store";
 import { computed, provide, ref, watch } from "vue";
 
 import { getActiveConversationId } from "@src/shared/utils/utils";
@@ -11,25 +12,24 @@ import Spinner from "@src/ui/states/loading-states/Spinner.vue";
 import ChatBottom from "@src/features/chat/components/ChatBottom/ChatBottom.vue";
 import ChatMiddle from "@src/features/chat/components/ChatMiddle/ChatMiddle.vue";
 import ChatTop from "@src/features/chat/components/ChatTop/ChatTop.vue";
+import RightSidebar from "@src/features/right-sidebar/components/right-sidebar.vue";
+
+const props = defineProps<{
+  id: number;
+  entity: "leads" | "clients";
+}>();
 
 const store = useStore();
-const isConversationLoading = ref(false);
+const conversationsStore = useConversationsStore();
 
 // search the selected conversation using activeConversationId.
 const activeConversation = computed(() => {
   const conversationId = getActiveConversationId();
   if (!conversationId) return undefined;
 
-  let conversation = store.conversations.find(
+  let conversation = conversationsStore?.allCommunications.find(
     (conversation) => conversation.id === conversationId,
   );
-
-  // Если не нашли, ищем в архивных диалогах
-  if (!conversation) {
-    conversation = store.archivedConversations.find(
-      (conversation) => conversation.id === conversationId,
-    );
-  }
 
   return conversation;
 });
@@ -40,8 +40,20 @@ watch(
     if (newConversation) {
       provide("activeConversation", newConversation);
     }
+    if (store.rightSidebarOpen) {
+      useConversationsStore().fetchConversationById(props.entity, props.id);
+    }
   },
   { immediate: true },
+);
+
+watch(
+  () => store.rightSidebarOpen,
+  (isOpen) => {
+    if (isOpen) {
+      useConversationsStore().fetchConversationById(props.entity, props.id);
+    }
+  },
 );
 
 // determines whether select mode is enabled.
@@ -107,32 +119,40 @@ const handleCloseSelect = () => {
 </script>
 
 <template>
-  <Spinner
-    v-if="
-      store.status === 'loading' || store.delayLoading || isConversationLoading
-    "
-  />
+  <div class="h-full w-full flex scrollbar-hidden">
+    <div class="h-full flex flex-col w-full scrollbar-hidden">
+      <Spinner v-if="conversationsStore.isLoading" />
 
-  <div
-    v-else-if="getActiveConversationId() && activeConversation"
-    class="h-full flex flex-col scrollbar-hidden"
-  >
-    <ChatTop
-      :active-conversation="activeConversation"
-      :select-all="selectAll"
-      :select-mode="selectMode"
-      :handle-select-all="handleSelectAll"
-      :handle-deselect-all="handleDeselectAll"
-      :handle-close-select="handleCloseSelect"
+      <div
+        v-else-if="getActiveConversationId() && activeConversation"
+        class="h-full flex flex-col scrollbar-hidden"
+      >
+        <ChatTop
+          :active-conversation="activeConversation"
+          :select-all="selectAll"
+          :select-mode="selectMode"
+          :handle-select-all="handleSelectAll"
+          :handle-deselect-all="handleDeselectAll"
+          :handle-close-select="handleCloseSelect"
+        />
+        <ChatMiddle
+          :active-conversation="activeConversation"
+          :selected-messages="selectedMessages"
+          :handle-select-message="handleSelectMessage"
+          :handle-deselect-message="handleDeselectMessage"
+        />
+        <ChatBottom :active-conversation="activeConversation" />
+      </div>
+
+      <NoChatSelected v-else />
+    </div>
+
+    <RightSidebar
+      v-if="
+        getActiveConversationId() &&
+        activeConversation &&
+        store.rightSidebarOpen
+      "
     />
-    <ChatMiddle
-      :active-conversation="activeConversation"
-      :selected-messages="selectedMessages"
-      :handle-select-message="handleSelectMessage"
-      :handle-deselect-message="handleDeselectMessage"
-    />
-    <ChatBottom :active-conversation="activeConversation" />
   </div>
-
-  <NoChatSelected v-else />
 </template>

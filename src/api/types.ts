@@ -320,6 +320,14 @@ export interface ApiCommunicationClientsResponse {
 
 // -----------------
 
+export interface ApiCommunicationCity {
+  id: number;
+  name: string;
+  name_ua: string;
+  name_new: string;
+  name_new_ua: string;
+}
+
 export interface ApiCommunicationLeadFull {
   id: number;
   user_id: number;
@@ -328,7 +336,7 @@ export interface ApiCommunicationLeadFull {
   email: string | null;
   phone: string | null;
   tg_name: string | null;
-  city: string | null;
+  cities: ApiCommunicationCity[];
   channel: string | null;
   source: string | null;
   social: string | null;
