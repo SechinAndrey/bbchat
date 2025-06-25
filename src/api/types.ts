@@ -429,3 +429,52 @@ export interface ApiGlobalDataResponse {
   usersForClients: ApiGlobalDataUser[];
   kanbanStatuses: ApiKanbanStatus[];
 }
+
+// --- selections ---
+
+export interface ApiSelectionType {
+  id: number;
+  name: string;
+}
+
+export interface ApiSelectionManager {
+  id: number;
+  role_id: number;
+  name: string;
+  email: string;
+  phone: string;
+}
+
+export interface ApiSelectionItem {
+  code: string;
+  id: number;
+  firm_name: number;
+  side_type: string;
+  type: string;
+  format: string;
+  addr: string;
+  image: string;
+  scheme: string;
+  light: number;
+  trassa: number;
+  aleas: string;
+  price: number;
+  active: boolean;
+  updated_at: string;
+  city_name: string;
+  title: string;
+  selling_price: number | null;
+  buying_price: number | null;
+  printing_price: number | null;
+  selectionTypeId: number;
+  isWatched: boolean;
+}
+
+export interface ApiSelection {
+  id: number;
+  type: ApiSelectionType;
+  created_at: string;
+  manager: ApiSelectionManager | null;
+  boards_count: number;
+  boards_list: ApiSelectionItem[];
+}

@@ -19,6 +19,9 @@ const props = defineProps<{
   entity: "leads" | "clients";
 }>();
 
+provide("entity", props.entity);
+provide("id", props.id);
+
 const store = useStore();
 const conversationsStore = useConversationsStore();
 
