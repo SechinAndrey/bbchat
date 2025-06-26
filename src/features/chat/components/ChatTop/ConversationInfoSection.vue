@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// import type { IConversation } from "@src/shared/types/types";
+import type { IConversation } from "@src/shared/types/types";
 
 import { inject, ref } from "vue";
 
@@ -30,7 +30,7 @@ const props = defineProps<{
 const store = useStore();
 const conversationsStore = useConversationsStore();
 
-const activeConversation = inject("activeConversation");
+const activeConversation = inject<IConversation>("activeConversation");
 
 const showDropdown = ref(false);
 
@@ -77,9 +77,9 @@ const handleOpenVoiceCallModal = () => {
     <div class="group mr-4 md:hidden">
       <IconButton
         class="ic-btn-ghost-primary w-7 h-7"
-        @click="handleCloseConversation"
         title="close conversation"
         aria-label="close conversation"
+        @click="handleCloseConversation"
       >
         <ChevronLeftIcon class="w-[1.25rem] h-[1.25rem]" />
       </IconButton>
@@ -92,12 +92,12 @@ const handleOpenVoiceCallModal = () => {
       <!--avatar-->
       <button
         class="mr-5 outline-none"
-        @click="props.handleOpenInfo"
         aria-label="profile avatar"
+        @click="props.handleOpenInfo"
       >
         <div
           :style="{
-            backgroundImage: `url(${getAvatar(activeConversation)})`,
+            backgroundImage: `url(${activeConversation ? getAvatar(activeConversation) : ''})`,
           }"
           class="w-[2.25rem] h-[2.25rem] rounded-full bg-cover bg-center"
         ></div>
@@ -107,10 +107,10 @@ const handleOpenVoiceCallModal = () => {
       <div class="flex flex-col">
         <p
           class="w-fit heading-2 text-color mb-2 cursor-pointer"
-          @click="props.handleOpenInfo"
           tabindex="0"
+          @click="props.handleOpenInfo"
         >
-          {{ getName(activeConversation) }}
+          {{ activeConversation ? getName(activeConversation) : "" }}
         </p>
 
         <p
@@ -131,8 +131,8 @@ const handleOpenVoiceCallModal = () => {
       <IconButton
         title="search messages"
         aria-label="search messages"
-        @click="props.handleOpenSearch"
         class="ic-btn-ghost-primary w-7 h-7 mr-3"
+        @click="props.handleOpenSearch"
       >
         <MagnifyingGlassIcon
           class="w-[1.25rem] h-[1.25rem] text-gray-400 group-hover:text-primary"
@@ -144,12 +144,12 @@ const handleOpenVoiceCallModal = () => {
         <IconButton
           id="open-conversation-menu"
           class="ic-btn-ghost-primary open-top-menu group w-7 h-7"
-          @click="showDropdown = !showDropdown"
           :aria-expanded="showDropdown"
           tabindex="0"
           aria-controls="conversation-menu"
           title="toggle conversation menu"
           aria-label="toggle conversation menu"
+          @click="showDropdown = !showDropdown"
         >
           <EllipsisVerticalIcon class="open-top-menu w-[1.25rem] h-[1.25rem]" />
         </IconButton>

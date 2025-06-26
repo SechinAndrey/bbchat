@@ -10,7 +10,7 @@ import useConversationsStore from "@src/features/conversations/conversations-sto
 const conversationsStore = useConversationsStore();
 
 const activeConversation = computed<
-  ApiCommunicationLeadFull | ApiCommunicationClientFull
+  ApiCommunicationLeadFull | ApiCommunicationClientFull | null
 >(() => {
   return conversationsStore.activeConversation;
 });
@@ -39,7 +39,7 @@ const activeConversation = computed<
         </div>
         <div class="flex">
           <div>ПІБ</div>
-          <div>{{ activeConversation.fio || "не вказано" }}</div>
+          <div>{{ activeConversation?.fio || "не вказано" }}</div>
         </div>
         <div class="flex">
           <button class="text-primary">Транскрипція</button>

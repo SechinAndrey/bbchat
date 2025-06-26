@@ -79,9 +79,9 @@ const hideAvatar = () => {
 };
 
 const messageText = computed(() => {
-  if (typeof props.message.content == "string") {
+  if (typeof props.message.content === "string") {
     return props.message.content;
-  } else if (props.message.content.text) {
+  } else if (props.message.content && "text" in props.message.content) {
     return props.message.content.text;
   } else {
     return "";
@@ -112,9 +112,7 @@ const replyMessage = getMessageById(activeConversation, props.message.replyTo);
       <div class="flex items-end">
         <!--bubble-->
         <div
-          @click="handleCloseContextMenu"
           v-click-outside="contextConfig"
-          @contextmenu.prevent="handleShowContextMenu"
           class="group max-w-[31.25rem] p-5 rounded-b transition duration-500"
           :class="{
             'rounded-tl ml-4 order-2 bg-primary-hover/10':
@@ -129,6 +127,8 @@ const replyMessage = getMessageById(activeConversation, props.message.replyTo);
             'rounded-tr mr-4 bg-primary-hover/30':
               !props.self && props.selected,
           }"
+          @click="handleCloseContextMenu"
+          @contextmenu.prevent="handleShowContextMenu"
         >
           <!--reply to-->
           <MessagePreview
@@ -142,6 +142,7 @@ const replyMessage = getMessageById(activeConversation, props.message.replyTo);
           <p
             v-if="props.message.content && props.message.type !== 'recording'"
             class="body-2 outline-none text-black opacity-60 dark:text-white dark:opacity-70"
+            tabindex="0"
             v-html="
               linkifyStr(messageText, {
                 className: props.self
@@ -153,7 +154,6 @@ const replyMessage = getMessageById(activeConversation, props.message.replyTo);
                 },
               })
             "
-            tabindex="0"
           ></p>
 
           <!--recording-->

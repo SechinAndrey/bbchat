@@ -1,10 +1,8 @@
 <script setup lang="ts">
-import { ref } from "vue";
 import AnimatedTabs from "@src/ui/navigation/AnimatedTabs/AnimatedTabs.vue";
 import CommonInfoTab from "./CommonInfoTab.vue";
 import CallsTab from "./CallsTab.vue";
 import SetsTab from "./SetsTab.vue";
-import useConversationsStore from "@src/features/conversations/conversations-store";
 
 const tabsConfig = [
   { key: "common", name: "Загальна інформація", compact: true },
@@ -12,7 +10,9 @@ const tabsConfig = [
   { key: "sets", name: "Підбірки", compact: true },
 ];
 
-const conversationsStore = useConversationsStore();
+const handleTabChange = (tabKey: string) => {
+  console.log(`Tab changed to: ${tabKey}`);
+};
 </script>
 
 <template>

@@ -1,18 +1,15 @@
 <script setup lang="ts">
-import type { IConversation } from "@src/shared/types/types";
-import { inject, ref, computed } from "vue";
-import { useAuthStore } from "@src/features/auth/store/auth-store";
+import { computed } from "vue";
 import useConversationsStore from "@src/features/conversations/conversations-store";
 import {
   ApiCommunicationLeadFull,
   ApiCommunicationClientFull,
 } from "@src/api/types";
-// import Button from "@src/ui/inputs/Button.vue";
-const authStore = useAuthStore();
+
 const conversationsStore = useConversationsStore();
 
 const activeConversation = computed<
-  ApiCommunicationLeadFull | ApiCommunicationClientFull
+  ApiCommunicationLeadFull | ApiCommunicationClientFull | null
 >(() => {
   return conversationsStore.activeConversation;
 });
@@ -49,12 +46,12 @@ const activeConversation = computed<
     <div class="my-4 text-neutral-active">Канал</div>
 
     <div>
-      {{ activeConversation?.channel?.title || "Не вказано" }}
+      {{ activeConversation?.channel || "Не вказано" }}
     </div>
 
     <div class="my-4 text-neutral-active">Місто</div>
 
-    <div v-for="city in activeConversation?.cities || []">
+    <div v-for="city in activeConversation?.cities || []" :key="city.id">
       {{ city.name_ua }}
     </div>
 

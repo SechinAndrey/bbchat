@@ -328,6 +328,18 @@ export interface ApiCommunicationCity {
   name_new_ua: string;
 }
 
+export interface ApiCommunicationCallInfo {
+  id: number;
+  binotel_id: number;
+  user_id: number;
+  phone: string;
+  call_type: number;
+  waitsec: number;
+  billsec: number;
+  disposition: string;
+  created_at: string;
+}
+
 export interface ApiCommunicationLeadFull {
   id: number;
   user_id: number;
@@ -344,6 +356,7 @@ export interface ApiCommunicationLeadFull {
   have_supervision: number | null;
   comment: string | null;
   messages: ApiMessage[] | null;
+  calls: ApiCommunicationCallInfo[];
   info: unknown;
   utm: unknown;
   utm_channel: unknown;
