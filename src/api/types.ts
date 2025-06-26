@@ -340,6 +340,29 @@ export interface ApiCommunicationCallInfo {
   created_at: string;
 }
 
+export interface ApiCommunicationStatusLogUser {
+  id: number;
+  role_id: number;
+  name: string;
+  email: string;
+}
+
+export interface ApiCommunicationStatusLogItem {
+  id: number;
+  lead_id: number;
+  user_id: number;
+  old_status_id: number;
+  new_status_id: number;
+  rejection_id: number | null;
+  rejection_reason_id: number | null;
+  comment: string | null;
+  created_at: string;
+  updated_at: string;
+  old_status: ApiKanbanStatus;
+  new_status: ApiKanbanStatus;
+  user: ApiCommunicationStatusLogUser;
+}
+
 export interface ApiCommunicationLeadFull {
   id: number;
   user_id: number;
@@ -378,6 +401,7 @@ export interface ApiCommunicationLeadFull {
   class_id: number | null;
   key_call_attempt_count: number | null;
   last_key_call_attempt_at: string | null;
+  status_log: ApiCommunicationStatusLogItem[];
 }
 
 // eslint-disable-next-line
@@ -426,20 +450,20 @@ export interface ApiMessageFull {
 export interface ApiKanbanStatus {
   id: number;
   name: string;
-  for_hunters: number;
-  for_all: number;
-  avaliable_statuses: string; // JSON array of status IDs as a string
+  for_hunters: boolean;
+  for_all: boolean;
+  available_statuses: number[];
 }
 
-export interface ApiGlobalDataUser {
+export interface ApiManagerListItem {
   id: number;
   name: string;
   role_id: number;
 }
 
 export interface ApiGlobalDataResponse {
-  users: ApiGlobalDataUser[];
-  usersForClients: ApiGlobalDataUser[];
+  users: ApiManagerListItem[];
+  usersForClients: ApiManagerListItem[];
   kanbanStatuses: ApiKanbanStatus[];
 }
 

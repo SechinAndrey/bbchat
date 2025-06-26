@@ -1,17 +1,27 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import useConversationsStore from "@src/features/conversations/conversations-store";
 import {
   ApiCommunicationLeadFull,
   ApiCommunicationClientFull,
+  ApiKanbanStatus,
 } from "@src/api/types";
+import { formatConversationDate } from "@src/shared/utils/utils";
+import useConversationsStore from "@src/features/conversations/conversations-store";
+import useGlobalDataStore from "@src/shared/store/global-data-store";
 
 const conversationsStore = useConversationsStore();
+const globalDataStore = useGlobalDataStore();
 
 const activeConversation = computed<
   ApiCommunicationLeadFull | ApiCommunicationClientFull | null
 >(() => {
   return conversationsStore.activeConversation;
+});
+
+const kanbanStatus = computed<ApiKanbanStatus | undefined>(() => {
+  return globalDataStore.getKanbanStatusById(
+    activeConversation.value?.status_id || 0,
+  );
 });
 </script>
 
@@ -40,7 +50,9 @@ const activeConversation = computed<
     <div class="my-4 text-neutral-active">Створено</div>
 
     <div>
-      {{ activeConversation?.created_at || "Не вказано" }}
+      {{
+        formatConversationDate(activeConversation?.created_at) || "Не вказано"
+      }}
     </div>
 
     <div class="my-4 text-neutral-active">Канал</div>
@@ -66,11 +78,25 @@ const activeConversation = computed<
     <div class="my-4 text-neutral-active">Канбан статус</div>
 
     <div>
-      {{ activeConversation?.status_id || "Не вказано" }}
+      {{ kanbanStatus?.name }}
     </div>
 
     <hr />
 
     <div class="my-4 text-neutral-active">Історія статусів</div>
+
+    <div
+      v-for="status in activeConversation?.status_log || []"
+      :key="status.id"
+      class="mb-4"
+    >
+      <div>
+        {{ formatConversationDate(status.created_at) }} -
+        {{ status.new_status.name }}
+      </div>
+      <div>
+        {{ status.user.name }}
+      </div>
+    </div>
   </div>
 </template>

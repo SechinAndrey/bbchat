@@ -1,16 +1,20 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 import globalDataService from "@src/shared/services/global-data-service";
-import type { ApiGlobalDataResponse, ApiGlobalDataUser } from "@src/api/types";
+import type {
+  ApiGlobalDataResponse,
+  ApiManagerListItem,
+  ApiKanbanStatus,
+} from "@src/api/types";
 
 export const useGlobalDataStore = defineStore("globalData", () => {
   const globalData = ref<ApiGlobalDataResponse | null>(null);
   const isLoading = ref(false);
   const error = ref<string | null>(null);
-  const allUsers = computed<ApiGlobalDataUser[]>(() => {
+  const allUsers = computed<ApiManagerListItem[]>(() => {
     if (!globalData.value) return [];
     // combine users and usersForClients into a single array with UNIQUE users by id
-    const usersMap = new Map<string, ApiGlobalDataUser>();
+    const usersMap = new Map<string, ApiManagerListItem>();
     globalData.value.users.forEach((user) =>
       usersMap.set(user.id.toString(), user),
     );
@@ -19,6 +23,15 @@ export const useGlobalDataStore = defineStore("globalData", () => {
     );
     return Array.from(usersMap.values());
   });
+
+  const kanbanStatuses = computed<ApiKanbanStatus[]>(() => {
+    if (!globalData.value) return [];
+    return globalData.value.kanbanStatuses;
+  });
+
+  const getKanbanStatusById = (id: number): ApiKanbanStatus | undefined => {
+    return kanbanStatuses.value.find((status) => status.id === id);
+  };
 
   const fetchGlobalData = async () => {
     isLoading.value = true;
@@ -35,11 +48,15 @@ export const useGlobalDataStore = defineStore("globalData", () => {
   };
 
   return {
+    kanbanStatuses,
     globalData,
     allUsers,
     isLoading,
     error,
 
     fetchGlobalData,
+    getKanbanStatusById,
   };
 });
+
+export default useGlobalDataStore;
