@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { ref, computed } from "vue";
+import { ref, computed, type Ref } from "vue";
 import conversationsService from "./conversations-service";
 import type { GetCommunicationsParams } from "./conversations-service";
 import type {
@@ -7,11 +7,37 @@ import type {
   ApiCommunicationClientFull,
   ApiCommunicationLeadFull,
 } from "@src/api/types";
-import type { IConversation } from "@src/shared/types/types";
+import type { IConversation, IMessage } from "@src/shared/types/types";
+import type { ApiMessageItem } from "@src/api/types";
 import {
   adaptApiCommunicationLeadToIConversation,
   adaptApiCommunicationClientToIConversation,
 } from "@src/api/communication-adapters";
+
+// Helper function to update entity messages
+const updateEntityMessages = (
+  entitiesRef: Ref<IConversation[]>,
+  targetId: number,
+  messages: ApiMessageItem[],
+) => {
+  const numericTargetId = Number(targetId);
+
+  const entityIndex = entitiesRef.value.findIndex(
+    (e) => e.id === numericTargetId,
+  );
+  console.log("📍 Entity search result:", {
+    entityIndex,
+    found: entityIndex !== -1,
+    availableIds: entitiesRef.value.map((e) => e.id),
+    searchingFor: numericTargetId,
+  });
+
+  if (entityIndex !== -1) {
+    entitiesRef.value[entityIndex].messages = messages as unknown as IMessage[];
+  } else {
+    console.warn("❌ Entity not found with ID:", numericTargetId);
+  }
+};
 
 export const useConversationsStore = defineStore("conversations", () => {
   // State
@@ -38,6 +64,8 @@ export const useConversationsStore = defineStore("conversations", () => {
   const isLoadingClients = ref(false);
   const leadsError = ref<string | null>(null);
   const clientsError = ref<string | null>(null);
+  const isFetchingMessages = ref(false);
+  const messagesError = ref<string | null>(null);
 
   // Getters
   const hasMoreLeads = computed(() => {
@@ -257,6 +285,36 @@ export const useConversationsStore = defineStore("conversations", () => {
     });
   };
 
+  const fetchCommunicationMessages = async (
+    entity: "leads" | "clients",
+    id: number,
+  ) => {
+    try {
+      isFetchingMessages.value = true;
+      messagesError.value = null;
+
+      const response = await conversationsService.getCommunicationMessages(
+        entity,
+        id,
+      );
+      // Update messages for the appropriate entity
+      if (entity === "leads") {
+        updateEntityMessages(leads, id, response.data);
+      } else {
+        updateEntityMessages(clients, id, response.data);
+      }
+
+      return response;
+    } catch (err) {
+      console.error("❌ Error in fetchCommunicationMessages:", err);
+      messagesError.value =
+        err instanceof Error ? err.message : "Unknown error occurred";
+      throw err;
+    } finally {
+      isFetchingMessages.value = false;
+    }
+  };
+
   const setSearchFilter = (search: string) => {
     // Reset to page 1 when changing search
     filters.value = {
@@ -365,6 +423,8 @@ export const useConversationsStore = defineStore("conversations", () => {
     error,
     leadsError,
     clientsError,
+    isFetchingMessages,
+    messagesError,
     filters,
     activeConversation,
     isFetchingActiveConversation,
@@ -382,6 +442,7 @@ export const useConversationsStore = defineStore("conversations", () => {
     setUserFilter,
     resetFilters,
     fetchConversationById,
+    fetchCommunicationMessages,
     // New actions for leads and clients
     fetchLeads,
     fetchClients,

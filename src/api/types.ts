@@ -211,6 +211,54 @@ export interface ApiCommunicationMessage {
   state: string;
 }
 
+export interface ApiChaportMessage {
+  id: number;
+  type_id: number;
+  user_id: number;
+  name: string;
+  message: string;
+  created_at: string;
+}
+
+export interface ApiEChatMessage {
+  id: number;
+  direction: string;
+  message: string;
+  created_at: string;
+}
+
+export interface ApiMessageItemUser {
+  id: number;
+  role_id: number;
+  name: string;
+  email: string;
+  phone: string;
+  avatar: string;
+  firstName: string;
+  lastName: string;
+  lastSeen: string;
+}
+
+export interface ApiMessageItem {
+  id: number;
+  type_id: number;
+  user_id: number;
+  lead_id: number | null;
+  client_id: number | null;
+  chaport_message_id: number | null;
+  call_id: number | null;
+  echat_message_id: number | null;
+  created_at: string;
+  lead: ApiCommunicationLead | null;
+  client: ApiCommunicationClient | null;
+  type: ApiMessageType;
+  user: ApiMessageItemUser;
+  call: ApiCommunicationCallInfo | null;
+  chaport_messages: ApiChaportMessage | null;
+  echat_messages: ApiEChatMessage | null;
+}
+
+// Communication lead and client types
 export interface ApiContact {
   id: number;
   name: string;
@@ -514,4 +562,19 @@ export interface ApiSelection {
   manager: ApiSelectionManager | null;
   boards_count: number;
   boards_list: ApiSelectionItem[];
+}
+
+export interface ApiMessagesResponse {
+  path: string;
+  current_page: number;
+  last_page: number;
+  first_page_url: string;
+  last_page_url: string;
+  next_page_url: string | null;
+  prev_page_url: string | null;
+  from: number;
+  to: number;
+  per_page: number;
+  total: number;
+  data: ApiMessageItem[];
 }

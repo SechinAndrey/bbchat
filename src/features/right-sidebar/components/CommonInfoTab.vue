@@ -95,7 +95,7 @@ const kanbanStatus = computed<ApiKanbanStatus | undefined>(() => {
         {{ status.new_status.name }}
       </div>
       <div>
-        {{ status.user.name }}
+        {{ status.user?.name }}
       </div>
     </div>
   </div>

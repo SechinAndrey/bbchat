@@ -58,6 +58,7 @@ module.exports = {
           surface: "var(--bg-surface)",
           "surface-variant": "var(--bg-surface-variant)",
           conversations: "var(--bg-conversations)",
+          message: "var(--bg-message)",
           nav: "var(--nav-bg)",
         },
         text: {

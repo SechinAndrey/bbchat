@@ -2,11 +2,10 @@
 import type { IConversation, IMessage } from "@src/shared/types/types";
 import type { Ref } from "vue";
 
-import { inject, onMounted, ref } from "vue";
+import { inject, onMounted, ref, watch, nextTick } from "vue";
 
 import useStore from "@src/shared/store/store";
-
-import Message from "@src/features/chat/components/ChatMiddle/Message/Message.vue";
+import MessageV2 from "@src/features/chat/components/ChatMiddle/Message/MessageV2.vue";
 import TimelineDivider from "@src/features/chat/components/ChatMiddle/TimelineDivider.vue";
 
 const props = defineProps<{
@@ -23,18 +22,14 @@ const activeConversation = <IConversation>inject("activeConversation");
 
 // checks whether the previous message was sent by the same user.
 const isFollowUp = (index: number, previousIndex: number): boolean => {
-  if (previousIndex < 0) {
-    return false;
-  } else {
-    let previousSender = activeConversation.messages[previousIndex].sender.id;
-    let currentSender = activeConversation.messages[index].sender.id;
-    return previousSender === currentSender;
-  }
-};
-
-// checks whether the message is sent by the authenticated user.
-const isSelf = (message: IMessage): boolean => {
-  return Boolean(store.user && message.sender.id === store.user.id);
+  return true; // This function is currently not implemented, returning true for now.
+  // if (previousIndex < 0) {
+  //   return false;
+  // } else {
+  //   let previousSender = activeConversation.messages[previousIndex].sender.id;
+  //   let currentSender = activeConversation.messages[index].sender.id;
+  //   return previousSender === currentSender;
+  // }
 };
 
 // checks wether the new message has been sent in a new day or not.
@@ -46,12 +41,26 @@ const renderDivider = (index: number, previousIndex: number): boolean => {
   }
 };
 
+const scrollToBottom = () => {
+  nextTick(() => {
+    if (container.value) {
+      container.value.scrollTop = container.value.scrollHeight;
+    }
+  });
+};
+
 // scroll messages to bottom.
 onMounted(() => {
-  (container.value as HTMLElement).scrollTop = (
-    container.value as HTMLElement
-  ).scrollHeight;
+  scrollToBottom();
 });
+
+watch(
+  () => activeConversation.messages,
+  () => {
+    scrollToBottom();
+  },
+  { deep: true },
+);
 </script>
 
 <template>
@@ -59,22 +68,12 @@ onMounted(() => {
     ref="container"
     class="grow px-5 py-5 flex flex-col overflow-y-scroll scrollbar-hidden"
   >
-    <div
-      v-if="store.status !== 'loading'"
-      v-for="(message, index) in activeConversation.messages"
-      :key="index"
-    >
-      <TimelineDivider v-if="renderDivider(index, index - 1)" />
+    <div v-if="store.status !== 'loading'" class="flex flex-col">
+      <div v-for="(message, index) in activeConversation.messages" :key="index">
+        <TimelineDivider v-if="renderDivider(index, index - 1)" />
 
-      <Message
-        :message="message"
-        :self="isSelf(message)"
-        :follow-up="isFollowUp(index, index - 1)"
-        :divider="renderDivider(index, index - 1)"
-        :selected="props.selectedMessages.includes(message.id)"
-        :handle-select-message="handleSelectMessage"
-        :handle-deselect-message="handleDeselectMessage"
-      />
+        <MessageV2 :message="message" />
+      </div>
     </div>
   </div>
 </template>

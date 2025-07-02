@@ -17,7 +17,7 @@ const props = defineProps<{
 
 <template>
   <Modal :open="props.open" :close-modal="props.closeModal">
-    <template v-slot:content>
+    <template #content>
       <div class="w-[18.75rem] py-6 bg-surface dark:bg-surface rounded">
         <!--header-->
         <div class="mb-6 px-5 flex justify-between items-center">
@@ -26,9 +26,9 @@ const props = defineProps<{
           </p>
 
           <Button
-            @click="props.closeModal"
             class="outlined-danger ghost-text py-2 px-4"
             typography="body-4"
+            @click="props.closeModal"
           >
             esc
           </Button>
@@ -40,7 +40,7 @@ const props = defineProps<{
         </div>
 
         <!--message-->
-        <ScrollBox class="max-h-[14.375rem] overflow-y-scroll">
+        <!-- <ScrollBox class="max-h-[14.375rem] overflow-y-scroll">
           <MessageItem
             v-if="props.conversation.messages.length > 0"
             v-for="(message, index) in props.conversation.messages"
@@ -49,7 +49,7 @@ const props = defineProps<{
           />
 
           <NoMessage vertical v-else />
-        </ScrollBox>
+        </ScrollBox> -->
       </div>
     </template>
   </Modal>

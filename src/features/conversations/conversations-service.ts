@@ -5,6 +5,7 @@ import type {
   ApiCommunicationClientsResponse,
   ApiCommunicationLeadFull,
   ApiCommunicationClientFull,
+  ApiMessagesResponse,
 } from "@src/api/types";
 
 export interface GetCommunicationsParams {
@@ -12,6 +13,15 @@ export interface GetCommunicationsParams {
   search?: string;
   user_id?: number;
   communication_status_id?: number;
+}
+
+export interface SendMessageParams {
+  phone: string;
+  message: string;
+  file_url?: string;
+  messenger_id: number;
+  contragent_type: "lead" | "client";
+  contragent_id: number;
 }
 
 export class ConversationsService {
@@ -72,6 +82,21 @@ export class ConversationsService {
     }
   }
 
+  async getCommunicationMessages(
+    entity: "leads" | "clients",
+    id: number,
+  ): Promise<ApiMessagesResponse> {
+    try {
+      const response = await apiClient.get<ApiMessagesResponse>(
+        `/communications/${entity}/${id}`,
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching communication messages:", error);
+      throw new Error("Failed to fetch communication messages");
+    }
+  }
+
   async getCommunicationEntityById<T>(
     entity: "leads" | "clients",
     id: number,
@@ -105,6 +130,15 @@ export class ConversationsService {
       "clients",
       id,
     );
+  }
+
+  async sendMessage(message: SendMessageParams): Promise<void> {
+    try {
+      await apiClient.post("/e-chat/dialogs/messages", message);
+    } catch (error) {
+      console.error("Error sending message:", error);
+      throw new Error("Failed to send message");
+    }
   }
 }
 

@@ -90,6 +90,9 @@
   --bg-conversations-light: #f6f7f9; /* Светло-серый фон для списка разговоров */
   --bg-conversations-dark: #2d3748; /* Темный аналог для темной темы */
 
+  --bg-message-light: #f8f8f9; /* Light gray background for messages */
+  --bg-message-dark: #374151; /* Dark background for messages - gray-700 for contrast */
+
   --cbg-10-light: rgba(255, 255, 255, 0.1);
   --cbg-10-dark: rgba(31, 41, 55, 0.1);
 }
@@ -133,6 +136,7 @@
   --bg-surface: var(--bg-surface-light);
   --bg-surface-variant: var(--bg-surface-variant-light);
   --bg-conversations: var(--bg-conversations-light);
+  --bg-message: var(--bg-message-light);
 
   --cbg-10: var(--cbg-10-light);
 }
@@ -176,6 +180,7 @@
   --bg-surface: var(--bg-surface-dark);
   --bg-surface-variant: var(--bg-surface-variant-dark);
   --bg-conversations: var(--bg-conversations-dark);
+  --bg-message: var(--bg-message-dark);
 
   --cbg-10: var(--cbg-10-dark);
 }

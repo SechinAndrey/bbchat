@@ -24,6 +24,7 @@ provide("id", props.id);
 
 const store = useStore();
 const conversationsStore = useConversationsStore();
+conversationsStore.fetchCommunicationMessages(props.entity, props.id);
 
 // search the selected conversation using activeConversationId.
 const activeConversation = computed(() => {

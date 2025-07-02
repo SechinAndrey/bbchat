@@ -7,6 +7,7 @@ import Checkbox from "./Checkbox.vue";
 type Option = {
   value: string | number;
   label: string;
+  image?: string;
 };
 
 const props = withDefaults(
@@ -17,12 +18,18 @@ const props = withDefaults(
     placeholder?: string;
     icon?: any;
     size?: "xs" | "sm" | "md" | "lg";
+    displayMode?: "icon-label" | "icon-only";
+    selectedIconClass?: string;
+    optionIconClass?: string;
   }>(),
   {
     multiple: false,
     placeholder: "Виберіть...",
     icon: UserIcon,
     size: "md",
+    displayMode: "icon-label",
+    selectedIconClass: "",
+    optionIconClass: "",
   },
 );
 
@@ -64,6 +71,14 @@ const sizeClasses = computed(() => {
         iconMargin: "mr-3",
       };
   }
+});
+
+const selectedOption = computed(() => {
+  if (props.multiple) {
+    // For multiple, we don't have a single selected option with an image.
+    return null;
+  }
+  return props.options.find((option) => option.value === props.modelValue);
 });
 
 const isOpen = ref(false);
@@ -188,18 +203,29 @@ const handleOptionClick = (option: Option) => {
 </script>
 
 <template>
-  <div class="relative" ref="selectElement">
+  <div ref="selectElement" class="relative">
     <button
-      @click="toggleDropdown"
       class="flex items-center justify-between w-full text-left gap-[0.25rem]"
+      @click="toggleDropdown"
     >
       <span class="flex items-center min-w-0">
+        <img
+          v-if="selectedOption && selectedOption.image"
+          :src="selectedOption.image"
+          class="flex-shrink-0"
+          :class="[
+            selectedIconClass || sizeClasses.icon,
+            sizeClasses.iconMargin,
+          ]"
+        />
         <component
           :is="icon"
+          v-else
           class="flex-shrink-0 text-text-secondary"
           :class="[sizeClasses.icon, sizeClasses.iconMargin]"
         />
         <span
+          v-if="displayMode === 'icon-label'"
           class="truncate text-text-primary"
           :class="sizeClasses.selectText"
           >{{ selectedLabel }}</span
@@ -226,6 +252,12 @@ const handleOptionClick = (option: Option) => {
           :style="dropdownStyle"
           class="z-50 bg-theme-surface rounded-md shadow-lg border border-neutral"
         >
+          <div
+            v-if="$slots.header"
+            class="px-3 py-2 font-bold border-b text-text-primary border-neutral"
+          >
+            <slot name="header" />
+          </div>
           <ul class="divide-y divide-neutral">
             <li
               v-for="option in options"
@@ -245,6 +277,12 @@ const handleOptionClick = (option: Option) => {
                   v-if="multiple"
                   :model-value="isSelected(option.value)"
                   class="mr-2"
+                />
+                <img
+                  v-if="option.image"
+                  :src="option.image"
+                  class="flex-shrink-0"
+                  :class="optionIconClass || sizeClasses.icon"
                 />
                 <span class="truncate">{{ option.label }}</span>
               </div>
