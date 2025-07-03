@@ -7,6 +7,8 @@ import { inject, onMounted, ref, watch, nextTick } from "vue";
 import useStore from "@src/shared/store/store";
 import MessageV2 from "@src/features/chat/components/ChatMiddle/Message/MessageV2.vue";
 import TimelineDivider from "@src/features/chat/components/ChatMiddle/TimelineDivider.vue";
+import SimpleMediaModal from "@src/ui/data-display/SimpleMediaModal.vue";
+import { isImage } from "@src/shared/utils/media";
 
 const props = defineProps<{
   handleSelectMessage: (messageId: number) => void;
@@ -19,6 +21,52 @@ const store = useStore();
 const container: Ref<HTMLElement | null> = ref(null);
 
 const activeConversation = <IConversation>inject("activeConversation");
+
+// Image gallery state
+const isImageGalleryOpen = ref(false);
+const galleryImages = ref<string[]>([]);
+const startingImageIndex = ref(0);
+
+// Collect all images from conversation messages
+const collectConversationImages = () => {
+  const images: string[] = [];
+
+  if (activeConversation?.messages) {
+    for (const message of activeConversation.messages) {
+      // Type assertion to handle mixed message types
+      const messageWithEchat = message as any;
+
+      // Check echat messages for media
+      if (messageWithEchat.echat_messages) {
+        const echatMessage =
+          typeof messageWithEchat.echat_messages.message_json === "string"
+            ? JSON.parse(messageWithEchat.echat_messages.message_json)
+            : messageWithEchat.echat_messages.message_json || {};
+
+        if (echatMessage.media && isImage(echatMessage.media)) {
+          images.push(echatMessage.media);
+        }
+      }
+    }
+  }
+
+  return images;
+};
+
+const openImageGallery = (clickedImageUrl: string) => {
+  const allImages = collectConversationImages();
+  const imageIndex = allImages.findIndex((img) => img === clickedImageUrl);
+
+  galleryImages.value = allImages;
+  startingImageIndex.value = imageIndex >= 0 ? imageIndex : 0;
+  isImageGalleryOpen.value = true;
+};
+
+const closeImageGallery = () => {
+  isImageGalleryOpen.value = false;
+  galleryImages.value = [];
+  startingImageIndex.value = 0;
+};
 
 // checks whether the previous message was sent by the same user.
 const isFollowUp = (index: number, previousIndex: number): boolean => {
@@ -72,8 +120,15 @@ watch(
       <div v-for="(message, index) in activeConversation.messages" :key="index">
         <TimelineDivider v-if="renderDivider(index, index - 1)" />
 
-        <MessageV2 :message="message" />
+        <MessageV2 :message="message" @open-image-gallery="openImageGallery" />
       </div>
     </div>
+
+    <SimpleMediaModal
+      :open="isImageGalleryOpen"
+      :image-urls="galleryImages"
+      :starting-index="startingImageIndex"
+      @close="closeImageGallery"
+    />
   </div>
 </template>

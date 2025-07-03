@@ -9,10 +9,15 @@ import {
   ChevronUpIcon,
 } from "@heroicons/vue/24/solid";
 import linkifyStr from "linkify-string";
+import MediaPreview from "@src/features/chat/components/ChatMiddle/Message/MediaPreview.vue";
 
 const props = defineProps<{
   message: ApiMessageItem;
   // self: boolean;
+}>();
+
+const emit = defineEmits<{
+  openImageGallery: [imageUrl: string];
 }>();
 
 const isCallDetailsExpanded = ref(false);
@@ -136,6 +141,7 @@ const formatDuration = (seconds: number) => {
           class="text-[0.8125rem] text-text-primary leading-relaxed relative pr-6"
         >
           <div
+            v-if="echat.message"
             v-html="
               linkifyStr(echat.message, {
                 className: isSelf
@@ -149,6 +155,17 @@ const formatDuration = (seconds: number) => {
               })
             "
           ></div>
+          <!--media preview-->
+          <MediaPreview
+            v-if="echatMessage.media"
+            :media="echatMessage.media"
+            :attachment-id="props.message.id"
+            @open-image-gallery="
+              (imageUrl) => {
+                emit('openImageGallery', imageUrl);
+              }
+            "
+          />
           <img
             :src="
               echat.message_telegram_id
