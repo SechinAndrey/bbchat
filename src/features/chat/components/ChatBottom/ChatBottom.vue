@@ -20,7 +20,7 @@ import ScaleTransition from "@src/ui/transitions/ScaleTransition.vue";
 import ReplyMessage from "@src/features/chat/components/ChatBottom/ReplyMessage.vue";
 import EmojiPicker from "@src/ui/inputs/EmojiPicker/EmojiPicker.vue";
 import Textarea from "@src/ui/inputs/Textarea.vue";
-import conversationsService from "@src/features/conversations/conversations-service.ts";
+import conversationsService from "@src/features/conversations/conversations-service";
 import useConversationsStore from "@src/features/conversations/conversations-store";
 import Select from "@src/ui/inputs/Select.vue";
 

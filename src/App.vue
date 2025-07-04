@@ -141,8 +141,8 @@ onUnmounted(() => {
           </div>
           <p class="text-danger dark:text-danger">{{ initError }}</p>
           <button
-            @click="handleReload"
             class="mt-4 px-4 py-2 bg-primary text-white rounded hover:bg-primary-hover transition"
+            @click="handleReload"
           >
             Попробовать снова
           </button>

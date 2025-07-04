@@ -6,13 +6,14 @@ import type {
   ApiResponseMeta,
   ApiCommunicationClientFull,
   ApiCommunicationLeadFull,
+  ApiMessageItem,
 } from "@src/api/types";
 import type { IConversation, IMessage } from "@src/shared/types/types";
-import type { ApiMessageItem } from "@src/api/types";
 import {
   adaptApiCommunicationLeadToIConversation,
   adaptApiCommunicationClientToIConversation,
 } from "@src/api/communication-adapters";
+import { usePusher } from "@src/shared/composables/usePusher";
 
 // Helper function to update entity messages
 const updateEntityMessages = (
@@ -410,6 +411,25 @@ export const useConversationsStore = defineStore("conversations", () => {
     filters.value = getDefaultFilters();
     return fetchClients(filters.value);
   };
+
+  const addMessageToConversation = (message: ApiMessageItem) => {
+    const lead = leads.value.find((l) => l.id === message.lead_id);
+    if (lead) {
+      lead.messages.push(message);
+      return;
+    }
+
+    const client = clients.value.find((c) => c.id === message.client_id);
+    if (client) {
+      client.messages.push(message);
+    }
+  };
+
+  // Initialize Pusher
+  const { bindEvent } = usePusher();
+  bindEvent("e-chat-notification", "new-message", (data) => {
+    addMessageToConversation(data);
+  });
 
   return {
     // State

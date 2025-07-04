@@ -105,6 +105,16 @@ const isSelected = computed(() => {
     route.currentRoute.value.path === pathWithoutSlash
   );
 });
+
+const lastMessageDate = computed(() => {
+  if (lastMessage.value && "date" in lastMessage.value) {
+    return formatConversationDate(lastMessage.value.date);
+  }
+  if (lastMessage.value && "created_at" in lastMessage.value) {
+    return formatConversationDate(lastMessage.value.created_at);
+  }
+  return "";
+});
 </script>
 
 <template>
@@ -112,6 +122,11 @@ const isSelected = computed(() => {
     <button
       :aria-label="'conversation with' + getName(props.conversation)"
       tabindex="0"
+      class="w-full h-[5.75rem] px-5 py-6 mb-3 flex rounded focus:bg-primary-hover/10 dark:active:bg-gray-600 dark:focus:bg-gray-600 dark:hover:bg-gray-600 hover:bg-primary-hover/10 active:bg-primary-hover/20 focus:outline-none transition duration-500 ease-out"
+      :class="{
+        'md:bg-primary-hover/10': isActive,
+        'md:dark:bg-gray-600': isActive,
+      }"
       @contextmenu.prevent="handleShowContextMenu"
       @click="
         () => {
@@ -119,11 +134,6 @@ const isSelected = computed(() => {
           handleSelectConversation();
         }
       "
-      class="w-full h-[5.75rem] px-5 py-6 mb-3 flex rounded focus:bg-primary-hover/10 dark:active:bg-gray-600 dark:focus:bg-gray-600 dark:hover:bg-gray-600 hover:bg-primary-hover/10 active:bg-primary-hover/20 focus:outline-none transition duration-500 ease-out"
-      :class="{
-        'md:bg-primary-hover/10': isActive,
-        'md:dark:bg-gray-600': isActive,
-      }"
     >
       <!--profile image-->
       <div class="mr-4">
@@ -159,7 +169,7 @@ const isSelected = computed(() => {
             <p
               class="body-1 text-neutral-active whitespace-nowrap text-[0.5625rem]"
             >
-              {{ formatConversationDate(lastMessage?.date) }}
+              {{ lastMessageDate }}
             </p>
           </div>
         </div>

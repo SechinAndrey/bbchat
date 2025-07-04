@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ApiMessageItem } from "@src/shared/types/api";
+import type { ApiMessageItem } from "@src/api/types";
 import { computed, ref } from "vue";
 import {
   PhoneArrowUpRightIcon,

@@ -1,3 +1,5 @@
+import { ApiMessageItem } from "@src/api/types";
+
 export interface IUser {
   id: number;
   roleId: number;

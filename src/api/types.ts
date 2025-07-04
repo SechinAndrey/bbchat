@@ -427,6 +427,7 @@ export interface ApiCommunicationLeadFull {
   have_supervision: number | null;
   comment: string | null;
   messages: ApiMessage[] | null;
+  replyMessage: ApiMessage | null;
   calls: ApiCommunicationCallInfo[];
   info: unknown;
   utm: unknown;

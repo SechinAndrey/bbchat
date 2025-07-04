@@ -6,17 +6,12 @@ import type {
   IMessageContent,
 } from "@src/shared/types";
 import type {
-  ApiMessageType,
   ApiMessageContent,
   ApiMessageContentBinotel,
   ApiCommunicationMessage,
   ApiContact,
   ApiCommunicationLead,
   ApiCommunicationClient,
-  ApiCommunicationResponse,
-  ApiCommunicationLeadFull,
-  ApiCommunicationClientFull,
-  ApiMessageFull,
 } from "@src/api/types";
 
 export function adaptApiContactToIContact(contact: ApiContact): IContact {
