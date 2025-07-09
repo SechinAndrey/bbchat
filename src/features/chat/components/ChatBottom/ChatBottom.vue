@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Ref } from "vue";
 import useStore from "@src/shared/store/store";
-import { ref, inject, onMounted, computed } from "vue";
+import { ref, inject, computed } from "vue";
 
 import {
   ApiCommunicationLeadFull,
@@ -199,6 +199,7 @@ async function sendMessage() {
     </div>
 
     <AttachmentsModal
+      :messenger-id="messengerId"
       :open="openAttachmentsModal"
       :close-modal="() => (openAttachmentsModal = false)"
     />

@@ -8,6 +8,7 @@ import type {
   ApiMessagesResponse,
 } from "@src/api/types";
 
+import type { IAttachment } from "@src/shared/types/types";
 export interface GetCommunicationsParams {
   page?: number;
   search?: string;
@@ -138,6 +139,31 @@ export class ConversationsService {
     } catch (error) {
       console.error("Error sending message:", error);
       throw new Error("Failed to send message");
+    }
+  }
+  /**
+   * Upload a file to the server
+   * @param file - The file to upload
+   * @returns Promise with the URL of the uploaded file
+   */
+  async uploadFile(file: IAttachment): Promise<string> {
+    const formData = new FormData();
+    formData.append("file_for_message", file.file as Blob, file.name);
+
+    try {
+      const response = await apiClient.post<{ url: string }>(
+        "/e-chat/dialogs/files",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        },
+      );
+      return response.data.file_url;
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      throw new Error("Failed to upload file");
     }
   }
 }
