@@ -286,10 +286,10 @@ export interface ApiCommunicationLead {
   visible: number | null;
   communication_status_id: number;
   type: string | null;
-  messages: ApiCommunicationMessage[] | null;
-  pinnedMessage: ApiCommunicationMessage | null;
+  messages: ApiMessageItem[] | null;
+  pinnedMessage: ApiMessageItem | null;
   pinnedMessageHidden: boolean | null;
-  replyMessage: ApiCommunicationMessage | null;
+  replyMessage: ApiMessageItem | null;
   unread: number;
   draftMessage: string;
 }
@@ -310,10 +310,10 @@ export interface ApiCommunicationClient {
   visible: number | null;
   communication_status_id: number | null;
   type: string | null;
-  messages: ApiCommunicationMessage[] | null;
-  pinnedMessage: ApiCommunicationMessage | null;
+  messages: ApiMessageItem[] | null;
+  pinnedMessage: ApiMessageItem | null;
   pinnedMessageHidden: boolean | null;
-  replyMessage: ApiCommunicationMessage | null;
+  replyMessage: ApiMessageItem | null;
   unread: number;
   draftMessage: string | null;
 }

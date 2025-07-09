@@ -72,7 +72,7 @@ export interface IConversation {
   avatar?: string;
   admins?: number[];
   contacts: IContact[];
-  messages: IMessage[];
+  messages: ApiMessageItem[];
   pinnedMessage?: IMessage;
   pinnedMessageHidden?: boolean;
   replyMessage?: IMessage;

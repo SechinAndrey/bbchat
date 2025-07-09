@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
+    "build:ignore-types": "vite build",
     "preview": "vite preview",
     "commit": "cz",
     "release": "standard-version",

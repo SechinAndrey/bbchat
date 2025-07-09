@@ -4,6 +4,11 @@ import type {
   IConversation,
   IRecording,
 } from "@src/shared/types/types";
+import type {
+  ApiCommunicationCallInfo,
+  ApiChaportMessage,
+  ApiEChatMessage,
+} from "@src/api/types";
 import type { Ref } from "vue";
 import { computed, ref } from "vue";
 
@@ -83,6 +88,25 @@ const lastMessage = computed(
   () => props.conversation.messages[props.conversation.messages.length - 1],
 );
 
+const chaport = computed<ApiChaportMessage | null>(() => {
+  return lastMessage.value?.chaport_messages || null;
+});
+
+const echat = computed(() => {
+  return lastMessage.value?.echat_messages || null;
+});
+
+const echatMessage = computed(() => {
+  if (typeof echat.value?.message_json === "string") {
+    return JSON.parse(echat.value.message_json);
+  }
+  return echat.value?.message_json || {};
+});
+
+const call = computed<ApiCommunicationCallInfo | null>(() => {
+  return lastMessage.value?.call || null;
+});
+
 // (event) remove the unread indicator when opening the conversation
 const handleRemoveUnread = () => {
   let index = getConversationIndex(props.conversation.id);
@@ -107,11 +131,25 @@ const isSelected = computed(() => {
 });
 
 const lastMessageDate = computed(() => {
-  if (lastMessage.value && "date" in lastMessage.value) {
-    return formatConversationDate(lastMessage.value.date);
+  if (call.value?.created_at) {
+    return formatConversationDate(call.value.created_at);
+  } else if (chaport.value?.created_at) {
+    return formatConversationDate(chaport.value.created_at);
+  } else if (echat.value?.created_at) {
+    return formatConversationDate(echat.value.created_at);
   }
-  if (lastMessage.value && "created_at" in lastMessage.value) {
-    return formatConversationDate(lastMessage.value.created_at);
+  return "";
+});
+
+const lastMessageText = computed(() => {
+  if (call.value?.billsec) {
+    return `Дзвінок ${call.value.billsec}c`;
+  } else if (chaport.value?.message) {
+    return chaport.value?.message;
+  } else if (echatMessage.value?.message) {
+    return echatMessage.value.message;
+  } else if (echatMessage.value?.media) {
+    return "Медіа повідомлення";
   }
   return "";
 });
@@ -181,7 +219,7 @@ const lastMessageDate = computed(() => {
         <div class="flex justify-between">
           <div>
             <!--draft Message-->
-            <p
+            <!-- <p
               v-if="
                 props.conversation.draftMessage &&
                 props.conversation.id !== getActiveConversationId()
@@ -189,10 +227,10 @@ const lastMessageDate = computed(() => {
               class="body-2 flex justify-start items-center text-danger"
             >
               draft: {{ shorten(props.conversation.draftMessage) }}
-            </p>
+            </p> -->
 
             <!--recording name-->
-            <p
+            <!-- <p
               v-else-if="
                 lastMessage &&
                 lastMessage.type === 'recording' &&
@@ -208,10 +246,10 @@ const lastMessageDate = computed(() => {
                 Recording
                 {{ (lastMessage.content as IRecording).duration }}
               </span>
-            </p>
+            </p> -->
 
             <!--attachments title-->
-            <p
+            <!-- <p
               v-else-if="lastMessage && hasAttachments(lastMessage)"
               class="body-2 text-color flex justify-start items-center"
               :class="{ 'text-primary': props.conversation.unread }"
@@ -219,16 +257,26 @@ const lastMessageDate = computed(() => {
               <span :class="{ 'text-primary': props.conversation.unread }">
                 {{ (lastMessage?.attachments as IAttachment[])[0].name }}
               </span>
-            </p>
+            </p> -->
 
             <!--last message content -->
-            <p
+            <!-- <p
               v-else-if="lastMessage"
               class="body-2 text-color flex justify-start items-center"
               :class="{ 'text-primary': props.conversation.unread }"
             >
               <span :class="{ 'text-primary': props.conversation.unread }">
                 {{ shorten(lastMessage) }}
+              </span>
+            </p> -->
+
+            <p
+              v-if="lastMessageText"
+              class="body-2 text-color flex justify-start items-center"
+              :class="{ 'text-primary': props.conversation.unread }"
+            >
+              <span :class="{ 'text-primary': props.conversation.unread }">
+                {{ shorten(lastMessageText) }}
               </span>
             </p>
           </div>

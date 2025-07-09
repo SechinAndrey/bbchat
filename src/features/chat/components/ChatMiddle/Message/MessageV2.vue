@@ -168,11 +168,11 @@ const formatDuration = (seconds: number) => {
           />
           <img
             :src="
-              echat.message_telegram_id
+              echat.dialog.messenger_id == 1
                 ? '/imgs/telegram.png'
                 : '/imgs/viber.png'
             "
-            :alt="echat.message_telegram_id ? 'Telegram' : 'Viber'"
+            :alt="echat.dialog.messenger_id == 1 ? 'Telegram' : 'Viber'"
             class="absolute bottom-0 right-0 w-4 h-4 rounded-full bg-cover bg-center"
           />
         </div>

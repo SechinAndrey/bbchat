@@ -86,7 +86,7 @@ function adaptApiCommunicationToIConversation(
   entityType: "lead" | "client",
 ): IConversation {
   const lastMessage = entity.messages?.at(-1);
-  const lastContact = entity.contacts?.at(-1);
+  // const lastContact = entity.contacts?.at(-1);
 
   return {
     id: entity.id,
@@ -96,15 +96,7 @@ function adaptApiCommunicationToIConversation(
     avatar: entity.avatar || "",
     admins: [],
     contacts: adaptApiContactsToIContacts(entity.contacts || []),
-    messages:
-      lastMessage && lastContact
-        ? [
-            adaptApiCommunicationMessageToIMessage(
-              lastMessage,
-              adaptApiContactToIContact(lastContact),
-            ),
-          ]
-        : [],
+    messages: lastMessage ? [lastMessage] : [],
     pinnedMessageHidden: false,
     draftMessage: "",
     communicationStatusId: entity.communication_status_id || 0,
