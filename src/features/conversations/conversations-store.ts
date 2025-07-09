@@ -415,13 +415,13 @@ export const useConversationsStore = defineStore("conversations", () => {
   const addMessageToConversation = (message: ApiMessageItem) => {
     const lead = leads.value.find((l) => l.id === message.lead_id);
     if (lead) {
-      lead.messages.push(message);
+      lead.messages.unshift(message);
       return;
     }
 
     const client = clients.value.find((c) => c.id === message.client_id);
     if (client) {
-      client.messages.push(message);
+      client.messages.unshift(message);
     }
   };
 

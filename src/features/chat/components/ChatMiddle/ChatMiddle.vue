@@ -81,13 +81,13 @@ const isFollowUp = (index: number, previousIndex: number): boolean => {
 };
 
 // checks wether the new message has been sent in a new day or not.
-const renderDivider = (index: number, previousIndex: number): boolean => {
-  if (index === 3) {
-    return true;
-  } else {
-    return false;
-  }
-};
+// const renderDivider = (index: number, previousIndex: number): boolean => {
+//   if (index === 3) {
+//     return true;
+//   } else {
+//     return false;
+//   }
+// };
 
 const scrollToBottom = () => {
   nextTick(() => {
@@ -116,9 +116,9 @@ watch(
     ref="container"
     class="grow px-5 py-5 flex flex-col overflow-y-scroll scrollbar-hidden"
   >
-    <div v-if="store.status !== 'loading'" class="flex flex-col">
+    <div v-if="store.status !== 'loading'" class="flex flex-col-reverse">
       <div v-for="(message, index) in activeConversation.messages" :key="index">
-        <TimelineDivider v-if="renderDivider(index, index - 1)" />
+        <!-- <TimelineDivider v-if="renderDivider(index, index - 1)" /> -->
 
         <MessageV2 :message="message" @open-image-gallery="openImageGallery" />
       </div>
