@@ -579,3 +579,14 @@ export interface ApiMessagesResponse {
   total: number;
   data: ApiMessageItem[];
 }
+
+export interface CreateLeadRequest {
+  name: string;
+  fio: string;
+  email?: string;
+  phone?: string;
+  tg_name?: string;
+  city: number[];
+  comment?: string;
+  status_id: number;
+}

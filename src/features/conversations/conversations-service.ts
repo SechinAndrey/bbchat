@@ -6,6 +6,7 @@ import type {
   ApiCommunicationLeadFull,
   ApiCommunicationClientFull,
   ApiMessagesResponse,
+  CreateLeadRequest,
 } from "@src/api/types";
 
 import type { IAttachment } from "@src/shared/types/types";
@@ -141,11 +142,7 @@ export class ConversationsService {
       throw new Error("Failed to send message");
     }
   }
-  /**
-   * Upload a file to the server
-   * @param file - The file to upload
-   * @returns Promise with the URL of the uploaded file
-   */
+
   async uploadFile(file: IAttachment): Promise<string> {
     const formData = new FormData();
     formData.append("file_for_message", file.file as Blob, file.name);
@@ -164,6 +161,23 @@ export class ConversationsService {
     } catch (error) {
       console.error("Error uploading file:", error);
       throw new Error("Failed to upload file");
+    }
+  }
+
+  async createLead(
+    leadData: CreateLeadRequest,
+  ): Promise<ApiCommunicationLeadFull> {
+    try {
+      const response = await apiClient.post<ApiCommunicationLeadFull>(
+        "/leads",
+        leadData,
+      );
+      console.log("Lead created successfully:", response.data);
+
+      return response.data;
+    } catch (error) {
+      console.error("Error creating lead:", error);
+      throw new Error("Failed to create lead");
     }
   }
 }

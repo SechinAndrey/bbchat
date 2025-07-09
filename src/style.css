@@ -175,6 +175,12 @@
   focus:outline-none transition duration-200 ease-out;
   }
 
+  .text-area {
+    @apply max-w-full w-full p-4 rounded-sm outline-none
+  text-sm text-black dark:text-white text-opacity-70 placeholder:text-black dark:placeholder:text-white placeholder:opacity-50
+  focus:outline-none transition duration-200 ease-out;
+  }
+
   .bordered-input {
     @apply border border-gray-200 bg-gray-50 dark:bg-gray-700
    dark:focus:bg-opacity-0 focus:bg-opacity-0 focus:border-primary

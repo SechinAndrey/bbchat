@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import TextInput from "@src/ui/inputs/TextInput.vue";
 
-const model = defineModel<string>();
+const model = defineModel<string | number>();
 
 const props = defineProps<{
   id?: string;
@@ -16,7 +16,11 @@ const props = defineProps<{
 
 <template>
   <div class="flex flex-col">
-    <label v-if="props.label" :id="props.id" class="body-2 text-color mb-3">
+    <label
+      v-if="props.label"
+      :id="props.id"
+      class="body-2 text-color mb-3 text-left"
+    >
       {{ props.label }}
     </label>
 
@@ -31,10 +35,7 @@ const props = defineProps<{
         :name="props.name"
         :value="model"
         class="text-input"
-        :class="[
-          props.bordered ? 'bordered-input' : 'ringed-input',
-          props.class,
-        ]"
+        :bordered="props.bordered"
         :placeholder="props.placeholder"
         @value-changed="(value) => (model = value)"
       />

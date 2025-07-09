@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import type { Ref } from "vue";
-import { onMounted, ref, watch } from "vue";
-
 const modelValue = defineModel<string>();
 
 const props = defineProps<{
@@ -10,25 +7,8 @@ const props = defineProps<{
   placeholder?: string;
   bordered?: boolean;
   autoResize?: boolean;
+  rows?: number;
 }>();
-
-const textarea: Ref<HTMLTextAreaElement | null> = ref(null);
-
-// change the size of the textarea
-const handleAutoResize = () => {
-  if (props.autoResize && textarea.value) {
-    textarea.value.style.height = "auto";
-    textarea.value.style.height = `${textarea.value.scrollHeight}px`;
-  }
-};
-
-onMounted(() => {
-  handleAutoResize();
-});
-
-watch(modelValue, () => {
-  handleAutoResize();
-});
 </script>
 
 <template>
@@ -37,8 +17,9 @@ watch(modelValue, () => {
     ref="textarea"
     v-model="modelValue"
     :name="props.name"
-    class="text-input"
+    class="text-area"
     :class="[props.bordered ? 'bordered-input' : 'ringed-input']"
     :placeholder="props.placeholder"
+    :rows="props.rows || 3"
   />
 </template>

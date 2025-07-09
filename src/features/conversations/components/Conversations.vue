@@ -1,16 +1,19 @@
 <script setup lang="ts">
 import type { Ref } from "vue";
 import type { GetCommunicationsParams } from "../conversations-service";
+import type { CreateLeadRequest } from "@src/api/types";
 
 import { ref, watch, computed } from "vue";
 import { useInfiniteScroll } from "@vueuse/core";
 
 import { useGlobalDataStore } from "@src/shared/store/global-data-store";
+import conversationsService from "@src/features/conversations/conversations-service";
 import { useConversationsStore } from "@src/features/conversations/conversations-store";
 import { useAuthStore } from "@src/features/auth/store/auth-store";
 
 import { PencilSquareIcon, UserIcon } from "@heroicons/vue/24/outline";
 import ComposeModal from "@src/features/conversations/modals/ComposeModal/ComposeModal.vue";
+import NewLeadModal from "@src/features/conversations/modals/NewLeadModal.vue";
 import NoConversation from "@src/ui/states/empty-states/NoConversation.vue";
 import Circle2Lines from "@src/ui/states/loading-states/Circle2Lines.vue";
 import IconButton from "@src/ui/inputs/IconButton.vue";
@@ -36,6 +39,7 @@ const selectedUser = ref<number | "all">("all");
 const selectedFilter = ref("leads");
 const keyword: Ref<string> = ref("");
 const composeOpen = ref(false);
+const newLeadModalOpen = ref(false);
 const openArchive = ref(false);
 
 const TAB = {
@@ -168,18 +172,27 @@ watch(
 const closeComposeModal = () => {
   composeOpen.value = false;
 };
+
+const closeNewLeadModal = () => {
+  newLeadModalOpen.value = false;
+};
+
+const handleNewLeadSubmit = async (leadData: CreateLeadRequest) => {
+  await conversationsService.createLead(leadData);
+  closeNewLeadModal();
+};
 </script>
 
 <template>
   <div class="bg-theme-conversations">
     <SidebarHeader>
       <!--title-->
-      <template v-slot:title>
+      <template #title>
         <div>Чати</div>
       </template>
 
       <!--side actions-->
-      <template v-slot:actions>
+      <template #actions>
         <div class="flex items-center gap-3">
           <Select
             v-if="authStore.currentUser?.roleId === 1"
@@ -199,12 +212,12 @@ const closeComposeModal = () => {
             :icon="leadClientIcon"
           />
 
-          <div title="Comming soon">
+          <div title="Додати ліда">
             <IconButton
-              class="disabled ic-btn-ghost-primary w-7 h-7"
-              @click="composeOpen = true"
-              aria-label="compose conversation"
-              title="compose conversation"
+              class="ic-btn-ghost-primary w-7 h-7"
+              aria-label="add new lead"
+              title="add new lead"
+              @click="newLeadModalOpen = true"
             >
               <PencilSquareIcon class="w-[1.25rem] h-[1.25rem]" />
             </IconButton>
@@ -216,12 +229,12 @@ const closeComposeModal = () => {
     <!--search bar-->
     <div class="px-5 pb-4">
       <SearchInput
+        :value="keyword"
         @value-changed="
           (value) => {
             keyword = value;
           }
         "
-        :value="keyword"
       />
     </div>
 
@@ -242,15 +255,15 @@ const closeComposeModal = () => {
     <SlideTransition :animation="animation">
       <div
         ref="scrollContainer"
+        :key="activeTab"
         role="list"
         aria-label="conversations"
         class="w-full h-full scroll-smooth scrollbar-hidden"
         style="overflow-x: visible; overflow-y: scroll"
-        :key="activeTab"
       >
         <Circle2Lines
-          v-if="isLoading && conversationsList.length === 0"
           v-for="item in 6"
+          v-if="isLoading && conversationsList.length === 0"
         />
 
         <div v-else>
@@ -263,8 +276,8 @@ const closeComposeModal = () => {
           <div v-if="conversationsList.length > 0">
             <FadeTransition>
               <ConversationsList
-                :filtered-conversations="conversationsList"
                 :key="openArchive ? 'archive' : 'active'"
+                :filtered-conversations="conversationsList"
               />
             </FadeTransition>
             <Circle2Lines v-if="isLoading" />
@@ -279,5 +292,12 @@ const closeComposeModal = () => {
 
     <!--compose modal-->
     <ComposeModal :open="composeOpen" :close-modal="closeComposeModal" />
+
+    <!--new lead modal-->
+    <NewLeadModal
+      :open="newLeadModalOpen"
+      :close-modal="closeNewLeadModal"
+      @submit="handleNewLeadSubmit"
+    />
   </div>
 </template>
