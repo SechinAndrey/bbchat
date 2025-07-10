@@ -82,13 +82,11 @@ const handleLogin = async () => {
           label="Email"
           placeholder="Enter your email"
           class="mb-5"
-          @value-changed="(val) => (email = val)"
         />
         <PasswordInput
-          :value="password"
+          v-model="password"
           label="Password"
           placeholder="Enter your password"
-          @value-changed="(val) => (password = val)"
         />
       </div>
 

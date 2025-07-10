@@ -14,27 +14,27 @@ const props = defineProps<{
 
 <template>
   <LabeledTextInput
-    placeholder="Search.."
+    placeholder="Пошук.."
     class="pl-7"
     :value="props.value"
-    @value-changed="(value) => $emit('valueChanged', value)"
+    @value-changed="(value: string) => $emit('valueChanged', value)"
   >
-    <template v-slot:startAdornment>
+    <template #startAdornment>
       <MagnifyingGlassIcon
         class="w-5 h-5 mx-[8px] translate-y-[75%] text-gray-400 dark:text-white dark:opacity-70"
       />
     </template>
-    <template v-slot:endAdornment>
+    <template #endAdornment>
       <IconButton
         v-if="props.value"
+        title="clear text"
+        aria-label="clear text"
+        class="ic-btn-ghost-gray m-[.5rem] p-2"
         @click="
           () => {
             if (props.value) $emit('valueChanged', '');
           }
         "
-        title="clear text"
-        aria-label="clear text"
-        class="ic-btn-ghost-gray m-[.5rem] p-2"
       >
         <XCircleIcon class="w-5 h-5" />
       </IconButton>

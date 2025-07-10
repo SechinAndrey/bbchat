@@ -5,13 +5,12 @@ import LabeledTextInput from "@src/ui/inputs/LabeledTextInput.vue";
 import { EyeSlashIcon, EyeIcon } from "@heroicons/vue/24/outline";
 import IconButton from "@src/ui/inputs/IconButton.vue";
 
-defineEmits(["valueChanged"]);
+const modelValue = defineModel<string>();
 
 const props = defineProps<{
   id?: string;
   type?: string;
   label?: string;
-  value?: string;
   placeholder?: string;
   description?: string;
   bordered?: boolean;
@@ -24,15 +23,14 @@ const showPassword = ref(false);
 <template>
   <LabeledTextInput
     :id="props.id"
+    v-model="modelValue"
     :type="showPassword ? 'text' : 'password'"
     :label="props.label"
-    :value="props.value"
     :placeholder="props.placeholder"
     :class="props.class"
     :bordered="props.bordered"
-    @value-changed="(value) => $emit('valueChanged', value)"
   >
-    <template v-slot:endAdornment>
+    <template #endAdornment>
       <IconButton
         title="toggle password visibility"
         aria-label="toggle password visibility"
