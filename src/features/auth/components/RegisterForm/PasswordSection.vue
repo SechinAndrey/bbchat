@@ -13,16 +13,14 @@ const confirmPassword = ref("");
     <div class="mb-5">
       <!--form-->
       <PasswordInput
-        @valueChanged="(value) => (password = value)"
-        :value="password"
+        v-model="password"
         label="Password"
         placeholder="Enter your password"
         class="mb-4"
       />
 
       <PasswordInput
-        @valueChanged="(value) => (confirmPassword = value)"
-        :value="confirmPassword"
+        v-model="confirmPassword"
         label="Confirm Password"
         placeholder="Enter your password"
       />

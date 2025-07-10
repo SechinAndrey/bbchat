@@ -148,7 +148,7 @@ export class ConversationsService {
     formData.append("file_for_message", file.file as Blob, file.name);
 
     try {
-      const response = await apiClient.post<{ url: string }>(
+      const response = await apiClient.post<{ file_url: string }>(
         "/e-chat/dialogs/files",
         formData,
         {

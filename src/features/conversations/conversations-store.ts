@@ -34,7 +34,7 @@ const updateEntityMessages = (
   });
 
   if (entityIndex !== -1) {
-    entitiesRef.value[entityIndex].messages = messages as unknown as IMessage[];
+    entitiesRef.value[entityIndex].messages = messages;
   } else {
     console.warn("❌ Entity not found with ID:", numericTargetId);
   }

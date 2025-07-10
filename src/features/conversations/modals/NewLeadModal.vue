@@ -3,7 +3,6 @@ import { ref, computed } from "vue";
 import Button from "@src/ui/inputs/Button.vue";
 import LabeledTextInput from "@src/ui/inputs/LabeledTextInput.vue";
 import Textarea from "@src/ui/inputs/Textarea.vue";
-import Select from "@src/ui/inputs/Select.vue";
 import Modal from "@src/ui/modals/Modal.vue";
 import type { CreateLeadRequest } from "@src/api/types";
 
@@ -11,16 +10,6 @@ const props = defineProps<{
   open: boolean;
   closeModal: () => void;
 }>();
-
-interface CityOption {
-  value: number;
-  label: string;
-}
-
-interface StatusOption {
-  value: number;
-  label: string;
-}
 
 const emit = defineEmits<{
   submit: [leadData: CreateLeadRequest];
@@ -33,17 +22,9 @@ const email = ref("");
 const phone = ref("");
 const tgName = ref("");
 const city = ref<number[]>([1]);
+const tempCity = ref<string>("1");
 const comment = ref("");
 const statusId = ref<number>(3);
-
-// Mock data for selects - replace with real data from API
-const cityOptions = ref<CityOption[]>([
-  { value: 1, label: "Київ" },
-  { value: 2, label: "Харків" },
-  { value: 3, label: "Одеса" },
-  { value: 4, label: "Дніпро" },
-  { value: 5, label: "Львів" },
-]);
 
 const isFormValid = computed(() => {
   const isNameValid = name.value.trim() !== "";
@@ -152,7 +133,7 @@ const handleCancel = () => {
               bordered
             />
             <LabeledTextInput
-              v-model="city"
+              v-model="tempCity"
               label="Місто"
               placeholder="Виберіть місто"
               bordered

@@ -93,7 +93,7 @@ const handleCloseVoiceCallModal = (endCall: boolean) => {
     <!--Contact info modal-->
     <ConversationInfoModal
       :open="openInfo"
-      :closeModal="() => (openInfo = false)"
+      :close-modal="() => (openInfo = false)"
       :conversation="activeConversation"
     />
 

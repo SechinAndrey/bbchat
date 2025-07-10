@@ -68,16 +68,14 @@ const handleSubmit = () => {
 
   <Collapse id="account-settings-collapse" :collapsed="props.collapsed">
     <LabeledTextInput
+      v-model="accountValues.firstName"
       label="First name"
-      inputClasses="mb-7"
-      :value="accountValues?.firstName"
-      @value-changed="(value) => (accountValues.firstName = value)"
+      input-classes="mb-7"
     />
     <LabeledTextInput
+      v-model="accountValues.lastName"
       label="Last name"
-      inputClasses="mb-7"
-      :value="accountValues?.lastName"
-      @value-changed="(value) => (accountValues.lastName = value)"
+      input-classes="mb-7"
     />
     <DropFileUpload
       label="Avatar"
@@ -88,8 +86,8 @@ const handleSubmit = () => {
     />
     <Button
       class="contained-primary contained-text w-full py-4"
-      @click="handleSubmit"
       :loading="loading"
+      @click="handleSubmit"
     >
       Save Settings
     </Button>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import TextInput from "@src/ui/inputs/TextInput.vue";
 
-const model = defineModel<string | number>();
+const model = defineModel<string>();
 
 const props = defineProps<{
   id?: string;
@@ -31,13 +31,12 @@ const props = defineProps<{
 
       <TextInput
         :id="props.id"
+        v-model="model"
         :type="props.type || 'text'"
         :name="props.name"
-        :value="model"
         class="text-input"
         :bordered="props.bordered"
         :placeholder="props.placeholder"
-        @value-changed="(value) => (model = value)"
       />
 
       <div class="absolute top-0 right-0">

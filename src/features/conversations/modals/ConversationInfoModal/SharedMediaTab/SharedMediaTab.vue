@@ -1,42 +1,41 @@
 <script setup lang="ts">
-import type {
-  IContact,
-  IConversation,
-  IMessage,
-} from "@src/shared/types/types";
-import { computed } from "vue";
+import type {} from // IContact,
+// IConversation,
+// IMessage,
+"@src/shared/types/types";
+// import { computed } from "vue";
 
-import { hasAttachments } from "@src/shared/utils/utils";
+// import { hasAttachments } from "@src/shared/utils/utils";
 
 import { ArrowUturnLeftIcon } from "@heroicons/vue/24/outline";
-import MediaItem from "@src/features/conversations/modals/ConversationInfoModal/SharedMediaTab/MediaItem.vue";
+// import MediaItem from "@src/features/conversations/modals/ConversationInfoModal/SharedMediaTab/MediaItem.vue";
 import SearchInput from "@src/ui/inputs/SearchInput.vue";
-import NoMedia from "@src/ui/states/empty-states/NoMedia.vue";
-import ScrollBox from "@src/ui/utils/ScrollBox.vue";
+// import NoMedia from "@src/ui/states/empty-states/NoMedia.vue";
+// import ScrollBox from "@src/ui/utils/ScrollBox.vue";
 import IconButton from "@src/ui/inputs/IconButton.vue";
 
-const props = defineProps<{
-  closeModal: () => void;
-  conversation: IConversation;
-  contact?: IContact;
-}>();
+// const props = defineProps<{
+//   closeModal: () => void;
+//   conversation: IConversation;
+//   contact?: IContact;
+// }>();
 
 // extract messages that contain attachments.
-const attachmentMessages = computed(() => {
-  let media: IMessage[] = [];
-  for (let message of props.conversation.messages) {
-    if (hasAttachments(message)) {
-      if (props.contact) {
-        if (message.sender.id === props.contact.id) {
-          media.push(message);
-        }
-      } else {
-        media.push(message);
-      }
-    }
-  }
-  return media;
-});
+// const attachmentMessages = computed(() => {
+//   let media: IMessage[] = [];
+//   for (let message of props.conversation.messages) {
+//     if (hasAttachments(message)) {
+//       if (props.contact) {
+//         if (message.sender.id === props.contact.id) {
+//           media.push(message);
+//         }
+//       } else {
+//         media.push(message);
+//       }
+//     }
+//   }
+//   return media;
+// });
 </script>
 
 <template>
@@ -49,13 +48,13 @@ const attachmentMessages = computed(() => {
 
       <!--return button-->
       <IconButton
+        class="ic-btn-outlined-danger p-2"
         @click="
           $emit('active-page-change', {
             tabName: 'conversation-info',
             animationName: 'slide-right',
           })
         "
-        class="ic-btn-outlined-danger p-2"
       >
         <ArrowUturnLeftIcon class="w-5 h-5" />
       </IconButton>
@@ -67,7 +66,7 @@ const attachmentMessages = computed(() => {
     </div>
 
     <!--media messages-->
-    <ScrollBox class="overflow-y-scroll max-h-[13.875rem]">
+    <!-- <ScrollBox class="overflow-y-scroll max-h-[13.875rem]">
       <div
         v-if="attachmentMessages.length > 0"
         v-for="(message, index) in attachmentMessages"
@@ -82,6 +81,6 @@ const attachmentMessages = computed(() => {
       </div>
 
       <NoMedia v-else vertical />
-    </ScrollBox>
+    </ScrollBox> -->
   </div>
 </template>

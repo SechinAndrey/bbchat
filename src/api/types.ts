@@ -222,9 +222,23 @@ export interface ApiChaportMessage {
 
 export interface ApiEChatMessage {
   id: number;
-  direction: string;
-  message: string;
   created_at: string;
+  dialog: {
+    id: number;
+    messenger_id: number;
+  };
+  dialog_id: number;
+  direction: number;
+  message: string;
+  message_date_time: string;
+  message_id: string;
+  message_json: string;
+  message_telegram_id: string;
+  number: string;
+  sender_id: string;
+  sender_json: string;
+  sender_number: string;
+  updated_at: string;
 }
 
 export interface ApiMessageItemUser {

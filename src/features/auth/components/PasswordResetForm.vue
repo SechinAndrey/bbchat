@@ -29,41 +29,26 @@ const confirmNewPassword = ref("");
       <!--form-->
       <div class="mb-6">
         <PasswordInput
-          :value="oldPassword"
+          v-model="oldPassword"
           bordered
           label="Old Password"
           placeholder="Enter your password"
           class="mb-5"
-          @value-changed="
-            (value) => {
-              oldPassword = value;
-            }
-          "
         />
 
         <PasswordInput
-          :value="newPassword"
+          v-model="newPassword"
           bordered
           label="New Password"
           placeholder="Enter your password"
           class="mb-5"
-          @value-changed="
-            (value) => {
-              newPassword = value;
-            }
-          "
         />
 
         <PasswordInput
-          :value="confirmNewPassword"
+          v-model="confirmNewPassword"
           bordered
           label="Confirm New Password"
           placeholder="Enter your password"
-          @value-changed="
-            (value) => {
-              confirmNewPassword = value;
-            }
-          "
         />
       </div>
 

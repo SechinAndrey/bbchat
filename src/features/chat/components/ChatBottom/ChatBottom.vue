@@ -136,7 +136,7 @@ async function sendMessage() {
             class="max-h-[5rem] pr-[3.125rem] resize-none scrollbar-hidden"
             auto-resize
             cols="30"
-            rows="1"
+            :rows="1"
             placeholder="Напишіть своє повідомлення тут"
             aria-label="Напишіть своє повідомлення тут"
             @keydown.ctrl.enter.prevent="sendMessage"

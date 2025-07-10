@@ -96,7 +96,10 @@ export function usePusher() {
 
   const cleanup = () => {
     subscriptions.value.forEach(({ channel, event, callback }) => {
-      unbindEvent(channel, event, callback);
+      const channelInstance = channels.value[channel];
+      if (channelInstance) {
+        channelInstance.unbind(event, callback);
+      }
     });
 
     Object.keys(channels.value).forEach((channelName) => {
