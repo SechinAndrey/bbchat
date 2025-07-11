@@ -45,18 +45,18 @@ const handleActiveSidebarComponentChange = (value: string) => {
         <ul class="xs:flex md:block xs:justify-between xs:items-center">
           <li class="md:mb-4">
             <NavItem
-              @click="() => handleActiveSidebarComponentChange('messages')"
               :active="store.activeSidebarComponent === 'messages'"
-              textColor="text-white"
+              text-color="text-white"
+              @click="() => handleActiveSidebarComponentChange('messages')"
             >
               <ChatBubbleLeftRightIcon />
             </NavItem>
           </li>
           <li class="md:mb-4">
             <NavItem
-              @click="() => handleActiveSidebarComponentChange('contacts')"
               :active="store.activeSidebarComponent === 'contacts'"
-              textColor="text-white"
+              text-color="text-white"
+              @click="() => handleActiveSidebarComponentChange('contacts')"
             >
               <UsersIcon />
             </NavItem>
@@ -67,8 +67,8 @@ const handleActiveSidebarComponentChange = (value: string) => {
             <NavLink
               :icon="Cog6ToothIcon"
               title="Settings"
-              @click="() => handleActiveSidebarComponentChange('settings')"
               :active="store.activeSidebarComponent === 'settings'"
+              @click="() => handleActiveSidebarComponentChange('settings')"
             />
           </li>
 
@@ -95,7 +95,7 @@ const handleActiveSidebarComponentChange = (value: string) => {
           <li>
             <NavLink
               class="flex justify-center"
-              :icon="isDarkMode.value ? SunIcon : MoonIcon"
+              :icon="isDarkMode?.value ? SunIcon : MoonIcon"
               title="Night mode"
               @click="toggleDarkMode"
             />
@@ -106,8 +106,8 @@ const handleActiveSidebarComponentChange = (value: string) => {
               class="flex justify-center"
               :icon="Cog6ToothIcon"
               title="Settings"
-              @click="() => handleActiveSidebarComponentChange('settings')"
               :active="store.activeSidebarComponent === 'settings'"
+              @click="() => handleActiveSidebarComponentChange('settings')"
             />
           </li>
         </ul>

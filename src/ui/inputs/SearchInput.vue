@@ -3,22 +3,16 @@ import { MagnifyingGlassIcon, XCircleIcon } from "@heroicons/vue/24/outline";
 import IconButton from "@src/ui/inputs/IconButton.vue";
 import LabeledTextInput from "@src/ui/inputs/LabeledTextInput.vue";
 
-defineEmits(["valueChanged"]);
+const model = defineModel<string>();
 
-const props = defineProps<{
+defineProps<{
   variant?: string;
   class?: string;
-  value?: string;
 }>();
 </script>
 
 <template>
-  <LabeledTextInput
-    placeholder="Пошук.."
-    class="pl-7"
-    :value="props.value"
-    @value-changed="(value: string) => $emit('valueChanged', value)"
-  >
+  <LabeledTextInput v-model="model" placeholder="Пошук.." input-class="px-7">
     <template #startAdornment>
       <MagnifyingGlassIcon
         class="w-5 h-5 mx-[8px] translate-y-[75%] text-gray-400 dark:text-white dark:opacity-70"
@@ -26,15 +20,11 @@ const props = defineProps<{
     </template>
     <template #endAdornment>
       <IconButton
-        v-if="props.value"
+        v-if="model"
         title="clear text"
         aria-label="clear text"
         class="ic-btn-ghost-gray m-[.5rem] p-2"
-        @click="
-          () => {
-            if (props.value) $emit('valueChanged', '');
-          }
-        "
+        @click="model = ''"
       >
         <XCircleIcon class="w-5 h-5" />
       </IconButton>

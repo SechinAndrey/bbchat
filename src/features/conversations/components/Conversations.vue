@@ -228,14 +228,7 @@ const handleNewLeadSubmit = async (leadData: CreateLeadRequest) => {
 
     <!--search bar-->
     <div class="px-5 pb-4">
-      <SearchInput
-        :value="keyword"
-        @value-changed="
-          (value) => {
-            keyword = value;
-          }
-        "
-      />
+      <SearchInput v-model="keyword" />
     </div>
 
     <Tabs class="mx-5 mb-4">

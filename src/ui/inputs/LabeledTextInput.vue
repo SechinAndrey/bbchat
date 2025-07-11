@@ -11,6 +11,7 @@ const props = defineProps<{
   class?: string;
   placeholder?: string;
   bordered?: boolean;
+  inputClass?: string;
 }>();
 </script>
 
@@ -34,7 +35,7 @@ const props = defineProps<{
         v-model="model"
         :type="props.type || 'text'"
         :name="props.name"
-        class="text-input"
+        :class="['text-input', props.inputClass]"
         :bordered="props.bordered"
         :placeholder="props.placeholder"
       />
