@@ -95,6 +95,16 @@
 
   --cbg-10-light: rgba(255, 255, 255, 0.1);
   --cbg-10-dark: rgba(31, 41, 55, 0.1);
+
+  /* Scrollbar colors */
+  --scrollbar-track-light: transparent;
+  --scrollbar-track-dark: transparent;
+
+  --scrollbar-thumb-light: #d1d5db; /* gray-300 */
+  --scrollbar-thumb-hover-light: #9ca3af; /* gray-400 */
+
+  --scrollbar-thumb-dark: #4b5563; /* gray-600 */
+  --scrollbar-thumb-hover-dark: #6b7280; /* gray-500 */
 }
 
 :root {
@@ -139,6 +149,10 @@
   --bg-message: var(--bg-message-light);
 
   --cbg-10: var(--cbg-10-light);
+
+  --scrollbar-track: var(--scrollbar-track-light);
+  --scrollbar-thumb: var(--scrollbar-thumb-light);
+  --scrollbar-thumb-hover: var(--scrollbar-thumb-hover-light);
 }
 
 .dark {
@@ -183,4 +197,8 @@
   --bg-message: var(--bg-message-dark);
 
   --cbg-10: var(--cbg-10-dark);
+
+  --scrollbar-track: var(--scrollbar-track-dark);
+  --scrollbar-thumb: var(--scrollbar-thumb-dark);
+  --scrollbar-thumb-hover: var(--scrollbar-thumb-hover-dark);
 }

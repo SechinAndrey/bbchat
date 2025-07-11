@@ -65,6 +65,11 @@ module.exports = {
           primary: "var(--text-primary)",
           secondary: "var(--text-secondary)",
         },
+        scrollbar: {
+          track: "var(--scrollbar-track)",
+          thumb: "var(--scrollbar-thumb)",
+          "thumb-hover": "var(--scrollbar-thumb-hover)",
+        },
         cbg: {
           10: "var(--cbg-10)",
         },

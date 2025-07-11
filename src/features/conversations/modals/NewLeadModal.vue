@@ -2,9 +2,11 @@
 import { ref, computed } from "vue";
 import Button from "@src/ui/inputs/Button.vue";
 import LabeledTextInput from "@src/ui/inputs/LabeledTextInput.vue";
+import AutocompleteSelect from "@src/ui/inputs/AutocompleteSelect.vue";
 import Textarea from "@src/ui/inputs/Textarea.vue";
 import Modal from "@src/ui/modals/Modal.vue";
 import type { CreateLeadRequest } from "@src/api/types";
+import useGlobalDataStore from "@src/shared/store/global-data-store";
 
 const props = defineProps<{
   open: boolean;
@@ -21,10 +23,18 @@ const fio = ref("");
 const email = ref("");
 const phone = ref("");
 const tgName = ref("");
-const city = ref<number[]>([1]);
-const tempCity = ref<string>("1");
 const comment = ref("");
 const statusId = ref<number>(3);
+
+const globalDataStore = useGlobalDataStore();
+const cityOptions = computed(() => {
+  return globalDataStore.cities.map((city) => ({
+    value: city.id,
+    label: city.name,
+  }));
+});
+
+const selectedCityId = ref<number>(1);
 
 const isFormValid = computed(() => {
   const isNameValid = name.value.trim() !== "";
@@ -46,7 +56,7 @@ const clean = () => {
   email.value = "";
   phone.value = "";
   tgName.value = "";
-  city.value = [1];
+  selectedCityId.value = 1;
   comment.value = "";
   statusId.value = 3;
   props.closeModal();
@@ -63,7 +73,7 @@ const handleSubmit = () => {
     email: email.value.trim() || undefined,
     phone: phone.value.trim() || undefined,
     tg_name: tgName.value.trim() || undefined,
-    city: city.value,
+    city: [selectedCityId.value],
     comment: comment.value.trim() || undefined,
     status_id: statusId.value,
   };
@@ -132,11 +142,13 @@ const handleCancel = () => {
               placeholder="@tg_name"
               bordered
             />
-            <LabeledTextInput
-              v-model="tempCity"
+            <AutocompleteSelect
+              v-model="selectedCityId"
+              :options="cityOptions"
               label="Місто"
               placeholder="Виберіть місто"
               bordered
+              searchable
             />
           </div>
 

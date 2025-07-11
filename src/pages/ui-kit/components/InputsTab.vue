@@ -13,6 +13,7 @@ import SwitchInput from "@src/ui/inputs/SwitchInput.vue";
 import RangeSlider from "@src/ui/inputs/RangeSlider.vue";
 import DropFileUpload from "@src/ui/inputs/DropFileUpload.vue";
 import Select from "@src/ui/inputs/Select.vue";
+import AutocompleteSelect from "@src/ui/inputs/AutocompleteSelect.vue";
 
 import {
   PaperAirplaneIcon,
@@ -28,6 +29,8 @@ const switchValue = ref(false);
 const sliderValue = ref(50);
 const singleSelectValue = ref("");
 const multiSelectValue = ref([]);
+const singleAutocompleteValue = ref("");
+const multiAutocompleteValue = ref([]);
 const selectOptions = [
   { value: 1, label: "Перший варіант" },
   { value: 2, label: "Другий варіант" },
@@ -247,8 +250,8 @@ const handleSliderChange = function (value: number) {
           <div class="flex items-center">
             <SwitchInput
               :value="switchValue"
-              @switch-clicked="handleSwitchToggle"
               class="mr-2"
+              @switch-clicked="handleSwitchToggle"
             />
             <span class="body-2 text-color">{{
               switchValue ? "On" : "Off"
@@ -295,6 +298,52 @@ const handleSliderChange = function (value: number) {
             :options="selectOptions"
             multiple
             placeholder="Список мемберів"
+          />
+        </div>
+      </div>
+    </section>
+
+    <!-- Autocomplete Selects -->
+    <section class="mb-10">
+      <h3 class="heading-2 text-color mb-4">Autocomplete Selects</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div class="p-4 border rounded dark:border-gray-600">
+          <h4 class="body-2 text-color mb-2">Single Autocomplete Select</h4>
+          <AutocompleteSelect
+            v-model="singleAutocompleteValue"
+            :options="selectOptions"
+            placeholder="Пошук опцій..."
+            label="Оберіть один варіант"
+          />
+        </div>
+        <div class="p-4 border rounded dark:border-gray-600">
+          <h4 class="body-2 text-color mb-2">Multi Autocomplete Select</h4>
+          <AutocompleteSelect
+            v-model="multiAutocompleteValue"
+            :options="selectOptions"
+            multiple
+            placeholder="Пошук опцій..."
+            label="Оберіть кілька варіантів"
+          />
+        </div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="p-4 border rounded dark:border-gray-600">
+          <h4 class="body-2 text-color mb-2">Autocomplete with Border</h4>
+          <AutocompleteSelect
+            v-model="singleAutocompleteValue"
+            :options="selectOptions"
+            bordered
+            placeholder="З рамкою..."
+          />
+        </div>
+        <div class="p-4 border rounded dark:border-gray-600">
+          <h4 class="body-2 text-color mb-2">Non-searchable Autocomplete</h4>
+          <AutocompleteSelect
+            v-model="singleAutocompleteValue"
+            :options="selectOptions"
+            :searchable="false"
+            placeholder="Без пошуку..."
           />
         </div>
       </div>

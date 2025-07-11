@@ -17,4 +17,14 @@
 
   --bg-light: #ffffff;
   --bg-dark: #374151;
+
+  /* Board theme scrollbar colors */
+  --scrollbar-track-light: transparent;
+  --scrollbar-track-dark: transparent;
+
+  --scrollbar-thumb-light: rgba(61, 68, 92, 0.3);
+  --scrollbar-thumb-hover-light: rgba(61, 68, 92, 0.5);
+
+  --scrollbar-thumb-dark: rgba(129, 140, 248, 0.4);
+  --scrollbar-thumb-hover-dark: rgba(129, 140, 248, 0.6);
 }

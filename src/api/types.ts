@@ -528,6 +528,7 @@ export interface ApiGlobalDataResponse {
   users: ApiManagerListItem[];
   usersForClients: ApiManagerListItem[];
   kanbanStatuses: ApiKanbanStatus[];
+  cities: ApiCommunicationCity[];
 }
 
 // --- selections ---

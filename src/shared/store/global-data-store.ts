@@ -11,6 +11,7 @@ export const useGlobalDataStore = defineStore("globalData", () => {
   const globalData = ref<ApiGlobalDataResponse | null>(null);
   const isLoading = ref(false);
   const error = ref<string | null>(null);
+
   const allUsers = computed<ApiManagerListItem[]>(() => {
     if (!globalData.value) return [];
     // combine users and usersForClients into a single array with UNIQUE users by id
@@ -27,6 +28,14 @@ export const useGlobalDataStore = defineStore("globalData", () => {
   const kanbanStatuses = computed<ApiKanbanStatus[]>(() => {
     if (!globalData.value) return [];
     return globalData.value.kanbanStatuses;
+  });
+
+  const cities = computed(() => {
+    if (!globalData.value) return [];
+    return globalData.value.cities.map((city) => ({
+      id: city.id,
+      name: city.name,
+    }));
   });
 
   const getKanbanStatusById = (id: number): ApiKanbanStatus | undefined => {
@@ -52,6 +61,7 @@ export const useGlobalDataStore = defineStore("globalData", () => {
     globalData,
     allUsers,
     isLoading,
+    cities,
     error,
 
     fetchGlobalData,
