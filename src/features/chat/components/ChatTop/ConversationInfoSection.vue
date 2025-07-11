@@ -1,26 +1,17 @@
 <script setup lang="ts">
 import type { IConversation } from "@src/shared/types/types";
 
-import { inject, ref } from "vue";
+import { inject } from "vue";
 
 import router from "@src/router";
 import useStore from "@src/shared/store/store";
-import { getAvatar, getName } from "@src/shared/utils/utils";
-import mockData from "@src/shared/store/real-api-example";
+import { getName } from "@src/shared/utils/utils";
 
-import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  EllipsisVerticalIcon,
-  InformationCircleIcon,
-  MagnifyingGlassIcon,
-  NoSymbolIcon,
-  PhoneIcon,
-  ShareIcon,
-} from "@heroicons/vue/24/outline";
+import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/vue/24/outline";
 import IconButton from "@src/ui/inputs/IconButton.vue";
-import Dropdown from "@src/ui/navigation/Dropdown/Dropdown.vue";
-import useConversationsStore from "@src/features/conversations/conversations-store";
+import SearchInput from "@src/ui/inputs/SearchInput.vue";
+import Button from "@src/ui/inputs/Button.vue";
+import ConversationAvatar from "@src/shared/components/ConversationAvatar.vue";
 
 const props = defineProps<{
   handleOpenInfo: () => void;
@@ -28,46 +19,11 @@ const props = defineProps<{
 }>();
 
 const store = useStore();
-const conversationsStore = useConversationsStore();
 
 const activeConversation = inject<IConversation>("activeConversation");
 
-const showDropdown = ref(false);
-
-// (event) close dropdown menu when click item
-const handleCloseDropdown = () => {
-  showDropdown.value = false;
-};
-
-// (event) close dropdown menu when clicking outside the menu.
-const handleClickOutside = (event: Event) => {
-  let target = event.target as HTMLElement;
-  let parentElement = target.parentElement as HTMLElement;
-
-  if (
-    target &&
-    !(target.classList as Element["classList"]).contains("open-top-menu") &&
-    parentElement &&
-    !(parentElement.classList as Element["classList"]).contains("open-top-menu")
-  ) {
-    handleCloseDropdown();
-  }
-};
-
-// (event) navigate to the /chat/ url
 const handleCloseConversation = () => {
   router.push({ path: "/chat/" });
-};
-
-// (event) open the voice call modal and expand call
-const handleOpenVoiceCallModal = () => {
-  store.activeCall = mockData.activeCall;
-  store.callMinimized = false;
-
-  // wait for the transition to ongoing status to end
-  setTimeout(() => {
-    store.openVoiceCall = true;
-  }, 300);
 };
 </script>
 
@@ -85,140 +41,43 @@ const handleOpenVoiceCallModal = () => {
       </IconButton>
     </div>
 
-    <div
-      v-if="!conversationsStore.isFetchingActiveConversation"
-      class="flex grow"
-    >
+    <div class="flex grow">
       <!--avatar-->
       <button
         class="mr-5 outline-none"
         aria-label="profile avatar"
         @click="props.handleOpenInfo"
       >
-        <div
-          :style="{
-            backgroundImage: `url(${activeConversation ? getAvatar(activeConversation) : ''})`,
-          }"
-          class="w-[2.25rem] h-[2.25rem] rounded-full bg-cover bg-center"
-        ></div>
+        <ConversationAvatar
+          v-if="activeConversation"
+          :conversation="activeConversation"
+        />
       </button>
 
-      <!--name and last seen-->
       <div class="flex flex-col">
         <p
-          class="w-fit heading-2 text-color mb-2 cursor-pointer"
+          class="w-fit heading-2 text-color cursor-pointer"
           tabindex="0"
-          @click="props.handleOpenInfo"
+          @click="store.rightSidebarOpen = true"
         >
           {{ activeConversation ? getName(activeConversation) : "" }}
         </p>
 
-        <p
-          class="body-2 text-color font-extralight rounded-[.25rem]"
-          tabindex="0"
-          aria-label="Last seen december 16, 2019"
-        >
-          Last seen Dec 16, 2019
-        </p>
+        <!-- font-size 11px in rem -->
+        <p class="text-[0.6875rem] text-neutral-active">Запорожье</p>
       </div>
     </div>
 
-    <div
-      class="flex"
-      :class="{ hidden: conversationsStore.isFetchingActiveConversation }"
-    >
-      <!--search button-->
-      <IconButton
-        title="search messages"
-        aria-label="search messages"
-        class="ic-btn-ghost-primary w-7 h-7 mr-3"
-        @click="props.handleOpenSearch"
-      >
-        <MagnifyingGlassIcon
-          class="w-[1.25rem] h-[1.25rem] text-gray-400 group-hover:text-primary"
-        />
-      </IconButton>
+    <div class="flex">
+      <div class="relative flex items-center gap-4">
+        <SearchInput input-class="bg-theme-conversations" size="small" />
 
-      <div class="relative flex items-center">
-        <!--dropdown menu button-->
-        <IconButton
-          id="open-conversation-menu"
-          class="ic-btn-ghost-primary open-top-menu group w-7 h-7"
-          :aria-expanded="showDropdown"
-          tabindex="0"
-          aria-controls="conversation-menu"
-          title="toggle conversation menu"
-          aria-label="toggle conversation menu"
-          @click="showDropdown = !showDropdown"
-        >
-          <EllipsisVerticalIcon class="open-top-menu w-[1.25rem] h-[1.25rem]" />
-        </IconButton>
-
-        <!--dropdown menu-->
-        <Dropdown
-          id="conversation-menu"
-          :close-dropdown="() => (showDropdown = false)"
-          :show="showDropdown"
-          :position="['right-0']"
-          :handle-click-outside="handleClickOutside"
-          aria-labelledby="open-conversation-menu"
-        >
-          <button
-            class="dropdown-link dropdown-link-primary"
-            aria-label="Show profile information"
-            role="menuitem"
-            @click="
-              () => {
-                handleCloseDropdown();
-                props.handleOpenInfo();
-              }
-            "
-          >
-            <InformationCircleIcon
-              class="h-5 w-5 mr-3 text-black opacity-60 dark:text-white dark:opacity-70"
-            />
-            Profile Information
-          </button>
-          <button
-            class="dropdown-link dropdown-link-primary"
-            aria-label="start a voice call with this contact"
-            role="menuitem"
-            @click="
-              () => {
-                handleCloseDropdown();
-                handleOpenVoiceCallModal();
-              }
-            "
-          >
-            <PhoneIcon
-              class="h-5 w-5 mr-3 text-black opacity-60 dark:text-white dark:opacity-70"
-            />
-            Voice call
-          </button>
-          <button
-            class="dropdown-link dropdown-link-primary"
-            aria-label="share this contact"
-            role="menuitem"
-            @click="handleCloseDropdown"
-          >
-            <ShareIcon
-              class="h-5 w-5 mr-3 text-black opacity-60 dark:text-white dark:opacity-70"
-            />
-            Shared media
-          </button>
-          <button
-            class="dropdown-link dropdown-link-danger"
-            aria-label="block this contact"
-            role="menuitem"
-            @click="handleCloseDropdown"
-          >
-            <NoSymbolIcon class="h-5 w-5 mr-3" />
-            Block contact
-          </button>
-        </Dropdown>
+        <Button class="contained-primary contained-text" size="small">
+          Завершити діалог
+        </Button>
 
         <IconButton
-          class="ic-btn-ghost-primary open-top-menu group w-7 h-7"
+          class="ic-btn-ghost-primary open-top-menu group w-7 h-7 hover:text-white focus:text-white"
           @click="store.rightSidebarOpen = !store.rightSidebarOpen"
         >
           <ChevronRightIcon

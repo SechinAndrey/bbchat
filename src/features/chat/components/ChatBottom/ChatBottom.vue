@@ -130,10 +130,11 @@ async function sendMessage() {
 
       <!--message textarea-->
       <div v-if="!recording" class="grow md:mr-5 xs:mr-4 self-end">
-        <div class="relative">
+        <div class="relative flex items-center">
           <Textarea
             v-model="value"
             class="max-h-[5rem] pr-[3.125rem] resize-none scrollbar-hidden"
+            textarea-class="bg-theme-conversations"
             auto-resize
             cols="30"
             :rows="1"
@@ -143,19 +144,16 @@ async function sendMessage() {
           />
 
           <!--emojis-->
-          <div class="absolute bottom-[.8125rem] right-0">
+          <div class="absolute bottom-[.3rem] right-0">
             <!--emoji button-->
             <IconButton
               title="toggle emoji picker"
               aria-label="toggle emoji picker"
-              class="ic-btn-ghost-primary toggle-picker-button w-7 h-7 md:mr-5 xs:mr-4"
+              class="ic-btn-ghost-primary toggle-picker-button w-7 h-7 md:mr-5 xs:mr-4 hover:text-white focus:text-white"
               @click="showPicker = !showPicker"
             >
               <XCircleIcon v-if="showPicker" class="w-[1.25rem] h-[1.25rem]" />
-              <FaceSmileIcon
-                v-else
-                class="w-[1.25rem] h-[1.25rem] text-gray-400 group-hover:text-primary"
-              />
+              <FaceSmileIcon v-else class="w-[1.25rem] h-[1.25rem]" />
             </IconButton>
 
             <!--emoji picker-->
@@ -173,11 +171,11 @@ async function sendMessage() {
           </div>
         </div>
       </div>
-      <div class="min-h-[2.75rem] flex">
+      <div class="min-h-[2.75rem] flex items-center">
         <!--select attachments button-->
         <IconButton
           v-if="!recording"
-          class="ic-btn-ghost-primary w-7 h-7 md:mr-5 xs:mr-4"
+          class="ic-btn-ghost-primary w-7 h-7 md:mr-5 xs:mr-4 hover:text-white focus:text-white"
           title="open select attachments modal"
           aria-label="open select attachments modal"
           @click="openAttachmentsModal = true"

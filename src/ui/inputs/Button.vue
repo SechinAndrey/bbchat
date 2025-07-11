@@ -5,15 +5,18 @@ const props = defineProps<{
   loading?: boolean;
   link?: boolean;
   typography?: string;
+  size?: "small" | "medium";
 }>();
+
+defineEmits(["button-clicked"]);
 </script>
 
 <template>
   <component
     :is="link ? RouterLink : 'button'"
-    @click="$emit('button-clicked', $event)"
     tabindex="0"
-    class="group btn"
+    :class="['group btn', props.size === 'small' ? 'py-3' : 'py-4']"
+    @click="$emit('button-clicked')"
   >
     <!--loading icon-->
     <svg

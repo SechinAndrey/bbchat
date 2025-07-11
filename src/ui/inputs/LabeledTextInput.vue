@@ -12,6 +12,7 @@ const props = defineProps<{
   placeholder?: string;
   bordered?: boolean;
   inputClass?: string;
+  size?: "small" | "medium";
 }>();
 </script>
 
@@ -38,6 +39,7 @@ const props = defineProps<{
         :class="['text-input', props.inputClass]"
         :bordered="props.bordered"
         :placeholder="props.placeholder"
+        :size="props.size"
       />
 
       <div class="absolute top-0 right-0">

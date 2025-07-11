@@ -1,13 +1,8 @@
 <script setup lang="ts">
-import type {
-  IAttachment,
-  IConversation,
-  IRecording,
-} from "@src/shared/types/types";
+import type { IConversation } from "@src/shared/types/types";
 import type {
   ApiCommunicationCallInfo,
   ApiChaportMessage,
-  ApiEChatMessage,
 } from "@src/api/types";
 import type { Ref } from "vue";
 import { computed, ref } from "vue";
@@ -15,10 +10,8 @@ import { computed, ref } from "vue";
 import useStore from "@src/shared/store/store";
 import {
   getActiveConversationId,
-  getAvatar,
   getConversationIndex,
   getName,
-  hasAttachments,
   shorten,
   formatConversationDate,
 } from "@src/shared/utils/utils";
@@ -27,12 +20,10 @@ import route from "@src/router";
 import {
   ArchiveBoxArrowDownIcon,
   InformationCircleIcon,
-  MicrophoneIcon,
   TrashIcon,
 } from "@heroicons/vue/24/outline";
 import Dropdown from "@src/ui/navigation/Dropdown/Dropdown.vue";
-import { useAvatarInitials } from "@src/shared/composables/useAvatarInitials";
-import flemeIcon from "@src/ui/icons/flemeIcon.vue";
+import ConversationAvatar from "@src/shared/components/ConversationAvatar.vue";
 
 const props = defineProps<{
   conversation: IConversation;
@@ -42,22 +33,11 @@ const store = useStore();
 
 const showContextMenu = ref(false);
 
-const name = getName(props.conversation) || "";
-const [firstName, lastName] = name.split(" ");
-const { avatarInitials, avatarColor } = useAvatarInitials(
-  computed(() => firstName || null),
-  computed(() => lastName || null),
-);
-
-const avatar = computed(() => {
-  return getAvatar(props.conversation);
-});
-
 const contextMenuCoordinations: Ref<{ x: number; y: number } | undefined> =
   ref();
 
 // open context menu.
-const handleShowContextMenu = (event: any) => {
+const handleShowContextMenu = (event: MouseEvent) => {
   showContextMenu.value = true;
   contextMenuCoordinations.value = {
     x:
@@ -175,22 +155,7 @@ const lastMessageText = computed(() => {
     >
       <!--profile image-->
       <div class="mr-4">
-        <div
-          :style="{ backgroundImage: `url(${avatar})` }"
-          class="w-7 h-7 rounded-full bg-cover bg-center flex items-center justify-center"
-          :class="avatarColor"
-        >
-          <flemeIcon
-            v-if="!avatar && props.conversation.entityType === 'lead'"
-            class="text-orange-500 dark:text-orange-400"
-          />
-          <span
-            v-else-if="!avatar"
-            class="flex items-center justify-center w-full h-full text-sm font-semibold text-primary rounded-full"
-          >
-            {{ avatarInitials }}
-          </span>
-        </div>
+        <ConversationAvatar :conversation="props.conversation" />
       </div>
 
       <div class="w-full flex flex-col">
@@ -212,7 +177,7 @@ const lastMessageText = computed(() => {
           </div>
         </div>
 
-        <div class="text-[0.5625rem] text-left">
+        <div class="text-[0.5625rem] text-left text-color">
           {{ props.conversation.contacts?.at(0)?.firstName }}
         </div>
 

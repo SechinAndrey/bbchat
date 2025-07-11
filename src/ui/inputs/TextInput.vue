@@ -7,6 +7,7 @@ const props = defineProps<{
   name?: string;
   placeholder?: string;
   bordered?: boolean;
+  size?: "small" | "medium";
 }>();
 </script>
 
@@ -17,7 +18,10 @@ const props = defineProps<{
     :type="props.type || 'text'"
     :name="props.name"
     class="text-input"
-    :class="[props.bordered ? 'bordered-input' : 'ringed-input']"
+    :class="[
+      props.bordered ? 'bordered-input' : 'ringed-input',
+      props.size === 'small' ? 'h-7' : 'h-8',
+    ]"
     :placeholder="props.placeholder"
   />
 </template>

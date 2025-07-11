@@ -117,7 +117,7 @@ watch(
     class="grow px-5 py-5 flex flex-col overflow-y-scroll scrollbar-hidden"
   >
     <div v-if="store.status !== 'loading'" class="flex flex-col-reverse">
-      <div v-for="(message, index) in activeConversation.messages" :key="index">
+      <div v-for="message in activeConversation.messages" :key="message.id">
         <!-- <TimelineDivider v-if="renderDivider(index, index - 1)" /> -->
 
         <MessageV2 :message="message" @open-image-gallery="openImageGallery" />

@@ -2,12 +2,6 @@
 import type { IConversation } from "@src/shared/types/types";
 
 import { inject, ref } from "vue";
-
-import useStore from "@src/shared/store/store";
-
-import ConversationInfoModal from "@src/features/conversations/modals/ConversationInfoModal/ConversationInfoModal.vue";
-import SearchModal from "@src/features/chat/modals/SearchModal/SearchModal.vue";
-import VoiceCallModal from "@src/features/calls/modals/VoiceCallModal/VoiceCallModal.vue";
 import PinnedMessage from "@src/features/chat/components/ChatTop/PinnedMessage.vue";
 import ConversationInfoSection from "./ConversationInfoSection.vue";
 import SelectSection from "./SelectSection.vue";
@@ -19,8 +13,6 @@ const props = defineProps<{
   handleDeselectAll: () => void;
   handleCloseSelect: () => void;
 }>();
-
-const store = useStore();
 
 const activeConversation = <IConversation>inject("activeConversation");
 
@@ -36,19 +28,6 @@ const handleOpenSearch = () => {
 // (event) open info modal
 const handleOpenInfo = () => {
   openInfo.value = true;
-};
-
-// (event) close the voice call modal and minimize the call
-const handleCloseVoiceCallModal = (endCall: boolean) => {
-  if (endCall) {
-    store.activeCall = undefined;
-    store.callMinimized = false;
-  }
-
-  if (store.openVoiceCall) {
-    store.openVoiceCall = false;
-    store.callMinimized = true;
-  }
 };
 </script>
 
@@ -82,25 +61,5 @@ const handleCloseVoiceCallModal = (endCall: boolean) => {
     >
       <PinnedMessage :active-conversation="activeConversation" />
     </div>
-
-    <!--Search modal-->
-    <SearchModal
-      :open="openSearch"
-      :close-modal="() => (openSearch = false)"
-      :conversation="activeConversation"
-    />
-
-    <!--Contact info modal-->
-    <ConversationInfoModal
-      :open="openInfo"
-      :close-modal="() => (openInfo = false)"
-      :conversation="activeConversation"
-    />
-
-    <!--voice call modal-->
-    <VoiceCallModal
-      :open="store.openVoiceCall"
-      :close-modal="handleCloseVoiceCallModal"
-    />
   </div>
 </template>

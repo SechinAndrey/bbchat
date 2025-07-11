@@ -8,6 +8,7 @@ const props = defineProps<{
   bordered?: boolean;
   autoResize?: boolean;
   rows?: number;
+  textareaClass?: string;
 }>();
 </script>
 
@@ -18,7 +19,10 @@ const props = defineProps<{
     v-model="modelValue"
     :name="props.name"
     class="text-area"
-    :class="[props.bordered ? 'bordered-input' : 'ringed-input']"
+    :class="[
+      props.bordered ? 'bordered-input' : 'ringed-input',
+      props.textareaClass,
+    ]"
     :placeholder="props.placeholder"
     :rows="props.rows || 3"
   />
