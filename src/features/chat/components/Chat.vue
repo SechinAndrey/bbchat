@@ -44,9 +44,7 @@ watch(
     if (newConversation) {
       provide("activeConversation", newConversation);
     }
-    if (store.rightSidebarOpen) {
-      useConversationsStore().fetchConversationById(props.entity, props.id);
-    }
+    useConversationsStore().fetchConversationById(props.entity, props.id);
   },
   { immediate: true },
 );
