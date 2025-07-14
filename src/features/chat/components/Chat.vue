@@ -12,7 +12,7 @@ import Spinner from "@src/ui/states/loading-states/Spinner.vue";
 import ChatBottom from "@src/features/chat/components/ChatBottom/ChatBottom.vue";
 import ChatMiddle from "@src/features/chat/components/ChatMiddle/ChatMiddle.vue";
 import ChatTop from "@src/features/chat/components/ChatTop/ChatTop.vue";
-import RightSidebar from "@src/features/right-sidebar/components/right-sidebar.vue";
+import RightSidebar from "@src/features/right-sidebar/components/RightSidebar.vue";
 
 const props = defineProps<{
   id: number;
