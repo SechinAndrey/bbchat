@@ -28,10 +28,10 @@ const contragent_type = computed(() => {
 
 const conversationsStore = useConversationsStore();
 
-const activeConversation = computed<
+const activeConversationInfo = computed<
   ApiCommunicationLeadFull | ApiCommunicationClientFull | null
 >(() => {
-  return conversationsStore.activeConversation;
+  return conversationsStore.activeConversationInfo;
 });
 
 const emit = defineEmits<{
@@ -132,7 +132,7 @@ async function sendMessage() {
   const response = await conversationsService.uploadFile(attachments.value[0]);
 
   await conversationsService.sendMessage({
-    phone: activeConversation?.value?.phone || "",
+    phone: activeConversationInfo?.value?.phone || "",
     message: caption.value,
     file_url: response,
     messenger_id: props.messengerId,

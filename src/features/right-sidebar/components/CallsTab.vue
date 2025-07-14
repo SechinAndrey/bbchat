@@ -9,10 +9,10 @@ import { formatConversationDate, formatSeconds } from "@src/shared/utils/utils";
 import useConversationsStore from "@src/features/conversations/conversations-store";
 const conversationsStore = useConversationsStore();
 
-const activeConversation = computed<
+const activeConversationInfo = computed<
   ApiCommunicationLeadFull | ApiCommunicationClientFull | null
 >(() => {
-  return conversationsStore.activeConversation;
+  return conversationsStore.activeConversationInfo;
 });
 </script>
 
@@ -20,7 +20,7 @@ const activeConversation = computed<
   <div class="p-4">
     <h3 class="text-lg font-semibold mb-4">Дзвінки</h3>
     <div class="space-y-3">
-      <div v-for="call in activeConversation?.calls || []" :key="call.id">
+      <div v-for="call in activeConversationInfo?.calls || []" :key="call.id">
         <div class="flex">
           <div>Дата</div>
           <div>{{ formatConversationDate(call.created_at) }}</div>
@@ -39,7 +39,7 @@ const activeConversation = computed<
         </div>
         <div class="flex">
           <div>ПІБ</div>
-          <div>{{ activeConversation?.fio || "не вказано" }}</div>
+          <div>{{ activeConversationInfo?.fio || "не вказано" }}</div>
         </div>
         <div class="flex">
           <button class="text-primary">Транскрипція</button>

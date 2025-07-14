@@ -48,10 +48,10 @@ export const useConversationsStore = defineStore("conversations", () => {
   const clientsMeta = ref<ApiResponseMeta | null>(null);
   const isLoading = ref(false);
   const error = ref<string | null>(null);
-  const activeConversation = ref<
+  const activeConversationInfo = ref<
     ApiCommunicationLeadFull | ApiCommunicationClientFull | null
   >(null);
-  const isFetchingActiveConversation = ref(false);
+  const isFetchingActiveConversationInfo = ref(false);
 
   // Filter state
   const filters = ref<GetCommunicationsParams>({
@@ -90,21 +90,21 @@ export const useConversationsStore = defineStore("conversations", () => {
     entity: "leads" | "clients",
     id: number,
   ) => {
-    isFetchingActiveConversation.value = true;
-    activeConversation.value = null;
+    isFetchingActiveConversationInfo.value = true;
+    activeConversationInfo.value = null;
     try {
       const conversation =
         await conversationsService.getCommunicationEntityById<
           ApiCommunicationLeadFull | ApiCommunicationClientFull
         >(entity, id);
-      activeConversation.value = conversation;
+      activeConversationInfo.value = conversation;
       return conversation;
     } catch (err) {
       error.value =
         err instanceof Error ? err.message : "Unknown error occurred";
       throw err;
     } finally {
-      isFetchingActiveConversation.value = false;
+      isFetchingActiveConversationInfo.value = false;
     }
   };
 
@@ -446,8 +446,8 @@ export const useConversationsStore = defineStore("conversations", () => {
     isFetchingMessages,
     messagesError,
     filters,
-    activeConversation,
-    isFetchingActiveConversation,
+    activeConversationInfo,
+    isFetchingActiveConversationInfo,
 
     // Getters
     hasMoreLeads,

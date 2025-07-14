@@ -33,10 +33,10 @@ const contragent_type = computed(() => {
   return entity === "leads" ? "lead" : "client";
 });
 
-const activeConversation = computed<
+const activeConversationInfo = computed<
   ApiCommunicationLeadFull | ApiCommunicationClientFull | null
 >(() => {
-  return conversationsStore.activeConversation;
+  return conversationsStore.activeConversationInfo;
 });
 
 // the content of the message.
@@ -88,7 +88,7 @@ async function sendMessage() {
     return;
   }
   await conversationsService.sendMessage({
-    phone: activeConversation?.value?.phone || "",
+    phone: activeConversationInfo?.value?.phone || "",
     message: value.value,
     file_url: "",
     messenger_id: messengerId.value,
@@ -104,7 +104,7 @@ async function sendMessage() {
     <!--selected reply display-->
     <div
       class="relative transition-all duration-200"
-      :class="{ 'pt-[3.75rem]': activeConversation?.replyMessage }"
+      :class="{ 'pt-[3.75rem]': activeConversationInfo?.replyMessage }"
     >
       <ReplyMessage />
     </div>

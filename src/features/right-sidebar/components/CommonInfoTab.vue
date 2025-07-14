@@ -12,15 +12,15 @@ import useGlobalDataStore from "@src/shared/store/global-data-store";
 const conversationsStore = useConversationsStore();
 const globalDataStore = useGlobalDataStore();
 
-const activeConversation = computed<
+const activeConversationInfo = computed<
   ApiCommunicationLeadFull | ApiCommunicationClientFull | null
 >(() => {
-  return conversationsStore.activeConversation;
+  return conversationsStore.activeConversationInfo;
 });
 
 const kanbanStatus = computed<ApiKanbanStatus | undefined>(() => {
   return globalDataStore.getKanbanStatusById(
-    activeConversation.value?.status_id || 0,
+    activeConversationInfo.value?.status_id || 0,
   );
 });
 </script>
@@ -32,14 +32,14 @@ const kanbanStatus = computed<ApiKanbanStatus | undefined>(() => {
     <div class="flex gap-2 mb-2">
       <div>Телефон:</div>
       <div class="text-gray-500">
-        {{ activeConversation?.phone || "Не вказаний" }}
+        {{ activeConversationInfo?.phone || "Не вказаний" }}
       </div>
     </div>
 
     <div class="flex gap-2 mb-2">
       <div>Пошта:</div>
       <div class="text-gray-500">
-        {{ activeConversation?.email || "Не вказана" }}
+        {{ activeConversationInfo?.email || "Не вказана" }}
       </div>
     </div>
 
@@ -51,26 +51,27 @@ const kanbanStatus = computed<ApiKanbanStatus | undefined>(() => {
 
     <div>
       {{
-        formatConversationDate(activeConversation?.created_at) || "Не вказано"
+        formatConversationDate(activeConversationInfo?.created_at) ||
+        "Не вказано"
       }}
     </div>
 
     <div class="my-4 text-neutral-active">Канал</div>
 
     <div>
-      {{ activeConversation?.channel || "Не вказано" }}
+      {{ activeConversationInfo?.channel || "Не вказано" }}
     </div>
 
     <div class="my-4 text-neutral-active">Місто</div>
 
-    <div v-for="city in activeConversation?.cities || []" :key="city.id">
+    <div v-for="city in activeConversationInfo?.cities || []" :key="city.id">
       {{ city.name_ua }}
     </div>
 
     <div class="my-4 text-neutral-active">Коментар</div>
 
     <div>
-      {{ activeConversation?.comment || "Не вказано" }}
+      {{ activeConversationInfo?.comment || "Не вказано" }}
     </div>
 
     <hr />
@@ -86,7 +87,7 @@ const kanbanStatus = computed<ApiKanbanStatus | undefined>(() => {
     <div class="my-4 text-neutral-active">Історія статусів</div>
 
     <div
-      v-for="status in activeConversation?.status_log || []"
+      v-for="status in activeConversationInfo?.status_log || []"
       :key="status.id"
       class="mb-4"
     >
