@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { ApiMessageItem } from "@src/api/types";
-import { computed, ref } from "vue";
+import { computed, ref, inject } from "vue";
 import {
   PhoneArrowUpRightIcon,
   PhoneArrowDownLeftIcon,
@@ -10,11 +10,15 @@ import {
 } from "@heroicons/vue/24/solid";
 import linkifyStr from "linkify-string";
 import MediaPreview from "@src/features/chat/components/ChatMiddle/Message/MediaPreview.vue";
+import ConversationAvatar from "@src/shared/components/ConversationAvatar.vue";
+import { IConversation } from "@src/shared/types";
 
 const props = defineProps<{
   message: ApiMessageItem;
   // self: boolean;
 }>();
+
+const activeConversation = inject<IConversation>("activeConversation");
 
 const emit = defineEmits<{
   openImageGallery: [imageUrl: string];
@@ -90,16 +94,10 @@ const formatDuration = (seconds: number) => {
     class="flex items-start gap-4 py-3 px-4"
     :class="{ 'justify-end': isSelf }"
   >
-    <!-- Avatar part -->
-    <!-- Lead: fleme icon -->
-    <!-- Client, Suppliers: image or letters if no image -->
-    <div v-if="!isSelf" class="flex-shrink-0">
-      <div
-        class="w-7 h-7 bg-theme-conversations rounded-full flex items-center justify-center relative"
-      >
-        A
-      </div>
-    </div>
+    <ConversationAvatar
+      v-if="!isSelf && activeConversation"
+      :conversation="activeConversation"
+    />
 
     <!-- Message body -->
     <div class="flex gap-3 items-end">
