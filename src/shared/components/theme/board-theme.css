@@ -9,6 +9,11 @@
   --color-primary-focus-dark: #6366f1; /* indigo-500 */
   --color-primary-active-dark: #4f46e5; /* indigo-600 */
 
+  --color-secondary-light: #fff0ec;
+  --color-secondary-hover-light: #fdb49a;
+  --color-secondary-focus-light: #fdb49a;
+  --color-secondary-active-light: #fc6b40;
+
   --nav-bg-light: #3d445c;
   --nav-bg-dark: #3d445c;
 
