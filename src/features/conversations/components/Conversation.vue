@@ -60,7 +60,8 @@ const handleCloseContextMenu = () => {
 const handleSelectConversation = () => {
   showContextMenu.value = false;
   const entity = props.conversation.entityType === "lead" ? "leads" : "clients";
-  router.push({ path: `/chat/${entity}/${props.conversation.id}/` });
+  const id = Number(props.conversation.id);
+  router.push({ path: `/chat/${entity}/${id}/` });
 };
 
 // last message in conversation to display

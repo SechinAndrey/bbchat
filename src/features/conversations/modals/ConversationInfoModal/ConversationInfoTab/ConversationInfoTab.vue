@@ -6,7 +6,7 @@ import { computed, ref } from "vue";
 import { getAvatar, getName, getOddContact } from "@src/shared/utils/utils";
 
 import {
-  ArrowLeftOnRectangleIcon,
+  ArrowLeftStartOnRectangleIcon,
   AtSymbolIcon,
   BellIcon,
   NoSymbolIcon,
@@ -42,7 +42,7 @@ const imageUrl = computed(() => {
   <div>
     <div class="mb-6 px-5 flex justify-between items-center">
       <!--title-->
-      <p class="heading-1 text-color" id="modal-title" tabindex="0">
+      <p id="modal-title" class="heading-1 text-color" tabindex="0">
         <span v-if="conversation.type === 'couple' || props.contact"
           >Contact</span
         >
@@ -54,8 +54,8 @@ const imageUrl = computed(() => {
       <!--close button-->
       <Button
         v-if="!props.contact"
-        @click="props.closeModal"
         class="outlined-danger ghost-text py-2 px-4"
+        @click="props.closeModal"
       >
         esc
       </Button>
@@ -63,13 +63,13 @@ const imageUrl = computed(() => {
       <!--return button-->
       <IconButton
         v-else
+        class="ic-btn-outlined-danger p-2"
         @click="
           $emit('active-page-change', {
             tabName: 'members',
             animationName: 'slide-right',
           })
         "
-        class="ic-btn-outlined-danger p-2"
       >
         <ArrowUturnLeftIcon
           class="w-5 h-5 text-black opacity-50 dark:text-white dark:opacity-70 group-focus:text-danger dark:group-focus:text-white group-hover:text-danger group-hover:opacity-100 dark:group-hover:text-white"
@@ -83,9 +83,9 @@ const imageUrl = computed(() => {
         <!--avatar-->
         <div class="mr-5">
           <button
-            @click="openImageViewer = true"
             class="outline-none"
             aria-label="view avatar"
+            @click="openImageViewer = true"
           >
             <div
               :style="{
@@ -117,8 +117,8 @@ const imageUrl = computed(() => {
           </div>
 
           <IconButton
-            title="edit group"
             v-if="['group', 'broadcast'].includes(conversation.type)"
+            title="edit group"
             class="ic-btn-ghost-primary w-7 h-7"
             @click="
               $emit('active-page-change', {
@@ -214,7 +214,11 @@ const imageUrl = computed(() => {
         "
         class="px-5 pt-5 flex items-center group"
       >
-        <IconAndText :icon="ArrowLeftOnRectangleIcon" title="exit group" link />
+        <IconAndText
+          :icon="ArrowLeftStartOnRectangleIcon"
+          title="exit group"
+          link
+        />
       </div>
     </div>
 

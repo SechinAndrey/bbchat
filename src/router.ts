@@ -1,4 +1,8 @@
-import { createRouter, createWebHistory } from "vue-router";
+import {
+  createRouter,
+  createWebHistory,
+  RouteLocationNormalized,
+} from "vue-router";
 import { authService } from "@src/features/auth/services/auth-service";
 import AccessView from "@src/pages/access/AccessView.vue";
 import HomeView from "@src/pages/home/HomeView.vue";
@@ -26,7 +30,10 @@ const routes = [
         name: "Chat",
         component: Chat,
         meta: { requiresAuth: true },
-        props: true,
+        props: (route: RouteLocationNormalized) => ({
+          entity: route.params.entity,
+          id: Number(route.params.id),
+        }),
       },
     ],
   },

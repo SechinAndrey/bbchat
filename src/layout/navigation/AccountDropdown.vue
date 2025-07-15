@@ -7,6 +7,7 @@ import { useAvatarInitials } from "@src/shared/composables/useAvatarInitials";
 import {
   ArrowPathIcon,
   InformationCircleIcon,
+  ArrowLeftStartOnRectangleIcon,
 } from "@heroicons/vue/24/outline";
 import Dropdown from "@src/ui/navigation/Dropdown/Dropdown.vue";
 import { RouterLink } from "vue-router";
@@ -49,11 +50,11 @@ const handleCloseOnClickOutside = (event: Event) => {
     <!--toggle dropdown button-->
     <button
       :id="props.id + '-button'"
-      @click="handleShowDropdown"
       class="rounded-full active:scale-110 focus:outline-none focus:scale-110 transition duration-200 ease-out"
       :aria-expanded="showDropdown"
       aria-controls="profile-menu"
       aria-label="toggle profile menu"
+      @click="handleShowDropdown"
     >
       <div
         id="user-avatar"
@@ -119,7 +120,7 @@ const handleCloseOnClickOutside = (event: Event) => {
         role="menuitem"
         @click="handleLogout"
       >
-        <ArrowLeftOnRectangleIcon class="h-5 w-5 mr-3" />
+        <ArrowLeftStartOnRectangleIcon class="h-5 w-5 mr-3" />
         Logout
       </button>
     </Dropdown>

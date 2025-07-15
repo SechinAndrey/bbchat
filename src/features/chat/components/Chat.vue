@@ -4,8 +4,7 @@ import type { Ref } from "vue";
 import useStore from "@src/shared/store/store";
 import useConversationsStore from "@src/features/conversations/conversations-store";
 import { computed, provide, ref, watch } from "vue";
-
-import { getActiveConversationId } from "@src/shared/utils/utils";
+import { useRoute } from "vue-router";
 
 import NoChatSelected from "@src/ui/states/empty-states/NoChatSelected.vue";
 import Spinner from "@src/ui/states/loading-states/Spinner.vue";
@@ -22,13 +21,14 @@ const props = defineProps<{
 provide("entity", props.entity);
 provide("id", props.id);
 
+const route = useRoute();
 const store = useStore();
 const conversationsStore = useConversationsStore();
 conversationsStore.fetchCommunicationMessages(props.entity, props.id);
 
 // search the selected conversation using activeConversationId.
 const activeConversation = computed(() => {
-  const conversationId = getActiveConversationId();
+  const conversationId = Number(route.params.id);
   if (!conversationId) return undefined;
 
   let conversation = conversationsStore?.allCommunications.find(
@@ -38,13 +38,14 @@ const activeConversation = computed(() => {
   return conversation;
 });
 
+provide("activeConversation", activeConversation);
+
 watch(
   activeConversation,
   (newConversation) => {
     if (newConversation) {
-      provide("activeConversation", newConversation);
+      useConversationsStore().fetchConversationById(props.entity, props.id);
     }
-    useConversationsStore().fetchConversationById(props.entity, props.id);
   },
   { immediate: true },
 );
@@ -123,10 +124,16 @@ const handleCloseSelect = () => {
 <template>
   <div class="h-full w-full flex scrollbar-hidden">
     <div class="h-full flex flex-col w-full scrollbar-hidden">
-      <Spinner v-if="conversationsStore.isLoading" />
+      <Spinner
+        v-if="
+          conversationsStore.isLoading ||
+          conversationsStore.isLoadingLeads ||
+          conversationsStore.isLoadingClients
+        "
+      />
 
       <div
-        v-else-if="getActiveConversationId() && activeConversation"
+        v-else-if="activeConversation"
         class="h-full flex flex-col scrollbar-hidden"
       >
         <ChatTop
@@ -149,12 +156,6 @@ const handleCloseSelect = () => {
       <NoChatSelected v-else />
     </div>
 
-    <RightSidebar
-      v-if="
-        getActiveConversationId() &&
-        activeConversation &&
-        store.rightSidebarOpen
-      "
-    />
+    <RightSidebar v-if="activeConversation && store.rightSidebarOpen" />
   </div>
 </template>

@@ -3,8 +3,8 @@ import { ChatBubbleLeftRightIcon } from "@heroicons/vue/24/outline";
 
 const props = withDefaults(
   defineProps<{
-    title: string;
-    text: string;
+    title?: string;
+    text?: string;
   }>(),
   {
     title: "Чат не вибрано",

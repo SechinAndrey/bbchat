@@ -8,7 +8,7 @@ import type {
   ApiCommunicationLeadFull,
   ApiMessageItem,
 } from "@src/api/types";
-import type { IConversation, IMessage } from "@src/shared/types/types";
+import type { IConversation } from "@src/shared/types/types";
 import {
   adaptApiCommunicationLeadToIConversation,
   adaptApiCommunicationClientToIConversation,
@@ -26,12 +26,6 @@ const updateEntityMessages = (
   const entityIndex = entitiesRef.value.findIndex(
     (e) => e.id === numericTargetId,
   );
-  console.log("📍 Entity search result:", {
-    entityIndex,
-    found: entityIndex !== -1,
-    availableIds: entitiesRef.value.map((e) => e.id),
-    searchingFor: numericTargetId,
-  });
 
   if (entityIndex !== -1) {
     entitiesRef.value[entityIndex].messages = messages;

@@ -28,6 +28,17 @@ import SlideTransition from "@src/ui/transitions/SlideTransition.vue";
 import Select from "@src/ui/inputs/Select.vue";
 import flemeIcon from "@src/ui/icons/flemeIcon.vue";
 import clientIcon from "@src/ui/icons/clientIcon.vue";
+import { useRoute } from "vue-router";
+
+const route = useRoute();
+const id = ref<number | null>(null);
+const entity = ref<"leads" | "clients">("leads");
+if (route.params.id) {
+  id.value = Number(route.params.id);
+}
+if (route.params.entity) {
+  entity.value = route.params.entity as "leads" | "clients";
+}
 
 // Store instances
 const authStore = useAuthStore();
@@ -48,9 +59,13 @@ const TAB = {
 };
 const activeTab = ref(TAB.all);
 
-// Destructure from stores
-const { fetchLeads, fetchClients, loadMoreLeads, loadMoreClients } =
-  conversationsStore;
+const {
+  fetchLeads,
+  fetchClients,
+  loadMoreLeads,
+  loadMoreClients,
+  fetchCommunicationMessages,
+} = conversationsStore;
 
 // Computed properties
 const userOptions = computed(() => [
@@ -93,7 +108,7 @@ const hasMore = computed(() => {
 // Watch for data fetching
 watch(
   [keyword, selectedUser, selectedFilter, activeTab],
-  () => {
+  async () => {
     const params: GetCommunicationsParams = {
       page: 1,
       search: keyword.value || undefined,
@@ -102,9 +117,12 @@ watch(
     };
 
     if (selectedFilter.value === "leads") {
-      fetchLeads(params);
+      await fetchLeads(params);
     } else {
-      fetchClients(params);
+      await fetchClients(params);
+    }
+    if (id.value && entity.value) {
+      fetchCommunicationMessages(entity.value, id.value);
     }
   },
   { immediate: true },

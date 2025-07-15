@@ -5,6 +5,7 @@ import {
   ApiCommunicationClientFull,
   ApiKanbanStatus,
 } from "@src/api/types";
+import Button from "@src/ui/inputs/Button.vue";
 import { formatConversationDate } from "@src/shared/utils/utils";
 import useConversationsStore from "@src/features/conversations/conversations-store";
 import useGlobalDataStore from "@src/shared/store/global-data-store";
