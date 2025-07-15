@@ -258,11 +258,48 @@ export const unicodeToEmoji = (unicode: string) => {
 };
 
 /**
- * Formats a date for display in the conversation list.
- * Shows time if the date is today, otherwise shows the date.
- * @param dateInput {Date | string | number} - The date to format.
- * @param locale {string} - The locale to use.
- * @returns {string} - The formatted date string.
+ * Universal date formatter with custom options
+ * @param dateInput - The date to format
+ * @param options - Custom Intl.DateTimeFormat options
+ * @param locale - The locale to use
+ * @returns Formatted date string
+ */
+export const formatDate = (
+  dateInput: Date | string | number | undefined | null,
+  options?: Intl.DateTimeFormatOptions,
+  locale: string = "uk-UA",
+): string => {
+  if (!dateInput) {
+    return "";
+  }
+
+  const date = new Date(dateInput);
+  if (isNaN(date.getTime())) {
+    return "";
+  }
+
+  return new Intl.DateTimeFormat(locale, options).format(date);
+};
+
+/**
+ * Check if the date is today
+ * @param date - Date to check
+ * @returns Boolean indicating if the date is today
+ */
+export const isToday = (date: Date): boolean => {
+  const now = new Date();
+  return (
+    date.getDate() === now.getDate() &&
+    date.getMonth() === now.getMonth() &&
+    date.getFullYear() === now.getFullYear()
+  );
+};
+
+/**
+ * Format date for conversation list - shows time for today, full date for other days
+ * @param dateInput - The date to format
+ * @param locale - The locale to use
+ * @returns Formatted date string
  */
 export const formatConversationDate = (
   dateInput: Date | string | number | undefined | null,
@@ -274,28 +311,30 @@ export const formatConversationDate = (
 
   const date = new Date(dateInput);
   if (isNaN(date.getTime())) {
-    return ""; // Invalid date
+    return "";
   }
 
-  const now = new Date();
-  const isToday =
-    date.getDate() === now.getDate() &&
-    date.getMonth() === now.getMonth() &&
-    date.getFullYear() === now.getFullYear();
-
-  if (isToday) {
-    return new Intl.DateTimeFormat(locale, {
-      hour: "numeric",
-      minute: "numeric",
-    }).format(date);
+  if (isToday(date)) {
+    return formatDate(
+      dateInput,
+      {
+        hour: "numeric",
+        minute: "numeric",
+      },
+      locale,
+    );
   } else {
-    return new Intl.DateTimeFormat(locale, {
-      day: "numeric",
-      month: "numeric",
-      year: "numeric",
-      hour: "numeric",
-      minute: "numeric",
-    }).format(date);
+    return formatDate(
+      dateInput,
+      {
+        day: "numeric",
+        month: "numeric",
+        year: "numeric",
+        hour: "numeric",
+        minute: "numeric",
+      },
+      locale,
+    );
   }
 };
 

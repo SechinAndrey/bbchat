@@ -12,6 +12,7 @@ import linkifyStr from "linkify-string";
 import MediaPreview from "@src/features/chat/components/ChatMiddle/Message/MediaPreview.vue";
 import ConversationAvatar from "@src/shared/components/ConversationAvatar.vue";
 import { IConversation } from "@src/shared/types";
+import { formatDate } from "@src/shared/utils/utils";
 
 const props = defineProps<{
   message: ApiMessageItem;
@@ -222,7 +223,11 @@ const formatDuration = (seconds: number) => {
         </div>
       </div>
       <!-- Time -->
-      <div class="text-[0.625rem] font-light text-text-secondary">09:50</div>
+      <div class="text-[0.625rem] font-light text-text-secondary">
+        {{
+          formatDate(message.created_at, { hour: "numeric", minute: "numeric" })
+        }}
+      </div>
     </div>
   </div>
 </template>
