@@ -428,19 +428,23 @@ export interface ApiCommunicationStatusLogItem {
 export interface ApiCommunicationLeadFull {
   id: number;
   user_id: number;
+  type: string;
+  entityType: "leads" | "clients";
+  avatar: string | null;
   name: string;
   fio: string | null;
   email: string | null;
   phone: string | null;
   tg_name: string | null;
   cities: ApiCommunicationCity[];
+  contacts: ApiContact[];
   channel: string | null;
   source: string | null;
   social: string | null;
   from_form: number | null;
   have_supervision: number | null;
   comment: string | null;
-  messages: ApiMessage[] | null;
+  messages: ApiMessageItem[];
   replyMessage: ApiMessage | null;
   calls: ApiCommunicationCallInfo[];
   info: unknown;

@@ -4,11 +4,6 @@ import useStore from "@src/shared/store/store";
 import { ref, inject, computed } from "vue";
 
 import {
-  ApiCommunicationLeadFull,
-  ApiCommunicationClientFull,
-} from "@src/api/types";
-
-import {
   FaceSmileIcon,
   PaperAirplaneIcon,
   PaperClipIcon,
@@ -17,7 +12,6 @@ import {
 import AttachmentsModal from "@src/features/media/modals/AttachmentsModal/AttachmentsModal.vue";
 import IconButton from "@src/ui/inputs/IconButton.vue";
 import ScaleTransition from "@src/ui/transitions/ScaleTransition.vue";
-import ReplyMessage from "@src/features/chat/components/ChatBottom/ReplyMessage.vue";
 import EmojiPicker from "@src/ui/inputs/EmojiPicker/EmojiPicker.vue";
 import Textarea from "@src/ui/inputs/Textarea.vue";
 import conversationsService from "@src/features/conversations/conversations-service";
@@ -31,12 +25,6 @@ const entity = inject("entity") as "leads" | "clients";
 const id = inject("id") as number;
 const contragent_type = computed(() => {
   return entity === "leads" ? "lead" : "client";
-});
-
-const activeConversationInfo = computed<
-  ApiCommunicationLeadFull | ApiCommunicationClientFull | null
->(() => {
-  return conversationsStore.activeConversationInfo;
 });
 
 // the content of the message.
@@ -58,16 +46,6 @@ const showPicker = ref(false);
 // open modal used to send multiple attachments attachments.
 const openAttachmentsModal = ref(false);
 
-// start and stop recording.
-const handleToggleRecording = () => {
-  recording.value = !recording.value;
-};
-
-// stop recording without sending.
-const handleCancelRecording = () => {
-  recording.value = false;
-};
-
 // close picker when you click outside.
 const handleClickOutside = (event: Event) => {
   let target = event.target as HTMLElement;
@@ -88,7 +66,7 @@ async function sendMessage() {
     return;
   }
   await conversationsService.sendMessage({
-    phone: activeConversationInfo?.value?.phone || "",
+    phone: conversationsStore.activeConversationInfo?.phone || "",
     message: value.value,
     file_url: "",
     messenger_id: messengerId.value,
@@ -101,14 +79,6 @@ async function sendMessage() {
 
 <template>
   <div class="w-full">
-    <!--selected reply display-->
-    <div
-      class="relative transition-all duration-200"
-      :class="{ 'pt-[3.75rem]': activeConversationInfo?.replyMessage }"
-    >
-      <ReplyMessage />
-    </div>
-
     <div
       v-if="store.status !== 'loading'"
       class="h-auto min-h-[5.25rem] p-5 flex items-end"

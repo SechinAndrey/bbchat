@@ -1,20 +1,18 @@
 <script setup lang="ts">
-import type { IConversation } from "@src/shared/types/types";
-import type { Ref, ComputedRef } from "vue";
+import type { Ref } from "vue";
 
-import { inject, onMounted, ref, watch, nextTick } from "vue";
+import { onMounted, ref, watch, nextTick } from "vue";
 
 import useStore from "@src/shared/store/store";
 import MessageV2 from "@src/features/chat/components/ChatMiddle/Message/MessageV2.vue";
 import SimpleMediaModal from "@src/ui/data-display/SimpleMediaModal.vue";
 import { isImage } from "@src/shared/utils/media";
+import { useConversationsStore } from "@src/features/conversations/conversations-store";
 
 const store = useStore();
+const conversationsStore = useConversationsStore();
 
 const container: Ref<HTMLElement | null> = ref(null);
-
-const activeConversation =
-  inject<ComputedRef<IConversation | undefined>>("activeConversation");
 
 // Image gallery state
 const isImageGalleryOpen = ref(false);
@@ -25,8 +23,8 @@ const startingImageIndex = ref(0);
 const collectConversationImages = () => {
   const images: string[] = [];
 
-  if (activeConversation?.value?.messages) {
-    for (const message of activeConversation.value.messages) {
+  if (conversationsStore.activeConversationInfo) {
+    for (const message of conversationsStore.activeConversationInfo.messages) {
       // Type assertion to handle mixed message types
       const messageWithEchat = message as any;
 
@@ -75,7 +73,7 @@ onMounted(() => {
 });
 
 watch(
-  () => activeConversation?.value?.messages,
+  () => conversationsStore.activeConversationInfo?.messages,
   () => {
     scrollToBottom();
   },
@@ -89,10 +87,16 @@ watch(
     class="grow px-5 py-5 flex flex-col overflow-y-scroll scrollbar-hidden"
   >
     <div
-      v-if="store.status !== 'loading' && activeConversation?.messages"
+      v-if="
+        store.status !== 'loading' &&
+        conversationsStore.activeConversationInfo?.messages
+      "
       class="flex flex-col-reverse"
     >
-      <div v-for="message in activeConversation.messages" :key="message.id">
+      <div
+        v-for="message in conversationsStore.activeConversationInfo.messages"
+        :key="message.id"
+      >
         <!-- <TimelineDivider v-if="renderDivider(index, index - 1)" /> -->
 
         <MessageV2 :message="message" @open-image-gallery="openImageGallery" />

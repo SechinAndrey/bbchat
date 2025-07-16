@@ -8,7 +8,7 @@ import SwitchInput from "@src/ui/inputs/SwitchInput.vue";
 const props = defineProps<{
   link?: boolean;
   icon?: Component;
-  title?: string;
+  title?: string | null;
   chevron?: boolean;
   switch?: boolean;
   color?: string;

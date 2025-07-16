@@ -1,12 +1,19 @@
 <script setup lang="ts">
 import type { IConversation } from "@src/shared/types/types";
+import type {
+  ApiCommunicationLeadFull,
+  ApiCommunicationClientFull,
+} from "@src/api/types";
 import { computed } from "vue";
 import { getAvatar, getName } from "@src/shared/utils/utils";
 import { useAvatarInitials } from "@src/shared/composables/useAvatarInitials";
 import flemeIcon from "@src/ui/icons/flemeIcon.vue";
 
 interface Props {
-  conversation: IConversation;
+  conversation:
+    | IConversation
+    | ApiCommunicationLeadFull
+    | ApiCommunicationClientFull;
   size?: "sm" | "md" | "lg";
 }
 

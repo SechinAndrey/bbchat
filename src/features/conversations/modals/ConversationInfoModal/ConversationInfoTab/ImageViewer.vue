@@ -3,7 +3,7 @@ import { XMarkIcon } from "@heroicons/vue/24/solid";
 
 const props = defineProps<{
   open: boolean;
-  imageUrl?: string;
+  imageUrl?: string | null;
   closeImage: () => void;
 }>();
 </script>
@@ -29,9 +29,9 @@ const props = defineProps<{
           <!--close viewer button-->
           <div class="w-full flex justify-end">
             <button
-              @click="closeImage"
               class="rounded-full p-2 hover:bg-white hover:bg-opacity-10 active:bg-opacity-20 transition-all duration-200"
               aria-label="previous item"
+              @click="closeImage"
             >
               <XMarkIcon class="w-7 h-7 text-white stroke-1" />
             </button>

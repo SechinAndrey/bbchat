@@ -8,6 +8,11 @@ import type {
   IMessageContent,
   IRecording,
 } from "@src/shared/types/types";
+import type {
+  ApiCommunicationLeadFull,
+  ApiCommunicationClientFull,
+  ApiContact,
+} from "@src/api/types";
 import { useRoute } from "vue-router";
 
 /**
@@ -15,7 +20,10 @@ import { useRoute } from "vue-router";
  * @param contact
  * @returns A string the combines the first and last names.
  */
-export const getFullName = (contact: IContact, hyphen?: boolean) => {
+export const getFullName = (
+  contact: IContact | ApiContact,
+  hyphen?: boolean,
+) => {
   if (hyphen) {
     return contact.firstName + "-" + contact.lastName;
   } else {
@@ -28,7 +36,12 @@ export const getFullName = (contact: IContact, hyphen?: boolean) => {
  * @param conversation
  * @returns A contact object representing the other user in the conversation.
  */
-export const getOddContact = (conversation: IConversation) => {
+export const getOddContact = (
+  conversation:
+    | IConversation
+    | ApiCommunicationLeadFull
+    | ApiCommunicationClientFull,
+) => {
   const store = useStore();
   const authStore = useAuthStore();
 
@@ -50,7 +63,12 @@ export const getOddContact = (conversation: IConversation) => {
  * @param conversation
  * @returns A string representing the url to the avatar image
  */
-export const getAvatar = (conversation: IConversation) => {
+export const getAvatar = (
+  conversation:
+    | IConversation
+    | ApiCommunicationLeadFull
+    | ApiCommunicationClientFull,
+) => {
   if (["group", "broadcast"].includes(conversation.type)) {
     return conversation?.avatar;
   } else {
@@ -64,8 +82,14 @@ export const getAvatar = (conversation: IConversation) => {
  * @param conversation
  * @returns String
  */
-export const getName = (conversation: IConversation, hyphen?: boolean) => {
-  if (["group", "broadcast"].includes(conversation.type)) {
+export const getName = (
+  conversation:
+    | IConversation
+    | ApiCommunicationLeadFull
+    | ApiCommunicationClientFull,
+  hyphen?: boolean,
+) => {
+  if (conversation.type && ["group", "broadcast"].includes(conversation.type)) {
     if (hyphen) {
       return (conversation.name as string).split(" ").join("-");
     } else {

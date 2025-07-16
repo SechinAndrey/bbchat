@@ -1,26 +1,16 @@
 <script setup lang="ts">
-import type { IConversation } from "@src/shared/types/types";
-
-import { inject } from "vue";
-
 import router from "@src/router";
 import useStore from "@src/shared/store/store";
-import { getName } from "@src/shared/utils/utils";
 
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/vue/24/outline";
 import IconButton from "@src/ui/inputs/IconButton.vue";
 import SearchInput from "@src/ui/inputs/SearchInput.vue";
 import Button from "@src/ui/inputs/Button.vue";
 import ConversationAvatar from "@src/shared/components/ConversationAvatar.vue";
-
-const props = defineProps<{
-  handleOpenInfo: () => void;
-  handleOpenSearch: () => void;
-}>();
+import useConversationsStore from "@src/features/conversations/conversations-store";
 
 const store = useStore();
-
-const activeConversation = inject<IConversation>("activeConversation");
+const conversationsStore = useConversationsStore();
 
 const handleCloseConversation = () => {
   router.push({ path: "/chat/" });
@@ -43,14 +33,10 @@ const handleCloseConversation = () => {
 
     <div class="flex grow">
       <!--avatar-->
-      <button
-        class="mr-5 outline-none"
-        aria-label="profile avatar"
-        @click="props.handleOpenInfo"
-      >
+      <button class="mr-5 outline-none" aria-label="profile avatar">
         <ConversationAvatar
-          v-if="activeConversation"
-          :conversation="activeConversation"
+          v-if="conversationsStore.activeConversationInfo"
+          :conversation="conversationsStore.activeConversationInfo"
         />
       </button>
 
@@ -60,7 +46,7 @@ const handleCloseConversation = () => {
           tabindex="0"
           @click="store.rightSidebarOpen = true"
         >
-          {{ activeConversation ? getName(activeConversation) : "" }}
+          {{ conversationsStore?.activeConversationInfo?.id }}
         </p>
 
         <!-- font-size 11px in rem -->

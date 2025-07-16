@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { ApiMessageItem } from "@src/api/types";
-import { computed, ref, inject } from "vue";
+import { computed, ref } from "vue";
 import {
   PhoneArrowUpRightIcon,
   PhoneArrowDownLeftIcon,
@@ -11,19 +11,19 @@ import {
 import linkifyStr from "linkify-string";
 import MediaPreview from "@src/features/chat/components/ChatMiddle/Message/MediaPreview.vue";
 import ConversationAvatar from "@src/shared/components/ConversationAvatar.vue";
-import { IConversation } from "@src/shared/types";
 import { formatDate } from "@src/shared/utils/utils";
+import { useConversationsStore } from "@src/features/conversations/conversations-store";
 
 const props = defineProps<{
   message: ApiMessageItem;
   // self: boolean;
 }>();
 
-const activeConversation = inject<IConversation>("activeConversation");
-
 const emit = defineEmits<{
   openImageGallery: [imageUrl: string];
 }>();
+
+const conversationsStore = useConversationsStore();
 
 const isCallDetailsExpanded = ref(false);
 
@@ -96,8 +96,8 @@ const formatDuration = (seconds: number) => {
     :class="{ 'justify-end': isSelf }"
   >
     <ConversationAvatar
-      v-if="!isSelf && activeConversation"
-      :conversation="activeConversation"
+      v-if="!isSelf && conversationsStore.activeConversationInfo"
+      :conversation="conversationsStore.activeConversationInfo"
     />
 
     <!-- Message body -->

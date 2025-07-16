@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
-import { ref, computed, type Ref } from "vue";
+import { ref, computed, watch } from "vue";
+import { useRoute } from "vue-router";
 import conversationsService from "./conversations-service";
 import type { GetCommunicationsParams } from "./conversations-service";
 import type {
@@ -15,25 +16,6 @@ import {
 } from "@src/api/communication-adapters";
 import { usePusher } from "@src/shared/composables/usePusher";
 
-// Helper function to update entity messages
-const updateEntityMessages = (
-  entitiesRef: Ref<IConversation[]>,
-  targetId: number,
-  messages: ApiMessageItem[],
-) => {
-  const numericTargetId = Number(targetId);
-
-  const entityIndex = entitiesRef.value.findIndex(
-    (e) => e.id === numericTargetId,
-  );
-
-  if (entityIndex !== -1) {
-    entitiesRef.value[entityIndex].messages = messages;
-  } else {
-    console.warn("❌ Entity not found with ID:", numericTargetId);
-  }
-};
-
 export const useConversationsStore = defineStore("conversations", () => {
   // State
   const leads = ref<IConversation[]>([]);
@@ -41,11 +23,14 @@ export const useConversationsStore = defineStore("conversations", () => {
   const leadsMeta = ref<ApiResponseMeta | null>(null);
   const clientsMeta = ref<ApiResponseMeta | null>(null);
   const isLoading = ref(false);
+
   const error = ref<string | null>(null);
   const activeConversationInfo = ref<
     ApiCommunicationLeadFull | ApiCommunicationClientFull | null
   >(null);
   const isFetchingActiveConversationInfo = ref(false);
+
+  const route = useRoute();
 
   // Filter state
   const filters = ref<GetCommunicationsParams>({
@@ -91,6 +76,7 @@ export const useConversationsStore = defineStore("conversations", () => {
         await conversationsService.getCommunicationEntityById<
           ApiCommunicationLeadFull | ApiCommunicationClientFull
         >(entity, id);
+      conversation.messages = [];
       activeConversationInfo.value = conversation;
       return conversation;
     } catch (err) {
@@ -284,6 +270,8 @@ export const useConversationsStore = defineStore("conversations", () => {
     entity: "leads" | "clients",
     id: number,
   ) => {
+    if (isFetchingMessages.value) return;
+
     try {
       isFetchingMessages.value = true;
       messagesError.value = null;
@@ -292,11 +280,8 @@ export const useConversationsStore = defineStore("conversations", () => {
         entity,
         id,
       );
-      // Update messages for the appropriate entity
-      if (entity === "leads") {
-        updateEntityMessages(leads, id, response.data);
-      } else {
-        updateEntityMessages(clients, id, response.data);
+      if (activeConversationInfo.value) {
+        activeConversationInfo.value.messages = response.data;
       }
 
       return response;
@@ -425,6 +410,35 @@ export const useConversationsStore = defineStore("conversations", () => {
     addMessageToConversation(data);
   });
 
+  const initializeRouteWatchers = () => {
+    watch(
+      () => route.params,
+      async (newParams, oldParams) => {
+        if (
+          newParams.id !== oldParams?.id ||
+          newParams.entity !== oldParams?.entity
+        ) {
+          const { id, entity } = newParams;
+
+          if (id && entity) {
+            const entityType = entity as "leads" | "clients";
+            const conversationId = Number(id);
+
+            try {
+              await fetchConversationById(entityType, conversationId);
+              await fetchCommunicationMessages(entityType, conversationId);
+            } catch (err) {
+              console.error("❌ Error fetching conversation from route:", err);
+            }
+          } else {
+            activeConversationInfo.value = null;
+          }
+        }
+      },
+      { immediate: true },
+    );
+  };
+
   return {
     // State
     leads,
@@ -468,6 +482,8 @@ export const useConversationsStore = defineStore("conversations", () => {
     setClientsUserFilter,
     resetLeadsFilters,
     resetClientsFilters,
+
+    initializeRouteWatchers,
   };
 });
 
