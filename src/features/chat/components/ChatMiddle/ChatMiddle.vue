@@ -1,26 +1,20 @@
 <script setup lang="ts">
-import type { IConversation, IMessage } from "@src/shared/types/types";
-import type { Ref } from "vue";
+import type { IConversation } from "@src/shared/types/types";
+import type { Ref, ComputedRef } from "vue";
 
 import { inject, onMounted, ref, watch, nextTick } from "vue";
 
 import useStore from "@src/shared/store/store";
 import MessageV2 from "@src/features/chat/components/ChatMiddle/Message/MessageV2.vue";
-import TimelineDivider from "@src/features/chat/components/ChatMiddle/TimelineDivider.vue";
 import SimpleMediaModal from "@src/ui/data-display/SimpleMediaModal.vue";
 import { isImage } from "@src/shared/utils/media";
-
-const props = defineProps<{
-  handleSelectMessage: (messageId: number) => void;
-  handleDeselectMessage: (messageId: number) => void;
-  selectedMessages: number[];
-}>();
 
 const store = useStore();
 
 const container: Ref<HTMLElement | null> = ref(null);
 
-const activeConversation = <IConversation>inject("activeConversation");
+const activeConversation =
+  inject<ComputedRef<IConversation | undefined>>("activeConversation");
 
 // Image gallery state
 const isImageGalleryOpen = ref(false);
@@ -31,8 +25,8 @@ const startingImageIndex = ref(0);
 const collectConversationImages = () => {
   const images: string[] = [];
 
-  if (activeConversation?.messages) {
-    for (const message of activeConversation.messages) {
+  if (activeConversation?.value?.messages) {
+    for (const message of activeConversation.value.messages) {
       // Type assertion to handle mixed message types
       const messageWithEchat = message as any;
 
@@ -68,27 +62,6 @@ const closeImageGallery = () => {
   startingImageIndex.value = 0;
 };
 
-// checks whether the previous message was sent by the same user.
-const isFollowUp = (index: number, previousIndex: number): boolean => {
-  return true; // This function is currently not implemented, returning true for now.
-  // if (previousIndex < 0) {
-  //   return false;
-  // } else {
-  //   let previousSender = activeConversation.messages[previousIndex].sender.id;
-  //   let currentSender = activeConversation.messages[index].sender.id;
-  //   return previousSender === currentSender;
-  // }
-};
-
-// checks wether the new message has been sent in a new day or not.
-// const renderDivider = (index: number, previousIndex: number): boolean => {
-//   if (index === 3) {
-//     return true;
-//   } else {
-//     return false;
-//   }
-// };
-
 const scrollToBottom = () => {
   nextTick(() => {
     if (container.value) {
@@ -97,13 +70,12 @@ const scrollToBottom = () => {
   });
 };
 
-// scroll messages to bottom.
 onMounted(() => {
   scrollToBottom();
 });
 
 watch(
-  () => activeConversation.messages,
+  () => activeConversation?.value?.messages,
   () => {
     scrollToBottom();
   },
@@ -116,7 +88,10 @@ watch(
     ref="container"
     class="grow px-5 py-5 flex flex-col overflow-y-scroll scrollbar-hidden"
   >
-    <div v-if="store.status !== 'loading'" class="flex flex-col-reverse">
+    <div
+      v-if="store.status !== 'loading' && activeConversation?.messages"
+      class="flex flex-col-reverse"
+    >
       <div v-for="message in activeConversation.messages" :key="message.id">
         <!-- <TimelineDivider v-if="renderDivider(index, index - 1)" /> -->
 
