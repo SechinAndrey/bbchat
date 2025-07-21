@@ -45,7 +45,14 @@ export const useConversationsStore = defineStore("conversations", () => {
   const leadsError = ref<string | null>(null);
   const clientsError = ref<string | null>(null);
   const isFetchingMessages = ref(false);
+  const isLoadingMoreMessages = ref(false);
   const messagesError = ref<string | null>(null);
+  const messagesMeta = ref<ApiResponseMeta | null>(null);
+
+  const messagesFilters = ref<{ page?: number; search?: string }>({
+    page: 1,
+    search: "",
+  });
 
   // Getters
   const hasMoreLeads = computed(() => {
@@ -59,6 +66,11 @@ export const useConversationsStore = defineStore("conversations", () => {
   });
 
   const hasMore = computed(() => hasMoreLeads.value || hasMoreClients.value);
+
+  const hasMoreMessages = computed(() => {
+    if (!messagesMeta.value) return false;
+    return messagesMeta.value.current_page < messagesMeta.value.last_page;
+  });
 
   const allCommunications = computed(() => {
     return [...leads.value, ...clients.value];
@@ -266,33 +278,99 @@ export const useConversationsStore = defineStore("conversations", () => {
     });
   };
 
-  const fetchCommunicationMessages = async (
+  // Unified method for fetching messages (initial and pagination)
+  const fetchMessages = async (
     entity: "leads" | "clients",
     id: number,
+    params?: { page?: number; search?: string },
+    loadingRef = isFetchingMessages,
   ) => {
-    if (isFetchingMessages.value) return;
+    if (loadingRef.value) return;
 
     try {
-      isFetchingMessages.value = true;
+      loadingRef.value = true;
       messagesError.value = null;
+      const mergedParams = { ...messagesFilters.value, ...params };
+      if (params) messagesFilters.value = mergedParams;
 
       const response = await conversationsService.getCommunicationMessages(
         entity,
         id,
+        mergedParams,
       );
+
       if (activeConversationInfo.value) {
-        activeConversationInfo.value.messages = response.data;
+        if (!mergedParams.page || mergedParams.page === 1) {
+          activeConversationInfo.value.messages = response.data;
+        } else {
+          activeConversationInfo.value.messages = [
+            ...activeConversationInfo.value.messages,
+            ...response.data,
+          ];
+        }
       }
+
+      messagesMeta.value = {
+        current_page: response.current_page,
+        from: response.from,
+        last_page: response.last_page,
+        path: response.path,
+        per_page: response.per_page,
+        to: response.to,
+        total: response.total,
+      };
 
       return response;
     } catch (err) {
-      console.error("❌ Error in fetchCommunicationMessages:", err);
+      console.error("❌ Error in fetchMessages:", err);
       messagesError.value =
         err instanceof Error ? err.message : "Unknown error occurred";
       throw err;
     } finally {
-      isFetchingMessages.value = false;
+      loadingRef.value = false;
     }
+  };
+
+  // Wrapper for initial fetch
+  const fetchCommunicationMessages = async (
+    entity: "leads" | "clients",
+    id: number,
+    params?: { page?: number; search?: string },
+  ) => fetchMessages(entity, id, params, isFetchingMessages);
+
+  // Wrapper for loading more messages
+  const loadMoreMessages = async (entity: "leads" | "clients", id: number) => {
+    if (!hasMoreMessages.value || isLoadingMoreMessages.value) return;
+    const nextPage = messagesMeta.value
+      ? messagesMeta.value.current_page + 1
+      : 2;
+    return fetchMessages(
+      entity,
+      id,
+      { ...messagesFilters.value, page: nextPage },
+      isLoadingMoreMessages,
+    );
+  };
+
+  const resetMessagesPagination = () => {
+    messagesMeta.value = null;
+    messagesFilters.value = {
+      page: 1,
+      search: "",
+    };
+  };
+
+  const setMessagesSearchFilter = async (
+    entity: "leads" | "clients",
+    id: number,
+    search: string,
+  ) => {
+    messagesFilters.value = {
+      page: 1,
+      search,
+    };
+
+    return fetchCommunicationMessages(entity, id, messagesFilters.value);
   };
 
   const setSearchFilter = (search: string) => {
@@ -426,12 +504,16 @@ export const useConversationsStore = defineStore("conversations", () => {
 
             try {
               await fetchConversationById(entityType, conversationId);
-              await fetchCommunicationMessages(entityType, conversationId);
+              messagesMeta.value = null;
+              await fetchCommunicationMessages(entityType, conversationId, {
+                page: 1,
+              });
             } catch (err) {
               console.error("❌ Error fetching conversation from route:", err);
             }
           } else {
             activeConversationInfo.value = null;
+            messagesMeta.value = null;
           }
         }
       },
@@ -452,7 +534,10 @@ export const useConversationsStore = defineStore("conversations", () => {
     leadsError,
     clientsError,
     isFetchingMessages,
+    isLoadingMoreMessages,
     messagesError,
+    messagesMeta,
+    messagesFilters,
     filters,
     activeConversationInfo,
     isFetchingActiveConversationInfo,
@@ -461,6 +546,7 @@ export const useConversationsStore = defineStore("conversations", () => {
     hasMoreLeads,
     hasMoreClients,
     hasMore,
+    hasMoreMessages,
     allCommunications,
 
     // Actions
@@ -471,6 +557,9 @@ export const useConversationsStore = defineStore("conversations", () => {
     resetFilters,
     fetchConversationById,
     fetchCommunicationMessages,
+    loadMoreMessages,
+    resetMessagesPagination,
+    setMessagesSearchFilter,
     // New actions for leads and clients
     fetchLeads,
     fetchClients,

@@ -17,6 +17,11 @@ export interface GetCommunicationsParams {
   communication_status_id?: number;
 }
 
+export interface GetMessagesParams {
+  page?: number;
+  search?: string;
+}
+
 export interface SendMessageParams {
   phone: string;
   message: string;
@@ -87,10 +92,14 @@ export class ConversationsService {
   async getCommunicationMessages(
     entity: "leads" | "clients",
     id: number,
+    params?: GetMessagesParams,
   ): Promise<ApiMessagesResponse> {
     try {
       const response = await apiClient.get<ApiMessagesResponse>(
         `/communications/${entity}/${id}`,
+        {
+          params,
+        },
       );
       return response.data;
     } catch (error) {

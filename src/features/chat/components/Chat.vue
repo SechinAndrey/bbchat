@@ -28,7 +28,8 @@ conversationsStore.initializeRouteWatchers();
     <div class="h-full flex flex-col w-full scrollbar-hidden">
       <Spinner
         v-if="
-          conversationsStore.isFetchingMessages ||
+          (conversationsStore.isFetchingMessages &&
+            !conversationsStore.isLoadingMoreMessages) ||
           conversationsStore.isFetchingActiveConversationInfo
         "
       />

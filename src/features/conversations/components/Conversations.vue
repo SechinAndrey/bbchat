@@ -59,13 +59,8 @@ const TAB = {
 };
 const activeTab = ref(TAB.all);
 
-const {
-  fetchLeads,
-  fetchClients,
-  loadMoreLeads,
-  loadMoreClients,
-  fetchCommunicationMessages,
-} = conversationsStore;
+const { fetchLeads, fetchClients, loadMoreLeads, loadMoreClients } =
+  conversationsStore;
 
 // Computed properties
 const userOptions = computed(() => [
@@ -120,9 +115,6 @@ watch(
       await fetchLeads(params);
     } else {
       await fetchClients(params);
-    }
-    if (id.value && entity.value) {
-      fetchCommunicationMessages(entity.value, id.value);
     }
   },
   { immediate: true },
@@ -272,10 +264,9 @@ const handleNewLeadSubmit = async (leadData: CreateLeadRequest) => {
         class="w-full h-full scroll-smooth scrollbar-hidden"
         style="overflow-x: visible; overflow-y: scroll"
       >
-        <Circle2Lines
-          v-for="item in 6"
-          v-if="isLoading && conversationsList.length === 0"
-        />
+        <div v-if="isLoading && conversationsList.length === 0">
+          <Circle2Lines v-for="item in 6" :key="item" />
+        </div>
 
         <div v-else>
           <!-- <ArchivedButton

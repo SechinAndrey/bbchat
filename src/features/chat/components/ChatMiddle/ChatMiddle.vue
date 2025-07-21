@@ -1,18 +1,73 @@
 <script setup lang="ts">
 import type { Ref } from "vue";
 
-import { onMounted, ref, watch, nextTick } from "vue";
+import { onMounted, ref, watch, nextTick, computed } from "vue";
+import { useInfiniteScroll } from "@vueuse/core";
+import { useRoute } from "vue-router";
 
 import useStore from "@src/shared/store/store";
 import MessageV2 from "@src/features/chat/components/ChatMiddle/Message/MessageV2.vue";
 import SimpleMediaModal from "@src/ui/data-display/SimpleMediaModal.vue";
 import { isImage } from "@src/shared/utils/media";
 import { useConversationsStore } from "@src/features/conversations/conversations-store";
+import Spinner from "@src/ui/states/loading-states/Spinner.vue";
 
 const store = useStore();
 const conversationsStore = useConversationsStore();
+const route = useRoute();
 
 const container: Ref<HTMLElement | null> = ref(null);
+
+const currentEntity = computed(
+  () => route.params.entity as "leads" | "clients",
+);
+const currentId = computed(() => Number(route.params.id));
+const isLoadingMore = ref(false);
+
+useInfiniteScroll(
+  container,
+  async () => {
+    if (
+      conversationsStore.isLoadingMoreMessages ||
+      !conversationsStore.hasMoreMessages ||
+      !currentEntity.value ||
+      !currentId.value
+    ) {
+      return;
+    }
+
+    try {
+      isLoadingMore.value = true;
+
+      // Save current scroll position before loading more messages
+      const scrollElement = container.value;
+      const previousScrollHeight = scrollElement?.scrollHeight || 0;
+      const previousScrollTop = scrollElement?.scrollTop || 0;
+
+      await conversationsStore.loadMoreMessages(
+        currentEntity.value,
+        currentId.value,
+      );
+
+      // Restore scroll position after new messages are loaded
+      await nextTick();
+      if (scrollElement) {
+        const newScrollHeight = scrollElement.scrollHeight;
+        const heightDifference = newScrollHeight - previousScrollHeight;
+        scrollElement.scrollTop = previousScrollTop + heightDifference;
+      }
+    } catch (error) {
+      console.error("Error loading more messages:", error);
+    } finally {
+      isLoadingMore.value = false;
+    }
+  },
+  {
+    distance: 300,
+    direction: "top",
+    throttle: 500,
+  },
+);
 
 // Image gallery state
 const isImageGalleryOpen = ref(false);
@@ -25,15 +80,12 @@ const collectConversationImages = () => {
 
   if (conversationsStore.activeConversationInfo) {
     for (const message of conversationsStore.activeConversationInfo.messages) {
-      // Type assertion to handle mixed message types
-      const messageWithEchat = message as any;
-
       // Check echat messages for media
-      if (messageWithEchat.echat_messages) {
+      if (message.echat_messages) {
         const echatMessage =
-          typeof messageWithEchat.echat_messages.message_json === "string"
-            ? JSON.parse(messageWithEchat.echat_messages.message_json)
-            : messageWithEchat.echat_messages.message_json || {};
+          typeof message.echat_messages.message_json === "string"
+            ? JSON.parse(message.echat_messages.message_json)
+            : message.echat_messages.message_json || {};
 
         if (echatMessage.media && isImage(echatMessage.media)) {
           images.push(echatMessage.media);
@@ -75,7 +127,9 @@ onMounted(() => {
 watch(
   () => conversationsStore.activeConversationInfo?.messages,
   () => {
-    scrollToBottom();
+    if (!isLoadingMore.value) {
+      scrollToBottom();
+    }
   },
   { deep: true },
 );
@@ -86,6 +140,11 @@ watch(
     ref="container"
     class="grow px-5 py-5 flex flex-col overflow-y-scroll scrollbar-hidden"
   >
+    <Spinner
+      v-if="conversationsStore.isLoadingMoreMessages"
+      class="flex justify-center py-4"
+    />
+
     <div
       v-if="
         store.status !== 'loading' &&
