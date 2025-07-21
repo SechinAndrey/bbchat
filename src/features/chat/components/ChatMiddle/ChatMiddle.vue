@@ -11,6 +11,7 @@ import SimpleMediaModal from "@src/ui/data-display/SimpleMediaModal.vue";
 import { isImage } from "@src/shared/utils/media";
 import { useConversationsStore } from "@src/features/conversations/conversations-store";
 import Spinner from "@src/ui/states/loading-states/Spinner.vue";
+import NoChatSelected from "@src/ui/states/empty-states/NoChatSelected.vue";
 
 const store = useStore();
 const conversationsStore = useConversationsStore();
@@ -148,7 +149,8 @@ watch(
     <div
       v-if="
         store.status !== 'loading' &&
-        conversationsStore.activeConversationInfo?.messages
+        conversationsStore.activeConversationInfo?.messages &&
+        conversationsStore.activeConversationInfo.messages.length
       "
       class="flex flex-col-reverse"
     >
@@ -161,6 +163,8 @@ watch(
         <MessageV2 :message="message" @open-image-gallery="openImageGallery" />
       </div>
     </div>
+
+    <NoChatSelected v-else title="Повідомлень немає" text="" />
 
     <SimpleMediaModal
       :open="isImageGalleryOpen"

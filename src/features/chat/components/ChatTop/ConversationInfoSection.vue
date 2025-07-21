@@ -8,6 +8,11 @@ import SearchInput from "@src/ui/inputs/SearchInput.vue";
 import Button from "@src/ui/inputs/Button.vue";
 import ConversationAvatar from "@src/shared/components/ConversationAvatar.vue";
 import useConversationsStore from "@src/features/conversations/conversations-store";
+import { useDebounceFn } from "@vueuse/core";
+import { inject } from "vue";
+
+const entity = inject<"leads" | "clients">("entity");
+const id = inject<number>("id");
 
 const store = useStore();
 const conversationsStore = useConversationsStore();
@@ -15,6 +20,14 @@ const conversationsStore = useConversationsStore();
 const handleCloseConversation = () => {
   router.push({ path: "/chat/" });
 };
+
+const debouncedFn = useDebounceFn(() => {
+  if (!entity || !id) return;
+  conversationsStore.fetchCommunicationMessages(entity, id, {
+    page: 1,
+    search: conversationsStore.messagesFilters.search,
+  });
+}, 500);
 </script>
 
 <template>
@@ -56,7 +69,12 @@ const handleCloseConversation = () => {
 
     <div class="flex">
       <div class="relative flex items-center gap-4">
-        <SearchInput input-class="bg-theme-conversations" size="small" />
+        <SearchInput
+          v-model="conversationsStore.messagesFilters.search"
+          input-class="bg-theme-conversations"
+          size="small"
+          @update:model-value="debouncedFn"
+        />
 
         <Button class="contained-primary contained-text" size="small">
           Завершити діалог
