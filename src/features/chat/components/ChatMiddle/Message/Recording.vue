@@ -81,9 +81,9 @@ onUnmounted(() => {
     <!--play/pause button-->
     <button
       v-else
-      @click="handleTogglePlay"
       class="p-4 mr-4 flex justify-center items-center rounded-[.75rem] outline-none transition-all duration-200 bg-primary active:bg-primary-hover/70"
       :aria-label="playing ? 'pause' : 'play'"
+      @click="handleTogglePlay"
     >
       <PauseIcon v-if="playing" class="w-5 h-5 text-white" />
       <PlayIcon v-else class="w-5 h-5 text-white" />
@@ -93,8 +93,8 @@ onUnmounted(() => {
     <div class="w-full mr-4 relative flex items-center">
       <div :id="'waveform-' + props.recording.id" class="w-[9.375rem]"></div>
       <div
-        class="absolute border animate-pulse w-[9.375rem] border-gray-300"
         v-show="loading"
+        class="absolute border animate-pulse w-[9.375rem] border-gray-300"
       ></div>
     </div>
 
@@ -106,4 +106,12 @@ onUnmounted(() => {
       00:11
     </p>
   </div>
+
+  <!-- For debugging: compare with native audio element -->
+  <audio
+    v-if="props.recording.src"
+    controls
+    class="w-full mt-2"
+    :src="props.recording.src"
+  />
 </template>

@@ -13,6 +13,9 @@ import MediaPreview from "@src/features/chat/components/ChatMiddle/Message/Media
 import ConversationAvatar from "@src/shared/components/ConversationAvatar.vue";
 import { formatDate } from "@src/shared/utils/utils";
 import { useConversationsStore } from "@src/features/conversations/conversations-store";
+import Recording from "@src/features/chat/components/ChatMiddle/Message/Recording.vue";
+import Button from "@src/ui/inputs/Button.vue";
+import callService from "@src/shared/services/call-service";
 
 const props = defineProps<{
   message: ApiMessageItem;
@@ -25,7 +28,7 @@ const emit = defineEmits<{
 
 const conversationsStore = useConversationsStore();
 
-const isCallDetailsExpanded = ref(false);
+const isCallDetailsExpanded = ref(true);
 
 const isSelf = computed(() => {
   return props.message.user_id;
@@ -88,6 +91,14 @@ const formatDuration = (seconds: number) => {
   }
   return `${remainingSeconds} сек`;
 };
+
+const callAudio = ref("");
+
+async function getAudio(callId: number) {
+  const res = await callService.getAudio(callId);
+  if (!res.url) return;
+  callAudio.value = res.url;
+}
 </script>
 
 <template>
@@ -105,7 +116,11 @@ const formatDuration = (seconds: number) => {
       <!-- Message content -->
 
       <div
-        class="bg-theme-message rounded-2xl rounded-tl-sm px-4 py-3 max-w-md"
+        class="bg-theme-message rounded-2xl rounded-tl-sm px-4 py-3 max-w-md transition-all duration-300"
+        :class="{
+          'w-[225px]': call && !isCallDetailsExpanded,
+          'w-[260px]': call && isCallDetailsExpanded,
+        }"
       >
         <!-- 1 - чапорт -->
         <div
@@ -198,28 +213,43 @@ const formatDuration = (seconds: number) => {
               />
             </button>
           </div>
+          <Transition name="call-details-fade">
+            <div
+              v-show="isCallDetailsExpanded"
+              class="text-text-secondary overflow-hidden"
+            >
+              <div class="flex justify-between gap-10">
+                <span>Номер:</span>
+                <span>{{ call.phone }}</span>
+              </div>
+              <div class="flex justify-between gap-10">
+                <span>Статус:</span>
+                <span>{{ callStatusText }}</span>
+              </div>
+              <div class="flex justify-between gap-10">
+                <span>Тривалість:</span>
+                <span>{{ formatDuration(call.billsec) }}</span>
+              </div>
+              <div class="flex justify-between gap-10">
+                <span>Час очікування:</span>
+                <span>{{ formatDuration(call.waitsec) }}</span>
+              </div>
 
-          <div
-            v-if="isCallDetailsExpanded"
-            class="space-y-1 text-text-secondary"
-          >
-            <div class="flex justify-between">
-              <span>Номер:</span>
-              <span>{{ call.phone }}</span>
+              <Recording
+                v-if="callAudio"
+                :recording="{ id: call.id, src: callAudio }"
+              />
+
+              <Button
+                v-else
+                class="contained-primary contained-text m-2 mb-2"
+                size="small"
+                @click="getAudio(call.binotel_id)"
+              >
+                Прослухати дзвінок
+              </Button>
             </div>
-            <div class="flex justify-between">
-              <span>Статус:</span>
-              <span>{{ callStatusText }}</span>
-            </div>
-            <div class="flex justify-between">
-              <span>Тривалість:</span>
-              <span>{{ formatDuration(call.billsec) }}</span>
-            </div>
-            <div class="flex justify-between">
-              <span>Час очікування:</span>
-              <span>{{ formatDuration(call.waitsec) }}</span>
-            </div>
-          </div>
+          </Transition>
         </div>
       </div>
       <!-- Time -->
@@ -231,3 +261,26 @@ const formatDuration = (seconds: number) => {
     </div>
   </div>
 </template>
+
+<style scoped>
+/* Animation for call details expand/collapse */
+.call-details-fade-enter-active,
+.call-details-fade-leave-active {
+  transition:
+    height 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.3s,
+    margin 0.3s;
+}
+.call-details-fade-enter-from,
+.call-details-fade-leave-to {
+  height: 0;
+  opacity: 0;
+  margin-top: 0;
+}
+.call-details-fade-enter-to,
+.call-details-fade-leave-from {
+  height: auto;
+  opacity: 1;
+  margin-top: 0.25rem;
+}
+</style>
