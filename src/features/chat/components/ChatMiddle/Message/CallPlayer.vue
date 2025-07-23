@@ -2,7 +2,7 @@
 import { ref } from "vue";
 import Button from "@src/ui/inputs/Button.vue";
 import callService from "@src/shared/services/call-service";
-import AudioPlayer from "@src/ui/components/AudioPlayer.vue";
+// import AudioPlayer from "@src/ui/components/AudioPlayer.vue";
 
 const props = defineProps({
   binotelId: {
@@ -25,7 +25,8 @@ async function getAudio() {
 
 <template>
   <div class="flex flex-col mb-4">
-    <AudioPlayer v-if="callAudio" :src="callAudio" />
+    <!-- <AudioPlayer v-if="callAudio" :src="callAudio" /> -->
+    <audio v-if="callAudio" :src="callAudio" controls></audio>
     <Button
       v-else
       class="contained-primary contained-text m-2"
