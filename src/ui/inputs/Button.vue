@@ -43,7 +43,7 @@ defineEmits(["button-clicked"]);
     </svg>
 
     <!--loading text-->
-    <template v-if="props.loading"> Processing </template>
+    <template v-if="props.loading"> Завантаження... </template>
 
     <!--text-->
     <template v-else>

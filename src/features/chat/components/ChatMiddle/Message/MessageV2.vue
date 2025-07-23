@@ -13,9 +13,7 @@ import MediaPreview from "@src/features/chat/components/ChatMiddle/Message/Media
 import ConversationAvatar from "@src/shared/components/ConversationAvatar.vue";
 import { formatDate } from "@src/shared/utils/utils";
 import { useConversationsStore } from "@src/features/conversations/conversations-store";
-import Recording from "@src/features/chat/components/ChatMiddle/Message/Recording.vue";
-import Button from "@src/ui/inputs/Button.vue";
-import callService from "@src/shared/services/call-service";
+import CallPlayer from "@src/features/chat/components/ChatMiddle/Message/CallPlayer.vue";
 
 const props = defineProps<{
   message: ApiMessageItem;
@@ -91,14 +89,6 @@ const formatDuration = (seconds: number) => {
   }
   return `${remainingSeconds} сек`;
 };
-
-const callAudio = ref("");
-
-async function getAudio(callId: number) {
-  const res = await callService.getAudio(callId);
-  if (!res.url) return;
-  callAudio.value = res.url;
-}
 </script>
 
 <template>
@@ -234,20 +224,11 @@ async function getAudio(callId: number) {
                 <span>Час очікування:</span>
                 <span>{{ formatDuration(call.waitsec) }}</span>
               </div>
-
-              <Recording
-                v-if="callAudio"
-                :recording="{ id: call.id, src: callAudio }"
+              <CallPlayer
+                v-if="call.binotel_id"
+                :binotel-id="call.binotel_id"
+                class="mt-2"
               />
-
-              <Button
-                v-else
-                class="contained-primary contained-text m-2 mb-2"
-                size="small"
-                @click="getAudio(call.binotel_id)"
-              >
-                Прослухати дзвінок
-              </Button>
             </div>
           </Transition>
         </div>
