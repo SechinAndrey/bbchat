@@ -9,7 +9,8 @@ import Button from "@src/ui/inputs/Button.vue";
 import ConversationAvatar from "@src/shared/components/ConversationAvatar.vue";
 import useConversationsStore from "@src/features/conversations/conversations-store";
 import { useDebounceFn } from "@vueuse/core";
-import { inject } from "vue";
+import { inject, ref } from "vue";
+import { toast, type ToastOptions } from "vue3-toastify";
 
 const entity = inject<"leads" | "clients">("entity");
 const id = inject<number>("id");
@@ -28,6 +29,37 @@ const debouncedFn = useDebounceFn(() => {
     search: conversationsStore.messagesFilters.search,
   });
 }, 500);
+
+const isLoading = ref(false);
+
+const endConversation = async () => {
+  if (!entity || !id) return;
+  try {
+    isLoading.value = true;
+    await conversationsStore.updateConversation(
+      entity as "leads" | "clients",
+      id as number,
+      {
+        communication_status_id: 2, // 2 - completed
+      },
+    );
+    toast("Діалог завершено", {
+      autoClose: 2000,
+      type: "success",
+      position: toast.POSITION.BOTTOM_RIGHT,
+      theme: store.settings.darkMode ? "dark" : "light",
+    } as ToastOptions);
+  } catch (error) {
+    console.error("Error ending conversation:", error);
+    toast("Не вдалося завершити діалог", {
+      position: toast.POSITION.BOTTOM_RIGHT,
+      type: "error",
+      theme: store.settings.darkMode ? "dark" : "light",
+    } as ToastOptions);
+  } finally {
+    isLoading.value = false;
+  }
+};
 </script>
 
 <template>
@@ -79,15 +111,8 @@ const debouncedFn = useDebounceFn(() => {
         <Button
           class="contained-primary contained-text"
           size="small"
-          @click="
-            conversationsStore.updateConversation(
-              entity as 'leads' | 'clients',
-              id as number,
-              {
-                communication_status_id: 2, // 2 - completed
-              },
-            )
-          "
+          :loading="isLoading"
+          @click="endConversation"
         >
           Завершити діалог
         </Button>

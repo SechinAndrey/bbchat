@@ -206,3 +206,28 @@
   --scrollbar-thumb: var(--scrollbar-thumb-dark);
   --scrollbar-thumb-hover: var(--scrollbar-thumb-hover-dark);
 }
+
+/* Toasts */
+
+:root {
+  --toastify-color-light: white !important;
+  --toastify-color-dark: rgb(31 41 55 / var(--tw-bg-opacity, 1)) !important;
+  --toastify-color-info: #3498db;
+  --toastify-color-success: #07bc0c;
+  --toastify-color-warning: #f1c40f;
+  --toastify-color-error: #e74c3c;
+  --toastify-color-transparent: rgba(255, 255, 255, 0.7);
+
+  --toastify-color-progress-light: linear-gradient(
+    to right,
+    #818cf8,
+    #818cf8,
+    #6366f1
+  ) !important;
+  --toastify-color-progress-dark: linear-gradient(
+    to right,
+    #818cf8,
+    #818cf8,
+    #6366f1
+  ) !important;
+}

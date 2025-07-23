@@ -37,6 +37,7 @@
     "video.js": "7.21.6",
     "vue": "^3.3.4",
     "vue-router": "4",
+    "vue3-toastify": "^0.2.8",
     "wavesurfer.js": "^7.3.0"
   },
   "devDependencies": {

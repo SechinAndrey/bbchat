@@ -258,3 +258,7 @@
     @apply text-black text-opacity-70 dark:text-white active:bg-gray-100 dark:hover:bg-gray-600 dark:focus:bg-gray-600 hover:bg-gray-50;
   }
 }
+
+.Toastify__toast {
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+}
