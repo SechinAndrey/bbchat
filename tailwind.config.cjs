@@ -21,6 +21,7 @@ module.exports = {
           hover: "var(--color-primary-hover)",
           focus: "var(--color-primary-focus)",
           active: "var(--color-primary-active)",
+          easy: "var(--color-primary-easy)",
         },
         success: {
           DEFAULT: "var(--color-success)",

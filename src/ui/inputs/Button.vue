@@ -1,12 +1,19 @@
 <script setup lang="ts">
 import { RouterLink } from "vue-router";
 
-const props = defineProps<{
-  loading?: boolean;
-  link?: boolean;
-  typography?: string;
-  size?: "small" | "medium";
-}>();
+const props = withDefaults(
+  defineProps<{
+    loading?: boolean;
+    link?: boolean;
+    text?: boolean;
+    size?: "small" | "medium";
+  }>(),
+  {
+    loading: false,
+    link: false,
+    size: "medium",
+  },
+);
 
 defineEmits(["button-clicked"]);
 </script>
@@ -22,7 +29,7 @@ defineEmits(["button-clicked"]);
     <svg
       v-if="props.loading"
       :class="{ 'animate-spin': props.loading }"
-      class="-ml-1 mr-3 h-5 w-5 text-white"
+      class="-ml-1 mr-3 h-5 w-5"
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       viewBox="0 0 24 24"

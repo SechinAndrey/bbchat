@@ -7,6 +7,8 @@ import type {
 } from "@src/api/types";
 import { formatConversationDate, formatSeconds } from "@src/shared/utils/utils";
 import useConversationsStore from "@src/features/conversations/conversations-store";
+import CallTranscription from "@src/features/chat/components/ChatMiddle/Message/CallTranscription.vue";
+
 const conversationsStore = useConversationsStore();
 
 const activeConversationInfo = computed<
@@ -42,7 +44,7 @@ const activeConversationInfo = computed<
           <div>{{ activeConversationInfo?.fio || "не вказано" }}</div>
         </div>
         <div class="flex">
-          <button class="text-primary">Транскрипція</button>
+          <CallTranscription :call-id="call.id" />
         </div>
       </div>
     </div>

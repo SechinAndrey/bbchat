@@ -159,6 +159,10 @@
     border border-neutral dark:border-neutral hover:border-danger dark:hover:border-danger focus:border-danger dark:focus:border-danger;
   }
 
+  .btn-text-primary {
+    @apply text-primary hover:text-primary-hover focus:text-primary-focus dark:hover:text-white dark:focus:text-white hover:bg-primary-easy;
+  }
+
   .ghost-primary {
     @apply hover:bg-primary hover:text-primary-hover dark:hover:bg-neutral active:bg-primary-focus;
   }

@@ -1,4 +1,5 @@
 :root {
+  --color-primary-easy-light: #e0e7ff; /* indigo-100 */
   --color-primary-light: #a5b4fc; /* indigo-300 */
   --color-primary-hover-light: #818cf8; /* indigo-400 */
   --color-primary-focus-light: #818cf8; /* indigo-400 */
@@ -33,6 +34,7 @@
   --text-secondary-light: rgba(0, 0, 0, 0.5); /* text-black text-opacity-50 */
 
   /* Базовые цвета для темной темы */
+  --color-primary-easy-dark: #e0e7ff; /* indigo-100 */
   --color-primary-dark: #818cf8; /* indigo-400 */
   --color-primary-hover-dark: #6366f1; /* indigo-500 */
   --color-primary-focus-dark: #6366f1; /* indigo-500 */
@@ -108,6 +110,7 @@
 }
 
 :root {
+  --color-primary-easy: var(--color-primary-easy-light);
   --color-primary: var(--color-primary-light);
   --color-primary-hover: var(--color-primary-hover-light);
   --color-primary-focus: var(--color-primary-focus-light);
@@ -156,6 +159,7 @@
 }
 
 .dark {
+  --color-primary-easy: var(--color-primary-easy-dark);
   --color-primary: var(--color-primary-dark);
   --color-primary-hover: var(--color-primary-hover-dark);
   --color-primary-focus: var(--color-primary-focus-dark);
