@@ -521,6 +521,14 @@ export const useConversationsStore = defineStore("conversations", () => {
     );
   };
 
+  const updateConversation = async (
+    entity: "leads" | "clients",
+    id: number,
+    data: Partial<ApiCommunicationLeadFull | ApiCommunicationClientFull>,
+  ) => {
+    await conversationsService.updateConversation(entity, id, data);
+  };
+
   return {
     // State
     leads,
@@ -571,6 +579,7 @@ export const useConversationsStore = defineStore("conversations", () => {
     setClientsUserFilter,
     resetLeadsFilters,
     resetClientsFilters,
+    updateConversation,
 
     initializeRouteWatchers,
   };

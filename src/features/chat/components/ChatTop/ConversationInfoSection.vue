@@ -76,7 +76,19 @@ const debouncedFn = useDebounceFn(() => {
           @update:model-value="debouncedFn"
         />
 
-        <Button class="contained-primary contained-text" size="small">
+        <Button
+          class="contained-primary contained-text"
+          size="small"
+          @click="
+            conversationsStore.updateConversation(
+              entity as 'leads' | 'clients',
+              id as number,
+              {
+                communication_status_id: 2, // 2 - completed
+              },
+            )
+          "
+        >
           Завершити діалог
         </Button>
 

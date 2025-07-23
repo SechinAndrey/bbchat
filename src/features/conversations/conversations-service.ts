@@ -189,6 +189,22 @@ export class ConversationsService {
       throw new Error("Failed to create lead");
     }
   }
+
+  async updateConversation(
+    entity: "leads" | "clients",
+    id: number,
+    data: Partial<ApiCommunicationLeadFull | ApiCommunicationClientFull>,
+  ): Promise<void> {
+    try {
+      await apiClient.patch(`/communications/${entity}/${id}`, data);
+    } catch (error) {
+      console.error(
+        `Error updating communication ${entity.slice(0, -1)}:`,
+        error,
+      );
+      throw new Error(`Failed to update communication ${entity.slice(0, -1)}`);
+    }
+  }
 }
 
 export const conversationsService = new ConversationsService();
