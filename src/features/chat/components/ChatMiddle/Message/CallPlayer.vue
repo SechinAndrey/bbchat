@@ -26,7 +26,12 @@ async function getAudio() {
 <template>
   <div class="flex flex-col mb-4">
     <!-- <AudioPlayer v-if="callAudio" :src="callAudio" /> -->
-    <audio v-if="callAudio" :src="callAudio" controls></audio>
+    <audio
+      v-if="callAudio"
+      class="max-w-full"
+      :src="callAudio"
+      controls
+    ></audio>
     <Button
       v-else
       class="contained-primary contained-text m-2"
