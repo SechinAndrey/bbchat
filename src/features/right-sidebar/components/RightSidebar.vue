@@ -22,6 +22,7 @@ const handleTabChange = (tabKey: string) => {
     <AnimatedTabs
       :tabs="tabsConfig"
       default-tab="common"
+      content-class="max-h-full"
       @tab-change="handleTabChange"
     >
       <template #common>

@@ -2,19 +2,20 @@
 import { ref } from "vue";
 import Button from "@src/ui/inputs/Button.vue";
 import callService from "@src/shared/services/call-service";
+import { useFormattedText } from "@src/shared/composables/useFormattedText";
 
 const props = defineProps<{
   callId: number;
 }>();
 
 const isLoading = ref(false);
-const transcription = ref<string | undefined>(undefined);
-
+const transcription = ref<string>("");
+const formattedText = useFormattedText(transcription);
 const getTranscription = async () => {
   try {
     isLoading.value = true;
     const res = await callService.getTranscription(props.callId);
-    transcription.value = res.transcription;
+    transcription.value = res?.transcription || "";
   } catch (error) {
     console.error("Error fetching transcription:", error);
     transcription.value = "Транскрипція недоступна";
@@ -33,5 +34,5 @@ const getTranscription = async () => {
     @click="getTranscription"
     >Транскрипція</Button
   >
-  <div v-if="transcription">{{ transcription }}</div>
+  <div v-if="transcription" v-html="formattedText"></div>
 </template>

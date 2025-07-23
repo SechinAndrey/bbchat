@@ -19,9 +19,9 @@ const activeConversationInfo = computed<
 </script>
 
 <template>
-  <div class="p-4">
+  <div class="p-4 h-[99%]">
     <h3 class="text-lg font-semibold mb-4">Дзвінки</h3>
-    <div class="space-y-3">
+    <div class="space-y-3 max-h-[96%] overflow-auto pb-6 scrollbar-thin pr-2">
       <div v-for="call in activeConversationInfo?.calls || []" :key="call.id">
         <div class="flex">
           <div>Дата</div>

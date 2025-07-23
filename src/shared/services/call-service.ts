@@ -20,7 +20,7 @@ export class CallService {
   }> {
     try {
       const response = await apiClient.get(`/calls/${callId}/transcription`);
-      return response.data;
+      return response.data.data;
     } catch (error) {
       console.error("Error fetching call transcription:", error);
       throw new Error("Failed to fetch call transcription");
