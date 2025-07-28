@@ -470,15 +470,22 @@ export const useConversationsStore = defineStore("conversations", () => {
   };
 
   const addMessageToConversation = (message: ApiMessageItem) => {
-    const lead = leads.value.find((l) => l.id === message.lead_id);
-    if (lead) {
-      lead.messages.unshift(message);
-      return;
-    }
+    const conversationId = message.client_id || message.lead_id;
 
-    const client = clients.value.find((c) => c.id === message.client_id);
-    if (client) {
-      client.messages.unshift(message);
+    if (
+      activeConversationInfo.value &&
+      activeConversationInfo.value.id === conversationId
+    ) {
+      if (!activeConversationInfo.value.messages) {
+        activeConversationInfo.value.messages = [];
+      }
+      activeConversationInfo.value.messages.unshift(message);
+    } else {
+      //  todo:
+      //  * find conversation in list
+      //  * or fetch it if not loaded
+      //  * lift conversation to top of list
+      //  * add message to conversation, update new message count
     }
   };
 
