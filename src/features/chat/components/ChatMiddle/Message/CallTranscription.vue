@@ -34,5 +34,9 @@ const getTranscription = async () => {
     @click="getTranscription"
     >Транскрипція</Button
   >
-  <div v-if="transcription" v-html="formattedText"></div>
+  <div
+    v-if="transcription"
+    class="text-[0.813rem]"
+    v-html="formattedText"
+  ></div>
 </template>
