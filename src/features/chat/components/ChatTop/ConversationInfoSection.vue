@@ -11,8 +11,9 @@ import useConversationsStore from "@src/features/conversations/conversations-sto
 import { useDebounceFn } from "@vueuse/core";
 import { inject, ref } from "vue";
 import { toast, type ToastOptions } from "vue3-toastify";
+import type { EntityType } from "@src/shared/types/common";
 
-const entity = inject<"leads" | "clients">("entity");
+const entity = inject<EntityType>("entity");
 const id = inject<number>("id");
 
 const store = useStore();
@@ -37,7 +38,7 @@ const endConversation = async () => {
   try {
     isLoading.value = true;
     await conversationsStore.updateConversation(
-      entity as "leads" | "clients",
+      entity as EntityType,
       id as number,
       {
         communication_status_id: 2, // 2 - completed

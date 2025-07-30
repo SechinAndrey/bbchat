@@ -1,5 +1,5 @@
 import { ApiMessageItem } from "@src/api/types";
-import { EntityType } from "@src/shared/types/common";
+import type { EntityType } from "@src/shared/types/common";
 
 export interface IUser {
   id: number;

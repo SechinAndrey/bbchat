@@ -29,15 +29,16 @@ import Select from "@src/ui/inputs/Select.vue";
 import flemeIcon from "@src/ui/icons/flemeIcon.vue";
 import clientIcon from "@src/ui/icons/clientIcon.vue";
 import { useRoute } from "vue-router";
+import type { EntityType } from "@src/shared/types/common";
 
 const route = useRoute();
 const id = ref<number | null>(null);
-const entity = ref<"leads" | "clients">("leads");
+const entity = ref<EntityType>("leads");
 if (route.params.id) {
   id.value = Number(route.params.id);
 }
 if (route.params.entity) {
-  entity.value = route.params.entity as "leads" | "clients";
+  entity.value = route.params.entity as EntityType;
 }
 
 // Store instances

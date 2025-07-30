@@ -4,13 +4,12 @@ import { useAxios } from "@vueuse/integrations/useAxios";
 import apiClient from "@src/api/axios-instance";
 import type { GetSelectionsParams } from "./selections-service";
 import type { ApiSelection } from "@src/api/types";
+import type { EntityType } from "@src/shared/types/common";
 
 export const useSelectionsStore = defineStore("selections", () => {
   // State
   const selections = ref<ApiSelection[]>([]);
-  const currentEntity = ref<{ type: "leads" | "clients"; id: number } | null>(
-    null,
-  );
+  const currentEntity = ref<{ type: EntityType; id: number } | null>(null);
 
   const { data, isLoading, error, execute } = useAxios<ApiSelection[]>(
     "",
@@ -20,7 +19,7 @@ export const useSelectionsStore = defineStore("selections", () => {
 
   // Actions
   const fetchSelections = async (
-    entity: "leads" | "clients",
+    entity: EntityType,
     id: number,
     params?: GetSelectionsParams,
   ) => {

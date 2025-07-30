@@ -3,6 +3,7 @@ import { ref, computed, watch } from "vue";
 import { useRoute } from "vue-router";
 import conversationsService from "./conversations-service";
 import type { GetCommunicationsParams } from "./conversations-service";
+import type { EntityType } from "@src/shared/types/common";
 import type {
   ApiResponseMeta,
   ApiCommunicationClientFull,
@@ -74,10 +75,7 @@ export const useConversationsStore = defineStore("conversations", () => {
   });
 
   // Actions
-  const fetchConversationById = async (
-    entity: "leads" | "clients",
-    id: number,
-  ) => {
+  const fetchConversationById = async (entity: EntityType, id: number) => {
     isFetchingActiveConversationInfo.value = true;
     activeConversationInfo.value = null;
     try {
@@ -273,7 +271,7 @@ export const useConversationsStore = defineStore("conversations", () => {
 
   // Unified method for fetching messages (initial and pagination)
   const fetchMessages = async (
-    entity: "leads" | "clients",
+    entity: EntityType,
     id: number,
     params?: { page?: number; search?: string },
     loadingRef = isFetchingMessages,
@@ -326,13 +324,13 @@ export const useConversationsStore = defineStore("conversations", () => {
 
   // Wrapper for initial fetch
   const fetchCommunicationMessages = async (
-    entity: "leads" | "clients",
+    entity: EntityType,
     id: number,
     params?: { page?: number; search?: string },
   ) => fetchMessages(entity, id, params, isFetchingMessages);
 
   // Wrapper for loading more messages
-  const loadMoreMessages = async (entity: "leads" | "clients", id: number) => {
+  const loadMoreMessages = async (entity: EntityType, id: number) => {
     if (!hasMoreMessages.value || isLoadingMoreMessages.value) return;
     const nextPage = messagesMeta.value
       ? messagesMeta.value.current_page + 1
@@ -354,7 +352,7 @@ export const useConversationsStore = defineStore("conversations", () => {
   };
 
   const setMessagesSearchFilter = async (
-    entity: "leads" | "clients",
+    entity: EntityType,
     id: number,
     search: string,
   ) => {
@@ -499,7 +497,7 @@ export const useConversationsStore = defineStore("conversations", () => {
           const { id, entity } = newParams;
 
           if (id && entity) {
-            const entityType = entity as "leads" | "clients";
+            const entityType = entity as EntityType;
             const conversationId = Number(id);
 
             try {
@@ -522,7 +520,7 @@ export const useConversationsStore = defineStore("conversations", () => {
   };
 
   const updateConversation = async (
-    entity: "leads" | "clients",
+    entity: EntityType,
     id: number,
     data: Partial<ApiCommunicationLeadFull | ApiCommunicationClientFull>,
   ) => {

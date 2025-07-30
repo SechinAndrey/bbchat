@@ -1,4 +1,4 @@
-import { EntityType } from "@src/shared/types/common";
+import type { EntityType } from "@src/shared/types/common";
 
 /**
  * API types based on real API responses

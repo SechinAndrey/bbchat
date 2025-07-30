@@ -17,11 +17,12 @@ import Textarea from "@src/ui/inputs/Textarea.vue";
 import conversationsService from "@src/features/conversations/conversations-service";
 import useConversationsStore from "@src/features/conversations/conversations-store";
 import Select from "@src/ui/inputs/Select.vue";
+import type { EntityType } from "@src/shared/types/common";
 
 const store = useStore();
 const conversationsStore = useConversationsStore();
 
-const entity = inject("entity") as "leads" | "clients";
+const entity = inject("entity") as EntityType;
 const id = inject("id") as number;
 const contragent_type = computed(() => {
   return entity === "leads" ? "lead" : "client";

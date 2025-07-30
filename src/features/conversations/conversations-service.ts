@@ -10,6 +10,8 @@ import type {
 } from "@src/api/types";
 
 import type { IAttachment } from "@src/shared/types/types";
+import type { EntityType } from "@src/shared/types/common";
+
 export interface GetCommunicationsParams {
   page?: number;
   search?: string;
@@ -90,7 +92,7 @@ export class ConversationsService {
   }
 
   async getCommunicationMessages(
-    entity: "leads" | "clients",
+    entity: EntityType,
     id: number,
     params?: GetMessagesParams,
   ): Promise<ApiMessagesResponse> {
@@ -109,7 +111,7 @@ export class ConversationsService {
   }
 
   async getCommunicationEntityById<T>(
-    entity: "leads" | "clients",
+    entity: EntityType,
     id: number,
   ): Promise<T> {
     try {
@@ -191,7 +193,7 @@ export class ConversationsService {
   }
 
   async updateConversation(
-    entity: "leads" | "clients",
+    entity: EntityType,
     id: number,
     data: Partial<ApiCommunicationLeadFull | ApiCommunicationClientFull>,
   ): Promise<void> {

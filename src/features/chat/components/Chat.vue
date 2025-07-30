@@ -3,6 +3,8 @@ import useStore from "@src/shared/store/store";
 import useConversationsStore from "@src/features/conversations/conversations-store";
 import { provide } from "vue";
 
+import type { EntityType } from "@src/shared/types/common";
+
 import NoChatSelected from "@src/ui/states/empty-states/NoChatSelected.vue";
 import Spinner from "@src/ui/states/loading-states/Spinner.vue";
 import ChatBottom from "@src/features/chat/components/ChatBottom/ChatBottom.vue";
@@ -12,7 +14,7 @@ import RightSidebar from "@src/features/right-sidebar/components/RightSidebar.vu
 
 const props = defineProps<{
   id: number;
-  entity: "leads" | "clients";
+  entity: EntityType;
 }>();
 
 provide("entity", props.entity);

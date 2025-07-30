@@ -12,6 +12,7 @@ import { isImage } from "@src/shared/utils/media";
 import { useConversationsStore } from "@src/features/conversations/conversations-store";
 import Spinner from "@src/ui/states/loading-states/Spinner.vue";
 import NoChatSelected from "@src/ui/states/empty-states/NoChatSelected.vue";
+import type { EntityType } from "@src/shared/types/common";
 
 const store = useStore();
 const conversationsStore = useConversationsStore();
@@ -19,9 +20,7 @@ const route = useRoute();
 
 const container: Ref<HTMLElement | null> = ref(null);
 
-const currentEntity = computed(
-  () => route.params.entity as "leads" | "clients",
-);
+const currentEntity = computed(() => route.params.entity as EntityType);
 const currentId = computed(() => Number(route.params.id));
 const isLoadingMore = ref(false);
 

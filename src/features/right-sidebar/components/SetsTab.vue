@@ -3,11 +3,13 @@ import { inject } from "vue";
 import { useSelectionsStore } from "@src/features/selections/selection-store";
 import { formatConversationDate } from "@src/shared/utils/utils";
 
+import type { EntityType } from "@src/shared/types/common";
+
 // components
 import Spinner from "@src/ui/states/loading-states/Spinner.vue";
 
 const selectionsStore = useSelectionsStore();
-const entity = inject("entity") as "leads" | "clients";
+const entity = inject("entity") as EntityType;
 const id = inject("id") as number;
 
 selectionsStore.fetchSelections(entity, id);

@@ -1,5 +1,6 @@
 import apiClient from "@src/api/axios-instance";
 import type { ApiSelection } from "@src/api/types";
+import type { EntityType } from "@src/shared/types/common";
 
 export interface GetSelectionsParams {
   filters?: Record<string, unknown>;
@@ -16,7 +17,7 @@ export class SelectionsService {
    * @returns Promise with selections data
    */
   async getSelectionsByEntityId(
-    entity: "leads" | "clients",
+    entity: EntityType,
     id: number,
     params?: GetSelectionsParams,
   ): Promise<ApiSelectionsResponse> {

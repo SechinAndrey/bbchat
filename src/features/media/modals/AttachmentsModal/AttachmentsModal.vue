@@ -13,6 +13,7 @@ import Modal from "@src/ui/modals/Modal.vue";
 import ScrollBox from "@src/ui/utils/ScrollBox.vue";
 import conversationsService from "@src/features/conversations/conversations-service";
 import useConversationsStore from "@src/features/conversations/conversations-store";
+import type { EntityType } from "@src/shared/types/common";
 
 const props = defineProps<{
   messengerId: number;
@@ -20,7 +21,7 @@ const props = defineProps<{
   closeModal: () => void;
 }>();
 
-const entity = inject("entity") as "leads" | "clients";
+const entity = inject("entity") as EntityType;
 const id = inject("id") as number;
 const contragent_type = computed(() => {
   return entity === "leads" ? "lead" : "client";

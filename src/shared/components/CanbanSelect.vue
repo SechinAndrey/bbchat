@@ -3,6 +3,7 @@ import { computed, ref, watch } from "vue";
 import Select from "@src/ui/inputs/Select.vue";
 import useConversationsStore from "@src/features/conversations/conversations-store";
 import useGlobalDataStore from "@src/shared/store/global-data-store";
+import type { EntityType } from "@src/shared/types/common";
 
 const conversationsStore = useConversationsStore();
 const globalDataStore = useGlobalDataStore();
@@ -44,7 +45,7 @@ watch(
   () => selectedId.value,
   (newValue) => {
     conversationsStore.updateConversation(
-      "leads",
+      conversationsStore?.activeConversationInfo?.entity as EntityType,
       conversationsStore?.activeConversationInfo?.id as number,
       {
         status_id: newValue as number,
