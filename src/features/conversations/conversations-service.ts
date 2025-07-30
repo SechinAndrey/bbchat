@@ -207,6 +207,17 @@ export class ConversationsService {
       throw new Error(`Failed to update communication ${entity.slice(0, -1)}`);
     }
   }
+
+  async changeStatus(id: number, status: number) {
+    try {
+      return await apiClient.post(`/leads/${id}/change-status`, {
+        new_status_id: status,
+      });
+    } catch (error) {
+      console.error("Error changing lead status:", error);
+      throw new Error("Failed to change lead status");
+    }
+  }
 }
 
 export const conversationsService = new ConversationsService();

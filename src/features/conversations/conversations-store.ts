@@ -527,6 +527,10 @@ export const useConversationsStore = defineStore("conversations", () => {
     await conversationsService.updateConversation(entity, id, data);
   };
 
+  const changeStatus = async (id: number, status: number) => {
+    await conversationsService.changeStatus(id, status);
+  };
+
   return {
     // State
     leads,
@@ -578,6 +582,7 @@ export const useConversationsStore = defineStore("conversations", () => {
     resetLeadsFilters,
     resetClientsFilters,
     updateConversation,
+    changeStatus,
 
     initializeRouteWatchers,
   };

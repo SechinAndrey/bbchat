@@ -29,7 +29,7 @@ const handleActiveSidebarComponentChange = (value: string) => {
 
 <template>
   <div
-    class="xs:w-full md:w-[3.75rem] md:h-full md:py-7 xs:py-5 px-4 flex xs:flex-row md:flex-col items-center transition-all duration-500 bg-theme-nav"
+    class="xs:w-full md:w-[3.75rem] md:h-full md:py-7 xs:py-5 px-4 flex xs:flex-row md:flex-col items-center transition-all duration-500 bg-theme-nav z-10"
   >
     <!--logo-->
     <logoIcon class="xs:hidden md:block mb-6" />
