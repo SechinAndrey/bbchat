@@ -56,6 +56,7 @@ module.exports = {
         theme: {
           bg: "var(--bg)",
           text: "var(--text)",
+          "t-alt": "var(--t-alt)",
           surface: "var(--bg-surface)",
           "surface-variant": "var(--bg-surface-variant)",
           conversations: "var(--bg-conversations)",

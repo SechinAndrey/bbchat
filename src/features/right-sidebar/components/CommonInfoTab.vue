@@ -3,101 +3,106 @@ import { computed } from "vue";
 import {
   ApiCommunicationLeadFull,
   ApiCommunicationClientFull,
-  ApiKanbanStatus,
 } from "@src/api/types";
 import Button from "@src/ui/inputs/Button.vue";
 import { formatConversationDate } from "@src/shared/utils/utils";
 import useConversationsStore from "@src/features/conversations/conversations-store";
-import useGlobalDataStore from "@src/shared/store/global-data-store";
+import { PhoneIcon, EnvelopeIcon } from "@heroicons/vue/24/outline";
+import CanbanSelect from "@src/shared/components/CanbanSelect.vue";
 
 const conversationsStore = useConversationsStore();
-const globalDataStore = useGlobalDataStore();
 
 const activeConversationInfo = computed<
   ApiCommunicationLeadFull | ApiCommunicationClientFull | null
 >(() => {
   return conversationsStore.activeConversationInfo;
 });
-
-const kanbanStatus = computed<ApiKanbanStatus | undefined>(() => {
-  return globalDataStore.getKanbanStatusById(
-    activeConversationInfo.value?.status_id || 0,
-  );
-});
 </script>
 
 <template>
   <div class="py-4">
-    <div class="mb-4 text-neutral-active">Контакти</div>
+    <div class="mb-4 text-theme-t-alt text-[0.813rem]">Контакти</div>
 
-    <div class="flex gap-2 mb-2">
-      <div>Телефон:</div>
-      <div class="text-gray-500">
+    <div class="flex items-center gap-2 mb-2">
+      <PhoneIcon class="w-5 h-5 text-primary" />
+      <a class="text-[0.875rem]" :href="`tel:${activeConversationInfo?.phone}`">
         {{ activeConversationInfo?.phone || "Не вказаний" }}
-      </div>
+      </a>
     </div>
 
-    <div class="flex gap-2 mb-2">
-      <div>Пошта:</div>
-      <div class="text-gray-500">
+    <div class="flex items-center gap-2 mb-2">
+      <EnvelopeIcon class="w-5 h-5 text-primary" />
+      <a
+        class="text-[0.875rem]"
+        :href="`mailto:${activeConversationInfo?.email}`"
+      >
         {{ activeConversationInfo?.email || "Не вказана" }}
-      </div>
+      </a>
     </div>
 
     <Button class="">
-      <span class="text-primary">+ Додати</span>
+      <span class="text-primary text-[0.813rem]">+ Додати</span>
     </Button>
 
-    <div class="my-4 text-neutral-active">Створено</div>
+    <div class="my-4 text-theme-t-alt text-[0.813rem]">Створено</div>
 
-    <div>
+    <div class="text-[0.875rem]">
       {{
         formatConversationDate(activeConversationInfo?.created_at) ||
         "Не вказано"
       }}
     </div>
 
-    <div class="my-4 text-neutral-active">Канал</div>
+    <div class="my-4 text-theme-t-alt text-[0.813rem]">Канал</div>
 
-    <div>
+    <div class="text-[0.875rem]">
       {{ activeConversationInfo?.channel || "Не вказано" }}
     </div>
 
-    <div class="my-4 text-neutral-active">Місто</div>
-
-    <div v-for="city in activeConversationInfo?.cities || []" :key="city.id">
-      {{ city.name_ua }}
+    <div class="my-4 text-theme-t-alt text-[0.813rem]">Місто</div>
+    <div v-if="activeConversationInfo?.cities.length" class="text-[0.875rem]">
+      <div v-for="city in activeConversationInfo?.cities || []" :key="city.id">
+        {{ city.name_ua }}
+      </div>
     </div>
+    <div v-else class="text-[0.875rem]">Не вказано</div>
 
-    <div class="my-4 text-neutral-active">Коментар</div>
+    <div class="my-4 text-theme-t-alt text-[0.813rem]">Коментар</div>
 
-    <div>
+    <div class="text-[0.875rem]">
       {{ activeConversationInfo?.comment || "Не вказано" }}
     </div>
 
-    <hr />
+    <hr class="my-5" />
 
-    <div class="my-4 text-neutral-active">Канбан статус</div>
+    <div class="my-4 text-theme-t-alt text-[0.813rem]">Kanban статус</div>
 
     <div>
-      {{ kanbanStatus?.name }}
+      <CanbanSelect />
     </div>
 
-    <hr />
+    <hr v-if="activeConversationInfo?.status_log?.length" class="my-5" />
 
-    <div class="my-4 text-neutral-active">Історія статусів</div>
+    <div
+      v-if="activeConversationInfo?.status_log?.length"
+      class="my-4 text-theme-t-alt text-[0.813rem]"
+    >
+      Історія статусів
+    </div>
 
     <div
       v-for="status in activeConversationInfo?.status_log || []"
       :key="status.id"
-      class="mb-4"
+      class="mb-4 text-[0.813rem]"
     >
-      <div>
-        {{ formatConversationDate(status.created_at) }} -
-        {{ status.new_status.name }}
-      </div>
-      <div>
-        {{ status.user?.name }}
+      <div class="flex gap-4 mb-4">
+        <div class="text-theme-t-alt">
+          {{ formatConversationDate(status.created_at) }}
+        </div>
+        <div class="flex-1 min-w-full">
+          <div>{{ status.new_status.name }}</div>
+          <div class="text-theme-t-alt">{{ status.user?.name }}</div>
+        </div>
       </div>
     </div>
   </div>

@@ -89,7 +89,7 @@
   --bg-surface-variant-light: #f3f4f6; /* gray-100 */
   --bg-surface-variant-dark: #374151; /* gray-700 */
 
-  --bg-conversations-light: #f6f7f9; /* Светло-серый фон для списка разговоров */
+  --bg-conversations-light: #f2f5fb; /* Светло-серый фон для списка разговоров */
   --bg-conversations-dark: #2d3748; /* Темный аналог для темной темы */
 
   --bg-message-light: #f8f8f9; /* Light gray background for messages */
@@ -97,6 +97,8 @@
 
   --cbg-10-light: rgba(255, 255, 255, 0.1);
   --cbg-10-dark: rgba(31, 41, 55, 0.1);
+
+  --t-alt: #8b8f9d;
 
   /* Scrollbar colors */
   --scrollbar-track-light: transparent;

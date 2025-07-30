@@ -519,7 +519,7 @@ export interface ApiKanbanStatus {
   name: string;
   for_hunters: boolean;
   for_all: boolean;
-  available_statuses: number[];
+  avaliable_statuses: string;
 }
 
 export interface ApiManagerListItem {

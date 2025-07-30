@@ -220,7 +220,7 @@ const handleOptionClick = (option: Option) => {
         />
         <component
           :is="icon"
-          v-else
+          v-else-if="icon"
           class="flex-shrink-0 text-text-secondary"
           :class="[sizeClasses.icon, sizeClasses.iconMargin]"
         />

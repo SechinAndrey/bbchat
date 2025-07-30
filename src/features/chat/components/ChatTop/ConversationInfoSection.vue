@@ -118,7 +118,7 @@ const endConversation = async () => {
         </Button>
 
         <IconButton
-          class="ic-btn-ghost-primary open-top-menu group w-7 h-7 hover:text-white focus:text-white"
+          class="ic-btn-ghost-primary open-top-menu group w-7 h-7"
           @click="store.rightSidebarOpen = !store.rightSidebarOpen"
         >
           <ChevronRightIcon

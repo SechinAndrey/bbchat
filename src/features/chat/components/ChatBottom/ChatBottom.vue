@@ -119,7 +119,7 @@ async function sendMessage() {
             <IconButton
               title="toggle emoji picker"
               aria-label="toggle emoji picker"
-              class="ic-btn-ghost-primary toggle-picker-button w-7 h-7 md:mr-5 xs:mr-4 hover:text-white focus:text-white"
+              class="ic-btn-ghost-primary toggle-picker-button w-7 h-7 md:mr-5 xs:mr-4"
               @click="showPicker = !showPicker"
             >
               <XCircleIcon v-if="showPicker" class="w-[1.25rem] h-[1.25rem]" />
@@ -145,7 +145,7 @@ async function sendMessage() {
         <!--select attachments button-->
         <IconButton
           v-if="!recording"
-          class="ic-btn-ghost-primary w-7 h-7 md:mr-5 xs:mr-4 hover:text-white focus:text-white"
+          class="ic-btn-ghost-primary w-7 h-7 md:mr-5 xs:mr-4"
           title="open select attachments modal"
           aria-label="open select attachments modal"
           @click="openAttachmentsModal = true"

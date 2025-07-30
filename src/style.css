@@ -209,7 +209,7 @@
   }
 
   .ic-btn-ghost-primary {
-    @apply hover:bg-primary-hover hover:bg-opacity-10 dark:hover:bg-gray-600 focus:bg-primary-hover focus:bg-opacity-20 dark:focus:bg-gray-600 hover:text-primary focus:text-primary duration-200;
+    @apply hover:bg-primary-hover hover:bg-opacity-10 dark:hover:bg-gray-600 focus:bg-primary-hover focus:bg-opacity-20 dark:focus:bg-gray-600 hover:text-white focus:text-white duration-200;
   }
 
   .ic-btn-ghost-danger {

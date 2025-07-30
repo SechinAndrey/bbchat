@@ -47,6 +47,10 @@ export const getOddContact = (
 
   let oddContact;
 
+  if (!conversation.contacts || conversation.contacts.length === 0) {
+    return undefined;
+  }
+
   for (const contact of conversation.contacts) {
     // Check against current user from auth store first, fallback to legacy store
     const currentUserId = authStore.currentUser?.id || store.user?.id;
