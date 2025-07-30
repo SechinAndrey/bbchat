@@ -10,10 +10,7 @@ import type {
   ApiMessageItem,
 } from "@src/api/types";
 import type { IConversation } from "@src/shared/types/types";
-import {
-  adaptApiCommunicationLeadToIConversation,
-  adaptApiCommunicationClientToIConversation,
-} from "@src/api/communication-adapters";
+import { adaptApiCommunicationToIConversation } from "@src/api/communication-adapters";
 import { usePusher } from "@src/shared/composables/usePusher";
 
 export const useConversationsStore = defineStore("conversations", () => {
@@ -119,22 +116,20 @@ export const useConversationsStore = defineStore("conversations", () => {
       // If loading first page or resetting, replace the data
       if (mergedParams.page === 1) {
         leads.value = response.leads.data.map(
-          adaptApiCommunicationLeadToIConversation,
+          adaptApiCommunicationToIConversation,
         );
         clients.value = response.clients.data.map(
-          adaptApiCommunicationClientToIConversation,
+          adaptApiCommunicationToIConversation,
         );
       } else {
         // Otherwise append to existing data for "load more" functionality
         leads.value = [
           ...leads.value,
-          ...response.leads.data.map(adaptApiCommunicationLeadToIConversation),
+          ...response.leads.data.map(adaptApiCommunicationToIConversation),
         ];
         clients.value = [
           ...clients.value,
-          ...response.clients.data.map(
-            adaptApiCommunicationClientToIConversation,
-          ),
+          ...response.clients.data.map(adaptApiCommunicationToIConversation),
         ];
       }
 
@@ -172,13 +167,13 @@ export const useConversationsStore = defineStore("conversations", () => {
       // If loading first page or resetting, replace the data
       if (mergedParams.page === 1) {
         leads.value = response.leads.data.map(
-          adaptApiCommunicationLeadToIConversation,
+          adaptApiCommunicationToIConversation,
         );
       } else {
         // Otherwise append to existing data for "load more" functionality
         leads.value = [
           ...leads.value,
-          ...response.leads.data.map(adaptApiCommunicationLeadToIConversation),
+          ...response.leads.data.map(adaptApiCommunicationToIConversation),
         ];
       }
 
@@ -215,15 +210,13 @@ export const useConversationsStore = defineStore("conversations", () => {
       // If loading first page or resetting, replace the data
       if (mergedParams.page === 1) {
         clients.value = response.clients.data.map(
-          adaptApiCommunicationClientToIConversation,
+          adaptApiCommunicationToIConversation,
         );
       } else {
         // Otherwise append to existing data for "load more" functionality
         clients.value = [
           ...clients.value,
-          ...response.clients.data.map(
-            adaptApiCommunicationClientToIConversation,
-          ),
+          ...response.clients.data.map(adaptApiCommunicationToIConversation),
         ];
       }
 

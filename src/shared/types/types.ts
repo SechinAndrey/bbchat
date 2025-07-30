@@ -1,4 +1,5 @@
 import { ApiMessageItem } from "@src/api/types";
+import { EntityType } from "@src/shared/types/common";
 
 export interface IUser {
   id: number;
@@ -67,8 +68,8 @@ export interface IMessage {
 export interface IConversation {
   id: number;
   type: string;
-  entityType: string;
-  name?: string;
+  name: string;
+  entity: EntityType;
   avatar?: string;
   admins?: number[];
   contacts: IContact[];

@@ -109,7 +109,7 @@ const endConversation = async () => {
         />
 
         <Button
-          class="contained-primary contained-text"
+          class="contained-primary contained-text whitespace-nowrap"
           size="small"
           :loading="isLoading"
           @click="endConversation"

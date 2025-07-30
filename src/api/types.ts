@@ -1,3 +1,5 @@
+import { EntityType } from "@src/shared/types/common";
+
 /**
  * API types based on real API responses
  */
@@ -290,6 +292,7 @@ export interface ApiCommunicationLead {
   id: number;
   user_id: number;
   name: string;
+  entity: EntityType;
   fio: string | null;
   avatar: string | null;
   contacts: ApiContact[];
@@ -311,6 +314,7 @@ export interface ApiCommunicationLead {
 export interface ApiCommunicationClient {
   id: number;
   user_id: number;
+  entity: EntityType;
   name: string;
   fio: string | null;
   u0437: string | null;
@@ -429,9 +433,9 @@ export interface ApiCommunicationLeadFull {
   id: number;
   user_id: number;
   type: string;
-  entityType: "leads" | "clients";
   avatar: string | null;
   name: string;
+  entity: EntityType;
   fio: string | null;
   email: string | null;
   phone: string | null;

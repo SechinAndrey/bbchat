@@ -51,7 +51,7 @@ const sizeClasses = computed(() => {
     :class="[avatarColor, sizeClasses]"
   >
     <flemeIcon
-      v-if="!avatar && conversation.entityType === 'lead'"
+      v-if="!avatar && conversation.entity === 'leads'"
       class="text-orange-500 dark:text-orange-400"
     />
     <span

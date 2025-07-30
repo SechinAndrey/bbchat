@@ -81,18 +81,16 @@ export function adaptApiCommunicationMessageToIMessage(
 }
 
 // Generic function to adapt API communication entities to IConversation
-function adaptApiCommunicationToIConversation(
+export function adaptApiCommunicationToIConversation(
   entity: ApiCommunicationLead | ApiCommunicationClient,
-  entityType: "lead" | "client",
 ): IConversation {
   const lastMessage = entity.messages?.at(-1);
-  // const lastContact = entity.contacts?.at(-1);
 
   return {
     id: entity.id,
     type: entity.type || "couple",
-    entityType,
-    name: entity.name || `${entityType}${entity.id}`,
+    entity: entity.entity,
+    name: entity.name || `${entity.entity}${entity.id}`,
     avatar: entity.avatar || "",
     admins: [],
     contacts: adaptApiContactsToIContacts(entity.contacts || []),
@@ -101,16 +99,4 @@ function adaptApiCommunicationToIConversation(
     draftMessage: "",
     communicationStatusId: entity.communication_status_id || 0,
   };
-}
-
-export function adaptApiCommunicationLeadToIConversation(
-  lead: ApiCommunicationLead,
-): IConversation {
-  return adaptApiCommunicationToIConversation(lead, "lead");
-}
-
-export function adaptApiCommunicationClientToIConversation(
-  client: ApiCommunicationClient,
-): IConversation {
-  return adaptApiCommunicationToIConversation(client, "client");
 }
