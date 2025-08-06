@@ -41,7 +41,7 @@ selectionsStore.fetchSelections(entity, id);
 </script>
 
 <template>
-  <div class="p-4">
+  <div class="p-4 h-[99%]">
     <ConfirmModal
       :open="showDeleteModal"
       title="Видалити підбірку?"
@@ -54,7 +54,7 @@ selectionsStore.fetchSelections(entity, id);
     <div v-if="selectionsStore.isLoading" class="flex justify-center pt-10">
       <Spinner />
     </div>
-    <div v-else>
+    <div v-else class="max-h-[96%] overflow-auto pb-6 scrollbar-thin pr-2">
       <div v-if="selectionsStore.selections.length > 0" class="space-y-3">
         <div
           v-for="selection in selectionsStore.selections"
