@@ -3,6 +3,8 @@ import { ref } from "vue";
 import Button from "@src/ui/inputs/Button.vue";
 import callService from "@src/shared/services/call-service";
 import { useFormattedText } from "@src/shared/composables/useFormattedText";
+import { ChevronDownIcon } from "@heroicons/vue/24/outline";
+import CollapseTransition from "@src/ui/transitions/CollapseTransition.vue";
 
 const props = defineProps<{
   callId: number;
@@ -10,8 +12,19 @@ const props = defineProps<{
 
 const isLoading = ref(false);
 const transcription = ref<string>("");
+const unfolded = ref(false);
 const formattedText = useFormattedText(transcription);
 const getTranscription = async () => {
+  if (unfolded.value) {
+    unfolded.value = false;
+    return;
+  }
+
+  if (transcription.value) {
+    unfolded.value = true;
+    return;
+  }
+
   try {
     isLoading.value = true;
     const res = await callService.getTranscription(props.callId);
@@ -21,22 +34,32 @@ const getTranscription = async () => {
     transcription.value = "Транскрипція недоступна";
   } finally {
     isLoading.value = false;
+    unfolded.value = true;
   }
 };
 </script>
 
 <template>
+  <!-- add transition fold/unfold -->
+  <CollapseTransition>
+    <div v-if="unfolded" class="w-full">
+      <hr class="w-full my-4" />
+      <div class="text-theme-t-alt text-[0.813rem]">Резюме розмови:</div>
+      <div class="text-[0.813rem]" v-html="formattedText"></div>
+    </div>
+  </CollapseTransition>
   <Button
-    v-if="!transcription"
-    class="btn-text-primary"
+    class="btn-text-primary text-sm leading-4 mt-3 m-2 px-3"
     size="small"
     :loading="isLoading"
     @click="getTranscription"
-    >Транскрипція</Button
   >
-  <div
-    v-if="transcription"
-    class="text-[0.813rem]"
-    v-html="formattedText"
-  ></div>
+    <ChevronDownIcon
+      :class="[
+        'w-5 h-5 inline-block mr-2 transition duration-150 ease-in-out',
+        { 'rotate-180': unfolded },
+      ]"
+    />
+    Транскрипція
+  </Button>
 </template>

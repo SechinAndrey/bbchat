@@ -10,7 +10,7 @@ import {
   PhoneIcon,
   PhoneArrowUpRightIcon,
   PhoneArrowDownLeftIcon,
-} from "@heroicons/vue/24/solid";
+} from "@heroicons/vue/24/outline";
 import { formatConversationDate, formatSeconds } from "@src/shared/utils/utils";
 import useConversationsStore from "@src/features/conversations/conversations-store";
 import CallTranscription from "@src/features/chat/components/ChatMiddle/Message/CallTranscription.vue";
@@ -32,8 +32,7 @@ function callTypeIcon(call: ApiCommunicationCallInfo) {
 </script>
 
 <template>
-  <div class="p-4 h-[99%]">
-    <h3 class="text-lg font-semibold mb-4">Дзвінки</h3>
+  <div class="pt-5 h-[99%]">
     <div class="space-y-3 max-h-[96%] overflow-auto pb-6 scrollbar-thin pr-2">
       <div v-for="call in activeConversationInfo?.calls || []" :key="call.id">
         <div class="flex gap-5">
@@ -54,11 +53,16 @@ function callTypeIcon(call: ApiCommunicationCallInfo) {
               <div class="text-theme-t-alt text-[0.813rem] min-w-[49%]">
                 Номер
               </div>
-              <div class="text-[0.813rem]">{{ call.phone }}</div>
+
+              <a
+                class="text-[0.813rem] text-primary"
+                :href="`tel:${call.phone}`"
+                >{{ call.phone }}</a
+              >
             </div>
             <div class="flex">
               <div class="text-theme-t-alt text-[0.813rem] min-w-[49%]">
-                Час очікування
+                Очікування
               </div>
               <div class="text-[0.813rem]">
                 {{ formatSeconds(call.waitsec) }}
@@ -66,7 +70,7 @@ function callTypeIcon(call: ApiCommunicationCallInfo) {
             </div>
             <div class="flex">
               <div class="text-theme-t-alt text-[0.813rem] min-w-[49%]">
-                Час розмови
+                Тривалість
               </div>
               <div class="text-[0.813rem]">
                 {{ formatSeconds(call.billsec) }}
@@ -84,12 +88,11 @@ function callTypeIcon(call: ApiCommunicationCallInfo) {
               <CallPlayer
                 v-if="call.binotel_id"
                 :binotel-id="call.binotel_id"
-                class="mt-2"
+                class="m-2"
               />
             </div>
-            <div class="flex">
-              <CallTranscription :call-id="call.id" />
-            </div>
+
+            <CallTranscription class="m-2" :call-id="call.id" />
           </div>
         </div>
       </div>

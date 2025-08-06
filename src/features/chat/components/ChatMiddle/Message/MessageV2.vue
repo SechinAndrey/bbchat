@@ -227,7 +227,7 @@ const formatDuration = (seconds: number) => {
               <CallPlayer
                 v-if="call.binotel_id"
                 :binotel-id="call.binotel_id"
-                class="mt-2"
+                class="m-2 mt-3"
               />
             </div>
           </Transition>

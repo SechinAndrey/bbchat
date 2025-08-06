@@ -24,7 +24,7 @@ async function getAudio() {
 </script>
 
 <template>
-  <div class="flex flex-col mb-4">
+  <div class="flex flex-col">
     <!-- <AudioPlayer v-if="callAudio" :src="callAudio" /> -->
     <audio
       v-if="callAudio"
@@ -34,7 +34,7 @@ async function getAudio() {
     ></audio>
     <Button
       v-else
-      class="contained-primary contained-text m-2"
+      class="contained-primary contained-text"
       size="small"
       :loading="isLoading"
       @click="getAudio"
