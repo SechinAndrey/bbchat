@@ -25,8 +25,7 @@ const openDeleteModal = (selectionId: number) => {
 
 const handleDeleteConfirm = () => {
   if (selectedSelectionId.value) {
-    // TODO: Add delete logic
-    console.log("Deleting selection:", selectedSelectionId.value);
+    selectionsStore.deleteSelection(selectedSelectionId.value);
   }
   showDeleteModal.value = false;
   selectedSelectionId.value = null;

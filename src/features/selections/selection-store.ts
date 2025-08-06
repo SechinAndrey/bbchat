@@ -42,6 +42,14 @@ export const useSelectionsStore = defineStore("selections", () => {
     }
   };
 
+  const deleteSelection = async (setId: number) => {
+    const url = `/selections/${setId}`;
+    await apiClient.delete(url);
+    selections.value = selections.value.filter(
+      (selection) => selection.id !== setId,
+    );
+  };
+
   const resetState = () => {
     selections.value = [];
     currentEntity.value = null;
@@ -55,6 +63,7 @@ export const useSelectionsStore = defineStore("selections", () => {
     error,
     currentEntity,
     fetchSelections,
+    deleteSelection,
     resetState,
   };
 });
