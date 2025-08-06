@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { inject } from "vue";
+import { inject, ref } from "vue";
 import { useSelectionsStore } from "@src/features/selections/selection-store";
 import { formatConversationDate } from "@src/shared/utils/utils";
-
+import ConfirmModal from "@src/ui/modals/ConfirmModal.vue";
 import type { EntityType } from "@src/shared/types/common";
 
 // components
@@ -14,11 +14,43 @@ const selectionsStore = useSelectionsStore();
 const entity = inject("entity") as EntityType;
 const id = inject("id") as number;
 
+// Modal state
+const showDeleteModal = ref(false);
+const selectedSelectionId = ref<number | null>(null);
+
+const openDeleteModal = (selectionId: number) => {
+  selectedSelectionId.value = selectionId;
+  showDeleteModal.value = true;
+};
+
+const handleDeleteConfirm = () => {
+  if (selectedSelectionId.value) {
+    // TODO: Add delete logic
+    console.log("Deleting selection:", selectedSelectionId.value);
+  }
+  showDeleteModal.value = false;
+  selectedSelectionId.value = null;
+};
+
+const handleDeleteCancel = () => {
+  showDeleteModal.value = false;
+  selectedSelectionId.value = null;
+};
+
 selectionsStore.fetchSelections(entity, id);
 </script>
 
 <template>
   <div class="p-4">
+    <ConfirmModal
+      :open="showDeleteModal"
+      title="Видалити підбірку?"
+      text="Ви впевнені, що хочете видалити цю підбірку? Цю дію неможливо скасувати."
+      confirm-text="Видалити"
+      cancel-text="Скасувати"
+      @confirm="handleDeleteConfirm"
+      @cancel="handleDeleteCancel"
+    />
     <div v-if="selectionsStore.isLoading" class="flex justify-center pt-10">
       <Spinner />
     </div>
@@ -31,6 +63,7 @@ selectionsStore.fetchSelections(entity, id);
         >
           <button
             class="absolute right-1 p-2 hover:bg-secondary rounded-[4px] text-secondary-active"
+            @click="openDeleteModal(selection.id)"
           >
             <TrashIcon class="h-5 w-5">Remove</TrashIcon>
           </button>

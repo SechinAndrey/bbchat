@@ -141,7 +141,7 @@
   }
 
   .contained-danger {
-    @apply bg-danger dark:bg-danger focus:ring focus:ring-danger-hover active:ring active:ring-danger-active;
+    @apply bg-danger-active dark:bg-danger-active focus:ring focus:ring-danger-hover active:ring active:ring-danger-active;
   }
 
   .outlined-primary {
