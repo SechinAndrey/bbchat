@@ -14,11 +14,20 @@
   --color-secondary-focus-light: #fdb49a;
   --color-secondary-active-light: #fc6b40;
 
+  --color-secondary-dark: #452c1f; /* darker brown-orange base */
+  --color-secondary-hover-dark: #6b4423; /* slightly lighter on hover */
+  --color-secondary-focus-dark: #6b4423; /* same as hover for consistency */
+  --color-secondary-active-dark: #fc6b40; /* more saturated for active state */
+
+  /* need darker shades for dark mode */
+
   --nav-bg-light: #3d445c;
   --nav-bg-dark: #3d445c;
 
   --color-neutral-light: #ffffff1a;
   --color-neutral-dark: #ffffff1a;
+
+  --text-primary-light: #3d445c;
 
   --bg-light: #ffffff;
   --bg-dark: #374151;

@@ -15,6 +15,7 @@ import { formatConversationDate, formatSeconds } from "@src/shared/utils/utils";
 import useConversationsStore from "@src/features/conversations/conversations-store";
 import CallTranscription from "@src/features/chat/components/ChatMiddle/Message/CallTranscription.vue";
 import CallPlayer from "@src/features/chat/components/ChatMiddle/Message/CallPlayer.vue";
+import EmptyState from "@src/ui/states/empty-states/EmptyState.vue";
 
 const conversationsStore = useConversationsStore();
 
@@ -33,6 +34,12 @@ function callTypeIcon(call: ApiCommunicationCallInfo) {
 
 <template>
   <div class="pt-5 h-[99%]">
+    <EmptyState
+      v-if="!activeConversationInfo?.calls.length"
+      :icon="PhoneIcon"
+      title="Дзвінків немає"
+      class="bg-theme-bg py-5 rounded"
+    />
     <div class="space-y-3 max-h-[96%] overflow-auto pb-6 scrollbar-thin pr-2">
       <div v-for="call in activeConversationInfo?.calls || []" :key="call.id">
         <div class="flex gap-5">

@@ -17,12 +17,12 @@ const handleTabChange = (tabKey: string) => {
 
 <template>
   <div
-    class="bg-theme-conversations h-full xs:w-full md:min-w-[18.75rem] md:w-[18.75rem] flex flex-col scrollbar-hidden px-5 py-6"
+    class="bg-theme-conversations h-full xs:w-full md:min-w-[18.75rem] md:w-[18.75rem] flex flex-col scrollbar-hidden px-5 py-6 text-color"
   >
     <AnimatedTabs
       :tabs="tabsConfig"
       default-tab="common"
-      content-class="max-h-full"
+      content-class="max-h-full h-full"
       @tab-change="handleTabChange"
     >
       <template #common>
