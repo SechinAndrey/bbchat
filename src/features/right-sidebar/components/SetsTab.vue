@@ -4,6 +4,7 @@ import { useSelectionsStore } from "@src/features/selections/selection-store";
 import { formatConversationDate } from "@src/shared/utils/utils";
 import ConfirmModal from "@src/ui/modals/ConfirmModal.vue";
 import type { EntityType } from "@src/shared/types/common";
+import type { ApiSelection } from "@src/api/types";
 
 // components
 import Spinner from "@src/ui/states/loading-states/Spinner.vue";
@@ -17,37 +18,38 @@ const id = inject("id") as number;
 
 // Modal state
 const showDeleteModal = ref(false);
-const selectedSelectionId = ref<number | null>(null);
+const selectedSelection = ref<ApiSelection | null>(null);
 
-const openDeleteModal = (selectionId: number) => {
-  selectedSelectionId.value = selectionId;
+const openDeleteModal = (selection: ApiSelection) => {
+  selectedSelection.value = selection;
   showDeleteModal.value = true;
 };
 
 const handleDeleteConfirm = () => {
-  if (selectedSelectionId.value) {
-    selectionsStore.deleteSelection(selectedSelectionId.value);
+  if (selectedSelection.value) {
+    selectionsStore.deleteSelection(selectedSelection.value.id);
   }
   showDeleteModal.value = false;
-  selectedSelectionId.value = null;
+  selectedSelection.value = null;
 };
 
 const handleDeleteCancel = () => {
   showDeleteModal.value = false;
-  selectedSelectionId.value = null;
+  selectedSelection.value = null;
 };
 
-selectionsStore.fetchSelections(entity, id);
-
 const isSelectionsModalOpen = ref(false);
-const openSelectionModal = (selectionId: number) => {
-  selectedSelectionId.value = selectionId;
+const openSelectionModal = (selection: ApiSelection) => {
+  selectedSelection.value = selection;
   isSelectionsModalOpen.value = true;
 };
 const closeSelectionModal = () => {
   isSelectionsModalOpen.value = false;
-  selectedSelectionId.value = null;
+  selectedSelection.value = null;
 };
+
+// Get selections
+selectionsStore.fetchSelections(entity, id);
 </script>
 
 <template>
@@ -64,7 +66,7 @@ const closeSelectionModal = () => {
         >
           <button
             class="absolute right-1 p-2 hover:bg-secondary rounded-[4px] text-secondary-active"
-            @click="openDeleteModal(selection.id)"
+            @click="openDeleteModal(selection)"
           >
             <TrashIcon class="h-5 w-5"></TrashIcon>
           </button>
@@ -72,7 +74,7 @@ const closeSelectionModal = () => {
             <div class="text-theme-t-alt text-[0.813rem] min-w-[49%]">ID</div>
             <button
               class="text-[0.813rem] underline"
-              @click="openSelectionModal(selection.id)"
+              @click="openSelectionModal(selection)"
             >
               {{ selection.id }}
             </button>
@@ -129,7 +131,7 @@ const closeSelectionModal = () => {
     />
     <SelectionsModal
       :open="isSelectionsModalOpen"
-      :selection-id="selectedSelectionId"
+      :selection="selectedSelection"
       @close="closeSelectionModal"
     />
   </div>

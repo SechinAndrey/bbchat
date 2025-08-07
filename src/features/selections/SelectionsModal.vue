@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { watch } from "vue";
 import Modal from "@src/ui/modals/Modal.vue";
 import { XMarkIcon } from "@heroicons/vue/24/outline";
+import type { ApiSelection } from "@src/api/types";
+import SelectionTable from "@src/features/selections/SelectionTable.vue";
 
 const props = defineProps<{
   open: boolean;
-  selectionId: number | null;
+  selection: ApiSelection | null;
 }>();
 
 const emit = defineEmits<{
@@ -15,15 +16,6 @@ const emit = defineEmits<{
 const close = () => {
   emit("close");
 };
-
-watch(
-  () => props.open,
-  (newVal) => {
-    if (newVal) {
-      // fetch selection boards
-    }
-  },
-);
 </script>
 
 <template>
@@ -36,7 +28,7 @@ watch(
         <div
           class="flex items-center justify-between p-4 border-b border-theme-border"
         >
-          <h2 class="text-2xl">ID {{ selectionId }}</h2>
+          <h2 class="text-2xl">ID {{ props.selection?.id }}</h2>
           <button
             class="text-theme-text hover:text-theme-text-hover"
             @click="close"
@@ -45,6 +37,11 @@ watch(
             <XMarkIcon class="h-6 w-6" />
           </button>
         </div>
+
+        <SelectionTable
+          v-if="props.selection?.boards_list"
+          :selection-items="props.selection?.boards_list"
+        />
       </div>
     </template>
   </Modal>
