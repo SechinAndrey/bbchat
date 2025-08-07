@@ -9,6 +9,7 @@ import SlideTransition from "@src/ui/transitions/SlideTransition.vue";
 const props = defineProps<{
   open: boolean;
   closeModal: () => void;
+  noPadding?: boolean;
 }>();
 
 const modal: Ref<HTMLElement | undefined> = ref();
@@ -79,10 +80,13 @@ watch(
         class="fixed inset-0 z-10 h-full overflow-y-auto"
       >
         <div
-          ref="modal"
-          @click="closeOnClick"
           id="close-modal"
-          class="h-full flex items-center justify-center p-4 text-center sm:items-center sm:p-0"
+          ref="modal"
+          :class="[
+            'h-full flex items-center justify-center text-center sm:items-center',
+            { 'p-4 sm:p-0': !props.noPadding },
+          ]"
+          @click="closeOnClick"
         >
           <!--content-->
           <slot name="content"></slot>

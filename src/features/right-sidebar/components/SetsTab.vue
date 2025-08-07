@@ -9,6 +9,7 @@ import type { EntityType } from "@src/shared/types/common";
 import Spinner from "@src/ui/states/loading-states/Spinner.vue";
 import EmptyState from "@src/ui/states/empty-states/EmptyState.vue";
 import { RectangleStackIcon, TrashIcon } from "@heroicons/vue/24/outline";
+import SelectionsModal from "@src/features/selections/SelectionsModal.vue";
 
 const selectionsStore = useSelectionsStore();
 const entity = inject("entity") as EntityType;
@@ -37,19 +38,20 @@ const handleDeleteCancel = () => {
 };
 
 selectionsStore.fetchSelections(entity, id);
+
+const isSelectionsModalOpen = ref(false);
+const openSelectionModal = (selectionId: number) => {
+  selectedSelectionId.value = selectionId;
+  isSelectionsModalOpen.value = true;
+};
+const closeSelectionModal = () => {
+  isSelectionsModalOpen.value = false;
+  selectedSelectionId.value = null;
+};
 </script>
 
 <template>
   <div class="p-4 h-[99%]">
-    <ConfirmModal
-      :open="showDeleteModal"
-      title="Видалити підбірку?"
-      text="Ви впевнені, що хочете видалити цю підбірку? Цю дію неможливо скасувати."
-      confirm-text="Видалити"
-      cancel-text="Скасувати"
-      @confirm="handleDeleteConfirm"
-      @cancel="handleDeleteCancel"
-    />
     <div v-if="selectionsStore.isLoading" class="flex justify-center pt-10">
       <Spinner />
     </div>
@@ -64,16 +66,19 @@ selectionsStore.fetchSelections(entity, id);
             class="absolute right-1 p-2 hover:bg-secondary rounded-[4px] text-secondary-active"
             @click="openDeleteModal(selection.id)"
           >
-            <TrashIcon class="h-5 w-5">Remove</TrashIcon>
+            <TrashIcon class="h-5 w-5"></TrashIcon>
           </button>
           <div class="flex">
             <div class="text-theme-t-alt text-[0.813rem] min-w-[49%]">ID</div>
-            <button class="text-[0.813rem] underline">
+            <button
+              class="text-[0.813rem] underline"
+              @click="openSelectionModal(selection.id)"
+            >
               {{ selection.id }}
             </button>
           </div>
           <div class="flex">
-            <div class="text-theme-t-alt text-[0.813rem] min-w-[49%]">Type</div>
+            <div class="text-theme-t-alt text-[0.813rem] min-w-[49%]">Тип</div>
             <div class="text-[0.813rem]">{{ selection.type.name }}</div>
           </div>
           <div class="flex">
@@ -112,5 +117,20 @@ selectionsStore.fetchSelections(entity, id);
         class="bg-theme-bg py-5 rounded"
       />
     </div>
+
+    <ConfirmModal
+      :open="showDeleteModal"
+      title="Видалити підбірку?"
+      text="Ви впевнені, що хочете видалити цю підбірку? Цю дію неможливо скасувати."
+      confirm-text="Видалити"
+      cancel-text="Скасувати"
+      @confirm="handleDeleteConfirm"
+      @cancel="handleDeleteCancel"
+    />
+    <SelectionsModal
+      :open="isSelectionsModalOpen"
+      :selection-id="selectedSelectionId"
+      @close="closeSelectionModal"
+    />
   </div>
 </template>
