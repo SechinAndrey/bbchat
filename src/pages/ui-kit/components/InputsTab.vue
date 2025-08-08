@@ -25,6 +25,7 @@ import {
 } from "@heroicons/vue/24/outline";
 
 const checkboxValue = ref(false);
+const checkboxArrayValue = ref([]);
 const switchValue = ref(false);
 const sliderValue = ref(50);
 const singleSelectValue = ref("");
@@ -226,6 +227,49 @@ const handleSliderChange = function (value: number) {
             />
             <span class="body-2 text-color">{{
               checkboxValue ? "Checked" : "Unchecked"
+            }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div class="p-4 border rounded dark:border-gray-600">
+          <h4 class="body-2 text-color mb-2">Checkbox Array (v-model)</h4>
+          <div class="space-y-2">
+            <div class="flex items-center">
+              <Checkbox
+                v-model="checkboxArrayValue"
+                value="option1"
+                class="mr-2"
+              />
+              <span class="body-2 text-color">Варіант 1</span>
+            </div>
+            <div class="flex items-center">
+              <Checkbox
+                v-model="checkboxArrayValue"
+                value="option2"
+                class="mr-2"
+              />
+              <span class="body-2 text-color">Варіант 2</span>
+            </div>
+            <div class="flex items-center">
+              <Checkbox
+                v-model="checkboxArrayValue"
+                value="option3"
+                class="mr-2"
+              />
+              <span class="body-2 text-color">Варіант 3</span>
+            </div>
+            <div class="body-2 text-color mt-2">
+              Обрано: {{ checkboxArrayValue.join(", ") || "Нічого" }}
+            </div>
+          </div>
+        </div>
+        <div class="p-4 border rounded dark:border-gray-600">
+          <h4 class="body-2 text-color mb-2">Checkbox with v-model</h4>
+          <div class="flex items-center">
+            <Checkbox v-model="checkboxValue" class="mr-2" />
+            <span class="body-2 text-color">{{
+              checkboxValue ? "Відмічено" : "Не відмічено"
             }}</span>
           </div>
         </div>

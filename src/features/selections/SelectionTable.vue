@@ -8,6 +8,15 @@ const props = defineProps<{
 }>();
 
 const allSelected = ref(false);
+const selectedBoardIds = ref<number[]>([]);
+
+const allSelectedChanged = () => {
+  if (allSelected.value) {
+    selectedBoardIds.value = props.selectionItems?.map((item) => item.id) || [];
+  } else {
+    selectedBoardIds.value = [];
+  }
+};
 </script>
 
 <template>
@@ -22,7 +31,10 @@ const allSelected = ref(false);
           <thead class="bg-theme-surface border-b border-theme-surface-variant">
             <tr>
               <th class="w-12 p-4">
-                <Checkbox v-model="allSelected" />
+                <Checkbox
+                  v-model="allSelected"
+                  @update:model-value="allSelectedChanged"
+                />
               </th>
               <th class="text-left p-4 text-sm font-medium text-text-primary">
                 ID
@@ -79,7 +91,7 @@ const allSelected = ref(false);
               class="border-b border-theme-surface-variant hover:bg-theme-surface transition-colors"
             >
               <td class="p-4">
-                <Checkbox v-model="allSelected" />
+                <Checkbox v-model="selectedBoardIds" :value="item.id" />
               </td>
               <td class="p-4 text-sm text-text-primary">{{ item.id }}</td>
               <td class="p-4 text-sm text-text-primary">

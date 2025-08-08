@@ -1,19 +1,45 @@
 <script setup lang="ts">
+import { computed } from "vue";
 import { CheckIcon } from "@heroicons/vue/24/outline";
 
-defineProps<{
-  modelValue: boolean;
-}>();
+const model = defineModel<boolean | unknown[]>();
+const props = defineProps<{ value?: unknown }>();
+
+const isChecked = computed(() => {
+  if (Array.isArray(model.value)) {
+    return props.value !== undefined && model.value.includes(props.value);
+  }
+  return !!model.value;
+});
+
+const handleChange = () => {
+  if (Array.isArray(model.value)) {
+    if (props.value === undefined) return;
+
+    const newValue = [...model.value];
+    const index = newValue.indexOf(props.value);
+
+    if (index > -1) newValue.splice(index, 1);
+    else newValue.push(props.value);
+
+    model.value = newValue;
+  } else {
+    model.value = !model.value;
+  }
+};
 </script>
 
 <template>
-  <div class="relative flex h-5 w-5 items-center justify-center">
+  <div
+    class="relative flex h-5 w-5 items-center justify-center cursor-pointer"
+    @click="handleChange"
+  >
     <div
       class="h-5 w-5 appearance-none rounded-[.3125rem] border border-primary outline-none transition-all duration-300"
-      :class="{ 'bg-primary': modelValue }"
+      :class="{ 'bg-primary': isChecked }"
     ></div>
     <CheckIcon
-      v-if="modelValue"
+      v-if="isChecked"
       class="pointer-events-none absolute h-4 w-4 text-white"
     />
   </div>
