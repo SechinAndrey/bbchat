@@ -7,7 +7,7 @@ import SetsTab from "./SetsTab.vue";
 const tabsConfig = [
   { key: "common", name: "Загальна інформація", compact: true },
   { key: "calls", name: "Дзвінки", compact: true },
-  { key: "sets", name: "Підбірки", compact: true },
+  { key: "sets", name: "Добірки", compact: true },
 ];
 
 const handleTabChange = (tabKey: string) => {
