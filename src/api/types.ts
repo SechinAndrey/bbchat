@@ -577,6 +577,8 @@ export interface ApiSelectionItem {
   printing_price: number | null;
   selectionTypeId: number;
   isWatched: boolean;
+  watchedFrom?: string;
+  watchedTo?: string;
 }
 
 export interface ApiSelection {

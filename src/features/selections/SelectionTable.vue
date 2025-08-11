@@ -3,6 +3,7 @@ import { ref } from "vue";
 import type { ApiSelectionItem } from "@src/api/types";
 import Checkbox from "@src/ui/inputs/Checkbox.vue";
 import { LightBulbIcon, PhotoIcon } from "@heroicons/vue/24/outline";
+import { formatDate } from "@src/shared/utils/utils";
 
 const props = defineProps<{
   selectionItems: ApiSelectionItem[] | null;
@@ -17,6 +18,23 @@ const allSelectedChanged = () => {
   } else {
     selectedBoardIds.value = [];
   }
+};
+
+const dateWithTime = (date?: string): string => {
+  if (!date) return "";
+  return formatDate(date, {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+};
+
+const watchedDate = (date?: string): string => {
+  if (!date) return "";
+  const [year, month] = date.split("-");
+  return `${month}.${year}`;
 };
 </script>
 
@@ -173,7 +191,7 @@ const allSelectedChanged = () => {
                 </span>
               </td>
               <td class="py-[0.625rem] px-3 text-text-primary">
-                {{ item.updated_at }}
+                {{ dateWithTime(item.updated_at) }}
               </td>
               <td class="py-[0.625rem] px-3">
                 <button
@@ -205,12 +223,13 @@ const allSelectedChanged = () => {
                 {{ item.printing_price }} ₴
               </td>
               <td class="pl-3 py-[0.625rem] pr-[1.25rem] text-right">
-                <div
-                  v-if="item.isWatched"
-                  class="bg-secondary px-4 py-2 rounded"
-                >
-                  <span class="text-secondary-active">
-                    Площина під наглядом
+                <div v-if="item.isWatched" class="px-4 py-2 whitespace-nowrap">
+                  <span>
+                    {{ watchedDate(item.watchedFrom) }}
+                  </span>
+                  -
+                  <span>
+                    {{ watchedDate(item.watchedTo) }}
                   </span>
                 </div>
                 <div v-else class="bg-secondary px-4 py-2 rounded-sm">
