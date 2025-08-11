@@ -4,6 +4,7 @@ import type { ApiSelectionItem } from "@src/api/types";
 import Checkbox from "@src/ui/inputs/Checkbox.vue";
 import { LightBulbIcon, PhotoIcon } from "@heroicons/vue/24/outline";
 import { formatDate } from "@src/shared/utils/utils";
+import SimpleMediaModal from "@src/ui/data-display/SimpleMediaModal.vue";
 
 const props = defineProps<{
   selectionItems: ApiSelectionItem[] | null;
@@ -36,10 +37,41 @@ const watchedDate = (date?: string): string => {
   const [year, month] = date.split("-");
   return `${month}.${year}`;
 };
+
+const itemForGallery = ref<ApiSelectionItem | null>(null);
+const isImagesModalOpen = ref(false);
+
+const openImagesModal = (item: ApiSelectionItem) => {
+  itemForGallery.value = item;
+  isImagesModalOpen.value = true;
+};
+
+const closeImagesModal = () => {
+  isImagesModalOpen.value = false;
+  itemForGallery.value = null;
+};
+
+const imgs = (): string[] => {
+  const imgs = [];
+  if (itemForGallery.value?.image)
+    imgs.push(
+      import.meta.env.VITE_MEDIA_URL + "/" + itemForGallery.value.image,
+    );
+  if (itemForGallery.value?.scheme)
+    imgs.push(
+      import.meta.env.VITE_MEDIA_URL + "/" + itemForGallery.value.scheme,
+    );
+  return imgs;
+};
 </script>
 
 <template>
   <div class="selection-table h-[100vh] overflow-hidden text-[0.813rem]">
+    <SimpleMediaModal
+      :open="isImagesModalOpen"
+      :image-urls="imgs()"
+      @close="closeImagesModal"
+    />
     <!-- PC table with horizontal scroll -->
     <div
       class="h-[calc(100%-57px)] overflow-auto scrollbar-thin hidden md:block"
@@ -197,6 +229,7 @@ const watchedDate = (date?: string): string => {
                 <button
                   v-if="item.image"
                   class="w-8 h-8 ic-btn ic-btn-ghost-gray flex items-center justify-center"
+                  @click="openImagesModal(item)"
                 >
                   <PhotoIcon class="w-6 h-6 text-text-primary" />
                 </button>
