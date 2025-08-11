@@ -89,6 +89,11 @@
   --bg-surface-variant-light: #f3f4f6; /* gray-100 */
   --bg-surface-variant-dark: #374151; /* gray-700 */
 
+  --bg-table-light: #f9fafb; /* gray-50 */
+  --bg-table-dark: #111827; /* gray-900 */
+  --bg-table-hover-light: #f3f4f6; /* gray-100 */
+  --bg-table-hover-dark: #16202f; /* gray-700 */
+
   --bg-conversations-light: #f2f5fb; /* Светло-серый фон для списка разговоров */
   --bg-conversations-dark: #2d3748; /* Темный аналог для темной темы */
 
@@ -158,6 +163,9 @@
   --scrollbar-track: var(--scrollbar-track-light);
   --scrollbar-thumb: var(--scrollbar-thumb-light);
   --scrollbar-thumb-hover: var(--scrollbar-thumb-hover-light);
+
+  --bg-table: var(--bg-table-light);
+  --bg-table-hover: var(--bg-table-hover-light);
 }
 
 .dark {
@@ -207,6 +215,9 @@
   --scrollbar-track: var(--scrollbar-track-dark);
   --scrollbar-thumb: var(--scrollbar-thumb-dark);
   --scrollbar-thumb-hover: var(--scrollbar-thumb-hover-dark);
+
+  --bg-table: var(--bg-table-dark);
+  --bg-table-hover: var(--bg-table-hover-dark);
 }
 
 /* Toasts */

@@ -62,6 +62,10 @@ module.exports = {
           conversations: "var(--bg-conversations)",
           message: "var(--bg-message)",
           nav: "var(--nav-bg)",
+          table: {
+            bg: "var(--bg-table)",
+            hover: "var(--bg-table-hover)",
+          },
         },
         text: {
           primary: "var(--text-primary)",

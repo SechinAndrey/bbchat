@@ -2,6 +2,7 @@
 import { ref } from "vue";
 import type { ApiSelectionItem } from "@src/api/types";
 import Checkbox from "@src/ui/inputs/Checkbox.vue";
+import { LightBulbIcon, PhotoIcon } from "@heroicons/vue/24/outline";
 
 const props = defineProps<{
   selectionItems: ApiSelectionItem[] | null;
@@ -20,7 +21,7 @@ const allSelectedChanged = () => {
 </script>
 
 <template>
-  <div class="h-[100vh] overflow-hidden">
+  <div class="selection-table h-[100vh] overflow-hidden text-[0.813rem]">
     <!-- PC table with horizontal scroll -->
     <div
       class="h-[calc(100%-57px)] overflow-auto scrollbar-thin hidden md:block"
@@ -28,57 +29,90 @@ const allSelectedChanged = () => {
       <div class="overflow-x-auto bg-theme-bg rounded-lg shadow-shadow">
         <table class="w-full min-w-[1200px]">
           <!-- Table Header -->
-          <thead class="bg-theme-surface border-b border-theme-surface-variant">
+          <thead
+            class="bg-theme-table-bg border-b border-theme-surface-variant"
+          >
             <tr>
-              <th class="w-12 p-4">
+              <th class="w-[1%] pl-[1.25rem] py-[0.625rem] pr-3">
                 <Checkbox
                   v-model="allSelected"
+                  size="[1.25rem]"
                   @update:model-value="allSelectedChanged"
                 />
               </th>
-              <th class="text-left p-4 text-sm font-medium text-text-primary">
+              <th
+                class="w-[1%] py-[0.625rem] px-3 text-left font-medium text-text-primary"
+              >
                 ID
               </th>
-              <th class="text-left p-4 text-sm font-medium text-text-primary">
+              <th
+                class="w-[3.52%] py-[0.625rem] px-3 text-left font-medium text-text-primary"
+              >
                 Місто
               </th>
-              <th class="text-left p-4 text-sm font-medium text-text-primary">
+              <th
+                class="w-[8.52%] py-[0.625rem] px-3 text-left font-medium text-text-primary"
+              >
                 Фірма Код
               </th>
-              <th class="text-left p-4 text-sm font-medium text-text-primary">
+              <th
+                class="w-[8.52%] py-[0.625rem] px-3 text-left font-medium text-text-primary"
+              >
                 Тип
               </th>
-              <th class="text-left p-4 text-sm font-medium text-text-primary">
+              <th
+                class="w-[13.52%] py-[0.625rem] px-3 text-left font-medium text-text-primary"
+              >
                 Адреса
               </th>
-              <th class="text-left p-4 text-sm font-medium text-text-primary">
+              <th
+                class="w-[1%] py-[0.625rem] px-3 text-left font-medium text-text-primary"
+              >
                 Сторона
               </th>
-              <th class="text-left p-4 text-sm font-medium text-text-primary">
+              <th
+                class="w-[1%] py-[0.625rem] px-3 text-left font-medium text-text-primary"
+              >
                 Підсвітка
               </th>
-              <th class="text-left p-4 text-sm font-medium text-text-primary">
+              <th
+                class="w-[8.52%] py-[0.625rem] px-3 text-left font-medium text-text-primary"
+              >
                 Дата оновлення
               </th>
-              <th class="text-left p-4 text-sm font-medium text-text-primary">
+              <th
+                class="w-[1%] py-[0.625rem] px-3 text-left font-medium text-text-primary"
+              >
                 Фото
               </th>
-              <th class="text-left p-4 text-sm font-medium text-text-primary">
+              <th
+                class="w-[8.52%] py-[0.625rem] px-3 text-left font-medium text-text-primary"
+              >
                 Зайнятість
               </th>
-              <th class="text-left p-4 text-sm font-medium text-text-primary">
+              <th
+                class="w-[8.52%] py-[0.625rem] px-3 text-left font-medium text-text-primary"
+              >
                 Ціна системі
               </th>
-              <th class="text-left p-4 text-sm font-medium text-text-primary">
+              <th
+                class="w-[8.52%] py-[0.625rem] px-3 text-left font-medium text-text-primary"
+              >
                 Ціна купівлі (без ПДВ)
               </th>
-              <th class="text-left p-4 text-sm font-medium text-text-primary">
+              <th
+                class="w-[8.52%] py-[0.625rem] px-3 text-left font-medium text-text-primary"
+              >
                 Ціна продажу (без ПДВ)
               </th>
-              <th class="text-left p-4 text-sm font-medium text-text-primary">
+              <th
+                class="w-[8.52%] py-[0.625rem] px-3 text-left font-medium text-text-primary"
+              >
                 Ціна друку
               </th>
-              <th class="text-left p-4 text-sm font-medium text-text-primary">
+              <th
+                class="w-[8.52%] pl-3 py-[0.625rem] pr-[1.25rem] text-left font-medium text-text-primary"
+              >
                 Сповіщення
               </th>
             </tr>
@@ -88,22 +122,32 @@ const allSelectedChanged = () => {
             <tr
               v-for="item in props.selectionItems"
               :key="item.id"
-              class="border-b border-theme-surface-variant hover:bg-theme-surface transition-colors"
+              class="border-b border-theme-surface-variant bg-theme-table-bg hover:bg-theme-table-hover transition-colors"
             >
-              <td class="p-4">
-                <Checkbox v-model="selectedBoardIds" :value="item.id" />
+              <td class="pl-[1.25rem] py-[0.625rem] pr-3">
+                <Checkbox
+                  v-model="selectedBoardIds"
+                  :value="item.id"
+                  size="[1.25rem]"
+                />
               </td>
-              <td class="p-4 text-sm text-text-primary">{{ item.id }}</td>
-              <td class="p-4 text-sm text-text-primary">
+              <td class="py-[0.625rem] px-3 text-text-primary">
+                {{ item.id }}
+              </td>
+              <td class="py-[0.625rem] px-3 text-text-primary">
                 {{ item.city_name }}
               </td>
-              <td class="p-4 text-sm text-text-primary">
+              <td class="py-[0.625rem] px-3 text-text-primary">
                 <div>{{ item.firm_name }}</div>
                 <div class="text-xs text-text-secondary">{{ item.code }}</div>
               </td>
-              <td class="p-4 text-sm text-text-primary">{{ item.type }}</td>
-              <td class="p-4 text-sm text-text-primary">{{ item.addr }}</td>
-              <td class="p-4 text-sm text-text-primary">
+              <td class="py-[0.625rem] px-3 text-text-primary">
+                {{ item.title }}
+              </td>
+              <td class="py-[0.625rem] px-3 text-text-primary">
+                {{ item.addr }}
+              </td>
+              <td class="py-[0.625rem] px-3 text-text-primary text-center">
                 <span
                   class="inline-flex items-center justify-center w-6 h-6 rounded-full text-xs font-medium"
                   :class="
@@ -115,26 +159,32 @@ const allSelectedChanged = () => {
                   {{ item.side_type }}
                 </span>
               </td>
-              <td class="p-4 text-sm text-text-primary">
+              <td class="py-[0.625rem] px-3 text-text-primary text-center">
                 <span
                   class="inline-flex items-center justify-center w-6 h-6 rounded-full text-xs font-medium"
                 >
-                  {{ item.light ? "🔆" : "—" }}
+                  <LightBulbIcon
+                    :class="
+                      item.light
+                        ? 'text-green-500'
+                        : 'text-gray-300 dark:text-gray-700'
+                    "
+                  />
                 </span>
               </td>
-              <td class="p-4 text-sm text-text-primary">
+              <td class="py-[0.625rem] px-3 text-text-primary">
                 {{ item.updated_at }}
               </td>
-              <td class="p-4">
+              <td class="py-[0.625rem] px-3">
                 <button
                   v-if="item.image"
-                  class="w-8 h-8 bg-theme-surface rounded border border-neutral hover:bg-theme-surface-variant transition-colors"
+                  class="w-8 h-8 ic-btn ic-btn-ghost-gray flex items-center justify-center"
                 >
-                  📷
+                  <PhotoIcon class="w-6 h-6 text-text-primary" />
                 </button>
                 <span v-else class="text-text-secondary">—</span>
               </td>
-              <td class="p-4">
+              <td class="py-[0.625rem] px-3">
                 <div class="w-16 h-2 bg-neutral rounded-full overflow-hidden">
                   <div
                     class="h-full bg-success rounded-full"
@@ -142,23 +192,32 @@ const allSelectedChanged = () => {
                   ></div>
                 </div>
               </td>
-              <td class="p-4 text-sm text-text-primary">{{ item.price }} ₴</td>
-              <td class="p-4 text-sm text-text-primary">
+              <td class="py-[0.625rem] px-3 text-text-primary">
+                {{ item.price }} ₴
+              </td>
+              <td class="py-[0.625rem] px-3 text-text-primary">
                 {{ item.buying_price }} ₴
               </td>
-              <td class="p-4 text-sm text-text-primary">
+              <td class="py-[0.625rem] px-3 text-text-primary">
                 {{ item.selling_price }} ₴
               </td>
-              <td class="p-4 text-sm text-text-primary">
+              <td class="py-[0.625rem] px-3 text-text-primary">
                 {{ item.printing_price }} ₴
               </td>
-              <td class="p-4 text-right">
-                <span v-if="item.isWatched" class="text-sky-400 text-sm">
-                  Площина під наглядом
-                </span>
-                <span v-else class="text-danger text-sm ml-2">
-                  Площина не під наглядом
-                </span>
+              <td class="pl-3 py-[0.625rem] pr-[1.25rem] text-right">
+                <div
+                  v-if="item.isWatched"
+                  class="bg-secondary px-4 py-2 rounded"
+                >
+                  <span class="text-secondary-active">
+                    Площина під наглядом
+                  </span>
+                </div>
+                <div v-else class="bg-secondary px-4 py-2 rounded-sm">
+                  <span class="text-secondary-active">
+                    Площина не під наглядом
+                  </span>
+                </div>
               </td>
             </tr>
           </tbody>
@@ -273,3 +332,14 @@ const allSelectedChanged = () => {
     </div>
   </div>
 </template>
+
+<style>
+.selection-table th,
+.selection-table td {
+  text-align: left;
+}
+
+.selection-table td.text-center {
+  text-align: center;
+}
+</style>

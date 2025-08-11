@@ -26,7 +26,7 @@ const close = () => {
       >
         <!-- modal header -->
         <div
-          class="flex items-center justify-between p-4 border-b border-theme-border"
+          class="flex items-center justify-between p-[1.25rem] border-b border-theme-border dark:border-theme-surface-variant"
         >
           <h2 class="text-2xl">ID {{ props.selection?.id }}</h2>
           <button
