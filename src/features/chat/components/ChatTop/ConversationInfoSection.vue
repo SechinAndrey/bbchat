@@ -111,7 +111,7 @@ const endConversation = async () => {
 
         <Button
           class="whitespace-nowrap"
-          size="small"
+          size="sm"
           :loading="isLoading"
           @click="endConversation"
         >

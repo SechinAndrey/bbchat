@@ -59,102 +59,165 @@ const handleSliderChange = function (value: number) {
     <!-- Buttons -->
     <section class="mb-10">
       <h3 class="mb-4">Buttons (Button)</h3>
+      
+      <!-- Primary, Secondary variants -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div class="p-4 border rounded dark:border-gray-600">
           <h4 class="mb-2">Primary Button</h4>
-          <Button class="">Primary Button</Button>
+          <Button variant="primary">Основна кнопка</Button>
         </div>
         <div class="p-4 border rounded dark:border-gray-600">
-          <h4 class="mb-2">Success Button</h4>
-          <Button class="">Success Button</Button>
+          <h4 class="mb-2">Secondary Button</h4>
+          <Button variant="secondary">Вторинна кнопка</Button>
         </div>
         <div class="p-4 border rounded dark:border-gray-600">
-          <h4 class="mb-2">Danger Button</h4>
-          <Button class="">Warning</Button>
+          <h4 class="mb-2">Loading Button</h4>
+          <Button variant="primary" loading>Завантаження</Button>
         </div>
       </div>
+      
+      <!-- Outline variants -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div class="p-4 border rounded dark:border-gray-600">
-          <h4 class="mb-2">Outlined Button (Primary)</h4>
-          <Button class="">Outlined Button</Button>
+          <h4 class="mb-2">Outline Primary</h4>
+          <Button variant="outline">Контурна кнопка</Button>
         </div>
         <div class="p-4 border rounded dark:border-gray-600">
-          <h4 class="mb-2">Outlined Button (Success)</h4>
-          <Button class="">Outlined Button</Button>
+          <h4 class="mb-2">Ghost Button</h4>
+          <Button variant="ghost">Примарна кнопка</Button>
         </div>
         <div class="p-4 border rounded dark:border-gray-600">
-          <h4 class="mb-2">Outlined Button (Danger)</h4>
-          <Button class="">Outlined Button</Button>
+          <h4 class="mb-2">Text Button</h4>
+          <Button variant="text">Текстова кнопка</Button>
         </div>
       </div>
+      
+      <!-- Sizes -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div class="p-4 border rounded dark:border-gray-600">
+          <h4 class="mb-2">Small Button</h4>
+          <Button size="sm">Мала кнопка</Button>
+        </div>
+        <div class="p-4 border rounded dark:border-gray-600">
+          <h4 class="mb-2">Medium Button</h4>
+          <Button size="md">Середня кнопка</Button>
+        </div>
+        <div class="p-4 border rounded dark:border-gray-600">
+          <h4 class="mb-2">Large Button</h4>
+          <Button size="lg">Велика кнопка</Button>
+        </div>
+      </div>
+      
+      <!-- States -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div class="p-4 border rounded dark:border-gray-600">
+          <h4 class="mb-2">Disabled Button</h4>
+          <Button disabled>Відключена кнопка</Button>
+        </div>
+        <div class="p-4 border rounded dark:border-gray-600">
+          <h4 class="mb-2">Block Button</h4>
+          <Button block>Блокова кнопка</Button>
+        </div>
+        <div class="p-4 border rounded dark:border-gray-600">
+          <h4 class="mb-2">Link Button</h4>
+          <Button link to="/ui-kit">Кнопка-посилання</Button>
+        </div>
+      </div>
+      
+      <!-- With Icons -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div class="p-4 border rounded dark:border-gray-600">
-          <h4 class="mb-2">Ghost Button (Primary)</h4>
-          <Button class="">Ghost Button</Button>
+          <h4 class="mb-2">Button with Icon</h4>
+          <Button variant="primary">
+            <template #icon>
+              <PaperAirplaneIcon class="w-5 h-5" />
+            </template>
+            Надіслати
+          </Button>
         </div>
         <div class="p-4 border rounded dark:border-gray-600">
-          <h4 class="mb-2">Ghost Button (Success)</h4>
-          <Button class="">Ghost Button</Button>
+          <h4 class="mb-2">Icon Only Button</h4>
+          <Button variant="outline" icon-only>
+            <template #icon>
+              <Cog6ToothIcon class="w-5 h-5" />
+            </template>
+          </Button>
         </div>
         <div class="p-4 border rounded dark:border-gray-600">
-          <h4 class="mb-2">Ghost Button (Danger)</h4>
-          <Button class="">Ghost Button</Button>
+          <h4 class="mb-2">Ghost Icon Button</h4>
+          <Button variant="ghost" icon-only>
+            <template #icon>
+              <TrashIcon class="w-5 h-5" />
+            </template>
+          </Button>
         </div>
       </div>
     </section>
 
-    <!-- Icon Buttons -->
+    <!-- Icon Buttons (deprecated, replaced with Button icon-only) -->
     <section class="mb-10">
-      <h3 class="mb-4">Icon Buttons (IconButton)</h3>
+      <h3 class="mb-4">Icon Buttons (using Button component)</h3>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div class="p-4 border rounded dark:border-gray-600">
           <h4 class="mb-2">Primary Icon Button</h4>
           <div class="flex justify-center">
-            <IconButton class="p-2">
-              <PaperAirplaneIcon class="w-5 h-5" />
-            </IconButton>
+            <Button variant="primary" icon-only size="md">
+              <template #icon>
+                <PaperAirplaneIcon class="w-5 h-5" />
+              </template>
+            </Button>
           </div>
         </div>
         <div class="p-4 border rounded dark:border-gray-600">
-          <h4 class="mb-2">Success Icon Button</h4>
+          <h4 class="mb-2">Secondary Icon Button</h4>
           <div class="flex justify-center">
-            <IconButton class="p-2">
-              <UserPlusIcon class="w-5 h-5" />
-            </IconButton>
+            <Button variant="secondary" icon-only size="md">
+              <template #icon>
+                <UserPlusIcon class="w-5 h-5" />
+              </template>
+            </Button>
           </div>
         </div>
         <div class="p-4 border rounded dark:border-gray-600">
-          <h4 class="mb-2">Danger Icon Button</h4>
+          <h4 class="mb-2">Outline Icon Button</h4>
           <div class="flex justify-center">
-            <IconButton class="p-2">
-              <TrashIcon class="w-5 h-5" />
-            </IconButton>
+            <Button variant="outline" icon-only size="md">
+              <template #icon>
+                <TrashIcon class="w-5 h-5" />
+              </template>
+            </Button>
           </div>
         </div>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div class="p-4 border rounded dark:border-gray-600">
-          <h4 class="mb-2">Ghost Icon Button (Primary)</h4>
+          <h4 class="mb-2">Ghost Icon Button</h4>
           <div class="flex justify-center">
-            <IconButton class="p-2">
-              <MagnifyingGlassIcon class="w-5 h-5" />
-            </IconButton>
+            <Button variant="ghost" icon-only size="md">
+              <template #icon>
+                <MagnifyingGlassIcon class="w-5 h-5" />
+              </template>
+            </Button>
           </div>
         </div>
         <div class="p-4 border rounded dark:border-gray-600">
-          <h4 class="mb-2">Gray Icon Button</h4>
+          <h4 class="mb-2">Small Icon Button</h4>
           <div class="flex justify-center">
-            <IconButton class="p-2">
-              <Cog6ToothIcon class="w-5 h-5" />
-            </IconButton>
+            <Button variant="primary" icon-only size="sm">
+              <template #icon>
+                <Cog6ToothIcon class="w-4 h-4" />
+              </template>
+            </Button>
           </div>
         </div>
         <div class="p-4 border rounded dark:border-gray-600">
-          <h4 class="mb-2">Ghost Icon Button (Danger)</h4>
+          <h4 class="mb-2">Large Icon Button</h4>
           <div class="flex justify-center">
-            <IconButton class="p-2">
-              <XMarkIcon class="w-5 h-5" />
-            </IconButton>
+            <Button variant="ghost" icon-only size="lg">
+              <template #icon>
+                <XMarkIcon class="w-6 h-6" />
+              </template>
+            </Button>
           </div>
         </div>
       </div>

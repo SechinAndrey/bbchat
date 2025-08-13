@@ -1,35 +1,133 @@
 <script setup lang="ts">
+import { computed } from "vue";
 import { RouterLink } from "vue-router";
+
+// Button configuration
+const BUTTON_SIZES = {
+  sm: {
+    padding: "px-4 py-[0.625rem]",
+    text: "text-[0.813rem]",
+    lineHeight: "leading-[0.9rem]",
+    icon: "w-4 h-4",
+    gap: "gap-2",
+    height: "h-[32px]",
+  },
+  md: {
+    padding: "px-5 py-3",
+    text: "text-[0.875rem]",
+    lineHeight: "leading-[1.125rem]",
+    icon: "w-5 h-5",
+    gap: "gap-2",
+    height: "h-[36px]",
+  },
+  lg: {
+    padding: "px-6 py-4",
+    text: "text-lg",
+    lineHeight: "leading-[1.5rem]",
+    icon: "w-6 h-6",
+    gap: "gap-3",
+    height: "h-[44px]",
+  },
+} as const;
+
+const BUTTON_VARIANTS = {
+  primary: "btn-primary",
+  secondary: "btn-secondary",
+  outline: "btn-outline",
+  ghost: "btn-ghost",
+  text: "btn-text",
+} as const;
+
+type ButtonSize = keyof typeof BUTTON_SIZES;
+type ButtonVariant = keyof typeof BUTTON_VARIANTS;
 
 const props = withDefaults(
   defineProps<{
     loading?: boolean;
+    disabled?: boolean;
     link?: boolean;
-    text?: boolean;
-    size?: "small" | "medium";
+    to?: string;
+    size?: ButtonSize;
+    variant?: ButtonVariant;
+    iconOnly?: boolean;
+    block?: boolean;
+    loadingText?: string;
   }>(),
   {
     loading: false,
+    disabled: false,
     link: false,
-    size: "medium",
+    size: "md",
+    variant: "primary",
+    iconOnly: false,
+    block: false,
+    loadingText: "Завантаження...",
   },
 );
 
-defineEmits(["button-clicked"]);
+defineEmits<{
+  click: [event: MouseEvent];
+}>();
+
+// Computed classes
+const buttonClasses = computed(() => {
+  const sizeConfig = BUTTON_SIZES[props.size] || BUTTON_SIZES.md;
+  const variantClass =
+    BUTTON_VARIANTS[props.variant] || BUTTON_VARIANTS.primary;
+
+  return [
+    "btn",
+    variantClass,
+    sizeConfig.text,
+    sizeConfig.height,
+    sizeConfig.lineHeight,
+    props.iconOnly ? "btn-icon" : sizeConfig.padding,
+    {
+      "btn-loading": props.loading,
+      "btn-disabled": props.disabled,
+      "btn-block": props.block,
+      [sizeConfig.gap]: !props.iconOnly,
+    },
+  ];
+});
+
+const iconClasses = computed(() => {
+  const sizeConfig = BUTTON_SIZES[props.size] || BUTTON_SIZES.md;
+  return [sizeConfig.icon, { "animate-spin": props.loading }];
+});
+
+const componentType = computed(() => {
+  if (props.link) {
+    return props.to ? RouterLink : "a";
+  }
+  return "button";
+});
+
+const componentProps = computed(() => {
+  if (props.link && props.to) {
+    return { to: props.to };
+  }
+  if (props.link) {
+    return { href: "#" };
+  }
+  return {
+    type: "button",
+    disabled: props.disabled || props.loading,
+  };
+});
 </script>
 
 <template>
   <component
-    :is="link ? RouterLink : 'button'"
-    tabindex="0"
-    :class="['group btn', props.size === 'small' ? 'py-3' : 'py-4']"
-    @click="$emit('button-clicked')"
+    :is="componentType"
+    v-bind="componentProps"
+    :class="buttonClasses"
+    @click="$emit('click', $event)"
   >
-    <!--loading icon-->
+    <!-- Loading icon -->
     <svg
-      v-if="props.loading"
-      :class="{ 'animate-spin': props.loading }"
-      class="-ml-1 mr-3 h-5 w-5"
+      v-if="loading"
+      :class="iconClasses"
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       viewBox="0 0 24 24"
@@ -41,20 +139,129 @@ defineEmits(["button-clicked"]);
         r="10"
         stroke="currentColor"
         stroke-width="4"
-      ></circle>
+      />
       <path
         class="opacity-75"
         fill="currentColor"
         d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 01412H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-      ></path>
+      />
     </svg>
 
-    <!--loading text-->
-    <template v-if="props.loading"> Завантаження... </template>
+    <!-- Icon slot for icon-only buttons or buttons with icons -->
+    <slot v-if="!loading" name="icon" :class="iconClasses" />
 
-    <!--text-->
-    <template v-else>
-      <slot></slot>
+    <!-- Content -->
+    <template v-if="!loading && !iconOnly">
+      <slot>Кнопка</slot>
     </template>
+
+    <!-- Loading text for screen readers -->
+    <span v-if="loading"> {{ loadingText }} </span>
   </component>
 </template>
+
+<style scoped>
+/* Base button styles */
+.btn {
+  @apply inline-flex items-center justify-center font-medium 
+         transition-all duration-200 ease-in-out cursor-pointer
+         focus:outline-none focus:ring-2 focus:ring-offset-2
+         disabled:cursor-not-allowed;
+  border-radius: var(--btn-border-radius);
+}
+
+/* Button variants */
+.btn-primary {
+  background-color: var(--color-btn-primary-bg);
+  color: var(--color-btn-primary-text);
+  --tw-ring-color: var(--color-btn-primary-focus);
+}
+
+.btn-primary:hover:not(.btn-disabled):not(.btn-loading) {
+  background-color: var(--color-btn-primary-bg-hover);
+}
+
+.btn-primary:active:not(.btn-disabled):not(.btn-loading) {
+  background-color: var(--color-btn-primary-bg-active);
+}
+
+.btn-secondary {
+  background-color: var(--color-btn-secondary-bg);
+  color: var(--color-btn-secondary-text);
+  --tw-ring-color: var(--color-btn-secondary-focus);
+}
+
+.btn-secondary:hover:not(.btn-disabled):not(.btn-loading) {
+  background-color: var(--color-btn-secondary-bg-hover);
+}
+
+.btn-secondary:active:not(.btn-disabled):not(.btn-loading) {
+  background-color: var(--color-btn-secondary-bg-active);
+}
+
+.btn-outline {
+  background-color: var(--color-btn-outline-bg);
+  color: var(--color-btn-outline-text);
+  border: 1px solid var(--color-btn-outline-border);
+  --tw-ring-color: var(--color-btn-outline-focus);
+}
+
+.btn-outline:hover:not(.btn-disabled):not(.btn-loading) {
+  background-color: var(--color-btn-outline-bg-hover);
+}
+
+.btn-outline:active:not(.btn-disabled):not(.btn-loading) {
+  background-color: var(--color-btn-outline-bg-active);
+}
+
+.btn-ghost {
+  background-color: var(--color-btn-ghost-bg);
+  color: var(--color-btn-ghost-text);
+  --tw-ring-color: var(--color-btn-ghost-focus);
+}
+
+.btn-ghost:hover:not(.btn-disabled):not(.btn-loading) {
+  background-color: var(--color-btn-ghost-bg-hover);
+}
+
+.btn-ghost:active:not(.btn-disabled):not(.btn-loading) {
+  background-color: var(--color-btn-ghost-bg-active);
+}
+
+.btn-text {
+  background-color: var(--color-btn-text-bg);
+  color: var(--color-btn-text-text);
+  --tw-ring-color: var(--color-btn-text-focus);
+  @apply underline-offset-4;
+}
+
+.btn-text:hover:not(.btn-disabled):not(.btn-loading) {
+  background-color: var(--color-btn-text-bg-hover);
+  @apply underline;
+}
+
+.btn-text:active:not(.btn-disabled):not(.btn-loading) {
+  background-color: var(--color-btn-text-bg-active);
+}
+
+/* Button states */
+.btn-disabled {
+  background-color: var(--color-btn-disabled-bg) !important;
+  color: var(--color-btn-disabled-text) !important;
+  border-color: var(--color-btn-disabled-bg) !important;
+  @apply opacity-60;
+}
+
+.btn-loading {
+  @apply opacity-80;
+}
+
+/* Button modifiers */
+.btn-icon {
+  @apply aspect-square p-2;
+}
+
+.btn-block {
+  @apply w-full;
+}
+</style>

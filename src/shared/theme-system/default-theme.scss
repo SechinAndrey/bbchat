@@ -40,6 +40,43 @@ html.theme-default {
   /* COMPONENTS colors */
   /*********************/
 
+  // Buttons
+  --color-btn-primary-bg: #8e99f3;
+  --color-btn-primary-bg-hover: #7a86f0;
+  --color-btn-primary-bg-active: #6b78ed;
+  --color-btn-primary-text: #ffffff;
+  --color-btn-primary-focus: rgba(142, 153, 243, 0.5);
+
+  --color-btn-secondary-bg: #fc6b40;
+  --color-btn-secondary-bg-hover: #fb5a2d;
+  --color-btn-secondary-bg-active: #fa4a1a;
+  --color-btn-secondary-text: #ffffff;
+  --color-btn-secondary-focus: rgba(252, 107, 64, 0.5);
+
+  --color-btn-outline-bg: transparent;
+  --color-btn-outline-bg-hover: rgba(142, 153, 243, 0.1);
+  --color-btn-outline-bg-active: rgba(142, 153, 243, 0.2);
+  --color-btn-outline-border: #8e99f3;
+  --color-btn-outline-text: #8e99f3;
+  --color-btn-outline-focus: rgba(142, 153, 243, 0.5);
+
+  --color-btn-ghost-bg: transparent;
+  --color-btn-ghost-bg-hover: rgba(142, 153, 243, 0.1);
+  --color-btn-ghost-bg-active: rgba(142, 153, 243, 0.2);
+  --color-btn-ghost-text: #8e99f3;
+  --color-btn-ghost-focus: rgba(142, 153, 243, 0.5);
+
+  --color-btn-text-bg: transparent;
+  --color-btn-text-bg-hover: rgba(142, 153, 243, 0.1);
+  --color-btn-text-bg-active: rgba(142, 153, 243, 0.2);
+  --color-btn-text-text: #8e99f3;
+  --color-btn-text-focus: rgba(142, 153, 243, 0.5);
+
+  --color-btn-disabled-bg: #e8ebf1;
+  --color-btn-disabled-text: #8b8f9d;
+
+  --btn-border-radius: 0.5rem;
+
   // Sidebar
   --color-sidebar-bg: #3d445c;
   --color-sidebar-divider: rgba(255, 255, 255, 0.1);
