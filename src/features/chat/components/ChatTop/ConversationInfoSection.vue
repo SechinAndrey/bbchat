@@ -104,8 +104,7 @@ const endConversation = async () => {
       <div class="relative flex items-center gap-4">
         <SearchInput
           v-model="conversationsStore.messagesFilters.search"
-          input-class="bg-theme-conversations"
-          size="small"
+          variant="filled"
           @update:model-value="debouncedFn"
         />
 

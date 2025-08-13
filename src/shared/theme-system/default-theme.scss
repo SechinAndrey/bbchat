@@ -95,9 +95,12 @@ html.theme-default {
   --color-message-border: transparent;
 
   // Inputs
-  --color-input-bg: #f6f7f9;
-  --color-input-border: #cdd4d9;
-  --color-input-placeholder: rgba(0, 0, 0, 0.5);
+  --color-input-bg: #ffffff;
+  --color-input-bg-alt: #f6f7f9;
+  --color-input-border: #e7e7e7;
+  --color-input-text: var(--color-text-primary);
+  --color-input-placeholder: #8b8f9d;
+  --color-input-focus: rgba(142, 153, 243, 0.5);
 
   --color-checkbox-bg: transparent;
   --color-checkbox-border: #cdd4d9;
@@ -123,5 +126,9 @@ html.theme-default[data-theme="dark"] {
   --color-message-border: transparent;
 
   // Inputs
-  --color-input-bg: #2d3747;
+  --color-input-bg: #1f2936;
+  --color-input-bg-alt: #2d3747;
+  --color-input-border: #4b5563;
+  --color-input-text: var(--color-text-primary);
+  --color-input-placeholder: #cbd5e1;
 }

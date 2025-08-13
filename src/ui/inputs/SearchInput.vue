@@ -1,53 +1,77 @@
 <script setup lang="ts">
-import { MagnifyingGlassIcon, XCircleIcon } from "@heroicons/vue/24/outline";
-import IconButton from "@src/ui/inputs/IconButton.vue";
-import LabeledTextInput from "@src/ui/inputs/LabeledTextInput.vue";
 import { computed } from "vue";
+import { MagnifyingGlassIcon, XCircleIcon } from "@heroicons/vue/24/outline";
+import TextInput from "@src/ui/inputs/TextInput.vue";
+import Button from "@src/ui/inputs/Button.vue";
 
 const model = defineModel<string>();
 
+// Inherit props from TextInput for consistency
+type TextInputProps = InstanceType<typeof TextInput>["$props"];
+
 const props = defineProps<{
-  variant?: string;
-  class?: string;
-  inputClass?: string;
-  size?: "small" | "medium";
+  size?: TextInputProps["size"];
+  variant?: TextInputProps["variant"];
+  placeholder?: string;
+  disabled?: boolean;
 }>();
 
-const iconClasses = computed(() => {
-  const baseClasses =
-    "w-5 h-5 mx-[8px] text-gray-400 dark:text-white dark:opacity-70";
-  const translateY =
-    props.size === "small" ? "translate-y-[50%]" : "translate-y-[75%]";
-  return `${baseClasses} ${translateY}`;
+const closeIconBtnSizeList = {
+  sm: "w-5 h-5",
+  md: "w-6 h-6",
+  lg: "w-7 h-7",
+};
+
+const closeIconBtnSize = computed(() => {
+  if (props.size) {
+    return closeIconBtnSizeList[props.size];
+  }
+  return closeIconBtnSizeList.md;
 });
 
-const clearButtonClasses = computed(() => {
-  const baseClasses = " p-2";
-  const margin = props.size === "small" ? "m-[.25rem]" : "m-[.5rem]";
-  return `${baseClasses} ${margin}`;
+const closeIconHeightList = {
+  sm: "h-5",
+  md: "h-6",
+  lg: "h-7",
+};
+
+const closeIconHeight = computed(() => {
+  if (props.size) {
+    return closeIconHeightList[props.size];
+  }
+  return closeIconHeightList.md;
 });
 </script>
 
 <template>
-  <LabeledTextInput
+  <TextInput
     v-model="model"
-    placeholder="Пошук.."
-    :input-class="['px-7', props.inputClass].join(' ')"
-    :size="props.size || 'medium'"
+    :placeholder="placeholder || 'Пошук...'"
+    :size="size"
+    :variant="variant"
+    :disabled="disabled"
   >
-    <template #startAdornment>
-      <MagnifyingGlassIcon :class="iconClasses" />
+    <template #iconLeft="slotProps">
+      <MagnifyingGlassIcon
+        :class="[slotProps.class, 'text-app-text-secondary']"
+      />
     </template>
-    <template #endAdornment>
-      <IconButton
+    <template #iconRight>
+      <Button
         v-if="model"
-        title="clear text"
-        aria-label="clear text"
-        :class="clearButtonClasses"
+        variant="ghost"
+        size="sm"
+        icon-only
+        :ring="false"
+        class="!p-1"
+        :class="[closeIconHeight]"
+        aria-label="Очистити пошук"
         @click="model = ''"
       >
-        <XCircleIcon class="w-5 h-5" />
-      </IconButton>
+        <template #icon="slotProps">
+          <XCircleIcon :class="[slotProps.class, closeIconBtnSize]" />
+        </template>
+      </Button>
     </template>
-  </LabeledTextInput>
+  </TextInput>
 </template>

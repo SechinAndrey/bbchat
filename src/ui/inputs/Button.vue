@@ -10,7 +10,7 @@ const BUTTON_SIZES = {
     lineHeight: "leading-[0.9rem]",
     icon: "w-4 h-4",
     gap: "gap-2",
-    height: "h-[32px]",
+    height: "h-[2rem]",
   },
   md: {
     padding: "px-5 py-3",
@@ -18,7 +18,7 @@ const BUTTON_SIZES = {
     lineHeight: "leading-[1.125rem]",
     icon: "w-5 h-5",
     gap: "gap-2",
-    height: "h-[36px]",
+    height: "h-[2.25rem]",
   },
   lg: {
     padding: "px-6 py-4",
@@ -26,7 +26,7 @@ const BUTTON_SIZES = {
     lineHeight: "leading-[1.5rem]",
     icon: "w-6 h-6",
     gap: "gap-3",
-    height: "h-[44px]",
+    height: "h-[2.75rem]",
   },
 } as const;
 
@@ -58,7 +58,7 @@ const props = withDefaults(
     loading: false,
     disabled: false,
     link: false,
-    size: "md",
+    size: "sm",
     variant: "primary",
     iconOnly: false,
     block: false,
