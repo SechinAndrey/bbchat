@@ -162,21 +162,19 @@ const lastMessageText = computed(() => {
           <!--conversation name-->
           <div class="flex items-start">
             <div class="grow mb-2 text-start">
-              <p class="heading-2 text-color">
+              <p class="">
                 {{ getName(props.conversation) }}
               </p>
             </div>
 
             <!--last message date-->
-            <p
-              class="body-1 text-neutral-active whitespace-nowrap text-[0.5625rem]"
-            >
+            <p class="whitespace-nowrap text-[0.5625rem]">
               {{ lastMessageDate }}
             </p>
           </div>
         </div>
 
-        <div class="text-[0.5625rem] text-left text-color">
+        <div class="text-[0.5625rem] text-left">
           {{ props.conversation.contacts?.at(0)?.firstName }}
         </div>
 
@@ -188,7 +186,7 @@ const lastMessageText = computed(() => {
                 props.conversation.draftMessage &&
                 props.conversation.id !== getActiveConversationId()
               "
-              class="body-2 flex justify-start items-center text-danger"
+              class=" flex justify-start items-center text-danger"
             >
               draft: {{ shorten(props.conversation.draftMessage) }}
             </p> -->
@@ -200,7 +198,7 @@ const lastMessageText = computed(() => {
                 lastMessage.type === 'recording' &&
                 lastMessage.content
               "
-              class="body-2 text-color flex justify-start items-center"
+              class="  flex justify-start items-center"
             >
               <MicrophoneIcon
                 class="w-4 h-4 mr-2 text-black opacity-60 dark:text-white dark:opacity-70"
@@ -215,7 +213,7 @@ const lastMessageText = computed(() => {
             <!--attachments title-->
             <!-- <p
               v-else-if="lastMessage && hasAttachments(lastMessage)"
-              class="body-2 text-color flex justify-start items-center"
+              class="  flex justify-start items-center"
               :class="{ 'text-primary': props.conversation.unread }"
             >
               <span :class="{ 'text-primary': props.conversation.unread }">
@@ -226,7 +224,7 @@ const lastMessageText = computed(() => {
             <!--last message content -->
             <!-- <p
               v-else-if="lastMessage"
-              class="body-2 text-color flex justify-start items-center"
+              class="  flex justify-start items-center"
               :class="{ 'text-primary': props.conversation.unread }"
             >
               <span :class="{ 'text-primary': props.conversation.unread }">
@@ -236,7 +234,7 @@ const lastMessageText = computed(() => {
 
             <p
               v-if="lastMessageText"
-              class="body-2 text-color flex justify-start items-center"
+              class="flex justify-start items-center"
               :class="{ 'text-primary': props.conversation.unread }"
             >
               <span :class="{ 'text-primary': props.conversation.unread }">
@@ -249,7 +247,7 @@ const lastMessageText = computed(() => {
             <div
               class="w-[1.125rem] h-[1.125rem] flex justify-center items-center rounded-[50%] bg-primary"
             >
-              <p class="body-1 text-white">
+              <p class="text-white">
                 {{ props.conversation.unread }}
               </p>
             </div>
@@ -271,7 +269,7 @@ const lastMessageText = computed(() => {
       :position="['top-0']"
     >
       <button
-        class="dropdown-link dropdown-link-primary"
+        class=""
         aria-label="Show conversation information"
         role="menuitem"
         @click="handleCloseContextMenu"
@@ -281,7 +279,7 @@ const lastMessageText = computed(() => {
       </button>
 
       <button
-        class="dropdown-link dropdown-link-primary"
+        class=""
         aria-label="Add conversation to archive"
         role="menuitem"
         @click="handleCloseContextMenu"
@@ -291,7 +289,7 @@ const lastMessageText = computed(() => {
       </button>
 
       <button
-        class="dropdown-link dropdown-link-danger"
+        class=""
         aria-label="Delete the conversation"
         role="menuitem"
         @click="handleCloseContextMenu"

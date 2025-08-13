@@ -2,7 +2,7 @@
 import { ref } from "vue";
 
 import useStore from "@src/shared/store/store";
-import { useTheme } from "@src/shared/components/theme/useTheme";
+import useTheme from "@src/shared/theme-system/useTheme";
 
 import {
   Cog6ToothIcon,
@@ -29,7 +29,12 @@ const handleActiveSidebarComponentChange = (value: string) => {
 
 <template>
   <div
-    class="xs:w-full md:w-[3.75rem] md:h-full md:py-7 xs:py-5 px-4 flex xs:flex-row md:flex-col items-center transition-all duration-500 bg-theme-nav z-10"
+    :class="[
+      'px-4 flex items-center bg-[var(--color-sidebar-bg)]',
+      'md:w-[3.75rem] md:h-full md:py-7 md:flex-col z-10',
+      'xs:w-full xs:py-5 xs:flex-row',
+      'transition-all duration-500',
+    ]"
   >
     <!--logo-->
     <logoIcon class="xs:hidden md:block mb-6" />
@@ -38,15 +43,14 @@ const handleActiveSidebarComponentChange = (value: string) => {
     <div class="grow w-full">
       <!--separator-->
       <hr
-        class="xs:hidden w-full md:block mb-6 border-neutral dark:border-neutral"
+        class="border-[var(--color-sidebar-divider)] xs:hidden w-full md:block mb-6"
       />
 
-      <nav aria-label="Main navigation">
+      <nav aria-label="Основна навігація">
         <ul class="xs:flex md:block xs:justify-between xs:items-center">
           <li class="md:mb-4">
             <NavItem
               :active="store.activeSidebarComponent === 'messages'"
-              text-color="text-white"
               @click="() => handleActiveSidebarComponentChange('messages')"
             >
               <ChatBubbleLeftRightIcon />
@@ -55,7 +59,6 @@ const handleActiveSidebarComponentChange = (value: string) => {
           <li class="md:mb-4">
             <NavItem
               :active="store.activeSidebarComponent === 'contacts'"
-              text-color="text-white"
               @click="() => handleActiveSidebarComponentChange('contacts')"
             >
               <UsersIcon />
@@ -66,7 +69,7 @@ const handleActiveSidebarComponentChange = (value: string) => {
           <li class="xs:inline md:hidden">
             <NavLink
               :icon="Cog6ToothIcon"
-              title="Settings"
+              title="Налаштування"
               :active="store.activeSidebarComponent === 'settings'"
               @click="() => handleActiveSidebarComponentChange('settings')"
             />
@@ -89,14 +92,14 @@ const handleActiveSidebarComponentChange = (value: string) => {
 
     <!--secondary navigation-->
     <div class="md:w-full">
-      <nav aria-label="Extra navigation" class="xs:hidden md:block">
+      <nav aria-label="Додаткова навігація" class="xs:hidden md:block">
         <ul>
           <!--toggle dark mode button-->
           <li>
             <NavLink
               class="flex justify-center"
-              :icon="isDarkMode?.value ? SunIcon : MoonIcon"
-              title="Night mode"
+              :icon="isDarkMode ? SunIcon : MoonIcon"
+              title="Нічний режим"
               @click="toggleDarkMode"
             />
           </li>
@@ -105,7 +108,7 @@ const handleActiveSidebarComponentChange = (value: string) => {
             <NavLink
               class="flex justify-center"
               :icon="Cog6ToothIcon"
-              title="Settings"
+              title="Налаштування"
               :active="store.activeSidebarComponent === 'settings'"
               @click="() => handleActiveSidebarComponentChange('settings')"
             />
@@ -114,7 +117,9 @@ const handleActiveSidebarComponentChange = (value: string) => {
       </nav>
 
       <!--separator-->
-      <hr class="xs:hidden md:block mb-6 border-neutral dark:border-neutral" />
+      <hr
+        class="border-[var(--color-sidebar-divider)] xs:hidden md:block mb-6"
+      />
 
       <!--user avatar MOBILE-->
       <AccountDropdown
@@ -128,3 +133,13 @@ const handleActiveSidebarComponentChange = (value: string) => {
     </div>
   </div>
 </template>
+
+<style>
+.app-sidebar {
+  background-color: var(--color-sidebar-bg);
+}
+
+.app-sidebar hr {
+  border-color: var(--color-sidebar-divider);
+}
+</style>

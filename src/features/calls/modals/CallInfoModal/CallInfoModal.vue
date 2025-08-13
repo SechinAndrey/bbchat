@@ -57,9 +57,7 @@ const handleChangeActiveTab = (event: {
 
         <!--Call again button-->
         <div class="px-5">
-          <Button class="contained-success contained-text w-full">
-            Call again
-          </Button>
+          <Button class="w-full"> Call again </Button>
         </div>
       </div>
     </template>

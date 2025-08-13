@@ -17,9 +17,7 @@ const props = defineProps<{
   <div>
     <!--modal header-->
     <div class="px-5 flex justify-between items-center">
-      <p id="modal-title" class="heading-1 text-color" tabindex="0">
-        Call Members
-      </p>
+      <p id="modal-title" class="" tabindex="0">Call Members</p>
 
       <!--return button-->
       <IconButton
@@ -29,7 +27,7 @@ const props = defineProps<{
             animationName: 'slide-right',
           })
         "
-        class="p-2 ic-btn-outlined-danger"
+        class="p-2"
       >
         <ArrowUturnLeftIcon class="w-5 h-5" />
       </IconButton>

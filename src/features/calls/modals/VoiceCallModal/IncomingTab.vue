@@ -29,11 +29,11 @@ const props = defineProps<{
         />
       </div>
 
-      <p class="heading-2 text-color mb-4" tabindex="0">
+      <p class="mb-4" tabindex="0">
         {{ getCallName(activeCall) }}
       </p>
 
-      <p class="body-3 outline-none text-success" tabindex="0">
+      <p class="outline-none text-success" tabindex="0">
         {{ activeCall.direction }}
       </p>
     </div>
@@ -42,7 +42,7 @@ const props = defineProps<{
     <div class="flex">
       <IconButton
         @click="handleCallStatusChange('ongoing')"
-        class="ic-btn-contained-success relative p-[1.0625rem] mr-8"
+        class="relative p-[1.0625rem] mr-8"
       >
         <PhoneIcon class="w-[1rem] h-[1rem]" />
         <span
@@ -57,7 +57,7 @@ const props = defineProps<{
             props.closeModal();
           }
         "
-        class="ic-btn-contained-danger relative p-[1.0625rem]"
+        class="relative p-[1.0625rem]"
       >
         <XMarkIcon class="w-[1rem] h-[1rem]" />
         <span

@@ -28,11 +28,9 @@ const confirmPassword = ref("");
 
     <!--controls-->
     <div class="mb-5">
-      <Button class="contained-primary contained-text w-full mb-4"
-        >Sign up</Button
-      >
+      <Button class="w-full mb-4">Sign up</Button>
       <Button
-        class="outlined-primary outlined-text w-full"
+        class="w-full"
         @click="
           $emit('active-section-change', {
             sectionName: 'personal-section',

@@ -14,42 +14,42 @@ import Spinner from "@src/ui/states/loading-states/Spinner.vue";
 
 <template>
   <div>
-    <h2 class="heading-1 text-color mb-6">States</h2>
+    <h2 class="mb-6">States</h2>
 
     <!-- Empty states -->
     <section class="mb-10">
-      <h3 class="heading-2 text-color mb-4">Empty States</h3>
+      <h3 class="mb-4">Empty States</h3>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         <div class="p-4 border rounded dark:border-gray-600">
-          <h4 class="body-2 text-color mb-2">No Conversations</h4>
+          <h4 class="mb-2">No Conversations</h4>
           <NoConversation />
         </div>
         <div class="p-4 border rounded dark:border-gray-600">
-          <h4 class="body-2 text-color mb-2">No Messages</h4>
+          <h4 class="mb-2">No Messages</h4>
           <NoMessage />
         </div>
         <div class="p-4 border rounded dark:border-gray-600">
-          <h4 class="body-2 text-color mb-2">No Chat Selected</h4>
+          <h4 class="mb-2">No Chat Selected</h4>
           <NoChatSelected />
         </div>
         <div class="p-4 border rounded dark:border-gray-600">
-          <h4 class="body-2 text-color mb-2">No Contacts</h4>
+          <h4 class="mb-2">No Contacts</h4>
           <NoContacts />
         </div>
         <div class="p-4 border rounded dark:border-gray-600">
-          <h4 class="body-2 text-color mb-2">No Calls</h4>
+          <h4 class="mb-2">No Calls</h4>
           <NoCalls />
         </div>
         <div class="p-4 border rounded dark:border-gray-600">
-          <h4 class="body-2 text-color mb-2">No Media</h4>
+          <h4 class="mb-2">No Media</h4>
           <NoMedia />
         </div>
         <div class="p-4 border rounded dark:border-gray-600">
-          <h4 class="body-2 text-color mb-2">No Notifications</h4>
+          <h4 class="mb-2">No Notifications</h4>
           <NoNotifications />
         </div>
         <div class="p-4 border rounded dark:border-gray-600">
-          <h4 class="body-2 text-color mb-2">No Archive</h4>
+          <h4 class="mb-2">No Archive</h4>
           <NoArchive />
         </div>
       </div>
@@ -57,20 +57,20 @@ import Spinner from "@src/ui/states/loading-states/Spinner.vue";
 
     <!-- Loading states -->
     <section class="mb-10">
-      <h3 class="heading-2 text-color mb-4">Loading States</h3>
+      <h3 class="mb-4">Loading States</h3>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div class="p-4 border rounded dark:border-gray-600">
-          <h4 class="body-2 text-color mb-2">Circle with 2 Lines</h4>
+          <h4 class="mb-2">Circle with 2 Lines</h4>
           <div class="flex justify-center">
             <Circle2Lines />
           </div>
         </div>
         <div class="p-4 border rounded dark:border-gray-600">
-          <h4 class="body-2 text-color mb-2">Multiple Lines</h4>
+          <h4 class="mb-2">Multiple Lines</h4>
           <MultipleLines />
         </div>
         <div class="p-4 border rounded dark:border-gray-600">
-          <h4 class="body-2 text-color mb-2">Spinner</h4>
+          <h4 class="mb-2">Spinner</h4>
           <div class="flex justify-center">
             <Spinner />
           </div>

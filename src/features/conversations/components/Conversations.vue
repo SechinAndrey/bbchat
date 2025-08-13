@@ -225,7 +225,7 @@ const handleNewLeadSubmit = async (leadData: CreateLeadRequest) => {
 
           <div title="Додати ліда">
             <IconButton
-              class="ic-btn-ghost-primary w-7 h-7"
+              class="w-7 h-7"
               aria-label="add new lead"
               title="add new lead"
               @click="newLeadModalOpen = true"

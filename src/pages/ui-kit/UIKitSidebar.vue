@@ -47,12 +47,12 @@ const toggleMobileMenu = function () {
         @click="toggleMobileMenu"
         class="flex items-center justify-between cursor-pointer"
       >
-        <h2 class="body-1 text-color font-medium">
+        <h2 class="font-medium">
           {{ navigationItems.find((item) => item.id === activeTab)?.name }}
         </h2>
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          class="h-5 w-5 text-color transform transition-transform"
+          class="h-5 w-5 transform transition-transform"
           :class="{ 'rotate-180': mobileMenuOpen }"
           viewBox="0 0 20 20"
           fill="currentColor"
@@ -75,7 +75,7 @@ const toggleMobileMenu = function () {
               handleTabChange(item.id);
               toggleMobileMenu();
             "
-            class="block px-4 py-2 text-sm text-color hover:bg-gray-100 dark:hover:bg-gray-600"
+            class="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600"
             :class="{
               'bg-primary-hover/10 dark:bg-primary-hover/30':
                 activeTab === item.id,
@@ -93,7 +93,7 @@ const toggleMobileMenu = function () {
     <!-- pc -->
     <div class="hidden md:block h-full">
       <nav class="flex flex-col space-y-1 sticky top-8">
-        <h2 class="text-xl font-bold text-color mb-4">UI Kit</h2>
+        <h2 class="text-xl font-bold mb-4">UI Kit</h2>
         <template v-for="item in navigationItems" :key="item.id">
           <button
             @click="handleTabChange(item.id)"
@@ -101,7 +101,7 @@ const toggleMobileMenu = function () {
             :class="
               activeTab === item.id
                 ? 'bg-primary-hover/10 text-primary dark:bg-primary-hover/30 dark:text-primary'
-                : 'text-color hover:bg-gray-100 dark:hover:bg-gray-700'
+                : ' hover:bg-gray-100 dark:hover:bg-gray-700'
             "
           >
             <div class="flex items-center">

@@ -20,8 +20,8 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits(["click"]);
 
 const itemClasses = computed(() => [
-  "dropdown-link",
-  props.danger ? "dropdown-link-danger" : "dropdown-link-primary",
+  "",
+  props.danger ? "" : "",
   {
     "opacity-50 cursor-not-allowed": props.disabled,
     "bg-gray-100 dark:bg-gray-600": props.active,

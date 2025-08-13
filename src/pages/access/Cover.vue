@@ -19,7 +19,7 @@ import blurPath from "@src/shared/assets/images/blur.png";
           Blazingly fast messaging platform for the
           <span class="text-gradient">web.</span>
         </p>
-        <p class="body-3 text-white">
+        <p class="text-white">
           Avian saves all the data in user’s devices and uses a cryptographic
           protocols to sync the data across multiple browsers and devices.
         </p>

@@ -99,7 +99,7 @@ onUnmounted(() => {
     </div>
 
     <p
-      class="body-1 text-black dark:text-white opacity-40 dark:opacity-70"
+      class="text-black dark:text-white opacity-40 dark:opacity-70"
       tabindex="0"
       aria-label="11 seconds"
     >

@@ -39,18 +39,18 @@ provide("activeConversation", {
 
 <template>
   <div>
-    <h2 class="heading-1 text-color mb-6">Display Elements</h2>
+    <h2 class="mb-6">Display Elements</h2>
 
     <!-- Accordion -->
     <section class="mb-10">
-      <h3 class="heading-2 text-color mb-4">Accordion</h3>
+      <h3 class="mb-4">Accordion</h3>
       <div class="p-4 border rounded dark:border-gray-600">
         <AccordionButton
           :collapsed="accordionCollapsed"
           chevron
           @click="toggleAccordion"
         >
-          <span class="body-2 text-color"
+          <span class=""
             >Click to {{ accordionCollapsed ? "expand" : "collapse" }}</span
           >
         </AccordionButton>
@@ -58,8 +58,8 @@ provide("activeConversation", {
           v-if="!accordionCollapsed"
           class="mt-4 p-4 bg-gray-50 dark:bg-gray-700 rounded"
         >
-          <p class="body-2 text-color">Accordion content</p>
-          <p class="body-3 text-color mt-2">
+          <p class="">Accordion content</p>
+          <p class="mt-2">
             This is hidden content that can be revealed by clicking the
             accordion header.
           </p>
@@ -69,7 +69,7 @@ provide("activeConversation", {
 
     <!-- VideoPlayer -->
     <section class="mb-10">
-      <h3 class="heading-2 text-color mb-4">Video Player</h3>
+      <h3 class="mb-4">Video Player</h3>
       <div class="p-4 border rounded dark:border-gray-600">
         <div class="flex justify-center">
           <VideoPlayer
@@ -80,10 +80,8 @@ provide("activeConversation", {
           />
         </div>
         <div class="mt-4 p-4 bg-gray-50 dark:bg-gray-700 rounded">
-          <p class="body-2 text-color">
-            Custom video player with playback controls
-          </p>
-          <p class="body-3 text-color mt-2">
+          <p class="">Custom video player with playback controls</p>
+          <p class="mt-2">
             Features include play/pause, volume control, progress bar, and
             fullscreen toggle
           </p>
@@ -93,7 +91,7 @@ provide("activeConversation", {
 
     <!-- Tabs -->
     <section class="mb-10">
-      <h3 class="heading-2 text-color mb-4">Tabs</h3>
+      <h3 class="mb-4">Tabs</h3>
       <div class="p-4 border rounded dark:border-gray-600">
         <div class="mb-4">
           <Tabs>
@@ -103,7 +101,7 @@ provide("activeConversation", {
           </Tabs>
         </div>
         <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded">
-          <p class="body-2 text-color">Active tab content</p>
+          <p class="">Active tab content</p>
         </div>
       </div>
     </section>

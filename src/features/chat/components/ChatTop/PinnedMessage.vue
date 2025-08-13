@@ -70,7 +70,7 @@ const handleRemovePinnedMessage = () => {
           title="hide pinned message"
           aria-label="hide pinned message"
           @click="handleHidePinnedMessage"
-          class="ic-btn-ghost-primary w-7 h-7"
+          class="w-7 h-7"
           :class="{
             'mr-3':
               store.user && activeConversation?.admins?.includes(store.user.id),
@@ -85,7 +85,7 @@ const handleRemovePinnedMessage = () => {
             store.user && activeConversation?.admins?.includes(store.user.id)
           "
           @click="handleRemovePinnedMessage"
-          class="ic-btn-ghost-primary w-7 h-7"
+          class="w-7 h-7"
           title="close pinned message"
           aria-label="close pinned message"
         >

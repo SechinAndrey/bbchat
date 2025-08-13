@@ -55,7 +55,7 @@ const handleChangeSkinTone = (tone: string) => {
 
     <!--active tone-->
     <div class="flex items-center">
-      <p class="body-2 text-color">Skin tone:</p>
+      <p class="">Skin tone:</p>
       <button
         @click="select = !select"
         class="w-5 h-5 ml-3 rounded-full hover:scale-110 duration-200 ease-in"

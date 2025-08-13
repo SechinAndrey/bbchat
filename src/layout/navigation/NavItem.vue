@@ -1,16 +1,12 @@
 <template>
   <div
-    class="xs:w-6 xs:h-6 md:w-auto md:h-auto md:bg-cbg-10 md:p-3 rounded-[0.23rem] group-focus:text-primary hover:text-primary-hover active:text-primary-active active:scale-110 transition ease-out duration-200"
-    :class="
-      active
-        ? 'text-primary-hover'
-        : [
-            'xs:text-neutral-active',
-            `md:${textColor}`,
-            `xs:dark:text-neutral-active`,
-            `md:dark:${textColor}`,
-          ]
-    "
+    :class="[
+      'xs:w-6 xs:h-6 md:w-auto md:h-auto md:p-3 rounded-[0.23rem]',
+      'md:bg-[var(--color-sidebar-btn-bg)]',
+      'hover:text-primary-lighter active:text-primary active:scale-110',
+      'transition ease-out duration-200 cursor-pointer',
+      active ? 'text-primary' : 'text-[var(--color-sidebar-btn-text)]',
+    ]"
   >
     <slot></slot>
   </div>
@@ -23,10 +19,6 @@ export default {
     active: {
       type: Boolean,
       default: false,
-    },
-    textColor: {
-      type: String,
-      default: "text-white",
     },
   },
 };

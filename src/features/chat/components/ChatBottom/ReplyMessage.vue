@@ -45,7 +45,7 @@ const handleRemoveReplyMessage = () => {
       <!--close selected Message-->
       <IconButton
         @click="handleRemoveReplyMessage"
-        class="ic-btn-ghost-primary w-7 h-7"
+        class="w-7 h-7"
         title="remove reply"
         aria-label="remove reply"
       >

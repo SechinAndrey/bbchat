@@ -62,8 +62,8 @@ const handleSubmit = () => {
     aria-controls="account-settings-collapse"
     @click="handleToggle()"
   >
-    <p class="heading-2 text-color mb-4">Account</p>
-    <p class="body-2 text-color">Update your profile details</p>
+    <p class="mb-4">Account</p>
+    <p class="">Update your profile details</p>
   </AccordionButton>
 
   <Collapse id="account-settings-collapse" :collapsed="props.collapsed">
@@ -84,11 +84,7 @@ const handleSubmit = () => {
       :value="accountValues.avatar"
       @value-changed="(value) => (accountValues.avatar = value)"
     />
-    <Button
-      class="contained-primary contained-text w-full py-4"
-      :loading="loading"
-      @click="handleSubmit"
-    >
+    <Button class="w-full py-4" :loading="loading" @click="handleSubmit">
       Save Settings
     </Button>
   </Collapse>

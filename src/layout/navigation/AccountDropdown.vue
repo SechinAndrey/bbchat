@@ -90,39 +90,37 @@ const handleCloseOnClickOutside = (event: Event) => {
       :close-dropdown="props.handleCloseDropdown"
     >
       <button
-        class="dropdown-link dropdown-link-primary"
+        class="flex items-center w-full px-4 py-3 text-sm text-app-text hover:bg-app-bg-secondary focus:bg-app-bg-secondary focus:outline-none transition-all duration-200 rounded mx-0.5 my-0.5"
         aria-label="Show profile information"
         role="menuitem"
         @click="props.handleCloseDropdown"
       >
-        <InformationCircleIcon
-          class="h-5 w-5 mr-3 text-black opacity-60 dark:text-white dark:opacity-70"
-        />
+        <InformationCircleIcon class="w-5 h-5 mr-3 opacity-70 hover:opacity-100 transition-opacity duration-200" />
         Profile Information
       </button>
 
       <RouterLink
         to="/reset/"
-        class="dropdown-link dropdown-link-primary"
+        class="flex items-center w-full px-4 py-3 text-sm text-app-text hover:bg-app-bg-secondary focus:bg-app-bg-secondary focus:outline-none transition-all duration-200 rounded mx-0.5 my-0.5 no-underline"
         aria-label="change password"
         role="menuitem"
         @click="props.handleCloseDropdown"
       >
-        <ArrowPathIcon
-          class="h-5 w-5 mr-3 text-black opacity-60 dark:text-white dark:opacity-70"
-        />
+        <ArrowPathIcon class="w-5 h-5 mr-3 opacity-70 hover:opacity-100 transition-opacity duration-200" />
         Password Change
       </RouterLink>
 
       <button
-        class="dropdown-link dropdown-link-danger"
+        class="flex items-center w-full px-4 py-3 text-sm text-danger hover:bg-danger/10 focus:bg-danger/10 focus:outline-none transition-all duration-200 rounded mx-0.5 my-0.5"
         aria-label="logout"
         role="menuitem"
         @click="handleLogout"
       >
-        <ArrowLeftStartOnRectangleIcon class="h-5 w-5 mr-3" />
+        <ArrowLeftStartOnRectangleIcon class="w-5 h-5 mr-3 opacity-70 hover:opacity-100 transition-opacity duration-200" />
         Logout
       </button>
     </Dropdown>
   </div>
 </template>
+
+

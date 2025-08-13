@@ -365,7 +365,7 @@ watch(filteredOptions, () => {
 <template>
   <div class="flex flex-col">
     <!-- Label -->
-    <label v-if="label" class="body-2 text-color mb-3 text-left">
+    <label v-if="label" class="mb-3 text-left">
       {{ label }}
     </label>
 
@@ -420,7 +420,7 @@ watch(filteredOptions, () => {
           v-if="isOpen"
           ref="dropdownMenu"
           :style="dropdownStyle"
-          class="z-50 bg-theme-surface rounded-md shadow-lg border border-neutral max-h-60 overflow-y-auto scrollbar-thin fixed"
+          class="z-50 bg-theme-surface rounded-md shadow-lg border max-h-60 overflow-y-auto scrollbar-thin fixed"
         >
           <div
             v-if="filteredOptions.length === 0"
@@ -429,7 +429,7 @@ watch(filteredOptions, () => {
             Нічого не знайдено
           </div>
 
-          <ul v-else class="divide-y divide-neutral">
+          <ul v-else class="divide-y">
             <li
               v-for="(option, index) in filteredOptions"
               :key="option.value"
@@ -443,10 +443,6 @@ watch(filteredOptions, () => {
                 class="p-3 flex items-center space-x-3 rounded-sm"
                 :class="{
                   'bg-primary text-white': isSelected(option.value),
-                  'bg-neutral-hover':
-                    !isSelected(option.value) && index === highlightedIndex,
-                  'hover:bg-neutral-hover':
-                    !isSelected(option.value) && index !== highlightedIndex,
                 }"
               >
                 <Checkbox

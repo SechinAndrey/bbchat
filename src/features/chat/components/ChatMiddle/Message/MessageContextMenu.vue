@@ -85,7 +85,7 @@ const handleReplyToMessage = () => {
     :position="['top-0']"
   >
     <button
-      class="dropdown-link dropdown-link-primary"
+      class=""
       role="menuitem"
       aria-label="reply to this message"
       @click="handleReplyToMessage"
@@ -95,7 +95,7 @@ const handleReplyToMessage = () => {
     </button>
 
     <button
-      class="dropdown-link dropdown-link-primary"
+      class=""
       role="menuitem"
       aria-label="copy this message"
       @click="handleCloseContextMenu"
@@ -105,7 +105,7 @@ const handleReplyToMessage = () => {
     </button>
 
     <button
-      class="dropdown-link dropdown-link-primary"
+      class=""
       role="menuitem"
       aria-label="pin this message"
       @click="handlePinMessage"
@@ -116,7 +116,7 @@ const handleReplyToMessage = () => {
 
     <button
       v-if="props.selected"
-      class="dropdown-link dropdown-link-primary"
+      class=""
       role="menuitem"
       aria-label="deselect this message"
       @click="
@@ -132,7 +132,7 @@ const handleReplyToMessage = () => {
 
     <button
       v-else
-      class="dropdown-link dropdown-link-primary"
+      class=""
       role="menuitem"
       aria-label="select this message"
       @click="
@@ -147,7 +147,7 @@ const handleReplyToMessage = () => {
     </button>
 
     <button
-      class="dropdown-link dropdown-link-danger"
+      class=""
       role="menuitem"
       aria-label="delete this message"
       @click="handleCloseContextMenu"

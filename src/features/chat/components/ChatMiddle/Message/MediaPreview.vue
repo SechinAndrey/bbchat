@@ -49,7 +49,7 @@ const openCarousel = () => {
         </div>
 
         <div
-          class="heading-2 break-words text-black opacity-50 dark:text-white dark:opacity-70 w-[calc(100%-40px)]"
+          class="break-words text-black opacity-50 dark:text-white dark:opacity-70 w-[calc(100%-40px)]"
         >
           {{ getFileName(props.media) }}
         </div>

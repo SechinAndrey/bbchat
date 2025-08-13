@@ -17,9 +17,9 @@ import { BellSlashIcon } from "@heroicons/vue/24/outline";
 
     <!--content-->
     <div>
-      <p class="heading-2 text-color mb-3">No notifications</p>
+      <p class="mb-3">No notifications</p>
 
-      <p class="body-2 text-color flex">Your notifications will appear here.</p>
+      <p class="flex">Your notifications will appear here.</p>
     </div>
   </div>
 </template>

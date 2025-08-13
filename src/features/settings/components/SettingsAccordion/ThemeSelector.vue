@@ -1,29 +1,21 @@
 <script setup lang="ts">
-import { useTheme } from "@src/shared/components/theme/useTheme";
+import useTheme from "@src/shared/theme-system/useTheme";
 import { CheckIcon } from "@heroicons/vue/24/solid";
 
-const { currentTheme, setTheme } = useTheme();
+const { setTheme } = useTheme();
 </script>
 
 <template>
   <div class="theme-selector mb-7">
     <div class="mb-6">
-      <h3 class="heading-2 text-color mb-2">Цветовая тема</h3>
-      <p class="body-3 text-color opacity-70">
-        Выберите цветовую схему для интерфейса
-      </p>
+      <h3 class="mb-2">Цветовая тема</h3>
+      <p class="opacity-70">Выберите цветовую схему для интерфейса</p>
     </div>
 
     <div class="theme-options flex gap-3">
       <div
-        class="theme-option flex-1 cursor-pointer p-3 rounded-xl border-2 transition-all duration-300 relative overflow-hidden"
-        :class="{
-          'border-primary bg-primary bg-opacity-10':
-            currentTheme.value === 'indigo',
-          'border-neutral-200 hover:border-primary hover:bg-primary hover:bg-opacity-5':
-            currentTheme.value !== 'indigo',
-        }"
-        @click="setTheme('indigo')"
+        class="theme-option flex-1 cursor-pointer p-3 rounded-xl border-2 transition-all duration-300 relative overflow-hidden border-primary bg-primary bg-opacity-10"
+        @click="setTheme('default')"
       >
         <div class="absolute inset-0 opacity-10">
           <div class="w-full h-full gradient-indigo"></div>
@@ -36,42 +28,9 @@ const { currentTheme, setTheme } = useTheme();
             <div class="w-full h-full gradient-indigo"></div>
           </div>
 
-          <span class="body-3 text-color font-medium">Индиго</span>
+          <span class="font-medium"> Стандартна </span>
 
           <div
-            v-if="currentTheme.value === 'indigo'"
-            class="absolute top-2 right-2 w-4 h-4 bg-primary rounded-full flex items-center justify-center"
-          >
-            <CheckIcon class="w-2.5 h-2.5 text-white" />
-          </div>
-        </div>
-      </div>
-
-      <div
-        class="theme-option flex-1 cursor-pointer p-3 rounded-xl border-2 transition-all duration-300 relative overflow-hidden"
-        :class="{
-          'border-primary bg-primary bg-opacity-10':
-            currentTheme.value === 'board',
-          'border-neutral-200 hover:border-primary hover:bg-primary hover:bg-opacity-5':
-            currentTheme.value !== 'board',
-        }"
-        @click="setTheme('board')"
-      >
-        <div class="absolute inset-0 opacity-10">
-          <div class="w-full h-full gradient-board"></div>
-        </div>
-
-        <div class="relative z-10 flex items-center justify-center flex-col">
-          <div
-            class="w-8 h-8 rounded-full mb-2 border-2 border-white shadow-sm overflow-hidden"
-          >
-            <div class="w-full h-full gradient-board"></div>
-          </div>
-
-          <span class="body-3 text-color font-medium">Board</span>
-
-          <div
-            v-if="currentTheme.value === 'board'"
             class="absolute top-2 right-2 w-4 h-4 bg-primary rounded-full flex items-center justify-center"
           >
             <CheckIcon class="w-2.5 h-2.5 text-white" />

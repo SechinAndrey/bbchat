@@ -3,7 +3,7 @@
 module.exports = {
   content: ["./index.html", "./src/**/*.{vue,js,ts,jsx,tsx}"],
 
-  darkMode: "class",
+  darkMode: ['[data-theme="dark"]'],
 
   theme: {
     screens: {
@@ -18,67 +18,34 @@ module.exports = {
       colors: {
         primary: {
           DEFAULT: "var(--color-primary)",
-          hover: "var(--color-primary-hover)",
-          focus: "var(--color-primary-focus)",
-          active: "var(--color-primary-active)",
-          easy: "var(--color-primary-easy)",
-        },
-        success: {
-          DEFAULT: "var(--color-success)",
-          hover: "var(--color-success-hover)",
-          focus: "var(--color-success-focus)",
-          active: "var(--color-success-active)",
-        },
-        danger: {
-          DEFAULT: "var(--color-danger)",
-          hover: "var(--color-danger-hover)",
-          focus: "var(--color-danger-focus)",
-          active: "var(--color-danger-active)",
+          lighter: "var(--color-primary-lighter)",
         },
         secondary: {
           DEFAULT: "var(--color-secondary)",
-          hover: "var(--color-secondary-hover)",
-          focus: "var(--color-secondary-focus)",
-          active: "var(--color-secondary-active)",
+          lighter: "var(--color-secondary-lighter)",
+        },
+        success: {
+          DEFAULT: "var(--color-state-success)",
+        },
+        info: {
+          DEFAULT: "var(--color-state-info)",
         },
         warning: {
           DEFAULT: "var(--color-warning)",
-          hover: "var(--color-warning-hover)",
-          focus: "var(--color-warning-focus)",
-          active: "var(--color-warning-active)",
         },
-        neutral: {
-          DEFAULT: "var(--color-neutral)",
-          hover: "var(--color-neutral-hover)",
-          focus: "var(--color-neutral-focus)",
-          active: "var(--color-neutral-active)",
+        danger: {
+          DEFAULT: "var(--color-state-danger)",
         },
-        theme: {
-          bg: "var(--bg)",
-          text: "var(--text)",
-          "t-alt": "var(--t-alt)",
-          surface: "var(--bg-surface)",
-          "surface-variant": "var(--bg-surface-variant)",
-          conversations: "var(--bg-conversations)",
-          message: "var(--bg-message)",
-          nav: "var(--nav-bg)",
-          table: {
-            bg: "var(--bg-table)",
-            hover: "var(--bg-table-hover)",
-          },
+        "app-text": {
+          DEFAULT: "var(--color-text-primary)",
+          secondary: "var(--color-text-secondary)",
         },
-        text: {
-          primary: "var(--text-primary)",
-          secondary: "var(--text-secondary)",
+        "app-bg": {
+          DEFAULT: "var(--color-bg-primary)",
+          secondary: "var(--color-bg-secondary)",
         },
-        scrollbar: {
-          track: "var(--scrollbar-track)",
-          thumb: "var(--scrollbar-thumb)",
-          "thumb-hover": "var(--scrollbar-thumb-hover)",
-        },
-        cbg: {
-          10: "var(--cbg-10)",
-        },
+        "app-border": "var(--color-border)",
+        "app-divider": "var(--color-divider)",
       },
 
       spacing: {

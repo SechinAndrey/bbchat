@@ -21,15 +21,9 @@ const props = defineProps<{
       <div class="w-[18.75rem] py-6 bg-surface dark:bg-surface rounded">
         <!--header-->
         <div class="mb-6 px-5 flex justify-between items-center">
-          <p id="modal-title" class="heading-1 text-color" tabindex="0">
-            Messages
-          </p>
+          <p id="modal-title" class="" tabindex="0">Messages</p>
 
-          <Button
-            class="outlined-danger ghost-text py-2 px-4"
-            typography="body-4"
-            @click="props.closeModal"
-          >
+          <Button class="py-2 px-4" typography="" @click="props.closeModal">
             esc
           </Button>
         </div>

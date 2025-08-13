@@ -4,7 +4,7 @@ import { ref, onMounted, onUnmounted, computed } from "vue";
 import useStore from "@src/shared/store/store";
 import { useAuthStore } from "@src/features/auth/store/auth-store";
 import { setupErrorInterceptor } from "@src/features/auth/services/error-interceptor";
-import ThemeProvider from "@src/shared/components/theme/ThemeProvider.vue";
+import ThemeProvider from "@src/shared/theme-system/ThemeProvider.vue";
 
 import FadeTransition from "@src/ui/transitions/FadeTransition.vue";
 
@@ -98,7 +98,7 @@ onUnmounted(() => {
 <template>
   <ThemeProvider>
     <div
-      class="bg-theme-bg transition-colors duration-500"
+      class="bg-app-bg text-app-text transition-colors duration-500"
       :style="{ height: height }"
     >
       <div

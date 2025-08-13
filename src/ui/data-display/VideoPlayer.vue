@@ -89,7 +89,7 @@ const handleToggleVideo = (state: any, player: any) => {
       <div class="overlay-container">
         <!--video title-->
         <div v-if="props.name" class="video-title">
-          <p class="body-5">{{ props.name }}</p>
+          <p class="">{{ props.name }}</p>
         </div>
 
         <!--pause and start buttons-->

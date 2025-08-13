@@ -1,0 +1,82 @@
+/*
+Default app theme
+
+FYI:
+for some variables colors can be same for some themes
+but it should be separate because they might have different value for another theme
+*/
+
+html.theme-default {
+  /****************/
+  /* BASIC colors */
+  /****************/
+
+  // Brand colors
+  --color-primary: #8e99f3;
+  --color-primary-lighter: #c2c6f9;
+
+  --color-secondary: #fc6b40;
+  --color-secondary-lighter: #fff0ec;
+
+  // States colors
+  --color-state-success: #4fb14b;
+  --color-state-warning: #ff9800;
+  --color-state-danger: #f44336;
+  --color-state-info: #2196f3;
+
+  // Text colors
+  --color-text-primary: #3d445c;
+  --color-text-secondary: #8b8f9d;
+
+  // Background colors
+  --color-bg-primary: #ffffff;
+  --color-bg-secondary: #f6f7f9;
+
+  // Borders, Dividers
+  --color-border: #f2f5fb;
+  --color-divider: #e8ebf1;
+
+  /*********************/
+  /* COMPONENTS colors */
+  /*********************/
+
+  // Sidebar
+  --color-sidebar-bg: #3d445c;
+  --color-sidebar-divider: rgba(255, 255, 255, 0.1);
+  --color-sidebar-btn-bg: rgba(255, 255, 255, 0.1);
+  --color-sidebar-btn-bg-md: rgba(255, 255, 255, 0.15); // responsive bg for md breakpoint
+  --color-sidebar-btn-text: #ffffff;
+
+  // Left panel
+  // --color-left-panel-bg: #f6f7f9;
+
+  // Right panel
+  // --color-right-panel-bg: #f6f7f9;
+
+  // Messages
+  --color-message-bg: #f8f8f9;
+  --color-message-border: transparent;
+
+  // Inputs
+  --color-input-bg: #f6f7f9;
+  --color-input-border: #cdd4d9;
+  --color-input-placeholder: rgba(0, 0, 0, 0.5);
+
+  --color-checkbox-bg: transparent;
+  --color-checkbox-border: #cdd4d9;
+}
+
+html.theme-default[data-theme="dark"] {
+  /* BASIC colors */
+
+  // Background colors
+  --color-bg-primary: #1f2936;
+  --color-bg-secondary: #2d3748;
+
+  // Messages
+  --color-message-bg: #374151;
+  --color-message-border: transparent;
+
+  // Inputs
+  --color-input-bg: #2d3747;
+}

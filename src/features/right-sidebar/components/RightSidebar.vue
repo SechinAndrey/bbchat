@@ -17,7 +17,7 @@ const handleTabChange = (tabKey: string) => {
 
 <template>
   <div
-    class="bg-theme-conversations h-full xs:w-full md:min-w-[18.75rem] md:w-[18.75rem] flex flex-col scrollbar-hidden px-5 py-6 text-color"
+    class="bg-theme-conversations h-full xs:w-full md:min-w-[18.75rem] md:w-[18.75rem] flex flex-col scrollbar-hidden px-5 py-6"
   >
     <AnimatedTabs
       :tabs="tabsConfig"

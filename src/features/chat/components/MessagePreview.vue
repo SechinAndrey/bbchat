@@ -40,7 +40,7 @@ const store = useStore();
     <!--content-->
     <p
       v-if="props.message.type !== 'recording' && props.message.content"
-      class="body-2 text-black opacity-50 dark:text-white dark:opacity-70"
+      class="text-black opacity-50 dark:text-white dark:opacity-70"
     >
       {{ shorten(props.message, 60) }}
     </p>
@@ -48,7 +48,7 @@ const store = useStore();
     <!--attachments title-->
     <p
       v-else-if="hasAttachments(props.message)"
-      class="body-2 text-black opacity-50 dark:text-white dark:opacity-70"
+      class="text-black opacity-50 dark:text-white dark:opacity-70"
     >
       {{ (props.message?.attachments as IAttachment[])[0].name }}
     </p>
@@ -56,7 +56,7 @@ const store = useStore();
     <!--recording title-->
     <p
       v-else-if="props.message.type === 'recording'"
-      class="body-2 text-black opacity-50 dark:text-white dark:opacity-70"
+      class="text-black opacity-50 dark:text-white dark:opacity-70"
     >
       recording 23s
     </p>

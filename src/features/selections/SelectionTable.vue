@@ -200,11 +200,6 @@ const imgs = (): string[] => {
               <td class="py-[0.625rem] px-3 text-text-primary text-center">
                 <span
                   class="inline-flex items-center justify-center w-6 h-6 rounded-full text-xs font-medium"
-                  :class="
-                    item.side_type === 'В'
-                      ? 'bg-success text-white'
-                      : 'bg-neutral text-text-primary'
-                  "
                 >
                   {{ item.side_type }}
                 </span>
@@ -228,7 +223,7 @@ const imgs = (): string[] => {
               <td class="py-[0.625rem] px-3">
                 <button
                   v-if="item.image"
-                  class="w-8 h-8 ic-btn ic-btn-ghost-gray flex items-center justify-center"
+                  class="w-8 h-8 flex items-center justify-center"
                   @click="openImagesModal(item)"
                 >
                   <PhotoIcon class="w-6 h-6 text-text-primary" />
@@ -236,7 +231,7 @@ const imgs = (): string[] => {
                 <span v-else class="text-text-secondary">—</span>
               </td>
               <td class="py-[0.625rem] px-3">
-                <div class="w-16 h-2 bg-neutral rounded-full overflow-hidden">
+                <div class="w-16 h-2 rounded-full overflow-hidden">
                   <div
                     class="h-full bg-success rounded-full"
                     style="width: 100%"
@@ -336,7 +331,7 @@ const imgs = (): string[] => {
 
         <div class="p-4 flex items-center justify-between">
           <div>Зайнятість</div>
-          <div class="w-16 h-2 bg-neutral rounded-full overflow-hidden">
+          <div class="w-16 h-2 rounded-full overflow-hidden">
             <div
               class="h-full bg-success rounded-full"
               style="width: 100%"

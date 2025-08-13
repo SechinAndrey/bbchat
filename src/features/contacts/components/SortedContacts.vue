@@ -89,7 +89,7 @@ const handleClickOutside = (event: Event) => {
 <template>
   <div v-for="(group, groupIndex) in props.contactGroups" :key="groupIndex">
     <!--group title-->
-    <p class="heading-3 text-color w-full px-5 pb-3 pt-5">
+    <p class="w-full px-5 pb-3 pt-5">
       {{ group.letter }}
     </p>
 
@@ -102,7 +102,7 @@ const handleClickOutside = (event: Event) => {
         >
           <div class="flex-row">
             <!--contact name-->
-            <p class="heading-2 text-color">
+            <p class="">
               {{ getFullName(contact) }}
             </p>
           </div>
@@ -134,7 +134,7 @@ const handleClickOutside = (event: Event) => {
             :position="dropdownMenuPosition"
           >
             <button
-              class="dropdown-link dropdown-link-primary"
+              class=""
               aria-label="Show profile information"
               role="menuitem"
             >
@@ -144,11 +144,7 @@ const handleClickOutside = (event: Event) => {
               Personal information
             </button>
 
-            <button
-              class="dropdown-link dropdown-link-danger"
-              aria-label="Delete contact"
-              role="menuitem"
-            >
+            <button class="" aria-label="Delete contact" role="menuitem">
               <TrashIcon class="h-5 w-5 mr-3" />
               Delete contact
             </button>

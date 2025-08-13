@@ -19,7 +19,7 @@ const props = defineProps<{
           class="inline-block outline-none mb-4"
           tabindex="0"
         >
-          <p class="heading-2 text-color w-13">
+          <p class="w-13">
             {{ props.title }}
           </p>
         </label>
@@ -33,7 +33,7 @@ const props = defineProps<{
       />
     </div>
     <!--description or help text-->
-    <p class="body-2 text-color help-block outline-none" tabindex="0">
+    <p class="help-block outline-none" tabindex="0">
       {{ props.description }}
     </p>
   </div>

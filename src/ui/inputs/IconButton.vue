@@ -1,5 +1,5 @@
 <template>
-  <button class="group ic-btn">
+  <button class="group">
     <slot></slot>
   </button>
 </template>

@@ -44,7 +44,7 @@ const colorClasses = computed(() => {
     />
 
     <div class="grow flex justify-start items-start">
-      <p class="body-2 transition-all duration-200" :class="colorClasses">
+      <p class="transition-all duration-200" :class="colorClasses">
         {{ props.title }}
       </p>
     </div>
@@ -65,7 +65,7 @@ const colorClasses = computed(() => {
     />
 
     <div class="grow flex justify-start items-start">
-      <p class="body-2" :class="colorClasses">
+      <p class="" :class="colorClasses">
         {{ props.title }}
       </p>
     </div>

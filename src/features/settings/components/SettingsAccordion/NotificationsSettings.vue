@@ -23,8 +23,8 @@ const store = useStore();
     aria-controls="notifications-settings-collapse"
     @click="props.handleToggle()"
   >
-    <p class="heading-2 text-color mb-4">Notifications</p>
-    <p class="body-2 text-color">Customize notifications</p>
+    <p class="mb-4">Notifications</p>
+    <p class="">Customize notifications</p>
   </AccordionButton>
 
   <Collapse id="notifications-settings-collapse" :collapsed="props.collapsed">

@@ -31,14 +31,12 @@ const handleCheck = () => {
         @update:model-value="handleCheck"
       />
       <label for="select-all">
-        <p class="body-2 text-color">Select All</p>
+        <p class="">Select All</p>
       </label>
     </div>
     <div class="flex items-center">
-      <Button class="ghost-danger ghost-text mr-3"> Delete </Button>
-      <Button class="ghost-primary ghost-text" @click="props.handleCloseSelect">
-        Cancel
-      </Button>
+      <Button class="mr-3"> Delete </Button>
+      <Button class="" @click="props.handleCloseSelect"> Cancel </Button>
     </div>
   </div>
 </template>

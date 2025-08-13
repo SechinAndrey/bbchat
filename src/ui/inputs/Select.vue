@@ -250,15 +250,15 @@ const handleOptionClick = (option: Option) => {
           v-if="isOpen"
           ref="dropdownMenu"
           :style="dropdownStyle"
-          class="z-50 bg-theme-surface rounded-md shadow-lg border border-neutral"
+          class="z-50 bg-theme-surface rounded-md shadow-lg border"
         >
           <div
             v-if="$slots.header"
-            class="px-3 py-2 font-bold border-b text-text-primary border-neutral"
+            class="px-3 py-2 font-bold border-b text-text-primary"
           >
             <slot name="header" />
           </div>
-          <ul class="divide-y divide-neutral">
+          <ul class="divide-y">
             <li
               v-for="option in options"
               :key="option.value"
@@ -270,7 +270,6 @@ const handleOptionClick = (option: Option) => {
                 class="p-2 flex items-center space-x-3 rounded-sm"
                 :class="{
                   'font-bold': isSelected(option.value),
-                  'hover:bg-neutral-hover': !isSelected(option.value),
                 }"
               >
                 <Checkbox

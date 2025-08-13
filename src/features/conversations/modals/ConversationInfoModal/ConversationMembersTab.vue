@@ -84,7 +84,7 @@ const handleClickOutside = (event: Event) => {
   <div>
     <!--header-->
     <div class="flex justify-between items-center mb-6 px-5">
-      <p id="modal-title" class="heading-1 text-color">Members</p>
+      <p id="modal-title" class="">Members</p>
 
       <!--return button-->
       <IconButton
@@ -95,7 +95,7 @@ const handleClickOutside = (event: Event) => {
             removeContact: true,
           })
         "
-        class="ic-btn-outlined-danger p-2"
+        class="p-2"
       >
         <ArrowUturnLeftIcon class="w-5 h-5" />
       </IconButton>
@@ -128,7 +128,7 @@ const handleClickOutside = (event: Event) => {
             v-if="(props.conversation.admins as number[]).includes(contact.id)"
           >
             <div class="ml-3">
-              <p class="body-4 text-primary">admin</p>
+              <p class="text-primary">admin</p>
             </div>
           </template>
 
@@ -158,24 +158,20 @@ const handleClickOutside = (event: Event) => {
                 :position="dropdownMenuPosition"
               >
                 <button
-                  class="dropdown-link dropdown-link-primary"
+                  class=""
                   aria-label="give admin permissions"
                   role="menuitem"
                 >
                   Promote to admin
                 </button>
                 <button
-                  class="dropdown-link dropdown-link-primary"
+                  class=""
                   aria-label="remove admin permissions"
                   role="menuitem"
                 >
                   Demote to member
                 </button>
-                <button
-                  class="dropdown-link dropdown-link-danger"
-                  aria-label="remove contacts"
-                  role="menuitem"
-                >
+                <button class="" aria-label="remove contacts" role="menuitem">
                   Remove contact
                 </button>
               </Dropdown>

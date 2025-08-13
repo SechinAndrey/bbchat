@@ -35,16 +35,9 @@ const CallStatusIcon = computed(() => {
   <div>
     <!--modal header-->
     <div class="px-5 flex justify-between items-center">
-      <p id="modal-title" class="heading-1 text-color" tabindex="0">
-        Call Details
-      </p>
+      <p id="modal-title" class="" tabindex="0">Call Details</p>
 
-      <Button
-        @click="props.closeModal"
-        class="outlined-danger ghost-text py-2 px-4"
-      >
-        esc
-      </Button>
+      <Button @click="props.closeModal" class="py-2 px-4"> esc </Button>
     </div>
 
     <div v-if="props.call" class="w-full py-7">

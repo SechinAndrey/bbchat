@@ -61,10 +61,8 @@ const handleLogin = async () => {
           class="w-[1.375rem] h-[1.125rem] mb-4 opacity-70"
           alt="bird logo"
         />
-        <p class="heading-2 text-color mb-4">Welcome back</p>
-        <p class="body-3 text-color text-opacity-75 font-light">
-          Sign in to start messaging!
-        </p>
+        <p class="mb-4">Welcome back</p>
+        <p class="text-opacity-75 font-light">Sign in to start messaging!</p>
       </div>
 
       <!-- Error message -->
@@ -92,11 +90,7 @@ const handleLogin = async () => {
 
       <!--local controls-->
       <div class="mb-6">
-        <Button
-          class="contained-primary contained-text w-full mb-4"
-          :loading="isLoading"
-          @click="handleLogin"
-        >
+        <Button class="w-full mb-4" :loading="isLoading" @click="handleLogin">
           Sign in
         </Button>
       </div>
@@ -106,7 +100,7 @@ const handleLogin = async () => {
         <span
           class="w-full border border-dashed border-gray-100 dark:border-gray-600 rounded-[.0625rem]"
         ></span>
-        <p class="body-3 text-color px-4 text-opacity-75 font-light">or</p>
+        <p class="px-4 text-opacity-75 font-light">or</p>
         <span
           class="w-full border border-dashed border-gray-100 dark:border-gray-600 rounded-[.0625rem]"
         ></span>
@@ -114,7 +108,7 @@ const handleLogin = async () => {
 
       <!--oauth controls-->
       <div>
-        <Button class="outlined-primary outlined-text w-full mb-5">
+        <Button class="w-full mb-5">
           <span class="flex">
             <img
               src="@src/shared/assets/vectors/google-logo.svg"
@@ -127,7 +121,7 @@ const handleLogin = async () => {
 
         <!--bottom text-->
         <div class="flex justify-center">
-          <p class="body-2 text-color">
+          <p>
             Don't have an account?
             <RouterLink to="/access/sign-up/" class="text-primary opacity-100">
               Sign up

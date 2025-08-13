@@ -19,8 +19,8 @@ const confirmNewPassword = ref("");
           class="w-[1.375rem] h-[1.125rem] mb-4 opacity-70"
           alt="bird logo"
         />
-        <p class="heading-2 text-color mb-4">Reset Your Password</p>
-        <p class="body-3 text-color text-opacity-75 font-light">
+        <p class="mb-4">Reset Your Password</p>
+        <p class="text-opacity-75 font-light">
           Enter your old password and your new password below to reset your
           password
         </p>
@@ -54,9 +54,7 @@ const confirmNewPassword = ref("");
 
       <!--controls-->
       <div>
-        <Button class="contained-primary contained-text w-full" link to="/"
-          >Reset Password</Button
-        >
+        <Button class="w-full" link to="/">Reset Password</Button>
       </div>
     </div>
   </div>

@@ -15,7 +15,7 @@ const props = defineProps<{
         : ['text-theme-text', 'opacity-60'],
     ]"
   >
-    <p class="body-5 text-nowrap" :class="{ 'text-xs': props.compact }">
+    <p class="text-nowrap" :class="{ 'text-xs': props.compact }">
       {{ props.name }}
     </p>
   </button>

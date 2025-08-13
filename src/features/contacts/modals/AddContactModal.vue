@@ -15,16 +15,9 @@ const props = defineProps<{
       <div class="w-[18.75rem] bg-surface dark:bg-surface rounded py-6">
         <!--modal header-->
         <div class="flex justify-between items-center px-5">
-          <p id="modal-title" class="heading-1 text-color" tabindex="0">
-            Add Contact
-          </p>
+          <p id="modal-title" class="" tabindex="0">Add Contact</p>
 
-          <Button
-            class="outlined-danger ghost-text py-2 px-4"
-            @click="props.closeModal"
-          >
-            esc
-          </Button>
+          <Button class="py-2 px-4" @click="props.closeModal"> esc </Button>
         </div>
 
         <!--text input-->
@@ -34,9 +27,7 @@ const props = defineProps<{
 
         <!--submit button-->
         <div class="px-5">
-          <Button class="contained-primary contained-text w-full py-4">
-            Add
-          </Button>
+          <Button class="w-full py-4"> Add </Button>
         </div>
       </div>
     </template>

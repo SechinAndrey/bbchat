@@ -56,16 +56,10 @@ const handleSelectedContactsChange = (contact: IContact) => {
       >
         <!--modal header-->
         <div class="flex justify-between items-center mb-6 px-5">
-          <p id="modal-title" class="heading-1 text-color" tabindex="0">
-            Contacts
-          </p>
+          <p id="modal-title" class="" tabindex="0">Contacts</p>
 
           <!--close button-->
-          <Button
-            @click="props.closeModal"
-            class="outlined-danger ghost-text py-2 px-4"
-            typography="body-4"
-          >
+          <Button @click="props.closeModal" class="py-2 px-4" typography="">
             esc
           </Button>
         </div>
@@ -101,9 +95,7 @@ const handleSelectedContactsChange = (contact: IContact) => {
 
         <!--call button-->
         <div class="px-5">
-          <Button class="contained-success contained-text w-full">
-            Call
-          </Button>
+          <Button class="w-full"> Call </Button>
         </div>
       </div>
     </template>

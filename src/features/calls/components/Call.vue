@@ -83,12 +83,12 @@ const handleOpenInfoModal = () => {
                 class="block"
                 @click="props.openVoiceCallModal"
               >
-                <p class="heading-2 text-color">
+                <p class="">
                   {{ getCallName(props.call) }}
                 </p>
               </button>
 
-              <p v-else class="heading-2 text-color">
+              <p v-else class="">
                 {{ getCallName(props.call) }}
               </p>
             </div>
@@ -124,13 +124,13 @@ const handleOpenInfoModal = () => {
           <!--recording length-->
           <p
             v-if="props.active"
-            class="body-2 flex justify-start items-center text-primary"
+            class="flex justify-start items-center text-primary"
           >
             {{ props.call.length }}
           </p>
 
           <!--recording date-->
-          <p v-else class="body-2 text-color flex justify-start items-center">
+          <p v-else class="flex justify-start items-center">
             {{ props.call.date }}
           </p>
         </div>

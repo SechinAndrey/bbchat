@@ -68,7 +68,7 @@ const endConversation = async () => {
   <div class="w-full flex justify-center items-center">
     <div class="group mr-4 md:hidden">
       <IconButton
-        class="ic-btn-ghost-primary w-7 h-7"
+        class="w-7 h-7"
         title="close conversation"
         aria-label="close conversation"
         @click="handleCloseConversation"
@@ -88,7 +88,7 @@ const endConversation = async () => {
 
       <div class="flex flex-col">
         <p
-          class="w-fit heading-2 text-color cursor-pointer"
+          class="w-fit cursor-pointer"
           tabindex="0"
           @click="store.rightSidebarOpen = true"
         >
@@ -96,7 +96,7 @@ const endConversation = async () => {
         </p>
 
         <!-- font-size 11px in rem -->
-        <p class="text-[0.6875rem] text-neutral-active">Запорожье</p>
+        <p class="text-[0.6875rem] text-primary">Запорожье</p>
       </div>
     </div>
 
@@ -110,7 +110,7 @@ const endConversation = async () => {
         />
 
         <Button
-          class="contained-primary contained-text whitespace-nowrap"
+          class="whitespace-nowrap"
           size="small"
           :loading="isLoading"
           @click="endConversation"
@@ -119,7 +119,7 @@ const endConversation = async () => {
         </Button>
 
         <IconButton
-          class="ic-btn-ghost-primary open-top-menu group w-7 h-7"
+          class="open-top-menu group w-7 h-7"
           @click="store.rightSidebarOpen = !store.rightSidebarOpen"
         >
           <ChevronRightIcon

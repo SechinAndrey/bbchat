@@ -27,7 +27,7 @@ import LabeledTextInput from "@src/ui/inputs/LabeledTextInput.vue";
             animationName: 'slide-left',
           })
         "
-        class="contained-primary contained-text"
+        class=""
       >
         Next
       </Button>

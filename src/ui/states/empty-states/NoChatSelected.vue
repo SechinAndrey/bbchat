@@ -21,8 +21,8 @@ const props = withDefaults(
       <ChatBubbleLeftRightIcon class="w-7 h-7 text-secondary-active" />
     </div>
 
-    <p class="heading-2 text-color mb-3">{{ props.title }}</p>
+    <p class="mb-3">{{ props.title }}</p>
 
-    <p class="body-2 text-color flex">{{ props.text }}</p>
+    <p class="flex">{{ props.text }}</p>
   </div>
 </template>

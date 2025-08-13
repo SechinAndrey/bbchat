@@ -42,7 +42,7 @@ const imageUrl = computed(() => {
   <div>
     <div class="mb-6 px-5 flex justify-between items-center">
       <!--title-->
-      <p id="modal-title" class="heading-1 text-color" tabindex="0">
+      <p id="modal-title" class="" tabindex="0">
         <span v-if="conversation.type === 'couple' || props.contact"
           >Contact</span
         >
@@ -52,18 +52,14 @@ const imageUrl = computed(() => {
       </p>
 
       <!--close button-->
-      <Button
-        v-if="!props.contact"
-        class="outlined-danger ghost-text py-2 px-4"
-        @click="props.closeModal"
-      >
+      <Button v-if="!props.contact" class="py-2 px-4" @click="props.closeModal">
         esc
       </Button>
 
       <!--return button-->
       <IconButton
         v-else
-        class="ic-btn-outlined-danger p-2"
+        class="p-2"
         @click="
           $emit('active-page-change', {
             tabName: 'members',
@@ -99,13 +95,13 @@ const imageUrl = computed(() => {
         <!--name-->
         <div class="w-full flex justify-between">
           <div>
-            <p class="heading-2 text-color mb-3 mr-5 text-start">
+            <p class="mb-3 mr-5 text-start">
               <span>
                 {{ getName(props.conversation) }}
               </span>
             </p>
 
-            <p class="body-2 text-color font-extralight text-start">
+            <p class="font-extralight text-start">
               <!--last seen-->
               <!--or number of group members-->
               {{
@@ -119,7 +115,7 @@ const imageUrl = computed(() => {
           <IconButton
             v-if="['group', 'broadcast'].includes(conversation.type)"
             title="edit group"
-            class="ic-btn-ghost-primary w-7 h-7"
+            class="w-7 h-7"
             @click="
               $emit('active-page-change', {
                 tabName: 'edit-group',

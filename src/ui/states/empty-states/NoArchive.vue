@@ -17,8 +17,8 @@ import { InboxIcon } from "@heroicons/vue/24/outline";
 
     <!--content-->
     <div>
-      <p class="heading-2 text-color mb-3">No archived conversations</p>
-      <p class="body-2 text-color flex">
+      <p class="mb-3">No archived conversations</p>
+      <p class="flex">
         select archive from the conversation context menu to save one.
       </p>
     </div>

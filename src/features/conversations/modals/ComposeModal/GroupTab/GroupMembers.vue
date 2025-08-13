@@ -80,13 +80,13 @@ const handleSelectedContactsChange = (contact: IContact) => {
             animationName: 'slide-right',
           })
         "
-        class="ghost-primary ghost-text mr-4"
+        class="mr-4"
       >
-        <p class="body-5">Previous</p>
+        <p class="">Previous</p>
       </Button>
 
       <!--next button-->
-      <Button class="contained-primary contained-text"> Finish </Button>
+      <Button class=""> Finish </Button>
     </div>
   </div>
 </template>

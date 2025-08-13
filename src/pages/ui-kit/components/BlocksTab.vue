@@ -47,27 +47,23 @@ const demoCallMembers = [
 
 <template>
   <div>
-    <h2 class="heading-1 text-color mb-6">UI Blocks</h2>
+    <h2 class="mb-6">UI Blocks</h2>
 
     <!-- IconAndText -->
     <section class="mb-10">
-      <h3 class="heading-2 text-color mb-4">Icon and Text</h3>
+      <h3 class="mb-4">Icon and Text</h3>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         <div class="p-4 border rounded dark:border-gray-600">
-          <h4 class="body-2 text-color mb-2">Icon with Text (Info Item)</h4>
+          <h4 class="mb-2">Icon with Text (Info Item)</h4>
           <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded">
             <IconAndText :icon="BellIcon" title="Notifications" />
           </div>
           <div class="mt-2 p-4 bg-gray-50 dark:bg-gray-700 rounded">
-            <p class="body-3 text-color">
-              Basic information item with icon and text
-            </p>
+            <p class="">Basic information item with icon and text</p>
           </div>
         </div>
         <div class="p-4 border rounded dark:border-gray-600">
-          <h4 class="body-2 text-color mb-2">
-            Icon with Text (Link with Chevron)
-          </h4>
+          <h4 class="mb-2">Icon with Text (Link with Chevron)</h4>
           <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded">
             <IconAndText
               link
@@ -77,24 +73,20 @@ const demoCallMembers = [
             />
           </div>
           <div class="mt-2 p-4 bg-gray-50 dark:bg-gray-700 rounded">
-            <p class="body-3 text-color">
-              Link item with chevron for navigation
-            </p>
+            <p class="">Link item with chevron for navigation</p>
           </div>
         </div>
         <div class="p-4 border rounded dark:border-gray-600">
-          <h4 class="body-2 text-color mb-2">Icon with Text and Switch</h4>
+          <h4 class="mb-2">Icon with Text and Switch</h4>
           <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded">
             <IconAndText :icon="BellIcon" title="Enable Notifications" switch />
           </div>
           <div class="mt-2 p-4 bg-gray-50 dark:bg-gray-700 rounded">
-            <p class="body-3 text-color">
-              Toggle switch with icon and description
-            </p>
+            <p class="">Toggle switch with icon and description</p>
           </div>
         </div>
         <div class="p-4 border rounded dark:border-gray-600">
-          <h4 class="body-2 text-color mb-2">Icon with Text (Danger Color)</h4>
+          <h4 class="mb-2">Icon with Text (Danger Color)</h4>
           <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded">
             <IconAndText
               :icon="TrashIcon"
@@ -103,9 +95,7 @@ const demoCallMembers = [
             />
           </div>
           <div class="mt-2 p-4 bg-gray-50 dark:bg-gray-700 rounded">
-            <p class="body-3 text-color">
-              Warning/danger action with red color
-            </p>
+            <p class="">Warning/danger action with red color</p>
           </div>
         </div>
       </div>
@@ -113,50 +103,42 @@ const demoCallMembers = [
 
     <!-- ContactItem -->
     <section class="mb-10">
-      <h3 class="heading-2 text-color mb-4">Contact Item</h3>
+      <h3 class="mb-4">Contact Item</h3>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         <div class="p-4 border rounded dark:border-gray-600">
-          <h4 class="body-2 text-color mb-2">Basic Contact Item</h4>
+          <h4 class="mb-2">Basic Contact Item</h4>
           <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded">
             <ContactItem :contact="demoContact" />
           </div>
           <div class="mt-2 p-4 bg-gray-50 dark:bg-gray-700 rounded">
-            <p class="body-3 text-color">
-              Standard contact item with name and avatar
-            </p>
+            <p class="">Standard contact item with name and avatar</p>
           </div>
         </div>
         <div class="p-4 border rounded dark:border-gray-600">
-          <h4 class="body-2 text-color mb-2">Active Contact Item</h4>
+          <h4 class="mb-2">Active Contact Item</h4>
           <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded">
             <ContactItem :contact="demoContact" :active="true" />
           </div>
           <div class="mt-2 p-4 bg-gray-50 dark:bg-gray-700 rounded">
-            <p class="body-3 text-color">
-              Selected/active contact with highlighted background
-            </p>
+            <p class="">Selected/active contact with highlighted background</p>
           </div>
         </div>
         <div class="p-4 border rounded dark:border-gray-600">
-          <h4 class="body-2 text-color mb-2">Card Variant Contact</h4>
+          <h4 class="mb-2">Card Variant Contact</h4>
           <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded">
             <ContactItem :contact="demoContact" variant="card" />
           </div>
           <div class="mt-2 p-4 bg-gray-50 dark:bg-gray-700 rounded">
-            <p class="body-3 text-color">
-              Card style contact item used in panels
-            </p>
+            <p class="">Card style contact item used in panels</p>
           </div>
         </div>
         <div class="p-4 border rounded dark:border-gray-600">
-          <h4 class="body-2 text-color mb-2">Unselectable Contact</h4>
+          <h4 class="mb-2">Unselectable Contact</h4>
           <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded">
             <ContactItem :contact="demoContact" :unselectable="true" />
           </div>
           <div class="mt-2 p-4 bg-gray-50 dark:bg-gray-700 rounded">
-            <p class="body-3 text-color">
-              Contact item without selection capability
-            </p>
+            <p class="">Contact item without selection capability</p>
           </div>
         </div>
       </div>
@@ -164,10 +146,10 @@ const demoCallMembers = [
 
     <!-- CallAvatar -->
     <section class="mb-10">
-      <h3 class="heading-2 text-color mb-4">Call Avatar</h3>
+      <h3 class="mb-4">Call Avatar</h3>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div class="p-4 border rounded dark:border-gray-600">
-          <h4 class="body-2 text-color mb-2">Single Avatar</h4>
+          <h4 class="mb-2">Single Avatar</h4>
           <div
             class="p-4 bg-gray-50 dark:bg-gray-700 rounded flex justify-center"
           >
@@ -180,11 +162,11 @@ const demoCallMembers = [
             </div>
           </div>
           <div class="mt-2 p-4 bg-gray-50 dark:bg-gray-700 rounded">
-            <p class="body-3 text-color">Individual call participant avatar</p>
+            <p class="">Individual call participant avatar</p>
           </div>
         </div>
         <div class="p-4 border rounded dark:border-gray-600">
-          <h4 class="body-2 text-color mb-2">Two Avatars</h4>
+          <h4 class="mb-2">Two Avatars</h4>
           <div
             class="p-4 bg-gray-50 dark:bg-gray-700 rounded flex justify-center"
           >
@@ -202,13 +184,11 @@ const demoCallMembers = [
             </div>
           </div>
           <div class="mt-2 p-4 bg-gray-50 dark:bg-gray-700 rounded">
-            <p class="body-3 text-color">
-              Two call participants with overlapping avatars
-            </p>
+            <p class="">Two call participants with overlapping avatars</p>
           </div>
         </div>
         <div class="p-4 border rounded dark:border-gray-600">
-          <h4 class="body-2 text-color mb-2">Group Call (3+ Members)</h4>
+          <h4 class="mb-2">Group Call (3+ Members)</h4>
           <div
             class="p-4 bg-gray-50 dark:bg-gray-700 rounded flex justify-center"
           >
@@ -226,14 +206,14 @@ const demoCallMembers = [
             </div>
           </div>
           <div class="mt-2 p-4 bg-gray-50 dark:bg-gray-700 rounded">
-            <p class="body-3 text-color">
+            <p class="">
               Group call with main avatar and counter for additional
               participants
             </p>
           </div>
         </div>
         <div class="p-4 border rounded dark:border-gray-600">
-          <h4 class="body-2 text-color mb-2">Large Avatar</h4>
+          <h4 class="mb-2">Large Avatar</h4>
           <div
             class="p-4 bg-gray-50 dark:bg-gray-700 rounded flex justify-center"
           >
@@ -247,13 +227,11 @@ const demoCallMembers = [
             </div>
           </div>
           <div class="mt-2 p-4 bg-gray-50 dark:bg-gray-700 rounded">
-            <p class="body-3 text-color">
-              Large sized avatar for primary display
-            </p>
+            <p class="">Large sized avatar for primary display</p>
           </div>
         </div>
         <div class="p-4 border rounded dark:border-gray-600">
-          <h4 class="body-2 text-color mb-2">Large Group Call</h4>
+          <h4 class="mb-2">Large Group Call</h4>
           <div
             class="p-4 bg-gray-50 dark:bg-gray-700 rounded flex justify-center"
           >
@@ -273,7 +251,7 @@ const demoCallMembers = [
             </div>
           </div>
           <div class="mt-2 p-4 bg-gray-50 dark:bg-gray-700 rounded">
-            <p class="body-3 text-color">
+            <p class="">
               Large group call display with counter for additional members
             </p>
           </div>

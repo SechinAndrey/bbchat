@@ -23,10 +23,10 @@ const props = withDefaults(
       <component :is="props.icon" class="w-7 h-7 text-secondary-active" />
     </div>
 
-    <p v-if="props.title" class="heading-2 text-color mb-3">
+    <p v-if="props.title" class="mb-3">
       {{ props.title }}
     </p>
 
-    <p v-if="props.text" class="body-2 text-color flex">{{ props.text }}</p>
+    <p v-if="props.text" class="flex">{{ props.text }}</p>
   </div>
 </template>

@@ -14,20 +14,18 @@ const toggleModal = function () {
 
 <template>
   <div>
-    <h2 class="heading-1 text-color mb-6">Modal Dialogs</h2>
+    <h2 class="mb-6">Modal Dialogs</h2>
 
     <!-- Basic Modal -->
     <section class="mb-10">
-      <h3 class="heading-2 text-color mb-4">Basic Modal</h3>
+      <h3 class="mb-4">Basic Modal</h3>
       <div class="p-4 border rounded dark:border-gray-600">
         <div class="flex justify-center">
-          <Button class="contained-primary contained-text" @click="toggleModal">
-            Open Modal
-          </Button>
+          <Button class="" @click="toggleModal"> Open Modal </Button>
         </div>
         <div class="mt-4 p-4 bg-surface-variant rounded">
-          <p class="body-2 text-color">Basic modal dialog</p>
-          <p class="body-3 text-color mt-2">
+          <p class="">Basic modal dialog</p>
+          <p class="mt-2">
             Features include a slide transition, focus trap, and ability to
             close with ESC key or clicking outside.
           </p>
@@ -42,14 +40,11 @@ const toggleModal = function () {
           >
             <div>
               <div class="mt-3 text-center sm:mt-5">
-                <h3
-                  class="text-lg leading-6 font-medium text-color"
-                  id="modal-title"
-                >
+                <h3 class="text-lg leading-6 font-medium" id="modal-title">
                   Modal Dialog Example
                 </h3>
                 <div class="mt-2">
-                  <p class="body-3 text-color">
+                  <p class="">
                     This is an example of a modal dialog component. You can
                     close it by clicking outside or pressing ESC.
                   </p>
@@ -57,12 +52,7 @@ const toggleModal = function () {
               </div>
             </div>
             <div class="mt-5 sm:mt-6">
-              <Button
-                class="contained-primary contained-text w-full"
-                @click="toggleModal"
-              >
-                Close Modal
-              </Button>
+              <Button class="w-full" @click="toggleModal"> Close Modal </Button>
             </div>
           </div>
         </template>

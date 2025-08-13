@@ -38,13 +38,13 @@ const props = defineProps<{
     <!--name, date and size-->
     <div class="grow">
       <div class="flex items-center justify-between mb-3">
-        <p class="heading-2 text-color" tabindex="0">
+        <p class="" tabindex="0">
           {{ attachment.name }}
         </p>
       </div>
 
       <div class="flex justify-start">
-        <p class="body-2 text-color" tabindex="0">
+        <p class="" tabindex="0">
           {{ attachment.size }}
         </p>
       </div>
@@ -52,10 +52,10 @@ const props = defineProps<{
 
     <!--action buttons-->
     <div class="flex">
-      <IconButton class="ic-btn-ghost-primary w-7 h-7 mr-2" title="replace">
+      <IconButton class="w-7 h-7 mr-2" title="replace">
         <ArrowPathRoundedSquareIcon class="w-[.9375rem] h-[.9375rem]" />
       </IconButton>
-      <IconButton class="ic-btn-ghost-danger w-7 h-7" title="delete">
+      <IconButton class="w-7 h-7" title="delete">
         <TrashIcon class="w-[.9375rem] h-[.9375rem]" />
       </IconButton>
     </div>

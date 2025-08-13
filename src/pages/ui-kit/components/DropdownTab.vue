@@ -72,16 +72,16 @@ function handleCheckboxToggle(field: string) {
 
 <template>
   <div>
-    <h2 class="heading-1 text-color mb-6">Dropdown Menus</h2>
+    <h2 class="mb-6">Dropdown Menus</h2>
 
     <!-- Simple Dropdown with options -->
     <section class="mb-10">
-      <h3 class="heading-2 text-color mb-4">Simple menu with options</h3>
+      <h3 class="mb-4">Simple menu with options</h3>
       <div class="p-4 border rounded dark:border-gray-600">
         <div class="flex gap-4 mb-4">
           <Dropdown position="bottom" trigger="click">
             <template #activator>
-              <Button class="contained-primary contained-text">
+              <Button class="">
                 {{ selectedOption }}
                 <ChevronDownIcon class="w-4 h-4 ml-2" />
               </Button>
@@ -99,7 +99,7 @@ function handleCheckboxToggle(field: string) {
 
           <Dropdown position="top" trigger="click">
             <template #activator>
-              <Button class="outlined-primary ghost-text">
+              <Button class="">
                 Open upwards
                 <ArrowUpIcon class="w-4 h-4 ml-2" />
               </Button>
@@ -112,8 +112,8 @@ function handleCheckboxToggle(field: string) {
         </div>
 
         <div class="p-4 bg-surface-variant rounded">
-          <p class="body-2 text-color">Simple dropdown menu with options</p>
-          <p class="body-3 text-color mt-2">
+          <p class="">Simple dropdown menu with options</p>
+          <p class="mt-2">
             Supports active items, disabled items, and can open in different
             directions. Menu items close after selection.
           </p>
@@ -123,12 +123,12 @@ function handleCheckboxToggle(field: string) {
 
     <!-- Dropdown with different triggers -->
     <section class="mb-10">
-      <h3 class="heading-2 text-color mb-4">Different trigger types</h3>
+      <h3 class="mb-4">Different trigger types</h3>
       <div class="p-4 border rounded dark:border-gray-600">
         <div class="flex gap-4 mb-4">
           <Dropdown position="bottom" trigger="click">
             <template #activator>
-              <Button class="contained-success contained-text">
+              <Button class="">
                 Click trigger
                 <ChevronDownIcon class="w-4 h-4 ml-2" />
               </Button>
@@ -140,7 +140,7 @@ function handleCheckboxToggle(field: string) {
 
           <Dropdown position="bottom" trigger="hover">
             <template #activator>
-              <Button class="outlined-success ghost-text">
+              <Button class="">
                 Hover trigger
                 <ChevronDownIcon class="w-4 h-4 ml-2" />
               </Button>
@@ -152,8 +152,8 @@ function handleCheckboxToggle(field: string) {
         </div>
 
         <div class="p-4 bg-surface-variant rounded">
-          <p class="body-2 text-color">Dropdown menu with different triggers</p>
-          <p class="body-3 text-color mt-2">
+          <p class="">Dropdown menu with different triggers</p>
+          <p class="mt-2">
             Menu can be opened by click or by hovering over the activator.
           </p>
         </div>
@@ -162,12 +162,12 @@ function handleCheckboxToggle(field: string) {
 
     <!-- Dropdown with filters -->
     <section class="mb-10">
-      <h3 class="heading-2 text-color mb-4">Filter menu</h3>
+      <h3 class="mb-4">Filter menu</h3>
       <div class="p-4 border rounded dark:border-gray-600">
         <div class="flex gap-4 mb-4">
           <Dropdown position="bottom" trigger="click" :close-on-select="false">
             <template #activator>
-              <Button class="contained-primary contained-text">
+              <Button class="">
                 Advanced Filters
                 <FunnelIcon class="w-4 h-4 ml-2" />
               </Button>
@@ -177,7 +177,7 @@ function handleCheckboxToggle(field: string) {
               <div class="p-2">
                 <!-- Search Input -->
                 <div class="mb-4">
-                  <h4 class="body-2 text-color font-medium mb-2">Search</h4>
+                  <h4 class="font-medium mb-2">Search</h4>
                   <TextInput
                     v-model="filters.searchQuery"
                     placeholder="Search items..."
@@ -188,35 +188,26 @@ function handleCheckboxToggle(field: string) {
 
                 <!-- Categories with Checkboxes -->
                 <div class="mb-4">
-                  <h4 class="body-2 text-color font-medium mb-2">Categories</h4>
+                  <h4 class="font-medium mb-2">Categories</h4>
                   <div class="flex flex-col gap-2">
                     <div class="flex items-center gap-2">
-                      <Checkbox
-                        :model-value="true"
-                        :handleCheck="() => {}"
-                      />
-                      <span class="body-3 text-color">Category 1</span>
+                      <Checkbox :model-value="true" :handle-check="() => {}" />
+                      <span class="">Category 1</span>
                     </div>
                     <div class="flex items-center gap-2">
-                      <Checkbox
-                        :model-value="false"
-                        :handleCheck="() => {}"
-                      />
-                      <span class="body-3 text-color">Category 2</span>
+                      <Checkbox :model-value="false" :handle-check="() => {}" />
+                      <span class="">Category 2</span>
                     </div>
                     <div class="flex items-center gap-2">
-                      <Checkbox
-                        :model-value="false"
-                        :handleCheck="() => {}"
-                      />
-                      <span class="body-3 text-color">Category 3</span>
+                      <Checkbox :model-value="false" :handle-check="() => {}" />
+                      <span class="">Category 3</span>
                     </div>
                   </div>
                 </div>
 
                 <!-- Price Range Slider -->
                 <div class="mb-4">
-                  <h4 class="body-2 text-color font-medium mb-2">
+                  <h4 class="font-medium mb-2">
                     Price Range ({{ filters.priceRange }}%)
                   </h4>
                   <RangeSlider
@@ -228,7 +219,7 @@ function handleCheckboxToggle(field: string) {
                 <!-- Show archived toggle -->
                 <div class="mb-4">
                   <div class="flex items-center justify-between">
-                    <h4 class="body-2 text-color font-medium">Show archived</h4>
+                    <h4 class="font-medium">Show archived</h4>
                     <SwitchInput
                       :value="filters.showArchived"
                       @switch-clicked="handleSwitchToggle"
@@ -238,26 +229,16 @@ function handleCheckboxToggle(field: string) {
 
                 <!-- Sort Order -->
                 <div class="mb-4">
-                  <h4 class="body-2 text-color font-medium mb-2">Sort Order</h4>
+                  <h4 class="font-medium mb-2">Sort Order</h4>
                   <div class="flex gap-2">
                     <Button
                       class="py-2 px-3"
-                      :class="
-                        filters.sortOrder === 'newest'
-                          ? 'contained-primary contained-text'
-                          : 'outlined-primary ghost-text'
-                      "
                       @button-clicked="filters.sortOrder = 'newest'"
                     >
                       Newest
                     </Button>
                     <Button
                       class="py-2 px-3"
-                      :class="
-                        filters.sortOrder === 'oldest'
-                          ? 'contained-primary contained-text'
-                          : 'outlined-primary ghost-text'
-                      "
                       @button-clicked="filters.sortOrder = 'oldest'"
                     >
                       Oldest
@@ -270,10 +251,8 @@ function handleCheckboxToggle(field: string) {
         </div>
 
         <div class="p-4 bg-surface-variant rounded">
-          <p class="body-2 text-color">
-            Advanced filter menu with input elements
-          </p>
-          <p class="body-3 text-color mt-2">
+          <p class="">Advanced filter menu with input elements</p>
+          <p class="mt-2">
             This example demonstrates how various input elements can be
             integrated into a dropdown filter menu, including text inputs,
             checkboxes, switches, sliders, and buttons.
@@ -284,12 +263,12 @@ function handleCheckboxToggle(field: string) {
 
     <!-- Dropdown with different positions -->
     <section class="mb-10">
-      <h3 class="heading-2 text-color mb-4">Different positions</h3>
+      <h3 class="mb-4">Different positions</h3>
       <div class="p-4 border rounded dark:border-gray-600">
         <div class="flex justify-center items-center gap-6 mb-4 min-h-[200px]">
           <Dropdown position="top" trigger="click">
             <template #activator>
-              <IconButton class="ic-btn-contained-primary p-2">
+              <IconButton class="p-2">
                 <ArrowUpIcon class="w-5 h-5" />
               </IconButton>
             </template>
@@ -299,7 +278,7 @@ function handleCheckboxToggle(field: string) {
 
           <Dropdown position="right" trigger="click">
             <template #activator>
-              <IconButton class="ic-btn-contained-success p-2">
+              <IconButton class="p-2">
                 <ArrowRightIcon class="w-5 h-5" />
               </IconButton>
             </template>
@@ -309,7 +288,7 @@ function handleCheckboxToggle(field: string) {
 
           <Dropdown position="bottom" trigger="click">
             <template #activator>
-              <IconButton class="ic-btn-contained-gray p-2">
+              <IconButton class="p-2">
                 <ArrowDownIcon class="w-5 h-5" />
               </IconButton>
             </template>
@@ -319,7 +298,7 @@ function handleCheckboxToggle(field: string) {
 
           <Dropdown position="left" trigger="click">
             <template #activator>
-              <IconButton class="ic-btn-ghost-primary p-2">
+              <IconButton class="p-2">
                 <ArrowLeftIcon class="w-5 h-5" />
               </IconButton>
             </template>
@@ -329,8 +308,8 @@ function handleCheckboxToggle(field: string) {
         </div>
 
         <div class="p-4 bg-surface-variant rounded">
-          <p class="body-2 text-color">Different positioning options</p>
-          <p class="body-3 text-color mt-2">
+          <p class="">Different positioning options</p>
+          <p class="mt-2">
             Dropdown menu can open in four different directions: top, right,
             bottom, and left.
           </p>
@@ -340,12 +319,12 @@ function handleCheckboxToggle(field: string) {
 
     <!-- Dropdown with danger options -->
     <section class="mb-10">
-      <h3 class="heading-2 text-color mb-4">Danger options</h3>
+      <h3 class="mb-4">Danger options</h3>
       <div class="p-4 border rounded dark:border-gray-600">
         <div class="flex gap-4 mb-4">
           <Dropdown position="bottom" trigger="click">
             <template #activator>
-              <Button class="contained-danger contained-text">
+              <Button class="">
                 Actions
                 <ChevronDownIcon class="w-4 h-4 ml-2" />
               </Button>
@@ -358,8 +337,8 @@ function handleCheckboxToggle(field: string) {
         </div>
 
         <div class="p-4 bg-surface-variant rounded">
-          <p class="body-2 text-color">Dropdown with danger actions</p>
-          <p class="body-3 text-color mt-2">
+          <p class="">Dropdown with danger actions</p>
+          <p class="mt-2">
             Dangerous actions are highlighted in red to draw attention.
           </p>
         </div>

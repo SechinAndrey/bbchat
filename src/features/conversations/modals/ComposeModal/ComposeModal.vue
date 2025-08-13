@@ -45,21 +45,9 @@ const activeTab = computed(() => {
       >
         <!--header-->
         <div class="flex justify-between items-center mb-6 px-5">
-          <p
-            id="modal-title"
-            class="heading-1 text-color"
-            ref="modalTitle"
-            tabindex="0"
-          >
-            Compose
-          </p>
+          <p id="modal-title" class="" ref="modalTitle" tabindex="0">Compose</p>
 
-          <Button
-            @click="props.closeModal"
-            class="outlined-danger ghost-text py-2 px-4"
-          >
-            esc
-          </Button>
+          <Button @click="props.closeModal" class="py-2 px-4"> esc </Button>
         </div>
 
         <!--tabs-->

@@ -23,17 +23,17 @@ const props = defineProps<{
     <!--name and message-->
     <div class="grow">
       <div class="flex flex-col items-start">
-        <p class="heading-2 text-color mb-4">
+        <p class="mb-4">
           {{ getFullName(props.message.sender) }}
         </p>
 
-        <p class="body-2 text-color">Wow really cool</p>
+        <p class="">Wow really cool</p>
       </div>
     </div>
 
     <!--message date-->
     <div>
-      <p class="body-4 text-color">1/5/2019</p>
+      <p class="">1/5/2019</p>
     </div>
   </button>
 </template>

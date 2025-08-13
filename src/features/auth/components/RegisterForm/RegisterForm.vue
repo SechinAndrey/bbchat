@@ -44,8 +44,8 @@ const changeActiveSection = (event: {
           src="@src/shared/assets/vectors/logo-gradient.svg"
           class="w-[1.375rem] h-[1.125rem] mb-5 opacity-70"
         />
-        <p class="heading-2 text-color mb-4">Get started with Avian</p>
-        <p class="body-3 text-color text-opacity-75 font-light">
+        <p class="mb-4">Get started with Avian</p>
+        <p class="text-opacity-75 font-light">
           Sign in to start using messaging!
         </p>
       </div>
@@ -53,14 +53,14 @@ const changeActiveSection = (event: {
       <!--form section-->
       <SlideTransition :animation="animation">
         <component
-          @active-section-change="changeActiveSection"
           :is="ActiveSection"
+          @active-section-change="changeActiveSection"
         />
       </SlideTransition>
 
       <!--bottom text-->
       <div class="flex justify-center">
-        <p class="body-2 text-color">
+        <p>
           Already have an account?
           <RouterLink to="/access/sign-in/" class="text-primary opacity-100">
             Sign in

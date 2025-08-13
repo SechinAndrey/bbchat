@@ -10,9 +10,7 @@ import IconButton from "@src/ui/inputs/IconButton.vue";
   <div>
     <!--header-->
     <div class="px-5 mb-6 flex justify-between items-center">
-      <p id="modal-title" class="heading-1 text-color" tabindex="0">
-        Edit Group Info
-      </p>
+      <p id="modal-title" class="" tabindex="0">Edit Group Info</p>
 
       <!--return button-->
       <IconButton
@@ -22,7 +20,7 @@ import IconButton from "@src/ui/inputs/IconButton.vue";
             animationName: 'slide-right',
           })
         "
-        class="ic-btn-outlined-danger p-2"
+        class="p-2"
       >
         <ArrowUturnLeftIcon class="w-5 h-5" />
       </IconButton>
@@ -48,7 +46,7 @@ import IconButton from "@src/ui/inputs/IconButton.vue";
             animationName: 'slide-right',
           })
         "
-        class="contained-primary contained-text w-full"
+        class="w-full"
       >
         Save
       </Button>

@@ -53,7 +53,7 @@ const store = useStore();
             href="#"
             class="flex items-center"
           >
-            <p class="heading-2 text-color">
+            <p class="">
               {{
                 store.user && store.user.id === props.contact.id
                   ? "You"
@@ -71,7 +71,7 @@ const store = useStore();
         </div>
 
         <!--contact last seen-->
-        <p class="body-2 text-color">Last seen 2:30 am</p>
+        <p class="">Last seen 2:30 am</p>
       </div>
 
       <!--optional checkbox-->

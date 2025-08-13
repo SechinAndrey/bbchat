@@ -68,7 +68,7 @@ const store = useStore();
         />
 
         <p
-          class="body-2 text-white dark:text-white group-hover:text-white group-focus:text-white"
+          class="text-white dark:text-white group-hover:text-white group-focus:text-white"
         >
           Close Archive
         </p>
@@ -79,14 +79,14 @@ const store = useStore();
           <!--title-->
           <div class="flex items-start">
             <div class="grow mb-4 text-start">
-              <p class="heading-2 text-color">Archived Conversations</p>
+              <p class="">Archived Conversations</p>
             </div>
           </div>
         </div>
 
         <div>
           <!--number of conversations -->
-          <p class="body-2 text-color flex justify-start items-center">
+          <p class="flex justify-start items-center">
             {{ store.archivedConversations.length }}
             conversations
           </p>

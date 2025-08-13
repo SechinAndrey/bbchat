@@ -24,8 +24,8 @@ const store = useStore();
     aria-controls="privacy-settings-collapse"
     @click="props.handleToggle()"
   >
-    <p class="mb-4 heading-2 text-color">Privacy & Safety</p>
-    <p class="body-2 text-color">Control your privacy settings</p>
+    <p class="mb-4">Privacy & Safety</p>
+    <p class="">Control your privacy settings</p>
   </AccordionButton>
 
   <Collapse id="privacy-settings-collapse" :collapsed="props.collapsed">

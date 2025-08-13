@@ -35,6 +35,8 @@ onUnmounted(() => {
 });
 </script>
 
+
+
 <template>
   <div>
     <div
@@ -48,7 +50,7 @@ onUnmounted(() => {
         :style="props.coordinates"
         v-show="props.show"
         v-click-outside="props.handleClickOutside"
-        class="absolute z-[100] w-[12.5rem] mt-2 rounded-sm bg-white dark:bg-gray-800 shadow-lg border border-gray-100 dark:border-gray-600 focus:outline-none"
+        class="absolute z-[100] w-[12.5rem] mt-2 rounded-md bg-app-bg shadow-lg border border-app-border focus:outline-none transition-all duration-200"
         role="menu"
         aria-orientation="vertical"
         aria-labelledby="menu-button"

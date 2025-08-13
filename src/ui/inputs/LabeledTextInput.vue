@@ -18,11 +18,7 @@ const props = defineProps<{
 
 <template>
   <div class="flex flex-col">
-    <label
-      v-if="props.label"
-      :id="props.id"
-      class="body-2 text-color mb-3 text-left"
-    >
+    <label v-if="props.label" :id="props.id" class="mb-3 text-left">
       {{ props.label }}
     </label>
 
@@ -36,7 +32,7 @@ const props = defineProps<{
         v-model="model"
         :type="props.type || 'text'"
         :name="props.name"
-        :class="['text-input', props.inputClass]"
+        :class="['', props.inputClass]"
         :bordered="props.bordered"
         :placeholder="props.placeholder"
         :size="props.size"

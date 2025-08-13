@@ -17,11 +17,8 @@ const props = defineProps<{
     v-model="model"
     :type="props.type || 'text'"
     :name="props.name"
-    class="text-input"
-    :class="[
-      props.bordered ? 'bordered-input' : 'ringed-input',
-      props.size === 'small' ? 'h-7' : 'h-8',
-    ]"
+    class=""
+    :class="[props.size === 'small' ? 'h-7' : 'h-8']"
     :placeholder="props.placeholder"
   />
 </template>

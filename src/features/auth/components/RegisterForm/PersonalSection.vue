@@ -27,7 +27,7 @@ import LabeledTextInput from "@src/ui/inputs/LabeledTextInput.vue";
     <!--local controls-->
     <div class="mb-6">
       <Button
-        class="contained-primary contained-text w-full mb-4"
+        class="w-full mb-4"
         @click="
           $emit('active-section-change', {
             sectionName: 'password-section',
@@ -43,14 +43,14 @@ import LabeledTextInput from "@src/ui/inputs/LabeledTextInput.vue";
       <span
         class="w-full border border-dashed border-gray-100 dark:border-gray-600 rounded-[.0625rem]"
       ></span>
-      <p class="body-3 text-color px-4 text-opacity-75 font-light">or</p>
+      <p class="px-4 text-opacity-75 font-light">or</p>
       <span
         class="w-full border border-dashed border-gray-100 dark:border-gray-600 rounded-[.0625rem]"
       ></span>
     </div>
 
     <!--oauth controls-->
-    <Button class="outlined-primary outlined-text w-full mb-5">
+    <Button class="w-full mb-5">
       <span class="flex">
         <img
           src="@src/shared/assets/vectors/google-logo.svg"

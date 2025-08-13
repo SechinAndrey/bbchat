@@ -176,8 +176,8 @@ async function sendMessage() {
           v-if="!hasAttachments"
           class="px-5 py-8 text-center text-gray-500 dark:text-gray-400"
         >
-          <p class="body-2">Файл не вибраний</p>
-          <p class="body-3 mt-1">Натисніть "Додати" щоб вибрати файл</p>
+          <p class="">Файл не вибраний</p>
+          <p class="mt-1">Натисніть "Додати" щоб вибрати файл</p>
         </div>
 
         <!--Caption input-->
@@ -192,23 +192,12 @@ async function sendMessage() {
         <!--Action buttons-->
         <div class="flex w-full px-5">
           <div class="grow flex justify-start">
-            <Button class="ghost-primary ghost-text" @click="openFileDialog">
-              Додати
-            </Button>
+            <Button class="" @click="openFileDialog"> Додати </Button>
           </div>
 
-          <Button
-            class="ghost-primary ghost-text mr-4"
-            @click="props.closeModal"
-          >
-            Скасувати
-          </Button>
+          <Button class="mr-4" @click="props.closeModal"> Скасувати </Button>
 
-          <Button
-            class="contained-primary contained-text"
-            :disabled="!hasAttachments"
-            @click="sendMessage"
-          >
+          <Button class="" :disabled="!hasAttachments" @click="sendMessage">
             Відправити
           </Button>
         </div>

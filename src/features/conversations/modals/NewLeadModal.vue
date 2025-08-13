@@ -154,9 +154,7 @@ const handleCancel = () => {
 
           <!-- Comment -->
           <div>
-            <label class="body-2 text-color mb-3 block text-left"
-              >Коментар</label
-            >
+            <label class="mb-3 block text-left">Коментар</label>
             <Textarea
               v-model="comment"
               placeholder="Ваш коментар"
@@ -169,15 +167,9 @@ const handleCancel = () => {
 
         <!-- Action buttons -->
         <div class="flex justify-end mt-6 space-x-3">
-          <Button class="ghost-primary ghost-text" @click="handleCancel">
-            Відміна
-          </Button>
+          <Button class="" @click="handleCancel"> Відміна </Button>
 
-          <Button
-            class="contained-primary contained-text"
-            :disabled="!isFormValid"
-            @click="handleSubmit"
-          >
+          <Button class="" :disabled="!isFormValid" @click="handleSubmit">
             Додати
           </Button>
         </div>

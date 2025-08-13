@@ -42,13 +42,11 @@ import IconButton from "@src/ui/inputs/IconButton.vue";
   <div>
     <!--header-->
     <div class="mb-6 px-5 flex justify-between items-center">
-      <p id="modal-title" class="heading-1 text-color" tabindex="0">
-        Shared Media
-      </p>
+      <p id="modal-title" class="" tabindex="0">Shared Media</p>
 
       <!--return button-->
       <IconButton
-        class="ic-btn-outlined-danger p-2"
+        class="p-2"
         @click="
           $emit('active-page-change', {
             tabName: 'conversation-info',

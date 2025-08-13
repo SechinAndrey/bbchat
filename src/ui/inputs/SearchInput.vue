@@ -22,7 +22,7 @@ const iconClasses = computed(() => {
 });
 
 const clearButtonClasses = computed(() => {
-  const baseClasses = "ic-btn-ghost-gray p-2";
+  const baseClasses = " p-2";
   const margin = props.size === "small" ? "m-[.25rem]" : "m-[.5rem]";
   return `${baseClasses} ${margin}`;
 });

@@ -49,7 +49,7 @@ const getTranscription = async () => {
     </div>
   </CollapseTransition>
   <Button
-    class="btn-text-primary text-sm leading-4 mt-3 m-2 px-3"
+    class="text-sm leading-4 mt-3 m-2 px-3"
     size="small"
     :loading="isLoading"
     @click="getTranscription"
