@@ -22,7 +22,7 @@ const activeClasses = {
 
 const inactiveClasses = {
   border: "border-transparent",
-  text: "text-gray-500 dark:text-white dark:opacity-60",
+  text: "text-app-text",
 };
 </script>
 
@@ -38,9 +38,9 @@ const inactiveClasses = {
       ]"
     >
       <IconButton
-        @click="$emit('tab-change', 'people')"
         title="people and smiles"
         aria-label="people and smiles"
+        @click="$emit('tab-change', 'people')"
       >
         <FaceSmileIcon
           class="w-5 h-5 transition-colors duration-200"
@@ -109,9 +109,9 @@ const inactiveClasses = {
       ]"
     >
       <IconButton
-        @click="$emit('tab-change', 'activity')"
         title="activities and sports"
         aria-label="activities and sports"
+        @click="$emit('tab-change', 'activity')"
       >
         <RocketLaunchIcon
           class="w-5 h-5 transition-colors duration-200"
@@ -155,9 +155,9 @@ const inactiveClasses = {
       ]"
     >
       <IconButton
-        @click="$emit('tab-change', 'travel')"
         title="travel"
         aria-label="travel"
+        @click="$emit('tab-change', 'travel')"
       >
         <GlobeAsiaAustraliaIcon
           class="w-5 h-5 transition-colors duration-200"

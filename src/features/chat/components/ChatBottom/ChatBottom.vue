@@ -10,7 +10,7 @@ import {
   XCircleIcon,
 } from "@heroicons/vue/24/outline";
 import AttachmentsModal from "@src/features/media/modals/AttachmentsModal/AttachmentsModal.vue";
-import IconButton from "@src/ui/inputs/IconButton.vue";
+import Button from "@src/ui/inputs/Button.vue";
 import ScaleTransition from "@src/ui/transitions/ScaleTransition.vue";
 import EmojiPicker from "@src/ui/inputs/EmojiPicker/EmojiPicker.vue";
 import Textarea from "@src/ui/inputs/Textarea.vue";
@@ -82,88 +82,97 @@ async function sendMessage() {
   <div class="w-full">
     <div
       v-if="store.status !== 'loading'"
-      class="h-auto min-h-[5.25rem] p-5 flex items-end"
+      class="h-auto min-h-[5.25rem] p-5 flex items-center"
       :class="recording ? ['justify-between'] : []"
     >
-      <div class="min-h-[2.75rem]">
-        <Select
-          v-model="messengerId"
-          :options="messengerOptions"
-          display-mode="icon-only"
-          size="sm"
-          class="mr-5"
-          selected-icon-class="w-8 h-8 rounded-full"
-          option-icon-class="w-5 h-5 rounded-full"
-        >
-          <template #header> Канал для відправки </template>
-        </Select>
-      </div>
+      <Select
+        v-model="messengerId"
+        :options="messengerOptions"
+        display-mode="icon-only"
+        size="sm"
+        class="mr-5"
+        selected-icon-class="w-8 h-8 rounded-full"
+        option-icon-class="w-5 h-5 rounded-full"
+      >
+        <template #header> Канал для відправки </template>
+      </Select>
 
       <!--message textarea-->
-      <div v-if="!recording" class="grow md:mr-5 xs:mr-4 self-end">
-        <div class="relative flex items-center">
-          <Textarea
-            v-model="value"
-            class="max-h-[5rem] pr-[3.125rem] resize-none scrollbar-hidden"
-            textarea-class="bg-theme-conversations"
-            auto-resize
-            cols="30"
-            :rows="1"
-            placeholder="Напишіть своє повідомлення тут"
-            aria-label="Напишіть своє повідомлення тут"
-            @keydown.ctrl.enter.prevent="sendMessage"
-          />
 
-          <!--emojis-->
-          <div class="absolute bottom-[.3rem] right-0">
-            <!--emoji button-->
-            <IconButton
-              title="toggle emoji picker"
-              aria-label="toggle emoji picker"
-              class="toggle-picker-button w-7 h-7 md:mr-5 xs:mr-4"
-              @click="showPicker = !showPicker"
+      <div
+        v-if="!recording"
+        class="relative flex items-center grow md:mr-5 xs:mr-4"
+      >
+        <Textarea
+          v-model="value"
+          no-resize
+          variant="filled"
+          :rows="1"
+          placeholder="Напишіть своє повідомлення тут"
+          @keydown.ctrl.enter.prevent="sendMessage"
+        />
+
+        <!--emojis-->
+        <div class="absolute bottom-0 right-3">
+          <!--emoji button-->
+          <Button
+            variant="ghost"
+            size="xs"
+            :ring="false"
+            icon-only
+            @click="showPicker = !showPicker"
+          >
+            <template #icon>
+              <XCircleIcon v-if="showPicker" />
+              <FaceSmileIcon v-else />
+            </template>
+          </Button>
+
+          <!--emoji picker-->
+          <ScaleTransition>
+            <div
+              v-show="showPicker"
+              v-click-outside="handleClickOutside"
+              class="absolute z-10 bottom-[3.4375rem] md:right-0 xs:right-[-5rem] mt-2"
             >
-              <XCircleIcon v-if="showPicker" class="w-[1.25rem] h-[1.25rem]" />
-              <FaceSmileIcon v-else class="w-[1.25rem] h-[1.25rem]" />
-            </IconButton>
-
-            <!--emoji picker-->
-            <ScaleTransition>
-              <div
-                v-show="showPicker"
-                v-click-outside="handleClickOutside"
-                class="absolute z-10 bottom-[3.4375rem] md:right-0 xs:right-[-5rem] mt-2"
-              >
-                <div role="none">
-                  <EmojiPicker :show="showPicker" />
-                </div>
+              <div role="none">
+                <EmojiPicker :show="showPicker" />
               </div>
-            </ScaleTransition>
-          </div>
+            </div>
+          </ScaleTransition>
         </div>
       </div>
-      <div class="min-h-[2.75rem] flex items-center">
+
+      <div class="flex items-center">
         <!--select attachments button-->
-        <IconButton
+        <Button
           v-if="!recording"
-          class="w-7 h-7 md:mr-5 xs:mr-4"
-          title="open select attachments modal"
-          aria-label="open select attachments modal"
+          variant="ghost"
+          size="sm"
+          icon-only
+          class="md:mr-5 xs:mr-4"
           @click="openAttachmentsModal = true"
         >
-          <PaperClipIcon class="w-[1.25rem] h-[1.25rem]" />
-        </IconButton>
+          <template #icon>
+            <PaperClipIcon />
+          </template>
+        </Button>
 
         <!--send message button-->
-        <IconButton
+        <Button
           v-if="!recording"
-          class="w-7 h-7 active:scale-110"
+          variant="primary"
+          size="sm"
+          icon-only
+          class="active:scale-110"
           title="send message"
           aria-label="send message"
           @click="sendMessage"
         >
-          <PaperAirplaneIcon class="w-[1.0625rem] h-[1.0625rem]" />
-        </IconButton>
+          <template #icon>
+            <PaperAirplaneIcon />
+          </template>
+        </Button>
       </div>
     </div>
 

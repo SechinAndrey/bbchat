@@ -3,6 +3,7 @@ import { ref, computed, onMounted, onUnmounted, nextTick, watch } from "vue";
 import UserIcon from "../../shared/icons/UserIcon.vue";
 import ChevronDownIcon from "../../shared/icons/ChevronDownIcon.vue";
 import Checkbox from "./Checkbox.vue";
+import Button from "./Button.vue";
 
 type Option = {
   value: string | number;
@@ -70,6 +71,21 @@ const sizeClasses = computed(() => {
         chevron: "w-4 h-4",
         iconMargin: "mr-3",
       };
+  }
+});
+
+// Explicit size in rem to strictly clamp image container
+const iconSizeRem = computed(() => {
+  switch (props.size) {
+    case "xs":
+      return "1rem"; // 16px
+    case "sm":
+      return "1.25rem"; // 20px
+    case "lg":
+      return "1.75rem"; // 28px
+    case "md":
+    default:
+      return "1.5rem"; // 24px
   }
 });
 
@@ -204,38 +220,45 @@ const handleOptionClick = (option: Option) => {
 
 <template>
   <div ref="selectElement" class="relative">
-    <button
-      class="flex items-center justify-between w-full text-left gap-[0.25rem]"
+    <Button
+      block
+      variant="ghost"
+      :size="size"
+      :ring="false"
+      class="justify-between font-normal"
       @click="toggleDropdown"
     >
       <span class="flex items-center min-w-0">
-        <img
+        <!-- Strict size wrapper to prevent overflow -->
+        <span
           v-if="selectedOption && selectedOption.image"
-          :src="selectedOption.image"
-          class="flex-shrink-0"
-          :class="[
-            selectedIconClass || sizeClasses.icon,
-            sizeClasses.iconMargin,
-          ]"
-        />
+          class="flex-shrink-0 inline-flex items-center justify-center overflow-hidden"
+          :class="[sizeClasses.iconMargin]"
+          :style="{ width: iconSizeRem, height: iconSizeRem }"
+        >
+          <img
+            :src="selectedOption.image"
+            class="block max-w-full max-h-full object-contain"
+          />
+        </span>
         <component
           :is="icon"
           v-else-if="icon"
-          class="flex-shrink-0 text-text-secondary"
+          class="flex-shrink-0 text-app-text-secondary"
           :class="[sizeClasses.icon, sizeClasses.iconMargin]"
         />
         <span
           v-if="displayMode === 'icon-label'"
-          class="truncate text-text-primary"
+          class="truncate text-app-text"
           :class="sizeClasses.selectText"
           >{{ selectedLabel }}</span
         >
       </span>
       <ChevronDownIcon
-        class="flex-shrink-0 text-text-secondary transition-transform duration-200"
+        class="flex-shrink-0 text-app-text-secondary transition-transform duration-200"
         :class="[{ 'rotate-180': isOpen }, sizeClasses.chevron]"
       />
-    </button>
+    </Button>
 
     <Teleport to="body">
       <transition
@@ -250,11 +273,11 @@ const handleOptionClick = (option: Option) => {
           v-if="isOpen"
           ref="dropdownMenu"
           :style="dropdownStyle"
-          class="z-50 bg-theme-surface rounded-md shadow-lg border"
+          class="z-50 bg-app-bg rounded-md shadow-lg border border-app-border"
         >
           <div
             v-if="$slots.header"
-            class="px-3 py-2 font-bold border-b text-text-primary"
+            class="px-3 py-2 font-bold border-b border-app-border text-app-text"
           >
             <slot name="header" />
           </div>
@@ -262,7 +285,7 @@ const handleOptionClick = (option: Option) => {
             <li
               v-for="option in options"
               :key="option.value"
-              class="text-text-primary relative cursor-pointer select-none"
+              class="text-app-text relative cursor-pointer select-none border-app-border"
               :class="sizeClasses.optionText"
               @click="handleOptionClick(option)"
             >
@@ -277,12 +300,17 @@ const handleOptionClick = (option: Option) => {
                   :model-value="isSelected(option.value)"
                   class="mr-2"
                 />
-                <img
+                <!-- Strict size wrapper for option image as well -->
+                <span
                   v-if="option.image"
-                  :src="option.image"
-                  class="flex-shrink-0"
-                  :class="optionIconClass || sizeClasses.icon"
-                />
+                  class="flex-shrink-0 inline-flex items-center justify-center overflow-hidden"
+                  :style="{ width: iconSizeRem, height: iconSizeRem }"
+                >
+                  <img
+                    :src="option.image"
+                    class="block max-w-full max-h-full object-contain"
+                  />
+                </span>
                 <span class="truncate">{{ option.label }}</span>
               </div>
             </li>

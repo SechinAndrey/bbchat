@@ -4,6 +4,14 @@ import { RouterLink } from "vue-router";
 
 // Button configuration
 const BUTTON_SIZES = {
+  xs: {
+    padding: "px-2 py-2",
+    text: "text-xs",
+    lineHeight: "leading-4",
+    icon: "w-5 h-5",
+    gap: "gap-1",
+    height: "h-6",
+  },
   sm: {
     padding: "px-4 py-[0.625rem]",
     text: "text-[0.813rem]",

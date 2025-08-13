@@ -8,14 +8,17 @@ const TEXTAREA_SIZES = {
   sm: {
     padding: "px-3 py-2",
     text: "text-sm",
+    minHeight: "min-h-[2rem]",
   },
   md: {
     padding: "px-4 py-2",
     text: "text-base",
+    minHeight: "min-h-[2.25rem]",
   },
   lg: {
     padding: "px-5 py-3",
     text: "text-lg",
+    minHeight: "min-h-[2.75rem]",
   },
 } as const;
 
@@ -30,10 +33,8 @@ type TextareaVariant = keyof typeof TEXTAREA_VARIANTS;
 
 const props = withDefaults(
   defineProps<{
-    id?: string;
-    name?: string;
     placeholder?: string;
-    autoResize?: boolean;
+    noResize?: boolean;
     rows?: number;
     size?: TextareaSize;
     variant?: TextareaVariant;
@@ -41,6 +42,8 @@ const props = withDefaults(
     disabled?: boolean;
   }>(),
   {
+    placeholder: "Введіть текст...",
+    noResize: false,
     rows: 3,
     size: "sm",
     variant: "default",
@@ -58,9 +61,11 @@ const textareaClasses = computed(() => {
     variantClass,
     sizeConfig.padding,
     sizeConfig.text,
+    sizeConfig.minHeight,
     {
       "textarea-block": props.block,
       "textarea-disabled": props.disabled,
+      "resize-none": props.noResize,
     },
   ];
 });

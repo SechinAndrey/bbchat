@@ -24,7 +24,7 @@ const handleActiveTabChange = (tab: string) => {
 <template>
   <div
     v-if="props.show"
-    class="w-[18.75rem] p-5 rounded-[1rem] border shadow-xl shadow-outline bg-white dark:bg-gray-800 border-gray-50 dark:border-gray-700"
+    class="w-[18.75rem] p-5 rounded-[1rem] border border-app-border shadow-xl shadow-outline bg-app-bg"
   >
     <!--Tabs-->
     <EmojiTabs
@@ -34,7 +34,7 @@ const handleActiveTabChange = (tab: string) => {
     />
 
     <!--Search-->
-    <SearchInput class="w-full mb-5 rounded-[.75rem]" v-model="keyword" />
+    <SearchInput v-model="keyword" class="mb-5" variant="filled" />
 
     <!--Emojis-->
     <Emojis :keyword="keyword" :active-tab="activeTab" class="w-full mb-5" />

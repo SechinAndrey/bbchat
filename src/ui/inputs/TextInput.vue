@@ -138,6 +138,7 @@ const iconRightContainerClasses = computed(() => [
   border-radius: var(--btn-border-radius);
   color: var(--color-input-text);
   --tw-ring-color: var(--color-input-focus);
+  --tw-ring-offset-color: var(--color-input-focus-offset);
 }
 
 .input::placeholder {
