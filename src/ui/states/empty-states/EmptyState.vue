@@ -15,12 +15,12 @@ const props = withDefaults(
 </script>
 
 <template>
-  <div class="flex flex-col justify-center items-center">
+  <div class="flex flex-col justify-center items-center bg-app-bg">
     <div
       v-if="props.icon"
-      class="w-10 h-10 mr-4 mb-5 flex justify-center items-center rounded-full bg-secondary transition duration-500"
+      class="w-10 h-10 mr-4 mb-5 flex justify-center items-center rounded-full bg-secondary-lighter transition duration-500"
     >
-      <component :is="props.icon" class="w-7 h-7 text-secondary-active" />
+      <component :is="props.icon" class="w-7 h-7 text-secondary" />
     </div>
 
     <p v-if="props.title" class="mb-3">

@@ -32,7 +32,7 @@ async function getAudio() {
       :src="callAudio"
       controls
     ></audio>
-    <Button v-else class="" size="small" :loading="isLoading" @click="getAudio">
+    <Button v-else size="sm" block :loading="isLoading" @click="getAudio">
       Отримати аудіо дзвінка
     </Button>
   </div>

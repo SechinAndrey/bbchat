@@ -99,6 +99,7 @@ const formatDuration = (seconds: number) => {
     <ConversationAvatar
       v-if="!isSelf && conversationsStore.activeConversationInfo"
       :conversation="conversationsStore.activeConversationInfo"
+      is-active
     />
 
     <!-- Message body -->
@@ -106,7 +107,7 @@ const formatDuration = (seconds: number) => {
       <!-- Message content -->
 
       <div
-        class="bg-theme-message rounded-2xl rounded-tl-sm px-4 py-3 max-w-md transition-all duration-300"
+        class="bg-app-bg-secondary rounded-2xl rounded-tl-sm px-4 py-3 max-w-md transition-all duration-300"
         :class="{
           'w-[225px]': call && !isCallDetailsExpanded,
           'w-[260px]': call && isCallDetailsExpanded,
@@ -115,7 +116,7 @@ const formatDuration = (seconds: number) => {
         <!-- 1 - чапорт -->
         <div
           v-if="chaport"
-          class="text-[0.8125rem] text-text-primary leading-relaxed relative pr-6"
+          class="text-[0.8125rem] leading-relaxed relative pr-6"
         >
           <div
             v-html="
@@ -142,7 +143,7 @@ const formatDuration = (seconds: number) => {
         <!-- message_telegram_id - telegram | viber -->
         <div
           v-if="echat"
-          class="text-[0.8125rem] text-text-primary leading-relaxed relative pr-6"
+          class="text-[0.8125rem] leading-relaxed relative pr-6"
         >
           <div
             v-if="echat.message"
@@ -182,10 +183,7 @@ const formatDuration = (seconds: number) => {
         </div>
 
         <!-- 3 - звонок -->
-        <div
-          v-if="call"
-          class="text-[0.8125rem] text-text-primary leading-relaxed"
-        >
+        <div v-if="call" class="text-[0.8125rem] leading-relaxed">
           <div class="flex items-center gap-2 mb-2">
             <component :is="callTypeIcon" class="w-4 h-4 text-blue-500" />
             <span class="font-medium">

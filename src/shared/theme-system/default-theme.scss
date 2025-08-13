@@ -109,10 +109,12 @@ html.theme-default {
 
 html.theme-default[data-theme="dark"] {
   /* BASIC colors */
+  --color-secondary: #fc6b40;
+  --color-secondary-lighter: #422c27;
 
   // Text colors
   --color-text-primary: #e2e8f0;
-  --color-text-secondary: #cbd5e1;
+  --color-text-secondary: #7f86b1;
 
   // Borders, Dividers
   --color-border: #4b5563;

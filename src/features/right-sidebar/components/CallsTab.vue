@@ -49,7 +49,7 @@ function callTypeIcon(call: ApiCommunicationCallInfo) {
           />
           <div class="flex-1">
             <div class="flex">
-              <div class="text-theme-t-alt text-[0.813rem] min-w-[49%]">
+              <div class="text-app-text-secondary text-[0.813rem] min-w-[49%]">
                 Дата
               </div>
               <div class="text-[0.813rem]">
@@ -57,7 +57,7 @@ function callTypeIcon(call: ApiCommunicationCallInfo) {
               </div>
             </div>
             <div class="flex">
-              <div class="text-theme-t-alt text-[0.813rem] min-w-[49%]">
+              <div class="text-app-text-secondary text-[0.813rem] min-w-[49%]">
                 Номер
               </div>
 
@@ -68,7 +68,7 @@ function callTypeIcon(call: ApiCommunicationCallInfo) {
               >
             </div>
             <div class="flex">
-              <div class="text-theme-t-alt text-[0.813rem] min-w-[49%]">
+              <div class="text-app-text-secondary text-[0.813rem] min-w-[49%]">
                 Очікування
               </div>
               <div class="text-[0.813rem]">
@@ -76,7 +76,7 @@ function callTypeIcon(call: ApiCommunicationCallInfo) {
               </div>
             </div>
             <div class="flex">
-              <div class="text-theme-t-alt text-[0.813rem] min-w-[49%]">
+              <div class="text-app-text-secondary text-[0.813rem] min-w-[49%]">
                 Тривалість
               </div>
               <div class="text-[0.813rem]">
@@ -84,7 +84,7 @@ function callTypeIcon(call: ApiCommunicationCallInfo) {
               </div>
             </div>
             <div class="flex">
-              <div class="text-theme-t-alt text-[0.813rem] min-w-[49%]">
+              <div class="text-app-text-secondary text-[0.813rem] min-w-[49%]">
                 ПІБ
               </div>
               <div class="text-[0.813rem]">
@@ -95,11 +95,11 @@ function callTypeIcon(call: ApiCommunicationCallInfo) {
               <CallPlayer
                 v-if="call.binotel_id"
                 :binotel-id="call.binotel_id"
-                class="m-2"
+                class="mx-1 mt-3 mb-4"
               />
             </div>
 
-            <CallTranscription class="m-2" :call-id="call.id" />
+            <CallTranscription class="m-3" :call-id="call.id" />
           </div>
         </div>
       </div>

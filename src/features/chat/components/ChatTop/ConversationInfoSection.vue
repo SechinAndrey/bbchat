@@ -83,6 +83,7 @@ const endConversation = async () => {
         <ConversationAvatar
           v-if="conversationsStore.activeConversationInfo"
           :conversation="conversationsStore.activeConversationInfo"
+          is-active
         />
       </button>
 

@@ -65,26 +65,30 @@ selectionsStore.fetchSelections(entity, id);
           class="relative"
         >
           <button
-            class="absolute right-1 p-2 hover:bg-secondary rounded-[4px] text-secondary-active"
+            class="absolute right-1 p-2 hover:bg-secondary-lighter rounded-[4px] text-secondary"
             @click="openDeleteModal(selection)"
           >
             <TrashIcon class="h-5 w-5"></TrashIcon>
           </button>
           <div class="flex">
-            <div class="text-theme-t-alt text-[0.813rem] min-w-[49%]">ID</div>
+            <div class="text-app-text-secondary text-[0.813rem] min-w-[49%]">
+              ID
+            </div>
             <button
-              class="text-[0.813rem] underline"
+              class="text-[0.813rem] underline text-primary"
               @click="openSelectionModal(selection)"
             >
               {{ selection.id }}
             </button>
           </div>
           <div class="flex">
-            <div class="text-theme-t-alt text-[0.813rem] min-w-[49%]">Тип</div>
+            <div class="text-app-text-secondary text-[0.813rem] min-w-[49%]">
+              Тип
+            </div>
             <div class="text-[0.813rem]">{{ selection.type.name }}</div>
           </div>
           <div class="flex">
-            <div class="text-theme-t-alt text-[0.813rem] min-w-[49%]">
+            <div class="text-app-text-secondary text-[0.813rem] min-w-[49%]">
               Дата створення
             </div>
             <div class="text-[0.813rem]">
@@ -92,7 +96,7 @@ selectionsStore.fetchSelections(entity, id);
             </div>
           </div>
           <div class="flex">
-            <div class="text-theme-t-alt text-[0.813rem] min-w-[49%]">
+            <div class="text-app-text-secondary text-[0.813rem] min-w-[49%]">
               Менеджер
             </div>
             <div class="text-[0.813rem]">
@@ -100,7 +104,7 @@ selectionsStore.fetchSelections(entity, id);
             </div>
           </div>
           <div class="flex">
-            <div class="text-theme-t-alt text-[0.813rem] min-w-[49%]">
+            <div class="text-app-text-secondary text-[0.813rem] min-w-[49%]">
               Кількість площин
             </div>
             <div class="text-[0.813rem]">
@@ -108,7 +112,7 @@ selectionsStore.fetchSelections(entity, id);
             </div>
           </div>
 
-          <hr class="my-4" />
+          <hr class="my-4 border-app-border" />
         </div>
       </div>
 

@@ -79,9 +79,7 @@ const imgs = (): string[] => {
       <div class="overflow-x-auto rounded-lg shadow-shadow">
         <table class="w-full min-w-[1200px]">
           <!-- Table Header -->
-          <thead
-            class="bg-theme-table-bg border-b border-theme-surface-variant"
-          >
+          <thead class="bg-theme-table-bg border-b border-app-border">
             <tr>
               <th class="w-[1%] pl-[1.25rem] py-[0.625rem] pr-3">
                 <Checkbox
@@ -90,78 +88,50 @@ const imgs = (): string[] => {
                   @update:model-value="allSelectedChanged"
                 />
               </th>
-              <th
-                class="w-[1%] py-[0.625rem] px-3 text-left font-medium text-text-primary"
-              >
+              <th class="w-[1%] py-[0.625rem] px-3 text-left font-medium">
                 ID
               </th>
-              <th
-                class="w-[3.52%] py-[0.625rem] px-3 text-left font-medium text-text-primary"
-              >
+              <th class="w-[3.52%] py-[0.625rem] px-3 text-left font-medium">
                 Місто
               </th>
-              <th
-                class="w-[8.52%] py-[0.625rem] px-3 text-left font-medium text-text-primary"
-              >
+              <th class="w-[8.52%] py-[0.625rem] px-3 text-left font-medium">
                 Фірма Код
               </th>
-              <th
-                class="w-[8.52%] py-[0.625rem] px-3 text-left font-medium text-text-primary"
-              >
+              <th class="w-[8.52%] py-[0.625rem] px-3 text-left font-medium">
                 Тип
               </th>
-              <th
-                class="w-[13.52%] py-[0.625rem] px-3 text-left font-medium text-text-primary"
-              >
+              <th class="w-[13.52%] py-[0.625rem] px-3 text-left font-medium">
                 Адреса
               </th>
-              <th
-                class="w-[1%] py-[0.625rem] px-3 text-left font-medium text-text-primary"
-              >
+              <th class="w-[1%] py-[0.625rem] px-3 text-left font-medium">
                 Сторона
               </th>
-              <th
-                class="w-[1%] py-[0.625rem] px-3 text-left font-medium text-text-primary"
-              >
+              <th class="w-[1%] py-[0.625rem] px-3 text-left font-medium">
                 Підсвітка
               </th>
-              <th
-                class="w-[8.52%] py-[0.625rem] px-3 text-left font-medium text-text-primary"
-              >
+              <th class="w-[8.52%] py-[0.625rem] px-3 text-left font-medium">
                 Дата оновлення
               </th>
-              <th
-                class="w-[1%] py-[0.625rem] px-3 text-left font-medium text-text-primary"
-              >
+              <th class="w-[1%] py-[0.625rem] px-3 text-left font-medium">
                 Фото
               </th>
-              <th
-                class="w-[8.52%] py-[0.625rem] px-3 text-left font-medium text-text-primary"
-              >
+              <th class="w-[8.52%] py-[0.625rem] px-3 text-left font-medium">
                 Зайнятість
               </th>
-              <th
-                class="w-[8.52%] py-[0.625rem] px-3 text-left font-medium text-text-primary"
-              >
+              <th class="w-[8.52%] py-[0.625rem] px-3 text-left font-medium">
                 Ціна системі
               </th>
-              <th
-                class="w-[8.52%] py-[0.625rem] px-3 text-left font-medium text-text-primary"
-              >
+              <th class="w-[8.52%] py-[0.625rem] px-3 text-left font-medium">
                 Ціна купівлі (без ПДВ)
               </th>
-              <th
-                class="w-[8.52%] py-[0.625rem] px-3 text-left font-medium text-text-primary"
-              >
+              <th class="w-[8.52%] py-[0.625rem] px-3 text-left font-medium">
                 Ціна продажу (без ПДВ)
               </th>
-              <th
-                class="w-[8.52%] py-[0.625rem] px-3 text-left font-medium text-text-primary"
-              >
+              <th class="w-[8.52%] py-[0.625rem] px-3 text-left font-medium">
                 Ціна друку
               </th>
               <th
-                class="w-[8.52%] pl-3 py-[0.625rem] pr-[1.25rem] text-left font-medium text-text-primary"
+                class="w-[8.52%] pl-3 py-[0.625rem] pr-[1.25rem] text-left font-medium"
               >
                 Сповіщення
               </th>
@@ -172,7 +142,7 @@ const imgs = (): string[] => {
             <tr
               v-for="item in props.selectionItems"
               :key="item.id"
-              class="border-b border-theme-surface-variant bg-theme-table-bg hover:bg-theme-table-hover transition-colors"
+              class="border-b border-app-border bg-theme-table-bg hover:bg-theme-table-hover transition-colors"
             >
               <td class="pl-[1.25rem] py-[0.625rem] pr-3">
                 <Checkbox
@@ -181,30 +151,30 @@ const imgs = (): string[] => {
                   size="[1.25rem]"
                 />
               </td>
-              <td class="py-[0.625rem] px-3 text-text-primary">
+              <td class="py-[0.625rem] px-3">
                 {{ item.id }}
               </td>
-              <td class="py-[0.625rem] px-3 text-text-primary">
+              <td class="py-[0.625rem] px-3">
                 {{ item.city_name }}
               </td>
-              <td class="py-[0.625rem] px-3 text-text-primary">
+              <td class="py-[0.625rem] px-3">
                 <div>{{ item.firm_name }}</div>
                 <div class="text-xs text-text-secondary">{{ item.code }}</div>
               </td>
-              <td class="py-[0.625rem] px-3 text-text-primary">
+              <td class="py-[0.625rem] px-3">
                 {{ item.title }}
               </td>
-              <td class="py-[0.625rem] px-3 text-text-primary">
+              <td class="py-[0.625rem] px-3">
                 {{ item.addr }}
               </td>
-              <td class="py-[0.625rem] px-3 text-text-primary text-center">
+              <td class="py-[0.625rem] px-3 text-center">
                 <span
                   class="inline-flex items-center justify-center w-6 h-6 rounded-full text-xs font-medium"
                 >
                   {{ item.side_type }}
                 </span>
               </td>
-              <td class="py-[0.625rem] px-3 text-text-primary text-center">
+              <td class="py-[0.625rem] px-3 text-center">
                 <span
                   class="inline-flex items-center justify-center w-6 h-6 rounded-full text-xs font-medium"
                 >
@@ -217,7 +187,7 @@ const imgs = (): string[] => {
                   />
                 </span>
               </td>
-              <td class="py-[0.625rem] px-3 text-text-primary">
+              <td class="py-[0.625rem] px-3">
                 {{ dateWithTime(item.updated_at) }}
               </td>
               <td class="py-[0.625rem] px-3">
@@ -226,7 +196,7 @@ const imgs = (): string[] => {
                   class="w-8 h-8 flex items-center justify-center"
                   @click="openImagesModal(item)"
                 >
-                  <PhotoIcon class="w-6 h-6 text-text-primary" />
+                  <PhotoIcon class="w-6 h-6" />
                 </button>
                 <span v-else class="text-text-secondary">—</span>
               </td>
@@ -238,18 +208,10 @@ const imgs = (): string[] => {
                   ></div>
                 </div>
               </td>
-              <td class="py-[0.625rem] px-3 text-text-primary">
-                {{ item.price }} ₴
-              </td>
-              <td class="py-[0.625rem] px-3 text-text-primary">
-                {{ item.buying_price }} ₴
-              </td>
-              <td class="py-[0.625rem] px-3 text-text-primary">
-                {{ item.selling_price }} ₴
-              </td>
-              <td class="py-[0.625rem] px-3 text-text-primary">
-                {{ item.printing_price }} ₴
-              </td>
+              <td class="py-[0.625rem] px-3">{{ item.price }} ₴</td>
+              <td class="py-[0.625rem] px-3">{{ item.buying_price }} ₴</td>
+              <td class="py-[0.625rem] px-3">{{ item.selling_price }} ₴</td>
+              <td class="py-[0.625rem] px-3">{{ item.printing_price }} ₴</td>
               <td class="pl-3 py-[0.625rem] pr-[1.25rem] text-right">
                 <div v-if="item.isWatched" class="px-4 py-2 whitespace-nowrap">
                   <span>
@@ -260,10 +222,8 @@ const imgs = (): string[] => {
                     {{ watchedDate(item.watchedTo) }}
                   </span>
                 </div>
-                <div v-else class="bg-secondary px-4 py-2 rounded-sm">
-                  <span class="text-secondary-active">
-                    Площина не під наглядом
-                  </span>
+                <div v-else class="bg-secondary-lighter px-4 py-2 rounded-sm">
+                  <span class="text-secondary"> Площина не під наглядом </span>
                 </div>
               </td>
             </tr>

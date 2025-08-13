@@ -22,15 +22,15 @@ const close = () => {
   <Modal :open="props.open" :close-modal="close" no-padding>
     <template #content>
       <div
-        class="h-full w-full relative overflow-hidden bg-theme-surface transition-all"
+        class="h-full w-full relative overflow-hidden bg-app-bg transition-all"
       >
         <!-- modal header -->
         <div
-          class="flex items-center justify-between p-[1.25rem] border-b border-theme-border dark:border-theme-surface-variant"
+          class="flex items-center justify-between p-[1.25rem] border-b border-app-border"
         >
           <h2 class="text-2xl">ID {{ props.selection?.id }}</h2>
           <button
-            class="text-theme-text hover:text-theme-text-hover"
+            class="text-app-text hover:text-app-text-hover"
             @click="close"
           >
             <span class="sr-only">Close</span>

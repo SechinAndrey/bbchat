@@ -43,14 +43,15 @@ const getTranscription = async () => {
   <!-- add transition fold/unfold -->
   <CollapseTransition>
     <div v-if="unfolded" class="w-full">
-      <hr class="w-full my-4" />
-      <div class="text-theme-t-alt text-[0.813rem]">Резюме розмови:</div>
+      <hr class="w-full my-4 border-app-border" />
+      <div class="text-app-text-secondary text-[0.813rem]">Резюме розмови:</div>
       <div class="text-[0.813rem]" v-html="formattedText"></div>
     </div>
   </CollapseTransition>
   <Button
-    class="text-sm leading-4 mt-3 m-2 px-3"
-    size="small"
+    size="sm"
+    variant="text"
+    block
     :loading="isLoading"
     @click="getTranscription"
   >
