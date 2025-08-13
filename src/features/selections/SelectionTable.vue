@@ -76,7 +76,7 @@ const imgs = (): string[] => {
     <div
       class="h-[calc(100%-57px)] overflow-auto scrollbar-thin hidden md:block"
     >
-      <div class="overflow-x-auto bg-theme-bg rounded-lg shadow-shadow">
+      <div class="overflow-x-auto rounded-lg shadow-shadow">
         <table class="w-full min-w-[1200px]">
           <!-- Table Header -->
           <thead
@@ -287,7 +287,7 @@ const imgs = (): string[] => {
       <div
         v-for="item in props.selectionItems"
         :key="item.id"
-        class="bg-theme-bg shadow-shadow border border-theme-surface-variant overflow-hidden"
+        class="shadow-shadow border border-theme-surface-variant overflow-hidden"
       >
         <div class="p-4 flex items-center justify-between">
           <div>ID</div>

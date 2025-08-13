@@ -59,7 +59,7 @@ const handleSliderChange = function (value: number) {
     <!-- Buttons -->
     <section class="mb-10">
       <h3 class="mb-4">Buttons (Button)</h3>
-      
+
       <!-- Primary, Secondary variants -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div class="p-4 border rounded dark:border-gray-600">
@@ -75,7 +75,7 @@ const handleSliderChange = function (value: number) {
           <Button variant="primary" loading>Завантаження</Button>
         </div>
       </div>
-      
+
       <!-- Outline variants -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div class="p-4 border rounded dark:border-gray-600">
@@ -91,7 +91,7 @@ const handleSliderChange = function (value: number) {
           <Button variant="text">Текстова кнопка</Button>
         </div>
       </div>
-      
+
       <!-- Sizes -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div class="p-4 border rounded dark:border-gray-600">
@@ -107,7 +107,7 @@ const handleSliderChange = function (value: number) {
           <Button size="lg">Велика кнопка</Button>
         </div>
       </div>
-      
+
       <!-- States -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div class="p-4 border rounded dark:border-gray-600">
@@ -123,7 +123,7 @@ const handleSliderChange = function (value: number) {
           <Button link to="/ui-kit">Кнопка-посилання</Button>
         </div>
       </div>
-      
+
       <!-- With Icons -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div class="p-4 border rounded dark:border-gray-600">

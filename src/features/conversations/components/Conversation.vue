@@ -9,7 +9,6 @@ import { computed, ref } from "vue";
 
 import useStore from "@src/shared/store/store";
 import {
-  getActiveConversationId,
   getConversationIndex,
   getName,
   shorten,
@@ -95,18 +94,9 @@ const handleRemoveUnread = () => {
   }
 };
 
-// (computed property) determines if this conversation is active.
-const isActive = computed(
-  () => getActiveConversationId() === props.conversation.id,
-);
-
-const isSelected = computed(() => {
-  const path = `/chat/${props.conversation.entity}/${props.conversation.id}/`;
-  const pathWithoutSlash = path.slice(0, -1);
-  return (
-    route.currentRoute.value.path === path ||
-    route.currentRoute.value.path === pathWithoutSlash
-  );
+const isActive = computed(() => {
+  const currentConversationId = route.currentRoute.value.params.id;
+  return currentConversationId === props.conversation.id.toString();
 });
 
 const lastMessageDate = computed(() => {
@@ -135,14 +125,13 @@ const lastMessageText = computed(() => {
 </script>
 
 <template>
-  <div class="select-none" :class="{ 'bg-theme-bg': isSelected }">
+  <div class="select-none">
     <button
-      :aria-label="'conversation with' + getName(props.conversation)"
+      :aria-label="'Комунікація з ' + getName(props.conversation)"
       tabindex="0"
-      class="w-full h-[5.75rem] px-5 py-6 mb-3 flex rounded focus:bg-primary-hover/10 dark:active:bg-gray-600 dark:focus:bg-gray-600 dark:hover:bg-gray-600 hover:bg-primary-hover/10 active:bg-primary-hover/20 focus:outline-none transition duration-500 ease-out"
+      class="w-full h-[5.75rem] px-5 py-6 mb-3 flex focus:outline-none transition duration-500 ease-out"
       :class="{
-        'md:bg-primary-hover/10': isActive,
-        'md:dark:bg-gray-600': isActive,
+        'bg-app-bg': isActive,
       }"
       @contextmenu.prevent="handleShowContextMenu"
       @click="
@@ -154,7 +143,10 @@ const lastMessageText = computed(() => {
     >
       <!--profile image-->
       <div class="mr-4">
-        <ConversationAvatar :conversation="props.conversation" />
+        <ConversationAvatar
+          :conversation="props.conversation"
+          :is-active="isActive"
+        />
       </div>
 
       <div class="w-full flex flex-col">
@@ -168,13 +160,15 @@ const lastMessageText = computed(() => {
             </div>
 
             <!--last message date-->
-            <p class="whitespace-nowrap text-[0.5625rem]">
+            <p
+              class="whitespace-nowrap text-[0.5625rem] text-app-text-secondary"
+            >
               {{ lastMessageDate }}
             </p>
           </div>
         </div>
 
-        <div class="text-[0.5625rem] text-left">
+        <div class="text-[0.5625rem] text-left text-app-text-secondary">
           {{ props.conversation.contacts?.at(0)?.firstName }}
         </div>
 

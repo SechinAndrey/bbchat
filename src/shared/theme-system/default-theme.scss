@@ -106,6 +106,10 @@ html.theme-default {
 html.theme-default[data-theme="dark"] {
   /* BASIC colors */
 
+  // Text colors
+  --color-text-primary: #e2e8f0;
+  --color-text-secondary: #cbd5e1;
+
   // Background colors
   --color-bg-primary: #1f2936;
   --color-bg-secondary: #2d3748;

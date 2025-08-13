@@ -43,7 +43,7 @@ const openCarousel = () => {
     <a v-else :href="props.media" target="_blank" download class="block">
       <div class="flex gap-4">
         <div
-          class="min-w-8 max-w-8 max-h-8 min-h-8 flex justify-center rounded-full outline-none items-center bg-theme-bg dark:bg-gray-800"
+          class="min-w-8 max-w-8 max-h-8 min-h-8 flex justify-center rounded-full outline-none items-center dark:bg-gray-800"
         >
           <ArrowDownTrayIcon class="h-5 w-5 text-secondary" />
         </div>

@@ -13,7 +13,7 @@ import Settings from "@src/features/settings/components/Settings.vue";
 const store = useStore();
 
 // the selected sidebar component (e.g message/notifications/settings)
-const ActiveComponent = computed((): any => {
+const ActiveComponent = computed(() => {
   if (store.activeSidebarComponent === "messages") {
     return Conversations;
   } else if (store.activeSidebarComponent === "contacts") {
@@ -25,12 +25,13 @@ const ActiveComponent = computed((): any => {
   } else if (store.activeSidebarComponent === "settings") {
     return Settings;
   }
+  return Conversations;
 });
 </script>
 
 <template>
   <aside
-    class="xs:w-full md:w-[18.75rem] h-full p-0 flex flex-col overflow-visible transition-all duration-500"
+    class="bg-app-bg-secondary xs:w-full md:w-[18.75rem] h-full p-0 flex flex-col overflow-visible transition-all duration-500"
   >
     <FadeTransition>
       <component :is="ActiveComponent" class="h-full flex flex-col" />

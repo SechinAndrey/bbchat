@@ -116,7 +116,7 @@ selectionsStore.fetchSelections(entity, id);
         v-else
         :icon="RectangleStackIcon"
         title="Добірок немає"
-        class="bg-theme-bg py-5 rounded"
+        class="py-5 rounded"
       />
     </div>
 

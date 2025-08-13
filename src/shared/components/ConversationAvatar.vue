@@ -15,6 +15,7 @@ interface Props {
     | ApiCommunicationLeadFull
     | ApiCommunicationClientFull;
   size?: "sm" | "md" | "lg";
+  isActive?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -26,6 +27,7 @@ const [firstName, lastName] = name.split(" ");
 const { avatarInitials, avatarColor } = useAvatarInitials(
   computed(() => firstName || null),
   computed(() => lastName || null),
+  computed(() => props.isActive),
 );
 
 const avatar = computed(() => {
@@ -52,7 +54,7 @@ const sizeClasses = computed(() => {
   >
     <flemeIcon
       v-if="!avatar && conversation.entity === 'leads'"
-      class="text-orange-500 dark:text-orange-400"
+      class="text-secondary"
     />
     <span
       v-else-if="!avatar"
