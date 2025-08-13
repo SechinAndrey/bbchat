@@ -52,6 +52,7 @@ const props = withDefaults(
     iconOnly?: boolean;
     block?: boolean;
     loadingText?: string;
+    ring?: boolean;
   }>(),
   {
     loading: false,
@@ -62,6 +63,7 @@ const props = withDefaults(
     iconOnly: false,
     block: false,
     loadingText: "Завантаження...",
+    ring: true,
   },
 );
 
@@ -88,6 +90,7 @@ const buttonClasses = computed(() => {
       "btn-block": props.block,
       [sizeConfig.gap]: !props.iconOnly,
     },
+    props.ring ? "focus:ring-2 focus:ring-offset-2" : "",
   ];
 });
 
@@ -165,7 +168,6 @@ const componentProps = computed(() => {
 .btn {
   @apply inline-flex items-center justify-center font-medium 
          transition-all duration-200 ease-in-out cursor-pointer
-         focus:outline-none focus:ring-2 focus:ring-offset-2
          disabled:cursor-not-allowed;
   border-radius: var(--btn-border-radius);
 }

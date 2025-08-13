@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Button from "@src/ui/inputs/Button.vue";
 const props = defineProps<{
   active: boolean;
   name: string;
@@ -7,16 +8,12 @@ const props = defineProps<{
 </script>
 
 <template>
-  <button
-    class="p-3 flex-1 rounded-sm outline-none focus:outline-none transition-all duration-200"
-    :class="[
-      props.active
-        ? ['bg-primary', 'text-white']
-        : ['text-theme-text', 'opacity-60'],
-    ]"
+  <Button
+    class="flex-1 whitespace-nowrap"
+    size="sm"
+    :variant="active ? 'primary' : 'ghost'"
+    :ring="false"
   >
-    <p class="text-nowrap" :class="{ 'text-xs': props.compact }">
-      {{ props.name }}
-    </p>
-  </button>
+    {{ props.name }}
+  </Button>
 </template>
