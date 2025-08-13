@@ -78,49 +78,54 @@ const handleCloseOnClickOutside = (event: Event) => {
       :show="props.showDropdown"
       :position="[
         'md:bottom-0',
-        'md:left-[2.5rem]',
-        'md:top-[auto]',
+        'md:left-0',
+        'md:top-auto',
         'md:bottom-[3.125rem]',
-        'xs:bottom-[3.7rem]',
+        'xs:bottom-[3rem]',
         'md:left-[-4.8125rem]',
         'xs:left-[auto]',
         'xs:right-[-0.5rem]',
+        'overflow-hidden',
       ]"
       :handle-click-outside="handleCloseOnClickOutside"
       :close-dropdown="props.handleCloseDropdown"
     >
       <button
-        class="flex items-center w-full px-4 py-3 text-sm text-app-text hover:bg-app-bg-secondary focus:bg-app-bg-secondary focus:outline-none transition-all duration-200 rounded mx-0.5 my-0.5"
+        class="flex items-center w-full px-4 py-3 text-sm text-app-text hover:bg-app-bg-secondary focus:bg-app-bg-secondary focus:outline-none transition-all duration-200"
         aria-label="Show profile information"
         role="menuitem"
         @click="props.handleCloseDropdown"
       >
-        <InformationCircleIcon class="w-5 h-5 mr-3 opacity-70 hover:opacity-100 transition-opacity duration-200" />
+        <InformationCircleIcon
+          class="w-5 h-5 mr-3 opacity-70 hover:opacity-100 transition-opacity duration-200"
+        />
         Profile Information
       </button>
 
       <RouterLink
         to="/reset/"
-        class="flex items-center w-full px-4 py-3 text-sm text-app-text hover:bg-app-bg-secondary focus:bg-app-bg-secondary focus:outline-none transition-all duration-200 rounded mx-0.5 my-0.5 no-underline"
+        class="flex items-center w-full px-4 py-3 text-sm text-app-text hover:bg-app-bg-secondary focus:bg-app-bg-secondary focus:outline-none transition-all duration-200"
         aria-label="change password"
         role="menuitem"
         @click="props.handleCloseDropdown"
       >
-        <ArrowPathIcon class="w-5 h-5 mr-3 opacity-70 hover:opacity-100 transition-opacity duration-200" />
+        <ArrowPathIcon
+          class="w-5 h-5 mr-3 opacity-70 hover:opacity-100 transition-opacity duration-200"
+        />
         Password Change
       </RouterLink>
 
       <button
-        class="flex items-center w-full px-4 py-3 text-sm text-danger hover:bg-danger/10 focus:bg-danger/10 focus:outline-none transition-all duration-200 rounded mx-0.5 my-0.5"
+        class="flex items-center w-full px-4 py-3 text-sm text-danger hover:bg-app-bg-secondary focus:bg-app-bg-secondary focus:outline-none transition-all duration-200"
         aria-label="logout"
         role="menuitem"
         @click="handleLogout"
       >
-        <ArrowLeftStartOnRectangleIcon class="w-5 h-5 mr-3 opacity-70 hover:opacity-100 transition-opacity duration-200" />
+        <ArrowLeftStartOnRectangleIcon
+          class="w-5 h-5 mr-3 opacity-70 hover:opacity-100 transition-opacity duration-200"
+        />
         Logout
       </button>
     </Dropdown>
   </div>
 </template>
-
-

@@ -23,7 +23,7 @@ const store = useStore();
       <!--chat-->
       <div
         id="mainContent"
-        class="xs:absolute xs:z-10 md:static grow h-full xs:w-full md:w-fit scrollbar-hidden bg-white dark:bg-gray-800 transition-all duration-500"
+        class="bg-app-bg xs:absolute xs:z-10 md:static grow h-full xs:w-full md:w-fit scrollbar-hidde transition-all duration-500"
         :class="
           getActiveConversationId()
             ? ['xs:left-[0rem]', 'xs:static']

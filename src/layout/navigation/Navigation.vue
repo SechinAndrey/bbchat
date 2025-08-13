@@ -66,14 +66,14 @@ const handleActiveSidebarComponentChange = (value: string) => {
           </li>
 
           <!--settings button small screen-->
-          <li class="xs:inline md:hidden">
+          <!-- <li class="xs:inline md:hidden">
             <NavLink
               :icon="Cog6ToothIcon"
               title="Налаштування"
               :active="store.activeSidebarComponent === 'settings'"
               @click="() => handleActiveSidebarComponentChange('settings')"
             />
-          </li>
+          </li> -->
 
           <li>
             <!--user avatar PC-->
@@ -104,7 +104,7 @@ const handleActiveSidebarComponentChange = (value: string) => {
             />
           </li>
           <!--settings button-->
-          <li>
+          <!-- <li>
             <NavLink
               class="flex justify-center"
               :icon="Cog6ToothIcon"
@@ -112,7 +112,7 @@ const handleActiveSidebarComponentChange = (value: string) => {
               :active="store.activeSidebarComponent === 'settings'"
               @click="() => handleActiveSidebarComponentChange('settings')"
             />
-          </li>
+          </li> -->
         </ul>
       </nav>
 

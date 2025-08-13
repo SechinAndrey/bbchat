@@ -35,8 +35,6 @@ onUnmounted(() => {
 });
 </script>
 
-
-
 <template>
   <div>
     <div
@@ -46,19 +44,17 @@ onUnmounted(() => {
 
     <ScaleTransition>
       <div
-        :class="props.position"
-        :style="props.coordinates"
         v-show="props.show"
         v-click-outside="props.handleClickOutside"
+        :class="props.position"
+        :style="props.coordinates"
         class="absolute z-[100] w-[12.5rem] mt-2 rounded-md bg-app-bg shadow-lg border border-app-border focus:outline-none transition-all duration-200"
         role="menu"
         aria-orientation="vertical"
         aria-labelledby="menu-button"
         tabindex="-1"
       >
-        <div role="none">
-          <slot></slot>
-        </div>
+        <slot></slot>
       </div>
     </ScaleTransition>
   </div>

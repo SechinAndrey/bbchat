@@ -33,7 +33,7 @@ html.theme-default {
   --color-bg-secondary: #f6f7f9;
 
   // Borders, Dividers
-  --color-border: #f2f5fb;
+  --color-border: #e7e7e7;
   --color-divider: #e8ebf1;
 
   /*********************/
@@ -109,6 +109,10 @@ html.theme-default[data-theme="dark"] {
   // Text colors
   --color-text-primary: #e2e8f0;
   --color-text-secondary: #cbd5e1;
+
+  // Borders, Dividers
+  --color-border: #4b5563;
+  --color-divider: #4b5563;
 
   // Background colors
   --color-bg-primary: #1f2936;
