@@ -228,7 +228,7 @@ const lastMessageText = computed(() => {
 
             <p
               v-if="lastMessageText"
-              class="flex justify-start items-center"
+              class="flex justify-start items-center text-[0.688rem]"
               :class="{ 'text-primary': props.conversation.unread }"
             >
               <span :class="{ 'text-primary': props.conversation.unread }">

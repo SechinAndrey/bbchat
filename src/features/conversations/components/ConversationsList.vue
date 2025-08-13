@@ -8,11 +8,11 @@ const props = defineProps<{
 </script>
 
 <template>
-  <div>
+  <div class="pr-[0.125rem]">
     <Conversation
       v-for="conversation in props.filteredConversations"
-      :conversation="conversation"
       :key="conversation.id"
+      :conversation="conversation"
       role="listitem"
     />
   </div>

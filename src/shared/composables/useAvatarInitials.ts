@@ -1,4 +1,4 @@
-import { computed, type ComputedRef, type MaybeRefOrGetter, toValue } from "vue";
+import { computed, type ComputedRef } from "vue";
 
 interface UseUserAvatarReturn {
   avatarInitials: ComputedRef<string>;
@@ -8,7 +8,7 @@ interface UseUserAvatarReturn {
 export function useAvatarInitials(
   firstName: ComputedRef<string | null | undefined>,
   lastName: ComputedRef<string | null | undefined>,
-  isActive?: MaybeRefOrGetter<boolean>,
+  isActive?: ComputedRef<boolean>,
 ): UseUserAvatarReturn {
   const avatarInitials = computed(() => {
     if (!firstName.value && !lastName.value) {
@@ -18,7 +18,7 @@ export function useAvatarInitials(
   });
 
   const avatarColor = computed(() => {
-    return toValue(isActive) ? "bg-app-bg-secondary" : "bg-app-bg";
+    return isActive?.value ? "bg-app-bg-secondary" : "bg-app-bg";
   });
 
   return {
