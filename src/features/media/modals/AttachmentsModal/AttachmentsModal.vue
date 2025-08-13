@@ -8,7 +8,7 @@ import {
 
 import Attachment from "@src/features/media/modals/AttachmentsModal/Attachment.vue";
 import Button from "@src/ui/inputs/Button.vue";
-import LabeledTextInput from "@src/ui/inputs/LabeledTextInput.vue";
+import TextInput from "@src/ui/inputs/TextInput.vue";
 import Modal from "@src/ui/modals/Modal.vue";
 import ScrollBox from "@src/ui/utils/ScrollBox.vue";
 import conversationsService from "@src/features/conversations/conversations-service";
@@ -148,7 +148,7 @@ async function sendMessage() {
 <template>
   <Modal :open="props.open" :close-modal="props.closeModal">
     <template #content>
-      <div class="w-[25rem] bg-white dark:bg-gray-800 rounded py-6">
+      <div class="w-[25rem] bg-app-bg rounded py-6">
         <!-- Hidden file input -->
         <input
           ref="fileInputRef"
@@ -172,32 +172,33 @@ async function sendMessage() {
         </ScrollBox>
 
         <!-- Empty state -->
-        <div
-          v-if="!hasAttachments"
-          class="px-5 py-8 text-center text-gray-500 dark:text-gray-400"
-        >
+        <div v-if="!hasAttachments" class="px-5 py-8 text-center text-app-text">
           <p class="">Файл не вибраний</p>
           <p class="mt-1">Натисніть "Додати" щоб вибрати файл</p>
         </div>
 
         <!--Caption input-->
         <div class="px-5 py-6">
-          <LabeledTextInput
+          <TextInput
             v-model="caption"
             placeholder="Підпис"
             type="text"
+            variant="bordered"
+            block
           />
         </div>
 
         <!--Action buttons-->
         <div class="flex w-full px-5">
           <div class="grow flex justify-start">
-            <Button class="" @click="openFileDialog"> Додати </Button>
+            <Button variant="outline" @click="openFileDialog"> Додати </Button>
           </div>
 
-          <Button class="mr-4" @click="props.closeModal"> Скасувати </Button>
+          <Button variant="text" class="mr-4" @click="props.closeModal">
+            Скасувати
+          </Button>
 
-          <Button class="" :disabled="!hasAttachments" @click="sendMessage">
+          <Button :disabled="!hasAttachments" @click="sendMessage">
             Відправити
           </Button>
         </div>

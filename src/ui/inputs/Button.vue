@@ -178,6 +178,7 @@ const componentProps = computed(() => {
          transition-all duration-200 ease-in-out cursor-pointer
          disabled:cursor-not-allowed;
   border-radius: var(--btn-border-radius);
+  --tw-ring-offset-color: var(--color-focus-offset);
 }
 
 /* Button variants */
@@ -242,12 +243,19 @@ const componentProps = computed(() => {
   background-color: var(--color-btn-text-bg);
   color: var(--color-btn-text-text);
   --tw-ring-color: var(--color-btn-text-focus);
+}
+
+a.btn-text {
   @apply underline-offset-4;
 }
 
-.btn-text:hover:not(.btn-disabled):not(.btn-loading) {
+a.btn-text:hover:not(.btn-disabled):not(.btn-loading) {
   background-color: var(--color-btn-text-bg-hover);
   @apply underline;
+}
+
+button.btn-text:hover:not(.btn-disabled):not(.btn-loading) {
+  background-color: var(--color-btn-text-bg-hover);
 }
 
 .btn-text:active:not(.btn-disabled):not(.btn-loading) {
