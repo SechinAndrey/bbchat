@@ -3,7 +3,6 @@ import { ref, computed, onMounted, onUnmounted, nextTick, watch } from "vue";
 import { XMarkIcon } from "@heroicons/vue/24/outline";
 import ChevronDownIcon from "../../shared/icons/ChevronDownIcon.vue";
 import Checkbox from "./Checkbox.vue";
-import TextInput from "./TextInput.vue";
 
 type Option = {
   value: string | number;
@@ -14,25 +13,59 @@ const modelValue = defineModel<(string | number)[] | string | number>({
   required: true,
 });
 
+// Same as TextInput.vue - refactor?
+const INPUT_SIZES = {
+  sm: {
+    height: "h-[2rem]",
+    padding: "px-3",
+    text: "text-sm",
+  },
+  md: {
+    height: "h-[2.25rem]",
+    padding: "px-4",
+    text: "text-base",
+  },
+  lg: {
+    height: "h-[2.75rem]",
+    padding: "px-5",
+    text: "text-lg",
+  },
+} as const;
+
+const INPUT_VARIANTS = {
+  default: "input-default",
+  filled: "input-filled",
+  bordered: "input-bordered",
+} as const;
+
+type InputSize = keyof typeof INPUT_SIZES;
+type InputVariant = keyof typeof INPUT_VARIANTS;
+
 const props = withDefaults(
   defineProps<{
     options: Option[];
     multiple?: boolean;
     placeholder?: string;
     label?: string;
-    bordered?: boolean;
     searchable?: boolean;
     debounceMs?: number;
     filterFunction?: (options: Option[], query: string) => Option[];
+    size?: InputSize;
+    variant?: InputVariant;
+    block?: boolean;
+    disabled?: boolean;
   }>(),
   {
     multiple: false,
     placeholder: "Виберіть...",
     label: "",
-    bordered: false,
     searchable: true,
     debounceMs: 300,
     filterFunction: undefined,
+    size: "sm",
+    variant: "default",
+    block: false,
+    disabled: false,
   },
 );
 
@@ -45,10 +78,30 @@ const isOpen = ref(false);
 const openUpwards = ref(false);
 const selectElement = ref<HTMLElement | null>(null);
 const dropdownMenu = ref<HTMLElement | null>(null);
-const inputElement = ref<InstanceType<typeof TextInput> | null>(null);
+const inputElement = ref<HTMLInputElement | null>(null);
 const highlightedIndex = ref(-1);
 
 const dropdownStyle = ref({});
+
+const sizeConfig = computed(() => INPUT_SIZES[props.size] || INPUT_SIZES.md);
+
+const inputClasses = computed(() => {
+  const variantClass = INPUT_VARIANTS[props.variant];
+
+  return [
+    "input",
+    "text-ellipsis",
+    variantClass,
+    sizeConfig.value.height,
+    sizeConfig.value.text,
+    sizeConfig.value.padding,
+    "pr-9", // space for icons
+    {
+      "input-block": props.block,
+      "input-disabled": props.disabled,
+    },
+  ];
+});
 
 const defaultFilterFunction = (options: Option[], query: string) => {
   if (!query) return options;
@@ -152,18 +205,22 @@ const updateDropdownPosition = () => {
       : `${Math.round(selectRect.bottom)}px`,
     left: `${Math.round(selectRect.left)}px`,
     minWidth: `${Math.round(selectRect.width)}px`,
+    maxWidth: `${Math.round(selectRect.width)}px`,
   };
 
   dropdownStyle.value = calculatedStyle;
 };
 
 const openDropdown = () => {
+  if (props.searchable) {
+    searchQuery.value = "";
+  }
   isOpen.value = true;
   highlightedIndex.value = -1;
 
   nextTick(() => {
     if (props.searchable) {
-      (inputElement.value?.$el as HTMLInputElement)?.focus();
+      inputElement.value?.focus();
     }
   });
 };
@@ -370,40 +427,42 @@ watch(filteredOptions, () => {
     </label>
 
     <!-- Input container -->
-    <div ref="selectElement" class="relative">
-      <TextInput
+    <div ref="selectElement" class="relative" :class="{ 'w-full': block }">
+      <input
         ref="inputElement"
         v-model="searchQuery"
+        type="text"
         :placeholder="computedPlaceholder"
-        :bordered="bordered"
         :readonly="!searchable"
-        class="pr-16"
+        :disabled="disabled"
+        :class="inputClasses"
         @input="handleInputChange"
         @click="openDropdown"
         @keydown="handleKeydown"
       />
 
-      <!-- Clear button -->
-      <button
-        v-if="showClearButton"
-        type="button"
-        class="absolute top-1/2 transform -translate-y-1/2 right-7 text-gray-400 hover:text-gray-600 z-10"
-        @mousedown.prevent="clearSelection"
+      <!-- Icons container -->
+      <div
+        class="absolute top-1/2 transform -translate-y-1/2 right-3 flex items-center space-x-2 text-gray-400 z-10"
       >
-        <XMarkIcon class="h-4 w-4" />
-      </button>
+        <!-- Clear button -->
+        <button
+          v-if="showClearButton"
+          type="button"
+          class="hover:text-gray-600"
+          @mousedown.prevent="clearSelection"
+        >
+          <XMarkIcon class="h-4 w-4" />
+        </button>
 
-      <!-- Dropdown arrow -->
-      <button
-        type="button"
-        class="absolute top-1/2 transform -translate-y-1/2 right-3 text-gray-400 z-10"
-        @mousedown.prevent="toggleDropdown"
-      >
-        <ChevronDownIcon
-          class="h-5 w-5 transition-transform duration-200"
-          :class="{ 'rotate-180': isOpen }"
-        />
-      </button>
+        <!-- Dropdown arrow -->
+        <button type="button" @mousedown.prevent="toggleDropdown">
+          <ChevronDownIcon
+            class="h-5 w-5 transition-transform duration-200"
+            :class="{ 'rotate-180': isOpen }"
+          />
+        </button>
+      </div>
     </div>
 
     <!-- Dropdown -->
@@ -420,7 +479,7 @@ watch(filteredOptions, () => {
           v-if="isOpen"
           ref="dropdownMenu"
           :style="dropdownStyle"
-          class="z-50 bg-theme-surface rounded-md shadow-lg border max-h-60 overflow-y-auto scrollbar-thin fixed"
+          class="z-50 bg-theme-surface rounded-md shadow-lg border max-h-60 max-w-xs overflow-y-auto scrollbar-thin fixed"
         >
           <div
             v-if="filteredOptions.length === 0"
@@ -434,24 +493,23 @@ watch(filteredOptions, () => {
               v-for="(option, index) in filteredOptions"
               :key="option.value"
               :data-option-index="index"
-              class="text-text-primary relative cursor-pointer select-none"
+              class="text-app-text relative cursor-pointer select-none bg-app-bg p-3 flex items-center space-x-3 transition-colors duration-150"
+              :class="{
+                'bg-primary text-white': isSelected(option.value),
+                'bg-app-bg-secondary':
+                  highlightedIndex === index && !isSelected(option.value),
+              }"
               @mousedown.prevent="selectOption(option)"
               @click.stop.prevent="selectOption(option)"
               @mouseenter="highlightedIndex = index"
             >
-              <div
-                class="p-3 flex items-center space-x-3 rounded-sm"
-                :class="{
-                  'bg-primary text-white': isSelected(option.value),
-                }"
-              >
-                <Checkbox
-                  v-if="multiple"
-                  :model-value="isSelected(option.value)"
-                  class="mr-2"
-                />
-                <span class="truncate">{{ option.label }}</span>
-              </div>
+              <Checkbox
+                v-if="multiple"
+                :model-value="isSelected(option.value)"
+                class="mr-2"
+                tabindex="-1"
+              />
+              <span class="truncate flex-1">{{ option.label }}</span>
             </li>
           </ul>
         </div>
@@ -459,3 +517,56 @@ watch(filteredOptions, () => {
     </Teleport>
   </div>
 </template>
+
+<style scoped>
+.input {
+  @apply w-full transition-all duration-200 ease-in-out
+         focus:outline-none focus:ring-2 focus:ring-offset-2;
+  border-radius: var(--btn-border-radius);
+  color: var(--color-input-text);
+  --tw-ring-color: var(--color-input-focus);
+  --tw-ring-offset-color: var(--color-focus-offset);
+}
+
+.input::placeholder {
+  color: var(--color-input-placeholder);
+}
+
+.input-default {
+  background-color: var(--color-input-bg);
+  border: 1px solid transparent;
+}
+
+.input-default:focus {
+  border-color: var(--color-primary);
+}
+
+.input-filled {
+  background-color: var(--color-input-bg-alt);
+  border: 1px solid transparent;
+}
+
+.input-filled:focus {
+  border-color: var(--color-primary);
+}
+
+.input-bordered {
+  background-color: transparent;
+  border: 1px solid var(--color-input-border);
+}
+
+.input-bordered:focus {
+  border-color: var(--color-primary);
+}
+
+.input-disabled {
+  @apply cursor-not-allowed opacity-60;
+  background-color: var(--color-btn-disabled-bg) !important;
+  border-color: var(--color-btn-disabled-bg) !important;
+  color: var(--color-btn-disabled-text) !important;
+}
+
+.input-block {
+  @apply w-full;
+}
+</style>

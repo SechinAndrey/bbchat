@@ -147,7 +147,7 @@ const handleCancel = () => {
               :options="cityOptions"
               label="Місто"
               placeholder="Виберіть місто"
-              bordered
+              variant="bordered"
               searchable
             />
           </div>
@@ -158,6 +158,7 @@ const handleCancel = () => {
             <Textarea
               v-model="comment"
               placeholder="Ваш коментар"
+              variant="bordered"
               bordered
               auto-resize
               :rows="5"
