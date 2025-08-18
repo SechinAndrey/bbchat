@@ -36,6 +36,10 @@ html.theme-default {
   --color-border: #e7e7e7;
   --color-divider: #e8ebf1;
 
+  // Scrollbar
+  --scrollbar-thumb: #cbd5e1;
+  --scrollbar-track: #f6f7f9;
+
   /*********************/
   /* COMPONENTS colors */
   /*********************/
@@ -108,6 +112,10 @@ html.theme-default {
 
   // Skeletons
   --color-skeleton: #c2c5cd;
+
+  /* Shadows */
+  // Global shadow color for all box shadows
+  --color-shadow: rgb(0 0 0 / 11%);
 }
 
 html.theme-default[data-theme="dark"] {
@@ -127,6 +135,10 @@ html.theme-default[data-theme="dark"] {
   --color-bg-primary: #1f2936;
   --color-bg-secondary: #2d3748;
 
+  // Scrollbar
+  --scrollbar-thumb: #4b5563;
+  --scrollbar-track: #2d3748;
+
   // Messages
   --color-message-bg: #374151;
   --color-message-border: transparent;
@@ -140,4 +152,7 @@ html.theme-default[data-theme="dark"] {
 
   // Skeletons
   --color-skeleton: #506587;
+
+  /* Shadows */
+  --color-shadow: #29374b;
 }

@@ -74,7 +74,7 @@ const imgs = (): string[] => {
     />
     <!-- PC table with horizontal scroll -->
     <div
-      class="h-[calc(100%-57px)] overflow-auto scrollbar-thin hidden md:block"
+      class="h-[calc(100%-131px)] overflow-auto scrollbar-thin hidden md:block"
     >
       <div class="overflow-x-auto rounded-lg shadow-shadow">
         <table class="w-full min-w-[1200px]">

@@ -92,13 +92,18 @@ module.exports = {
       },
 
       boxShadow: {
-        "shadow-sm": "0rem .0625rem .1875rem 0rem rgba(5,5,5,0.10)",
-        shadow:
-          "rgb(145 158 171 / 20%) 0rem .0625rem .1875rem 0rem , rgb(145 158 171 / 12%) 0rem .0625rem .125rem -0.25rem",
-        "shadow-md": "0rem .1875rem .25rem 0rem rgba(3,3,3,0.1), 0rem .125rem .25rem 0rem rgba(3,3,3,0.1)",
-        "shadow-lg": "0rem .625rem 1.25rem 0rem rgba(3,3,3,0.1), 0rem .1875rem .375rem 0rem rgba(3,3,3,0.1)",
-        "shadow-xl": "0rem .9375rem 1.5625rem 0rem rgba(3,3,3,0.1), 0rem .3125rem .625rem 0rem rgba(3,3,3,0.1)",
+        sm: "0 1px 2px 0 var(--color-shadow)",
+        DEFAULT: "0 1px 3px 0 var(--color-shadow), 0 1px 2px 0 var(--color-shadow)",
+        md: "0 4px 6px -1px var(--color-shadow), 0 2px 4px -1px var(--color-shadow)",
+        lg: "0 10px 15px -3px var(--color-shadow), 0 4px 6px -2px var(--color-shadow)",
+        xl: "0 20px 25px -5px var(--color-shadow), 0 8px 10px -6px var(--color-shadow)",
         cxl: "0 .125rem .3125rem rgba(193, 202, 255, 0.5), .125rem 0 .3125rem rgba(193, 202, 255, 0.5), -0.125rem 0 .3125rem rgba(193, 202, 255, 0.5), 0 -0.125rem .3125rem rgba(193, 202, 255, 0.5)",
+        up: "0 -4px 12px 0 var(--color-shadow)",
+        down: "0 4px 12px 0 var(--color-shadow)",
+        left: "-4px 0 12px 0 var(--color-shadow)",
+        right: "4px 0 12px 0 var(--color-shadow)",
+        "up-md": "0 -8px 24px 0 var(--color-shadow)",
+        "down-xl": "0 20px 40px 0 var(--color-shadow)",
       },
 
       keyframes: {

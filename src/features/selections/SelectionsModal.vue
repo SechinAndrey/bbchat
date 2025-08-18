@@ -3,6 +3,8 @@ import Modal from "@src/ui/modals/Modal.vue";
 import { XMarkIcon } from "@heroicons/vue/24/outline";
 import type { ApiSelection } from "@src/api/types";
 import SelectionTable from "@src/features/selections/SelectionTable.vue";
+import Button from "@src/ui/inputs/Button.vue";
+import apiClient from "@src/api/axios-instance";
 
 const props = defineProps<{
   open: boolean;
@@ -16,6 +18,28 @@ const emit = defineEmits<{
 const close = () => {
   emit("close");
 };
+
+const download = async () => {
+  if (!props.selection?.id) return;
+  try {
+    const response = await apiClient.post(
+      `/selections/${props.selection.id}/export`,
+    );
+    const fileUrl = response.data?.link;
+    if (fileUrl) {
+      const link = document.createElement("a");
+      link.href = fileUrl;
+      link.setAttribute("download", `selection_${props.selection.id}.xls`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } else {
+      console.error("Download link not found in response");
+    }
+  } catch (error) {
+    console.error("Download failed", error);
+  }
+};
 </script>
 
 <template>
@@ -24,7 +48,7 @@ const close = () => {
       <div
         class="h-full w-full relative overflow-hidden bg-app-bg transition-all"
       >
-        <!-- modal header -->
+        <!-- Modal header -->
         <div
           class="flex items-center justify-between p-[1.25rem] border-b border-app-border"
         >
@@ -33,7 +57,7 @@ const close = () => {
             class="text-app-text hover:text-app-text-hover"
             @click="close"
           >
-            <span class="sr-only">Close</span>
+            <span class="sr-only">Закрити</span>
             <XMarkIcon class="h-6 w-6" />
           </button>
         </div>
@@ -42,6 +66,12 @@ const close = () => {
           v-if="props.selection?.boards_list"
           :selection-items="props.selection?.boards_list"
         />
+
+        <div
+          class="flex fixed bottom-0 left-0 right-0 z-2 bg-app-bg py-4 px-[1.25rem] shadow-up"
+        >
+          <Button variant="text" @click="download"> Завантажити в .xls </Button>
+        </div>
       </div>
     </template>
   </Modal>
