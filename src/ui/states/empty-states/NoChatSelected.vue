@@ -8,7 +8,7 @@ const props = withDefaults(
   }>(),
   {
     title: "Чат не вибрано",
-    text: "Виберіть розмову з меню розмов.",
+    text: "Оберіть чат із списку чатів.",
   },
 );
 </script>
@@ -16,13 +16,13 @@ const props = withDefaults(
 <template>
   <div class="h-full flex flex-col justify-center items-center">
     <div
-      class="w-10 h-10 mr-4 mb-5 flex justify-center items-center rounded-full bg-secondary transition duration-500"
+      class="w-10 h-10 mr-4 mb-5 flex justify-center items-center rounded-full bg-secondary-lighter transition duration-500"
     >
-      <ChatBubbleLeftRightIcon class="w-7 h-7 text-secondary-active" />
+      <ChatBubbleLeftRightIcon class="w-7 h-7 text-secondary" />
     </div>
 
     <p class="mb-3">{{ props.title }}</p>
 
-    <p class="flex">{{ props.text }}</p>
+    <p class="flex text-app-text-secondary">{{ props.text }}</p>
   </div>
 </template>
