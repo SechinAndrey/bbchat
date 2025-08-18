@@ -105,6 +105,9 @@ html.theme-default {
 
   --color-checkbox-bg: transparent;
   --color-checkbox-border: #cdd4d9;
+
+  // Skeletons
+  --color-skeleton: #c2c5cd;
 }
 
 html.theme-default[data-theme="dark"] {
@@ -134,4 +137,7 @@ html.theme-default[data-theme="dark"] {
   --color-input-border: #4b5563;
   --color-input-text: var(--color-text-primary);
   --color-input-placeholder: #cbd5e1;
+
+  // Skeletons
+  --color-skeleton: #506587;
 }

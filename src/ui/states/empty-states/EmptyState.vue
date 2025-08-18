@@ -15,7 +15,9 @@ const props = withDefaults(
 </script>
 
 <template>
-  <div class="flex flex-col justify-center items-center bg-app-bg">
+  <div
+    class="flex flex-col justify-center items-center bg-app-bg p-6 rounded text-center"
+  >
     <div
       v-if="props.icon"
       class="w-10 h-10 mr-4 mb-5 flex justify-center items-center rounded-full bg-secondary-lighter transition duration-500"
@@ -27,6 +29,8 @@ const props = withDefaults(
       {{ props.title }}
     </p>
 
-    <p v-if="props.text" class="flex">{{ props.text }}</p>
+    <p v-if="props.text" class="flex text-app-text-secondary">
+      {{ props.text }}
+    </p>
   </div>
 </template>

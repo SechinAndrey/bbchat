@@ -38,7 +38,6 @@ function callTypeIcon(call: ApiCommunicationCallInfo) {
       v-if="!activeConversationInfo?.calls.length"
       :icon="PhoneIcon"
       title="Дзвінків немає"
-      class="py-5 rounded"
     />
     <div class="space-y-3 max-h-[96%] overflow-auto pb-6 scrollbar-thin pr-2">
       <div v-for="call in activeConversationInfo?.calls || []" :key="call.id">

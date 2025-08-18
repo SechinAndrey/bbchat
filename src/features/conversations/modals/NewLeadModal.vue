@@ -168,7 +168,7 @@ const handleCancel = () => {
 
         <!-- Action buttons -->
         <div class="flex justify-end mt-6 space-x-3">
-          <Button variant="ghost" @click="handleCancel"> Відмінити </Button>
+          <Button variant="text" @click="handleCancel"> Відмінити </Button>
 
           <Button :disabled="!isFormValid" @click="handleSubmit">
             Створити лід

@@ -11,10 +11,13 @@ import conversationsService from "@src/features/conversations/conversations-serv
 import { useConversationsStore } from "@src/features/conversations/conversations-store";
 import { useAuthStore } from "@src/features/auth/store/auth-store";
 
-import { PencilSquareIcon, UserIcon } from "@heroicons/vue/24/outline";
+import {
+  PencilSquareIcon,
+  UserIcon,
+  ChatBubbleBottomCenterIcon,
+} from "@heroicons/vue/24/outline";
 import ComposeModal from "@src/features/conversations/modals/ComposeModal/ComposeModal.vue";
 import NewLeadModal from "@src/features/conversations/modals/NewLeadModal.vue";
-import NoConversation from "@src/ui/states/empty-states/NoConversation.vue";
 import Circle2Lines from "@src/ui/states/loading-states/Circle2Lines.vue";
 import Button from "@src/ui/inputs/Button.vue";
 import SearchInput from "@src/ui/inputs/SearchInput.vue";
@@ -30,6 +33,7 @@ import flemeIcon from "@src/ui/icons/flemeIcon.vue";
 import clientIcon from "@src/ui/icons/clientIcon.vue";
 import { useRoute } from "vue-router";
 import type { EntityType } from "@src/shared/types/common";
+import EmptyState from "@src/ui/states/empty-states/EmptyState.vue";
 
 const route = useRoute();
 const id = ref<number | null>(null);
@@ -271,7 +275,7 @@ const handleNewLeadSubmit = async (leadData: CreateLeadRequest) => {
         style="overflow-x: visible; overflow-y: scroll"
       >
         <div v-if="isLoading && conversationsList.length === 0">
-          <Circle2Lines v-for="item in 6" :key="item" />
+          <Circle2Lines v-for="item in 8" :key="item" />
         </div>
 
         <div v-else>
@@ -292,7 +296,11 @@ const handleNewLeadSubmit = async (leadData: CreateLeadRequest) => {
           </div>
 
           <div v-else>
-            <NoConversation />
+            <EmptyState
+              :icon="ChatBubbleBottomCenterIcon"
+              title="Чати не знайдено"
+              class="mx-5"
+            />
           </div>
         </div>
       </div>
