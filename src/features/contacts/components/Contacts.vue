@@ -9,7 +9,7 @@ import useStore from "@src/shared/store/store";
 import AddContactModal from "@src/features/contacts/modals/AddContactModal.vue";
 import NoContacts from "@src/ui/states/empty-states/NoContacts.vue";
 import MultipleLines from "@src/ui/states/loading-states/MultipleLines.vue";
-import IconButton from "@src/ui/inputs/IconButton.vue";
+import Button from "@src/ui/inputs/Button.vue";
 import SearchInput from "@src/ui/inputs/SearchInput.vue";
 import SortedContacts from "@src/features/contacts/components/SortedContacts.vue";
 import SidebarHeader from "@src/layout/sidebar/SidebarHeader.vue";
@@ -59,18 +59,23 @@ watch(searchText, () => {
   <div>
     <SidebarHeader>
       <!--title-->
-      <template v-slot:title>Contacts</template>
+      <template #title>Чати</template>
 
       <!--side actions-->
-      <template v-slot:actions>
-        <IconButton
-          @click="openModal = true"
+      <template #actions>
+        <Button
           class="w-7 h-7"
-          title="add contacts"
-          aria-label="add contacts"
+          title="Додати контакти"
+          aria-label="Додати контакти"
+          :icon-only="true"
+          variant="ghost"
+          size="xs"
+          @click="openModal = true"
         >
-          <UserPlusIcon class="w-[1.25rem] h-[1.25rem]" />
-        </IconButton>
+          <template #icon>
+            <UserPlusIcon />
+          </template>
+        </Button>
       </template>
     </SidebarHeader>
 
@@ -86,8 +91,8 @@ watch(searchText, () => {
       style="overflow-x: visible; overflow-y: scroll"
     >
       <MultipleLines
-        v-if="store.status === 'loading' || store.delayLoading"
         v-for="item in 5"
+        v-if="store.status === 'loading' || store.delayLoading"
       />
 
       <SortedContacts
@@ -97,7 +102,7 @@ watch(searchText, () => {
           store.user &&
           store.user.contacts.length > 0
         "
-        :contactGroups="filteredContactGroups"
+        :contact-groups="filteredContactGroups"
         :bottom-edge="
           (contactContainer as HTMLElement)?.getBoundingClientRect().bottom
         "

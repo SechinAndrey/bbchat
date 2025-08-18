@@ -60,7 +60,7 @@ const closeIconHeight = computed(() => {
       <Button
         v-if="model"
         variant="ghost"
-        size="sm"
+        size="xs"
         icon-only
         :ring="false"
         class="!p-1"

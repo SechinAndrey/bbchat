@@ -143,12 +143,36 @@ async function sendMessage() {
 
   clean();
 }
+
+const handleDrop = (event: DragEvent) => {
+  event.preventDefault();
+  if (event.dataTransfer && event.dataTransfer.files) {
+    Array.from(event.dataTransfer.files).forEach((file, index) => {
+      const attachment: IAttachment = {
+        id: Date.now() + index,
+        type: getFileType(file),
+        name: file.name,
+        size: formatFileSize(file.size),
+        url: URL.createObjectURL(file),
+        thumbnail: file.type.startsWith("image/")
+          ? URL.createObjectURL(file)
+          : undefined,
+        file: file,
+      };
+
+      attachments.value.push(attachment);
+    });
+  }
+};
 </script>
 
 <template>
   <Modal :open="props.open" :close-modal="props.closeModal">
     <template #content>
       <div class="w-[25rem] bg-app-bg rounded py-6">
+        <!-- modal title -->
+        <h3 class="text-lg font-semibold px-5 mb-5">Додати вкладення</h3>
+
         <!-- Hidden file input -->
         <input
           ref="fileInputRef"
@@ -171,27 +195,38 @@ async function sendMessage() {
           />
         </ScrollBox>
 
-        <!-- Empty state -->
-        <div v-if="!hasAttachments" class="px-5 py-8 text-center text-app-text">
-          <p class="">Файл не вибраний</p>
-          <p class="mt-1">Натисніть "Додати" щоб вибрати файл</p>
+        <!-- Drag and drop area -->
+        <div
+          v-else
+          class="px-5 py-8 border-2 mx-5 border-dashed border-app-border rounded-md cursor-pointer"
+          @click="openFileDialog"
+          @dragover.prevent
+          @drop.prevent="handleDrop"
+        >
+          <p class="text-center text-app-text-secondary">
+            Перетягніть файли сюди або
+            <span class="font-semibold text-primary"> оберіть файл </span>
+            с комп'ютера
+          </p>
         </div>
 
         <!--Caption input-->
-        <div class="px-5 py-6">
-          <TextInput
-            v-model="caption"
-            placeholder="Підпис"
-            type="text"
-            variant="bordered"
-            block
-          />
-        </div>
+        <!-- <div class="px-5 py-6"> -->
+        <TextInput
+          v-model="caption"
+          placeholder="Підпис"
+          type="text"
+          variant="bordered"
+          class="mx-5 my-6"
+        />
+        <!-- </div> -->
 
         <!--Action buttons-->
         <div class="flex w-full px-5">
           <div class="grow flex justify-start">
-            <Button variant="outline" @click="openFileDialog"> Додати </Button>
+            <Button variant="outline" @click="openFileDialog">
+              Обрати файл
+            </Button>
           </div>
 
           <Button variant="text" class="mr-4" @click="props.closeModal">

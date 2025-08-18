@@ -16,7 +16,7 @@ import ComposeModal from "@src/features/conversations/modals/ComposeModal/Compos
 import NewLeadModal from "@src/features/conversations/modals/NewLeadModal.vue";
 import NoConversation from "@src/ui/states/empty-states/NoConversation.vue";
 import Circle2Lines from "@src/ui/states/loading-states/Circle2Lines.vue";
-import IconButton from "@src/ui/inputs/IconButton.vue";
+import Button from "@src/ui/inputs/Button.vue";
 import SearchInput from "@src/ui/inputs/SearchInput.vue";
 import FadeTransition from "@src/ui/transitions/FadeTransition.vue";
 // import ArchivedButton from "@src/features/conversations/components/ArchivedButton.vue";
@@ -224,14 +224,19 @@ const handleNewLeadSubmit = async (leadData: CreateLeadRequest) => {
           />
 
           <div title="Додати ліда">
-            <IconButton
+            <Button
               class="w-7 h-7"
-              aria-label="add new lead"
-              title="add new lead"
+              aria-label="Додати нового ліда"
+              title="Додати нового ліда"
+              :icon-only="true"
+              variant="ghost"
+              size="xs"
               @click="newLeadModalOpen = true"
             >
-              <PencilSquareIcon class="w-[1.25rem] h-[1.25rem]" />
-            </IconButton>
+              <template #icon>
+                <PencilSquareIcon />
+              </template>
+            </Button>
           </div>
         </div>
       </template>

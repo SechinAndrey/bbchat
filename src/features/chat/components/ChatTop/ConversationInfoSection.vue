@@ -9,7 +9,7 @@ import Button from "@src/ui/inputs/Button.vue";
 import ConversationAvatar from "@src/shared/components/ConversationAvatar.vue";
 import useConversationsStore from "@src/features/conversations/conversations-store";
 import { useDebounceFn } from "@vueuse/core";
-import { inject, ref } from "vue";
+import { computed, inject, ref } from "vue";
 import { toast, type ToastOptions } from "vue3-toastify";
 import type { EntityType } from "@src/shared/types/common";
 
@@ -61,6 +61,15 @@ const endConversation = async () => {
     isLoading.value = false;
   }
 };
+
+const title = computed(() => {
+  return conversationsStore.activeConversationInfo?.name || "Діалог";
+});
+
+const cityName = computed(() => {
+  const city = conversationsStore.activeConversationInfo?.cities?.at(0);
+  return city?.name_new_ua || city?.name_ua || city?.name || "Невідоме місто";
+});
 </script>
 
 <template>
@@ -93,11 +102,11 @@ const endConversation = async () => {
           tabindex="0"
           @click="store.rightSidebarOpen = true"
         >
-          {{ conversationsStore?.activeConversationInfo?.id }}
+          {{ title }}
         </p>
 
         <!-- font-size 11px in rem -->
-        <p class="text-[0.6875rem] text-primary">Запорожье</p>
+        <p class="text-[0.6875rem] text-app-text-secondary">{{ cityName }}</p>
       </div>
     </div>
 
@@ -105,7 +114,9 @@ const endConversation = async () => {
       <div class="relative flex items-center gap-4">
         <SearchInput
           v-model="conversationsStore.messagesFilters.search"
+          size="sm"
           variant="filled"
+          class="max-w-[13.563rem]"
           @update:model-value="debouncedFn"
         />
 
@@ -118,19 +129,16 @@ const endConversation = async () => {
           Завершити діалог
         </Button>
 
-        <IconButton
-          class="open-top-menu group w-7 h-7"
+        <Button
+          variant="text"
+          icon-only
           @click="store.rightSidebarOpen = !store.rightSidebarOpen"
         >
-          <ChevronRightIcon
-            v-if="store.rightSidebarOpen"
-            class="open-top-menu w-[1.25rem] h-[1.25rem]"
-          />
-          <ChevronLeftIcon
-            v-else
-            class="open-top-menu w-[1.25rem] h-[1.25rem]"
-          />
-        </IconButton>
+          <template #icon>
+            <ChevronRightIcon v-if="store.rightSidebarOpen" />
+            <ChevronLeftIcon v-else />
+          </template>
+        </Button>
       </div>
     </div>
   </div>

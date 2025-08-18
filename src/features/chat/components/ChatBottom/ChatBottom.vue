@@ -151,6 +151,8 @@ async function sendMessage() {
           size="sm"
           icon-only
           class="md:mr-5 xs:mr-4"
+          title="Додати вкладення"
+          aria-label="Додати вкладення"
           @click="openAttachmentsModal = true"
         >
           <template #icon>
@@ -164,9 +166,8 @@ async function sendMessage() {
           variant="primary"
           size="sm"
           icon-only
-          class="active:scale-110"
-          title="send message"
-          aria-label="send message"
+          title="Відправити повідомлення"
+          aria-label="Відправити повідомлення"
           @click="sendMessage"
         >
           <template #icon>
