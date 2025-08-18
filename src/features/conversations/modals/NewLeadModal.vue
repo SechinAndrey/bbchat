@@ -34,7 +34,7 @@ const cityOptions = computed(() => {
   }));
 });
 
-const selectedCityId = ref<number>(1);
+const selectedCityId = ref<number>();
 
 const isFormValid = computed(() => {
   const isNameValid = name.value.trim() !== "";
@@ -168,10 +168,10 @@ const handleCancel = () => {
 
         <!-- Action buttons -->
         <div class="flex justify-end mt-6 space-x-3">
-          <Button class="" @click="handleCancel"> Відміна </Button>
+          <Button variant="ghost" @click="handleCancel"> Відмінити </Button>
 
-          <Button class="" :disabled="!isFormValid" @click="handleSubmit">
-            Додати
+          <Button :disabled="!isFormValid" @click="handleSubmit">
+            Створити лід
           </Button>
         </div>
       </div>
