@@ -34,7 +34,7 @@ const cityOptions = computed(() => {
   }));
 });
 
-const selectedCityId = ref<number>();
+const selectedCityId = ref<string | number>("");
 
 const isFormValid = computed(() => {
   const isNameValid = name.value.trim() !== "";
@@ -56,7 +56,7 @@ const clean = () => {
   email.value = "";
   phone.value = "";
   tgName.value = "";
-  selectedCityId.value = 1;
+  selectedCityId.value = "";
   comment.value = "";
   statusId.value = 3;
   props.closeModal();
@@ -73,7 +73,7 @@ const handleSubmit = () => {
     email: email.value.trim() || undefined,
     phone: phone.value.trim() || undefined,
     tg_name: tgName.value.trim() || undefined,
-    city: [selectedCityId.value],
+    city: selectedCityId.value ? [selectedCityId.value as number] : [],
     comment: comment.value.trim() || undefined,
     status_id: statusId.value,
   };
