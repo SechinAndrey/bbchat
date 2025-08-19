@@ -14,6 +14,7 @@ import ConversationAvatar from "@src/shared/components/ConversationAvatar.vue";
 import { formatDate } from "@src/shared/utils/utils";
 import { useConversationsStore } from "@src/features/conversations/conversations-store";
 import CallPlayer from "@src/features/chat/components/ChatMiddle/Message/CallPlayer.vue";
+import Button from "@src/ui/inputs/Button.vue";
 
 const props = defineProps<{
   message: ApiMessageItem;
@@ -191,15 +192,19 @@ const formatDuration = (seconds: number) => {
                 call.call_type === 0 ? "Вхідний дзвінок" : "Вихідний дзвінок"
               }}
             </span>
-            <button
-              class="ml-auto p-1 hover:bg-gray-100 rounded transition-colors"
+            <Button
+              class="ml-auto"
+              variant="ghost"
+              size="xs"
+              icon-only
               @click="toggleCallDetails"
             >
-              <component
-                :is="isCallDetailsExpanded ? ChevronUpIcon : ChevronDownIcon"
-                class="w-3 h-3 text-text-secondary"
-              />
-            </button>
+              <template #icon>
+                <component
+                  :is="isCallDetailsExpanded ? ChevronUpIcon : ChevronDownIcon"
+                />
+              </template>
+            </Button>
           </div>
           <Transition name="call-details-fade">
             <div
