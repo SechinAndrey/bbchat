@@ -5,7 +5,6 @@ import useStore from "@src/shared/store/store";
 import useTheme from "@src/shared/theme-system/useTheme";
 
 import {
-  Cog6ToothIcon,
   MoonIcon,
   SunIcon,
   ChatBubbleLeftRightIcon,
@@ -30,10 +29,9 @@ const handleActiveSidebarComponentChange = (value: string) => {
 <template>
   <div
     :class="[
-      'px-4 flex items-center bg-[var(--color-sidebar-bg)]',
+      'xxx z-20 px-4 flex items-center bg-[var(--color-sidebar-bg)]',
+      'py-[0.75rem] px-5',
       'md:w-[3.75rem] md:h-full md:py-7 md:flex-col z-10',
-      'xs:w-full xs:py-5 xs:flex-row',
-      'transition-all duration-500',
     ]"
   >
     <!--logo-->

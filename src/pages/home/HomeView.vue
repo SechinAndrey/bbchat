@@ -15,7 +15,8 @@ const store = useStore();
       class="xs:relative md:static h-full flex xs:flex-col md:flex-row overflow-hidden"
     >
       <!--navigation-bar-->
-      <Navigation class="xs:order-1 md:-order-none" />
+      <!-- <Navigation class="xs:order-1 md:-order-none" /> -->
+      <Navigation />
       <!--sidebar-->
       <Sidebar
         class="xs:grow-1 md:grow-0 xs:overflow-y-scroll md:overflow-visible scrollbar-hidden"
@@ -23,7 +24,7 @@ const store = useStore();
       <!--chat-->
       <div
         id="mainContent"
-        class="bg-app-bg xs:absolute xs:z-10 md:static grow h-full xs:w-full md:w-fit scrollbar-hidde transition-all duration-500"
+        class="bg-app-bg grow md:h-full scrollbar-hidden transition-all duration-500 xs:w-full xs:absolute xs:z-10 md:static md:w-fit mt-9 md:mt-0 h-[calc(100%-3rem)]"
         :class="
           getActiveConversationId()
             ? ['xs:left-[0rem]', 'xs:static']

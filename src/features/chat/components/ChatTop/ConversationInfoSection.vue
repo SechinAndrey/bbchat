@@ -2,8 +2,11 @@
 import router from "@src/router";
 import useStore from "@src/shared/store/store";
 
-import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/vue/24/outline";
-import IconButton from "@src/ui/inputs/IconButton.vue";
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  InformationCircleIcon,
+} from "@heroicons/vue/24/outline";
 import SearchInput from "@src/ui/inputs/SearchInput.vue";
 import Button from "@src/ui/inputs/Button.vue";
 import ConversationAvatar from "@src/shared/components/ConversationAvatar.vue";
@@ -74,72 +77,87 @@ const cityName = computed(() => {
 
 <template>
   <!--conversation info-->
-  <div class="w-full flex justify-center items-center">
-    <div class="group mr-4 md:hidden">
-      <IconButton
-        class="w-7 h-7"
-        title="close conversation"
-        aria-label="close conversation"
-        @click="handleCloseConversation"
-      >
-        <ChevronLeftIcon class="w-[1.25rem] h-[1.25rem]" />
-      </IconButton>
-    </div>
+  <div
+    class="w-full flex flex-col sm:flex-row sm:justify-between sm:items-center"
+  >
+    <div class="flex items-center gap-3 mb-2">
+      <Button variant="text" icon-only @click="handleCloseConversation">
+        <template #icon>
+          <ChevronLeftIcon class="w-[1.25rem] h-[1.25rem]" />
+        </template>
+      </Button>
 
-    <div class="flex grow">
-      <!--avatar-->
-      <button class="mr-5 outline-none" aria-label="profile avatar">
-        <ConversationAvatar
-          v-if="conversationsStore.activeConversationInfo"
-          :conversation="conversationsStore.activeConversationInfo"
-          is-active
-        />
-      </button>
-
-      <div class="flex flex-col">
-        <p
-          class="w-fit cursor-pointer"
-          tabindex="0"
-          @click="store.rightSidebarOpen = true"
-        >
-          {{ title }}
-        </p>
-
-        <!-- font-size 11px in rem -->
-        <p class="text-[0.6875rem] text-app-text-secondary">{{ cityName }}</p>
-      </div>
-    </div>
-
-    <div class="flex">
-      <div class="relative flex items-center gap-4">
-        <SearchInput
-          v-model="conversationsStore.messagesFilters.search"
-          size="sm"
-          variant="filled"
-          class="max-w-[13.563rem]"
-          @update:model-value="debouncedFn"
-        />
-
-        <Button
-          class="whitespace-nowrap"
-          size="sm"
-          :loading="isLoading"
-          @click="endConversation"
-        >
-          Завершити діалог
-        </Button>
-
-        <Button
-          variant="text"
-          icon-only
+      <div class="flex grow">
+        <!--avatar-->
+        <button
+          class="mr-5 outline-none"
+          aria-label="profile avatar"
           @click="store.rightSidebarOpen = !store.rightSidebarOpen"
         >
-          <template #icon>
-            <ChevronRightIcon v-if="store.rightSidebarOpen" />
-            <ChevronLeftIcon v-else />
-          </template>
-        </Button>
+          <ConversationAvatar
+            v-if="conversationsStore.activeConversationInfo"
+            :conversation="conversationsStore.activeConversationInfo"
+            is-active
+          />
+        </button>
+
+        <div class="flex flex-col">
+          <Button
+            variant="ghost"
+            size="xs"
+            class="w-fit !text-app-text !px-3 !text-[0.813rem]"
+            tabindex="0"
+            @click="store.rightSidebarOpen = !store.rightSidebarOpen"
+          >
+            {{ title }}
+          </Button>
+
+          <!-- font-size 11px in rem -->
+          <p class="text-[0.6875rem] text-app-text-secondary px-3">
+            {{ cityName }}
+          </p>
+        </div>
       </div>
+
+      <Button
+        variant="text"
+        icon-only
+        class="sm:!hidden"
+        @click="store.rightSidebarOpen = !store.rightSidebarOpen"
+      >
+        <template #icon> <InformationCircleIcon /> </template>
+      </Button>
+    </div>
+
+    <div class="relative flex gap-4 justify-end">
+      <SearchInput
+        v-model="conversationsStore.messagesFilters.search"
+        size="sm"
+        variant="filled"
+        class="w-full sm:max-w-[13.563rem]"
+        @update:model-value="debouncedFn"
+      />
+
+      <Button
+        class="whitespace-nowrap"
+        size="sm"
+        :loading="isLoading"
+        @click="endConversation"
+      >
+        Завершити діалог
+      </Button>
+
+      <Button
+        variant="text"
+        icon-only
+        class="!hidden md:!flex"
+        @click="store.rightSidebarOpen = !store.rightSidebarOpen"
+      >
+        <template #icon>
+          <ChevronRightIcon v-if="store.rightSidebarOpen" />
+          <ChevronLeftIcon v-else />
+        </template>
+      </Button>
     </div>
   </div>
 </template>
