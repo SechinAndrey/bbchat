@@ -69,6 +69,7 @@ const download = async () => {
 
         <SelectionTable
           v-if="props.selection?.boards_list"
+          :selection-id="props.selection.id"
           :selection-items="props.selection?.boards_list"
         />
 

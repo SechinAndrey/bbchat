@@ -6,9 +6,11 @@ import { LightBulbIcon, PhotoIcon } from "@heroicons/vue/24/outline";
 import { formatDate } from "@src/shared/utils/utils";
 import SimpleMediaModal from "@src/ui/data-display/SimpleMediaModal.vue";
 import CurrencyInput from "@src/ui/inputs/CurrencyInput.vue";
+import apiClient from "@src/api/axios-instance";
 
 const props = defineProps<{
   selectionItems: ApiSelectionItem[] | null;
+  selectionId: number | null;
 }>();
 
 const allSelected = ref(false);
@@ -63,6 +65,21 @@ const imgs = (): string[] => {
       import.meta.env.VITE_MEDIA_URL + "/" + itemForGallery.value.scheme,
     );
   return imgs;
+};
+
+const changePrice = async (
+  boardId: number,
+  newPrice: number | null,
+  priceType: "selling_price" | "buying_price" | "printing_price",
+) => {
+  try {
+    await apiClient.patch(`/selections/${props.selectionId}/board/${boardId}`, {
+      type: priceType,
+      value: newPrice,
+    });
+  } catch (error) {
+    console.error("Error changing price:", error);
+  }
 };
 </script>
 
@@ -211,13 +228,28 @@ const imgs = (): string[] => {
               </td>
               <td class="py-[0.625rem] px-3">{{ item.price }} ₴</td>
               <td class="py-[0.625rem] px-3">
-                <CurrencyInput v-model="item.buying_price" />
+                <CurrencyInput
+                  v-model="item.buying_price"
+                  @change="
+                    changePrice(item.id, item.buying_price, 'buying_price')
+                  "
+                />
               </td>
               <td class="py-[0.625rem] px-2">
-                <CurrencyInput v-model="item.selling_price" />
+                <CurrencyInput
+                  v-model="item.selling_price"
+                  @change="
+                    changePrice(item.id, item.selling_price, 'selling_price')
+                  "
+                />
               </td>
               <td class="py-[0.625rem] px-2">
-                <CurrencyInput v-model="item.printing_price" />
+                <CurrencyInput
+                  v-model="item.printing_price"
+                  @change="
+                    changePrice(item.id, item.printing_price, 'printing_price')
+                  "
+                />
               </td>
               <td class="pl-3 py-[0.625rem] pr-[1.25rem] text-right">
                 <div v-if="item.isWatched" class="px-4 py-2 whitespace-nowrap">
