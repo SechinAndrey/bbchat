@@ -1,7 +1,7 @@
 <template>
   <div
     :class="[
-      'xs:w-6 xs:h-6 md:w-auto md:h-auto md:p-3 rounded-[0.23rem]',
+      'p-3 rounded-[0.23rem]',
       'md:bg-[var(--color-sidebar-btn-bg)]',
       'hover:text-primary-lighter active:text-primary active:scale-110',
       'transition ease-out duration-200 cursor-pointer',

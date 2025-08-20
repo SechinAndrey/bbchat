@@ -29,16 +29,16 @@ const handleActiveSidebarComponentChange = (value: string) => {
 <template>
   <div
     :class="[
-      'xxx z-20 px-4 flex items-center bg-[var(--color-sidebar-bg)]',
+      'px-4 flex items-center bg-[var(--color-sidebar-bg)]',
       'py-[0.75rem] px-5',
-      'md:w-[3.75rem] md:h-full md:py-7 md:flex-col z-10',
+      'md:w-[3.75rem] md:h-full md:py-7 md:flex-col',
     ]"
   >
     <!--logo-->
     <logoIcon class="xs:hidden md:block mb-6" />
 
     <!--main navigation-->
-    <div class="grow w-full">
+    <div class="grow w-[2.25rem]">
       <!--separator-->
       <hr
         class="border-[var(--color-sidebar-divider)] xs:hidden w-full md:block mb-6"
@@ -51,7 +51,7 @@ const handleActiveSidebarComponentChange = (value: string) => {
               :active="store.activeSidebarComponent === 'messages'"
               @click="() => handleActiveSidebarComponentChange('messages')"
             >
-              <ChatBubbleLeftRightIcon />
+              <ChatBubbleLeftRightIcon class="w-[20px] h-[20px]" />
             </NavItem>
           </li>
           <li class="md:mb-4">
@@ -89,7 +89,7 @@ const handleActiveSidebarComponentChange = (value: string) => {
     </div>
 
     <!--secondary navigation-->
-    <div class="md:w-full">
+    <div class="w-[2.25rem]">
       <nav aria-label="Додаткова навігація" class="xs:hidden md:block">
         <ul>
           <!--toggle dark mode button-->

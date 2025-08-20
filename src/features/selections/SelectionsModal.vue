@@ -46,7 +46,7 @@ const download = async () => {
   <Modal :open="props.open" :close-modal="close" no-padding>
     <template #content>
       <div
-        class="h-full w-full relative overflow-hidden bg-app-bg transition-all"
+        class="h-full w-full relative overflow-hidden bg-app-bg transition-all z-21"
       >
         <!-- Modal header -->
         <div

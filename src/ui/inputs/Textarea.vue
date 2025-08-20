@@ -58,6 +58,7 @@ const textareaClasses = computed(() => {
 
   return [
     "textarea",
+    "scrollbar-thin",
     variantClass,
     sizeConfig.padding,
     sizeConfig.text,

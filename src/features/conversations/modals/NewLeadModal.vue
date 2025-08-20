@@ -90,10 +90,10 @@ const handleCancel = () => {
 <template>
   <Modal :open="props.open" :close-modal="props.closeModal">
     <template #content>
-      <div class="w-[32rem] bg-white dark:bg-gray-800 rounded-lg p-6">
+      <div class="w-[32rem] bg-app-bg rounded-lg p-6">
         <!-- Header -->
         <div class="mb-6">
-          <h2 class="text-xl font-semibold text-gray-900 dark:text-white">
+          <h2 class="text-xl font-semibold text-app-text dark:text-white">
             Додати ліда
           </h2>
         </div>
