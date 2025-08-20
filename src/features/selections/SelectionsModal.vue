@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import Modal from "@src/ui/modals/Modal.vue";
-import { XMarkIcon } from "@heroicons/vue/24/outline";
+import {
+  XMarkIcon,
+  ArrowDownTrayIcon,
+  EyeIcon,
+  EyeSlashIcon,
+} from "@heroicons/vue/24/outline";
 import type { ApiSelection } from "@src/api/types";
 import SelectionTable from "@src/features/selections/SelectionTable.vue";
 import Button from "@src/ui/inputs/Button.vue";
@@ -70,7 +75,19 @@ const download = async () => {
         <div
           class="flex fixed bottom-0 left-0 right-0 z-2 bg-app-bg py-4 px-[1.25rem] shadow-up"
         >
-          <Button variant="text" @click="download"> Завантажити в .xls </Button>
+          <Button variant="text" @click="download">
+            <ArrowDownTrayIcon class="h-6 w-6 inline-block mr-1" /> Завантажити
+            в .xls
+          </Button>
+
+          <Button variant="text">
+            <EyeIcon class="h-6 w-6 inline-block mr-1" />Додати до спостереження
+          </Button>
+
+          <Button variant="text">
+            <EyeSlashIcon class="h-6 w-6 inline-block mr-1" />Прибрати із
+            спостереження
+          </Button>
         </div>
       </div>
     </template>

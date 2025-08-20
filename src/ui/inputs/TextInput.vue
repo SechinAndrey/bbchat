@@ -50,6 +50,7 @@ const props = withDefaults(
     variant?: InputVariant;
     block?: boolean;
     disabled?: boolean;
+    inputClass?: string;
   }>(),
   {
     type: "text",
@@ -72,6 +73,7 @@ const inputClasses = computed(() => {
 
   return [
     "input",
+    props.inputClass,
     variantClass,
     sizeConfig.value.height,
     sizeConfig.value.text,

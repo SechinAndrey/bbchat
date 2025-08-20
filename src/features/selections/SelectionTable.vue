@@ -5,6 +5,7 @@ import Checkbox from "@src/ui/inputs/Checkbox.vue";
 import { LightBulbIcon, PhotoIcon } from "@heroicons/vue/24/outline";
 import { formatDate } from "@src/shared/utils/utils";
 import SimpleMediaModal from "@src/ui/data-display/SimpleMediaModal.vue";
+import CurrencyInput from "@src/ui/inputs/CurrencyInput.vue";
 
 const props = defineProps<{
   selectionItems: ApiSelectionItem[] | null;
@@ -209,9 +210,15 @@ const imgs = (): string[] => {
                 </div>
               </td>
               <td class="py-[0.625rem] px-3">{{ item.price }} ₴</td>
-              <td class="py-[0.625rem] px-3">{{ item.buying_price }} ₴</td>
-              <td class="py-[0.625rem] px-3">{{ item.selling_price }} ₴</td>
-              <td class="py-[0.625rem] px-3">{{ item.printing_price }} ₴</td>
+              <td class="py-[0.625rem] px-3">
+                <CurrencyInput v-model="item.buying_price" />
+              </td>
+              <td class="py-[0.625rem] px-2">
+                <CurrencyInput v-model="item.selling_price" />
+              </td>
+              <td class="py-[0.625rem] px-2">
+                <CurrencyInput v-model="item.printing_price" />
+              </td>
               <td class="pl-3 py-[0.625rem] pr-[1.25rem] text-right">
                 <div v-if="item.isWatched" class="px-4 py-2 whitespace-nowrap">
                   <span>

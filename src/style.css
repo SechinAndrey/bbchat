@@ -21,3 +21,13 @@
 .Toastify__toast {
   box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
 }
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}

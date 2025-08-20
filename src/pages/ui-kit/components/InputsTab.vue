@@ -5,6 +5,7 @@ import Button from "@src/ui/inputs/Button.vue";
 import TextInput from "@src/ui/inputs/TextInput.vue";
 import Textarea from "@src/ui/inputs/Textarea.vue";
 import SearchInput from "@src/ui/inputs/SearchInput.vue";
+import CurrencyInput from "@src/ui/inputs/CurrencyInput.vue";
 
 import {
   PaperAirplaneIcon,
@@ -18,6 +19,7 @@ import {
 const textInputValue = ref("");
 const textareaValue = ref("");
 const searchValue = ref("");
+const currencyValue = ref(9100);
 </script>
 
 <template>
@@ -214,6 +216,31 @@ const searchValue = ref("");
           <SearchInput v-model="searchValue" size="sm" />
           <SearchInput v-model="searchValue" size="md" />
           <SearchInput v-model="searchValue" size="lg" />
+        </div>
+      </div>
+    </section>
+
+    <!-- Currency Inputs -->
+    <section class="mb-10">
+      <h3 class="mb-4">Поля валюти</h3>
+
+      <!-- Sizes -->
+      <div class="p-4 border rounded dark:border-gray-600 mb-6">
+        <h4 class="mb-4">Розміри</h4>
+        <div class="flex flex-col gap-4">
+          <CurrencyInput v-model="currencyValue" size="sm" placeholder="0" />
+          <CurrencyInput v-model="currencyValue" size="md" placeholder="0" />
+          <CurrencyInput v-model="currencyValue" size="lg" placeholder="0" />
+        </div>
+      </div>
+
+      <!-- Different Currencies -->
+      <div class="p-4 border rounded dark:border-gray-600 mb-6">
+        <h4 class="mb-4">Різні валюти</h4>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <CurrencyInput v-model="currencyValue" placeholder="0" />
+          <CurrencyInput v-model="currencyValue" currency="$" placeholder="0" />
+          <CurrencyInput v-model="currencyValue" currency="€" placeholder="0" />
         </div>
       </div>
     </section>
