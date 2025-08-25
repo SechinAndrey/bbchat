@@ -34,8 +34,12 @@ const globalStore = useGlobalDataStore();
 
 const selectedColumns = ref<string[]>([]);
 
+const isLoading = ref(false);
+const dropdownRef = ref<InstanceType<typeof Dropdown> | null>(null);
+
 const download = async () => {
   if (!props.selection?.id) return;
+  isLoading.value = true;
   try {
     const response = await apiClient.post(
       `/selections/${props.selection.id}/export`,
@@ -46,8 +50,11 @@ const download = async () => {
     if (fileUrl) {
       window.open(fileUrl, "_blank");
     }
+    dropdownRef.value?.closeDropdown();
   } catch (error) {
     console.error("Download failed", error);
+  } finally {
+    isLoading.value = false;
   }
 };
 
@@ -84,7 +91,7 @@ const selectedBoardIds = ref<number[]>([]);
         <div
           class="flex fixed bottom-0 left-0 right-0 z-2 bg-app-bg py-4 px-[1.25rem] shadow-up"
         >
-          <Dropdown position="top" trigger="click">
+          <Dropdown ref="dropdownRef" position="top" trigger="click">
             <template #activator>
               <Button variant="text">
                 <ArrowDownTrayIcon class="w-5 inline-block mr-1" /> Завантажити
@@ -104,7 +111,7 @@ const selectedBoardIds = ref<number[]>([]);
                 class="py-4 px-4 hover:bg-app-bg-secondary-lighter"
               />
 
-              <Button class="mx-4 mb-4" @click="download">
+              <Button class="mx-4 mb-4" :loading="isLoading" @click="download">
                 <ArrowDownTrayIcon class="w-5 inline-block mr-1" /> Завантажити
                 в .xls
               </Button>
