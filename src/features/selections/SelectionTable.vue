@@ -7,6 +7,9 @@ import { formatDate } from "@src/shared/utils/utils";
 import SimpleMediaModal from "@src/ui/data-display/SimpleMediaModal.vue";
 import CurrencyInput from "@src/ui/inputs/CurrencyInput.vue";
 import apiClient from "@src/api/axios-instance";
+import Button from "@src/ui/inputs/Button.vue";
+
+const model = defineModel<number[]>();
 
 const props = defineProps<{
   selectionItems: ApiSelectionItem[] | null;
@@ -14,13 +17,12 @@ const props = defineProps<{
 }>();
 
 const allSelected = ref(false);
-const selectedBoardIds = ref<number[]>([]);
 
 const allSelectedChanged = () => {
   if (allSelected.value) {
-    selectedBoardIds.value = props.selectionItems?.map((item) => item.id) || [];
+    model.value = props.selectionItems?.map((item) => item.id) || [];
   } else {
-    selectedBoardIds.value = [];
+    model.value = [];
   }
 };
 
@@ -160,14 +162,10 @@ const changePrice = async (
             <tr
               v-for="item in props.selectionItems"
               :key="item.id"
-              class="border-b border-app-border bg-theme-table-bg hover:bg-theme-table-hover transition-colors"
+              class="border-b border-app-border hover:bg-app-bg-secondary-lighter transition-colors"
             >
               <td class="pl-[1.25rem] py-[0.625rem] pr-3">
-                <Checkbox
-                  v-model="selectedBoardIds"
-                  :value="item.id"
-                  size="[1.25rem]"
-                />
+                <Checkbox v-model="model" :value="item.id" size="[1.25rem]" />
               </td>
               <td class="py-[0.625rem] px-3">
                 {{ item.id }}
@@ -209,13 +207,16 @@ const changePrice = async (
                 {{ dateWithTime(item.updated_at) }}
               </td>
               <td class="py-[0.625rem] px-3">
-                <button
+                <Button
                   v-if="item.image"
-                  class="w-8 h-8 flex items-center justify-center"
+                  variant="ghost"
+                  icon-only
                   @click="openImagesModal(item)"
                 >
-                  <PhotoIcon class="w-6 h-6" />
-                </button>
+                  <template #icon>
+                    <PhotoIcon />
+                  </template>
+                </Button>
                 <span v-else class="text-text-secondary">—</span>
               </td>
               <td class="py-[0.625rem] px-3">

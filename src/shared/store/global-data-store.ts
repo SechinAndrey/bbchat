@@ -38,6 +38,11 @@ export const useGlobalDataStore = defineStore("globalData", () => {
     }));
   });
 
+  const exportCols = computed(() => {
+    if (!globalData.value) return [];
+    return globalData.value.selectionExportFormFields.cols;
+  });
+
   const getKanbanStatusById = (id: number): ApiKanbanStatus | undefined => {
     return kanbanStatuses.value.find((status) => status.id === id);
   };
@@ -63,6 +68,7 @@ export const useGlobalDataStore = defineStore("globalData", () => {
     isLoading,
     cities,
     error,
+    exportCols,
 
     fetchGlobalData,
     getKanbanStatusById,

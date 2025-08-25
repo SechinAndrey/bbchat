@@ -1,6 +1,12 @@
 <script setup lang="ts">
 const props = defineProps<{
-  animation: string;
+  animation:
+    | "slide-left"
+    | "slide-right"
+    | "slide-up"
+    | "slide-down"
+    | "shelf-up"
+    | "shelf-down";
 }>();
 </script>
 
@@ -79,12 +85,12 @@ const props = defineProps<{
 
 .slide-down-enter-from {
   opacity: 0;
-  transform: translateY(-50px);
+  transform: translateY(30px);
 }
 
 .slide-down-leave-to {
   opacity: 0;
-  transform: translateY(-50px);
+  transform: translateY(30px);
 }
 
 /* shelf up */

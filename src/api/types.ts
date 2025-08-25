@@ -537,6 +537,12 @@ export interface ApiGlobalDataResponse {
   usersForClients: ApiManagerListItem[];
   kanbanStatuses: ApiKanbanStatus[];
   cities: ApiCommunicationCity[];
+  selectionExportFormFields: {
+    cols: {
+      alias: string;
+      name: string;
+    }[];
+  };
 }
 
 // --- selections ---

@@ -41,7 +41,7 @@ const dropdownPosition = computed(() => {
   // Позиционирование в соответствии с указанным направлением
   const positions: Record<string, any> = {
     top: {
-      bottom: `${activatorRef.value.offsetHeight + 5}px`,
+      bottom: `${activatorRef.value.offsetHeight + 12}px`,
       left: "0",
     },
     bottom: {
@@ -184,15 +184,15 @@ defineExpose({
     <Transition :name="handleClickOutside ? 'scale' : 'dropdown'">
       <div
         v-show="isOpen"
-        ref="dropdownRef"
         :id="id"
+        ref="dropdownRef"
         :style="handleClickOutside ? {} : dropdownPosition"
-        class="absolute z-[100] w-[12.5rem] rounded-sm bg-white dark:bg-gray-800 shadow-lg border border-gray-100 dark:border-gray-600 focus:outline-none"
+        class="absolute z-[100] w-[12.5rem] rounded-sm bg-app-bg dark:bg-gray-800 shadow-lg border border-app-border focus:outline-none"
         role="menu"
         aria-orientation="vertical"
         tabindex="-1"
       >
-        <div role="none">
+        <div role="none" class="flex flex-col gap-2">
           <slot @dropdown-item-click="handleItemClick"></slot>
         </div>
       </div>

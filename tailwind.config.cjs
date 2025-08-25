@@ -44,6 +44,7 @@ module.exports = {
         "app-bg": {
           DEFAULT: "var(--color-bg-primary)",
           secondary: "var(--color-bg-secondary)",
+          "secondary-lighter": "var(--color-bg-secondary-lighter)",
         },
         "app-border": "var(--color-border)",
         "app-divider": "var(--color-divider)",
