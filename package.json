@@ -22,6 +22,7 @@
     "@capacitor/core": "^7.2.0",
     "@capacitor/ios": "^7.2.0",
     "@heroicons/vue": "^2.0.18",
+    "@kalimahapps/vue-popper": "^1.2.2",
     "@videojs-player/vue": "^1.0.0",
     "@vueuse/core": "^13.4.0",
     "@vueuse/integrations": "^10.4.1",

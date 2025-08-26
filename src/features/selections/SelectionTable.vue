@@ -9,7 +9,9 @@ import CurrencyInput from "@src/ui/inputs/CurrencyInput.vue";
 import apiClient from "@src/api/axios-instance";
 import Button from "@src/ui/inputs/Button.vue";
 import BoardAvailability from "@src/features/selections/BoardAvailability.vue";
-import { Dropdown } from "@src/ui/navigation/DropdownV3";
+import BoardAvailabilityFull from "@src/features/selections/BoardAvailabilityFull.vue";
+
+import VuePopper from "@kalimahapps/vue-popper";
 
 const model = defineModel<number[]>();
 
@@ -222,19 +224,20 @@ const changePrice = async (
                 <span v-else class="text-text-secondary">—</span>
               </td>
               <td class="py-[0.625rem] px-3">
-                <Dropdown class="w-full" trigger="hover">
-                  <template #activator>
+                <VuePopper hover placement="top" class="w-full">
+                  <template #default>
                     <BoardAvailability :schedule="item.reserve_data" />
                   </template>
 
-                  <div>
-                    Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-                    Suscipit cum quas commodi quod autem necessitatibus quae
-                    enim praesentium neque impedit aspernatur facilis labore,
-                    deserunt eligendi consequuntur officia hic! Provident,
-                    distinctio.
-                  </div>
-                </Dropdown>
+                  <template #content>
+                    <div class="p-4">
+                      <BoardAvailabilityFull
+                        class="w-full"
+                        :schedule="item.reserve_data"
+                      />
+                    </div>
+                  </template>
+                </VuePopper>
               </td>
               <td class="py-[0.625rem] px-3">{{ item.price }} ₴</td>
               <td class="py-[0.625rem] px-3">

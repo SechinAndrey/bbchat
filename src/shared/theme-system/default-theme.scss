@@ -117,6 +117,9 @@ html.theme-default {
   /* Shadows */
   // Global shadow color for all box shadows
   --color-shadow: rgb(0 0 0 / 11%);
+
+  --vue-popper-bg: var(--color-bg-primary);
+  --vue-popper-text-color: var(--color-text-primary);
 }
 
 html.theme-default[data-theme="dark"] {
@@ -135,6 +138,7 @@ html.theme-default[data-theme="dark"] {
   // Background colors
   --color-bg-primary: #1f2936;
   --color-bg-secondary: #2d3748;
+  --color-bg-secondary-lighter: #2c3648;
 
   // Scrollbar
   --scrollbar-thumb: #4b5563;
