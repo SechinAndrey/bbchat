@@ -8,6 +8,8 @@ import SimpleMediaModal from "@src/ui/data-display/SimpleMediaModal.vue";
 import CurrencyInput from "@src/ui/inputs/CurrencyInput.vue";
 import apiClient from "@src/api/axios-instance";
 import Button from "@src/ui/inputs/Button.vue";
+import BoardAvailability from "@src/features/selections/BoardAvailability.vue";
+import { Dropdown } from "@src/ui/navigation/DropdownV3";
 
 const model = defineModel<number[]>();
 
@@ -220,12 +222,19 @@ const changePrice = async (
                 <span v-else class="text-text-secondary">—</span>
               </td>
               <td class="py-[0.625rem] px-3">
-                <div class="w-16 h-2 rounded-full overflow-hidden">
-                  <div
-                    class="h-full bg-success rounded-full"
-                    style="width: 100%"
-                  ></div>
-                </div>
+                <Dropdown class="w-full" trigger="hover">
+                  <template #activator>
+                    <BoardAvailability :schedule="item.reserve_data" />
+                  </template>
+
+                  <div>
+                    Lorem, ipsum dolor sit amet consectetur adipisicing elit.
+                    Suscipit cum quas commodi quod autem necessitatibus quae
+                    enim praesentium neque impedit aspernatur facilis labore,
+                    deserunt eligendi consequuntur officia hic! Provident,
+                    distinctio.
+                  </div>
+                </Dropdown>
               </td>
               <td class="py-[0.625rem] px-3">{{ item.price }} ₴</td>
               <td class="py-[0.625rem] px-3">

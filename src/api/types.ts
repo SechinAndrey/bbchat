@@ -585,6 +585,7 @@ export interface ApiSelectionItem {
   isWatched: boolean;
   watchedFrom?: string;
   watchedTo?: string;
+  reserve_data: Record<string, string>;
 }
 
 export interface ApiSelection {
