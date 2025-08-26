@@ -26,7 +26,7 @@ const props = withDefaults(
       block
       variant="filled"
       :size="props.size"
-      input-class="!border-solid !border-2 !border-app-border"
+      input-class="!border-solid !border-2 !border-app-border !pr-8 min-w-[6rem]"
     />
     <div
       class="absolute top-0 bottom-0 right-0 px-4 border-l-2 border-app-border flex items-center"
