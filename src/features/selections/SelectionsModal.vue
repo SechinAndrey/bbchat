@@ -16,10 +16,18 @@ import SlideTransition from "@src/ui/transitions/SlideTransition.vue";
 import Checkbox from "@src/ui/inputs/Checkbox.vue";
 import { Dropdown } from "@src/ui/navigation/DropdownV3";
 import useGlobalDataStore from "@src/shared/store/global-data-store";
+import FollowBoardsModal from "@src/features/selections/FollowBoardsModal.vue";
+import {
+  selectionsService,
+  type UnfollowParams,
+} from "@src/features/selections/selections-service";
+import type { EntityType } from "@src/shared/types/common";
 
 const props = defineProps<{
   open: boolean;
   selection: ApiSelection | null;
+  entityId: number;
+  entityType: EntityType;
 }>();
 
 const emit = defineEmits<{
@@ -59,10 +67,58 @@ const download = async () => {
 };
 
 const selectedBoardIds = ref<number[]>([]);
+const isFollowBoardsModalOpen = ref(false);
+const isUnfollowLoading = ref(false);
+const isDeleteLoading = ref(false);
+
+const unfollowBoards = async () => {
+  if (!props.selection?.id || isUnfollowLoading.value) return;
+
+  try {
+    isUnfollowLoading.value = true;
+
+    const params: UnfollowParams = {
+      id: props.entityId,
+      type: props.entityType,
+      selection_id: props.selection.id,
+      boards_ids: selectedBoardIds.value,
+    };
+
+    await selectionsService.unfollowBoards(params);
+  } catch (error) {
+    console.error("Error unfollowing boards:", error);
+  } finally {
+    isUnfollowLoading.value = false;
+  }
+};
+
+const deleteBoards = async () => {
+  if (
+    !props.selection?.id ||
+    isDeleteLoading.value ||
+    !selectedBoardIds.value.length
+  )
+    return;
+
+  try {
+    isDeleteLoading.value = true;
+
+    await selectionsService.deleteBoardsFromSelection(props.selection.id, {
+      items: selectedBoardIds.value,
+    });
+
+    // Clear selection after successful deletion
+    selectedBoardIds.value = [];
+  } catch (error) {
+    console.error("Error deleting boards:", error);
+  } finally {
+    isDeleteLoading.value = false;
+  }
+};
 </script>
 
 <template>
-  <Modal :open="props.open" :close-modal="close" no-padding>
+  <Modal :open="props.open" :close-modal="close" no-padding fullscreen>
     <template #content>
       <div
         class="h-full w-full relative overflow-hidden bg-app-bg transition-all z-21"
@@ -118,18 +174,36 @@ const selectedBoardIds = ref<number[]>([]);
             </div>
           </Dropdown>
 
+          <FollowBoardsModal
+            v-model="isFollowBoardsModalOpen"
+            :selected-board-ids="selectedBoardIds"
+            :selection-id="props.selection?.id || 0"
+            :entity-id="props.entityId"
+            :entity-type="props.entityType"
+          />
+
           <SlideTransition animation="slide-down">
             <span v-if="selectedBoardIds.length">
-              <Button variant="text">
+              <Button variant="text" @click="isFollowBoardsModalOpen = true">
                 <EyeIcon class="w-5 inline-block mr-1" />Додати до спостереження
               </Button>
 
-              <Button variant="text">
+              <Button
+                variant="text"
+                :loading="isUnfollowLoading"
+                :disabled="isUnfollowLoading"
+                @click="unfollowBoards"
+              >
                 <EyeSlashIcon class="w-5 inline-block mr-1" />Прибрати із
                 спостереження
               </Button>
 
-              <Button variant="text">
+              <Button
+                variant="text"
+                :loading="isDeleteLoading"
+                :disabled="isDeleteLoading"
+                @click="deleteBoards"
+              >
                 <TrashIcon class="w-5 inline-block mr-1" />Видалити
               </Button>
             </span>

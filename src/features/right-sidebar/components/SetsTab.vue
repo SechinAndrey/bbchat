@@ -136,6 +136,8 @@ selectionsStore.fetchSelections(entity, id);
     <SelectionsModal
       :open="isSelectionsModalOpen"
       :selection="selectedSelection"
+      :entity-id="id"
+      :entity-type="entity"
       @close="closeSelectionModal"
     />
   </div>

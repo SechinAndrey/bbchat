@@ -5,6 +5,7 @@ const props = defineProps<{
     | "slide-right"
     | "slide-up"
     | "slide-down"
+    | "slide-from-bottom"
     | "shelf-up"
     | "shelf-down";
 }>();
@@ -129,5 +130,24 @@ const props = defineProps<{
 .shelf-down-leave-to {
   opacity: 0;
   transform: translateY(-30px);
+}
+
+/* slide from bottom - for mobile modals */
+.slide-from-bottom-enter-active {
+  transition: all 0.3s ease-out;
+}
+
+.slide-from-bottom-leave-active {
+  transition: all 0.3s ease-out;
+}
+
+.slide-from-bottom-enter-from {
+  opacity: 0;
+  transform: translateY(100%);
+}
+
+.slide-from-bottom-leave-to {
+  opacity: 0;
+  transform: translateY(100%);
 }
 </style>

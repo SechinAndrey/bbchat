@@ -8,6 +8,22 @@ export interface GetSelectionsParams {
 
 export type ApiSelectionsResponse = ApiSelection[];
 
+export interface FollowParams {
+  id: number; // entity id
+  type: EntityType;
+  selection_id: number;
+  boards_ids: number[];
+  month_from?: string;
+  month_to?: string;
+}
+
+export interface UnfollowParams {
+  id: number; // entity id
+  type: EntityType;
+  selection_id: number;
+  boards_ids: number[];
+}
+
 export class SelectionsService {
   /**
    * Get selections for a specific entity by ID
@@ -33,6 +49,53 @@ export class SelectionsService {
         error,
       );
       throw new Error(`Failed to fetch selections for ${entity.slice(0, -1)}`);
+    }
+  }
+
+  async followBoards(params: FollowParams): Promise<void> {
+    try {
+      await apiClient.post(`/supervisions`, params);
+    } catch (error) {
+      console.error(
+        `Error following boards for selection ${params.selection_id}:`,
+        error,
+      );
+      throw new Error(
+        `Failed to follow boards for selection ${params.selection_id}`,
+      );
+    }
+  }
+
+  async unfollowBoards(params: UnfollowParams): Promise<void> {
+    try {
+      await apiClient.delete(`/supervisions`, { data: params });
+    } catch (error) {
+      console.error(
+        `Error unfollowing boards for selection ${params.selection_id}:`,
+        error,
+      );
+      throw new Error(
+        `Failed to unfollow boards for selection ${params.selection_id}`,
+      );
+    }
+  }
+
+  async deleteBoardsFromSelection(
+    selection_id: number,
+    params: {
+      items: number[];
+    },
+  ): Promise<void> {
+    try {
+      await apiClient.delete(`/selections/${selection_id}/items`, {
+        data: params,
+      });
+    } catch (error) {
+      console.error(
+        `Error deleting boards from selection ${selection_id}:`,
+        error,
+      );
+      throw new Error(`Failed to delete boards from selection ${selection_id}`);
     }
   }
 }
