@@ -73,6 +73,24 @@ export class ConversationsService {
   }
 
   /**
+   * Get all conversations for leads with contacts
+   */
+  async getLeadsContactsConversations(
+    params?: GetCommunicationsParams,
+  ): Promise<ApiCommunicationLeadsResponse> {
+    try {
+      const response = await apiClient.get<ApiCommunicationLeadsResponse>(
+        "/communications/leads/contacts",
+        { params },
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching leads contacts conversations:", error);
+      throw new Error("Failed to fetch leads contacts conversations");
+    }
+  }
+
+  /**
    * Get all clients for current user
    * @returns Promise with clients data
    */
@@ -91,14 +109,33 @@ export class ConversationsService {
     }
   }
 
+  /**
+   * Get all conversations for clients with contacts
+   */
+  async getClientsContactsConversations(
+    params?: GetCommunicationsParams,
+  ): Promise<ApiCommunicationClientsResponse> {
+    try {
+      const response = await apiClient.get<ApiCommunicationClientsResponse>(
+        "/communications/clients/contacts",
+        { params },
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching clients contacts conversations:", error);
+      throw new Error("Failed to fetch clients contacts conversations");
+    }
+  }
+
   async getCommunicationMessages(
     entity: EntityType,
     id: number,
+    contactId: number,
     params?: GetMessagesParams,
   ): Promise<ApiMessagesResponse> {
     try {
       const response = await apiClient.get<ApiMessagesResponse>(
-        `/communications/${entity}/${id}`,
+        `/communications/${entity}/${id}/contacts/${contactId}`,
         {
           params,
         },

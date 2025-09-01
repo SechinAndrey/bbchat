@@ -15,10 +15,12 @@ import RightSidebar from "@src/features/right-sidebar/components/RightSidebar.vu
 const props = defineProps<{
   id: number;
   entity: EntityType;
+  contactId: number;
 }>();
 
 provide("entity", props.entity);
 provide("id", props.id);
+provide("contactId", props.contactId);
 
 const store = useStore();
 const conversationsStore = useConversationsStore();

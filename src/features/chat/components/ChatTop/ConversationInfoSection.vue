@@ -18,6 +18,7 @@ import type { EntityType } from "@src/shared/types/common";
 
 const entity = inject<EntityType>("entity");
 const id = inject<number>("id");
+const contactId = inject<number>("contactId");
 
 const store = useStore();
 const conversationsStore = useConversationsStore();
@@ -27,8 +28,8 @@ const handleCloseConversation = () => {
 };
 
 const debouncedFn = useDebounceFn(() => {
-  if (!entity || !id) return;
-  conversationsStore.fetchCommunicationMessages(entity, id, {
+  if (!entity || !id || !contactId) return;
+  conversationsStore.fetchCommunicationMessages(entity, id, contactId, {
     page: 1,
     search: conversationsStore.messagesFilters.search,
   });

@@ -160,7 +160,7 @@ export const useConversationsStore = defineStore("conversations", () => {
       }
 
       const response =
-        await conversationsService.getCommunicationsLeads(mergedParams);
+        await conversationsService.getLeadsContactsConversations(mergedParams);
 
       // If loading first page or resetting, replace the data
       if (mergedParams.page === 1) {
@@ -203,7 +203,9 @@ export const useConversationsStore = defineStore("conversations", () => {
       }
 
       const response =
-        await conversationsService.getCommunicationsClients(mergedParams);
+        await conversationsService.getClientsContactsConversations(
+          mergedParams,
+        );
 
       // If loading first page or resetting, replace the data
       if (mergedParams.page === 1) {
@@ -273,6 +275,7 @@ export const useConversationsStore = defineStore("conversations", () => {
   const fetchMessages = async (
     entity: EntityType,
     id: number,
+    contactId: number,
     params?: { page?: number; search?: string },
     loadingRef = isFetchingMessages,
   ) => {
@@ -287,6 +290,7 @@ export const useConversationsStore = defineStore("conversations", () => {
       const response = await conversationsService.getCommunicationMessages(
         entity,
         id,
+        contactId,
         mergedParams,
       );
 
@@ -326,11 +330,16 @@ export const useConversationsStore = defineStore("conversations", () => {
   const fetchCommunicationMessages = async (
     entity: EntityType,
     id: number,
+    contactId: number,
     params?: { page?: number; search?: string },
-  ) => fetchMessages(entity, id, params, isFetchingMessages);
+  ) => fetchMessages(entity, id, contactId, params, isFetchingMessages);
 
   // Wrapper for loading more messages
-  const loadMoreMessages = async (entity: EntityType, id: number) => {
+  const loadMoreMessages = async (
+    entity: EntityType,
+    id: number,
+    contactId: number,
+  ) => {
     if (!hasMoreMessages.value || isLoadingMoreMessages.value) return;
     const nextPage = messagesMeta.value
       ? messagesMeta.value.current_page + 1
@@ -338,6 +347,7 @@ export const useConversationsStore = defineStore("conversations", () => {
     return fetchMessages(
       entity,
       id,
+      contactId,
       { ...messagesFilters.value, page: nextPage },
       isLoadingMoreMessages,
     );
@@ -492,20 +502,27 @@ export const useConversationsStore = defineStore("conversations", () => {
       async (newParams, oldParams) => {
         if (
           newParams.id !== oldParams?.id ||
-          newParams.entity !== oldParams?.entity
+          newParams.entity !== oldParams?.entity ||
+          newParams.contactId !== oldParams?.contactId
         ) {
           const { id, entity } = newParams;
 
           if (id && entity) {
             const entityType = entity as EntityType;
             const conversationId = Number(id);
+            const contactId = Number(newParams.contactId);
 
             try {
               await fetchConversationById(entityType, conversationId);
               messagesMeta.value = null;
-              await fetchCommunicationMessages(entityType, conversationId, {
-                page: 1,
-              });
+              await fetchCommunicationMessages(
+                entityType,
+                conversationId,
+                contactId,
+                {
+                  page: 1,
+                },
+              );
             } catch (err) {
               console.error("❌ Error fetching conversation from route:", err);
             }

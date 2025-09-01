@@ -50,6 +50,10 @@ const handleShowContextMenu = (event: MouseEvent) => {
   };
 };
 
+const contact = computed(() => {
+  return props.conversation.contacts?.at(0);
+});
+
 // (event) closes the context menu
 const handleCloseContextMenu = () => {
   showContextMenu.value = false;
@@ -59,7 +63,9 @@ const handleCloseContextMenu = () => {
 const handleSelectConversation = () => {
   showContextMenu.value = false;
   const id = Number(props.conversation.id);
-  router.push({ path: `/chat/${props.conversation.entity}/${id}/` });
+  router.push({
+    path: `/chat/${props.conversation.entity}/${id}/contact/${contact.value?.id}`,
+  });
 };
 
 // last message in conversation to display
@@ -95,8 +101,8 @@ const handleRemoveUnread = () => {
 };
 
 const isActive = computed(() => {
-  const currentConversationId = route.currentRoute.value.params.id;
-  return currentConversationId === props.conversation.id.toString();
+  const currentConversationId = route.currentRoute.value.params.contactId;
+  return contact.value?.id.toString() === currentConversationId;
 });
 
 const lastMessageDate = computed(() => {
