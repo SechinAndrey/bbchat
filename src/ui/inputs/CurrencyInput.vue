@@ -1,12 +1,13 @@
 <script setup lang="ts">
+import { computed } from "vue";
 import TextInput from "@src/ui/inputs/TextInput.vue";
-const model = defineModel<string>();
+const model = defineModel<number | null>();
 
 const props = withDefaults(
   defineProps<{
     currency?: string;
     disabled?: boolean;
-    size: "sm" | "md" | "lg";
+    size?: "sm" | "md" | "lg";
   }>(),
   {
     currency: "₴",
@@ -14,12 +15,25 @@ const props = withDefaults(
     size: "sm",
   },
 );
+
+// Convert between number and string for TextInput
+const stringValue = computed({
+  get: () => model.value?.toString() ?? '',
+  set: (value: string) => {
+    if (value === '') {
+      model.value = null;
+    } else {
+      const numValue = Number(value);
+      model.value = isNaN(numValue) ? null : numValue;
+    }
+  }
+});
 </script>
 
 <template>
   <div class="relative">
     <TextInput
-      v-model="model"
+      v-model="stringValue"
       type="number"
       placeholder="0"
       :disabled="props.disabled"
