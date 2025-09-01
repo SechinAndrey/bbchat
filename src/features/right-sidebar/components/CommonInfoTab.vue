@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, inject, type Ref } from "vue";
 import {
   ApiCommunicationLeadFull,
   ApiCommunicationClientFull,
@@ -7,8 +7,10 @@ import {
 import Button from "@src/ui/inputs/Button.vue";
 import { formatConversationDate } from "@src/shared/utils/utils";
 import useConversationsStore from "@src/features/conversations/conversations-store";
-import { PhoneIcon, EnvelopeIcon } from "@heroicons/vue/24/outline";
+import { PhoneIcon, EnvelopeIcon, UserIcon } from "@heroicons/vue/24/outline";
 import CanbanSelect from "@src/shared/components/CanbanSelect.vue";
+
+const contactId = inject<Ref<number> | undefined>("contactId");
 
 const conversationsStore = useConversationsStore();
 
@@ -23,24 +25,41 @@ const activeConversationInfo = computed<
   <div class="py-4">
     <div class="mb-4 text-app-text-secondary text-[0.813rem]">Контакти</div>
 
-    <div class="flex items-center gap-2 mb-2">
-      <PhoneIcon class="w-5 h-5 text-primary" />
-      <a class="text-[0.875rem]" :href="`tel:${activeConversationInfo?.phone}`">
-        {{ activeConversationInfo?.phone || "Не вказаний" }}
-      </a>
+    <div
+      v-for="contact in activeConversationInfo?.contacts"
+      :key="contact.id"
+      class="last:mb-0 border-b border-t border-dashed border-app-border py-3"
+      :class="{
+        'border-primary current-contact': contactId && contact.id === contactId,
+      }"
+    >
+      <div class="flex items-center gap-2 mb-2">
+        <UserIcon class="w-5 h-5 text-primary flex-shrink-0" />
+        <span class="text-[0.875rem] truncate">{{ contact.fio || "Не вказано" }}</span>
+      </div>
+
+      <div class="flex items-center gap-2 mb-2">
+        <PhoneIcon class="w-5 h-5 text-primary" />
+        <a
+          class="text-[0.875rem] hover:underline underline-offset-4"
+          :href="`tel:${contact.phone}`"
+        >
+          {{ contact.phone || "Не вказаний" }}
+        </a>
+      </div>
+
+      <div class="flex items-center gap-2 mb-2">
+        <EnvelopeIcon class="w-5 h-5 text-primary flex-shrink-0" />
+        <a
+          class="text-[0.875rem] hover:underline underline-offset-4 truncate"
+          :href="`mailto:${activeConversationInfo?.email}`"
+        >
+          {{ activeConversationInfo?.email || "Не вказана" }}
+        </a>
+      </div>
     </div>
 
-    <div class="flex items-center gap-2 mb-2">
-      <EnvelopeIcon class="w-5 h-5 text-primary" />
-      <a
-        class="text-[0.875rem]"
-        :href="`mailto:${activeConversationInfo?.email}`"
-      >
-        {{ activeConversationInfo?.email || "Не вказана" }}
-      </a>
-    </div>
-
-    <Button variant="text"> + Додати </Button>
+    <Button variant="text" class="mt-3"> + Додати </Button>
 
     <div class="my-4 text-app-text-secondary text-[0.813rem]">Створено</div>
 
@@ -110,3 +129,19 @@ const activeConversationInfo = computed<
     </div>
   </div>
 </template>
+
+<style scoped lang="scss">
+.current-contact {
+  // before triangle
+  position: relative;
+
+  &::before {
+    content: "";
+    position: absolute;
+    left: -0.938rem;
+    top: 0.625rem;
+    border: 0.5rem solid transparent;
+    border-left-color: #8e99f3;
+  }
+}
+</style>

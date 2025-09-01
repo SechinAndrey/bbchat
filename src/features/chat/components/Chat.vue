@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import useStore from "@src/shared/store/store";
 import useConversationsStore from "@src/features/conversations/conversations-store";
-import { provide } from "vue";
+import { provide, toRef } from "vue";
 
 import type { EntityType } from "@src/shared/types/common";
 
@@ -18,9 +18,9 @@ const props = defineProps<{
   contactId: number;
 }>();
 
-provide("entity", props.entity);
-provide("id", props.id);
-provide("contactId", props.contactId);
+provide("entity", toRef(props, "entity"));
+provide("id", toRef(props, "id"));
+provide("contactId", toRef(props, "contactId"));
 
 const store = useStore();
 const conversationsStore = useConversationsStore();
