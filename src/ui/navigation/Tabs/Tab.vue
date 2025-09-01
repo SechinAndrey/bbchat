@@ -10,6 +10,7 @@ const props = defineProps<{
 <template>
   <Button
     class="flex-1 whitespace-nowrap"
+    :class="['flex-1 whitespace-nowrap', { '!px-2': props.compact }]"
     size="sm"
     :variant="active ? 'primary' : 'ghost'"
     :ring="false"
