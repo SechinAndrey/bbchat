@@ -50,6 +50,40 @@ export const useSelectionsStore = defineStore("selections", () => {
     );
   };
 
+  const updateBoardsWatchStatus = (
+    selectionId: number,
+    boardIds: number[],
+    watchedFrom?: string,
+    watchedTo?: string,
+  ) => {
+    const selection = selections.value.find((s) => s.id === selectionId);
+    if (!selection?.boards_list) return;
+
+    const isWatched = !!(watchedFrom || watchedTo);
+
+    selection.boards_list.forEach((board) => {
+      if (boardIds.includes(board.id)) {
+        board.isWatched = isWatched;
+        board.watchedFrom = watchedFrom;
+        board.watchedTo = watchedTo;
+      }
+    });
+  };
+
+  const removeBoardsFromSelection = (
+    selectionId: number,
+    selectionItemIds: number[],
+  ) => {
+    const selection = selections.value.find((s) => s.id === selectionId);
+    if (!selection?.boards_list) return;
+
+    selection.boards_list = selection.boards_list.filter(
+      (board) => !selectionItemIds.includes(board.selection_item_id),
+    );
+
+    selection.boards_count = selection.boards_list.length;
+  };
+
   const resetState = () => {
     selections.value = [];
     currentEntity.value = null;
@@ -64,6 +98,8 @@ export const useSelectionsStore = defineStore("selections", () => {
     currentEntity,
     fetchSelections,
     deleteSelection,
+    updateBoardsWatchStatus,
+    removeBoardsFromSelection,
     resetState,
   };
 });

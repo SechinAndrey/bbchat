@@ -17,6 +17,7 @@ import Checkbox from "@src/ui/inputs/Checkbox.vue";
 import { Dropdown } from "@src/ui/navigation/DropdownV3";
 import useGlobalDataStore from "@src/shared/store/global-data-store";
 import FollowBoardsModal from "@src/features/selections/FollowBoardsModal.vue";
+import { useSelectionsStore } from "@src/features/selections/selection-store";
 import {
   selectionsService,
   type UnfollowParams,
@@ -39,6 +40,7 @@ const close = () => {
 };
 
 const globalStore = useGlobalDataStore();
+const selectionsStore = useSelectionsStore();
 
 const selectedColumns = ref<string[]>([]);
 
@@ -67,6 +69,7 @@ const download = async () => {
 };
 
 const selectedBoardIds = ref<number[]>([]);
+const selectionTableRef = ref<InstanceType<typeof SelectionTable> | null>(null);
 const isFollowBoardsModalOpen = ref(false);
 const isUnfollowLoading = ref(false);
 const isDeleteLoading = ref(false);
@@ -85,6 +88,12 @@ const unfollowBoards = async () => {
     };
 
     await selectionsService.unfollowBoards(params);
+
+    selectionsStore.updateBoardsWatchStatus(
+      props.selection.id,
+      selectedBoardIds.value
+    );
+    selectedBoardIds.value = [];
   } catch (error) {
     console.error("Error unfollowing boards:", error);
   } finally {
@@ -96,18 +105,23 @@ const deleteBoards = async () => {
   if (
     !props.selection?.id ||
     isDeleteLoading.value ||
-    !selectedBoardIds.value.length
+    !selectedBoardIds.value.length ||
+    !selectionTableRef.value
   )
     return;
 
   try {
     isDeleteLoading.value = true;
+    const selectionItemIds = selectionTableRef.value.selectedSelectionItemIds;
 
     await selectionsService.deleteBoardsFromSelection(props.selection.id, {
-      items: selectedBoardIds.value,
+      items: selectionItemIds,
     });
 
-    // Clear selection after successful deletion
+    selectionsStore.removeBoardsFromSelection(
+      props.selection.id,
+      selectionItemIds,
+    );
     selectedBoardIds.value = [];
   } catch (error) {
     console.error("Error deleting boards:", error);
@@ -139,6 +153,7 @@ const deleteBoards = async () => {
 
         <SelectionTable
           v-if="props.selection?.boards_list"
+          ref="selectionTableRef"
           v-model="selectedBoardIds"
           :selection-id="props.selection.id"
           :selection-items="props.selection?.boards_list"
@@ -180,6 +195,7 @@ const deleteBoards = async () => {
             :selection-id="props.selection?.id || 0"
             :entity-id="props.entityId"
             :entity-type="props.entityType"
+            @followed="selectedBoardIds = []"
           />
 
           <SlideTransition animation="slide-down">

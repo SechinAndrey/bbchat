@@ -4,6 +4,7 @@ import Button from "@src/ui/inputs/Button.vue";
 import { ref, computed } from "vue";
 import { selectionsService, type FollowParams } from "./selections-service";
 import type { EntityType } from "@src/shared/types/common";
+import { useSelectionsStore } from "@src/features/selections/selection-store";
 
 const props = defineProps<{
   selectedBoardIds: number[];
@@ -17,6 +18,8 @@ const emit = defineEmits<{
 }>();
 
 const open = defineModel<boolean>({ default: false });
+
+const selectionsStore = useSelectionsStore();
 
 const dateFrom = ref<string>("");
 const dateTo = ref<string>("");
@@ -57,6 +60,14 @@ const followBoards = async () => {
     };
 
     await selectionsService.followBoards(params);
+
+    selectionsStore.updateBoardsWatchStatus(
+      props.selectionId,
+      props.selectedBoardIds,
+      params.month_from,
+      params.month_to
+    );
+
     emit("followed");
     close();
   } catch (error) {

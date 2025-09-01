@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import type { ApiSelectionItem } from "@src/api/types";
 import Checkbox from "@src/ui/inputs/Checkbox.vue";
 import { LightBulbIcon, PhotoIcon } from "@heroicons/vue/24/outline";
@@ -14,6 +14,17 @@ import BoardAvailabilityFull from "@src/features/selections/BoardAvailabilityFul
 import VuePopper from "@kalimahapps/vue-popper";
 
 const model = defineModel<number[]>();
+
+const selectedSelectionItemIds = computed(() => {
+  if (!model.value || !props.selectionItems) return [];
+  return props.selectionItems
+    .filter((item) => model.value!.includes(item.id))
+    .map((item) => item.selection_item_id);
+});
+
+defineExpose({
+  selectedSelectionItemIds,
+});
 
 const props = defineProps<{
   selectionItems: ApiSelectionItem[] | null;

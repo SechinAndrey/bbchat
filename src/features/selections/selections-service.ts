@@ -54,7 +54,11 @@ export class SelectionsService {
 
   async followBoards(params: FollowParams): Promise<void> {
     try {
-      await apiClient.post(`/supervisions`, params);
+      const singleEntity = params.type === "leads" ? "lead" : "client";
+      await apiClient.post(`/supervisions`, {
+        ...params,
+        type: singleEntity,
+      });
     } catch (error) {
       console.error(
         `Error following boards for selection ${params.selection_id}:`,
@@ -68,7 +72,13 @@ export class SelectionsService {
 
   async unfollowBoards(params: UnfollowParams): Promise<void> {
     try {
-      await apiClient.delete(`/supervisions`, { data: params });
+      const singleEntity = params.type === "leads" ? "lead" : "client";
+      await apiClient.delete(`/supervisions`, {
+        data: {
+          ...params,
+          type: singleEntity,
+        },
+      });
     } catch (error) {
       console.error(
         `Error unfollowing boards for selection ${params.selection_id}:`,

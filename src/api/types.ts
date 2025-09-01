@@ -563,6 +563,7 @@ export interface ApiSelectionManager {
 export interface ApiSelectionItem {
   code: string;
   id: number;
+  selection_item_id: number;
   firm_name: number;
   side_type: string;
   type: string;
