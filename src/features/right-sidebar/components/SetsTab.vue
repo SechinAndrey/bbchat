@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { inject, ref } from "vue";
+import { inject, ref, type Ref } from "vue";
 import { useSelectionsStore } from "@src/features/selections/selection-store";
 import { formatConversationDate } from "@src/shared/utils/utils";
 import ConfirmModal from "@src/ui/modals/ConfirmModal.vue";
@@ -13,8 +13,8 @@ import { RectangleStackIcon, TrashIcon } from "@heroicons/vue/24/outline";
 import SelectionsModal from "@src/features/selections/SelectionsModal.vue";
 
 const selectionsStore = useSelectionsStore();
-const entity = inject("entity") as EntityType;
-const id = inject("id") as number;
+const entity = inject<Ref<EntityType>>("entity", ref("leads" as EntityType));
+const id = inject<Ref<number>>("id", ref(0));
 
 // Modal state
 const showDeleteModal = ref(false);
@@ -49,7 +49,9 @@ const closeSelectionModal = () => {
 };
 
 // Get selections
-selectionsStore.fetchSelections(entity, id);
+if (entity.value && id.value) {
+  selectionsStore.fetchSelections(entity.value, id.value);
+}
 </script>
 
 <template>

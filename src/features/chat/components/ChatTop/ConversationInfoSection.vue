@@ -12,13 +12,13 @@ import Button from "@src/ui/inputs/Button.vue";
 import ConversationAvatar from "@src/shared/components/ConversationAvatar.vue";
 import useConversationsStore from "@src/features/conversations/conversations-store";
 import { useDebounceFn } from "@vueuse/core";
-import { computed, inject, ref } from "vue";
+import { computed, inject, ref, type Ref } from "vue";
 import { toast, type ToastOptions } from "vue3-toastify";
 import type { EntityType } from "@src/shared/types/common";
 
-const entity = inject<EntityType>("entity");
-const id = inject<number>("id");
-const contactId = inject<number>("contactId");
+const entity = inject<Ref<EntityType>>("entity");
+const id = inject<Ref<number>>("id");
+const contactId = inject<Ref<number>>("contactId");
 
 const store = useStore();
 const conversationsStore = useConversationsStore();
@@ -28,26 +28,27 @@ const handleCloseConversation = () => {
 };
 
 const debouncedFn = useDebounceFn(() => {
-  if (!entity || !id || !contactId) return;
-  conversationsStore.fetchCommunicationMessages(entity, id, contactId, {
-    page: 1,
-    search: conversationsStore.messagesFilters.search,
-  });
+  if (!entity?.value || !id?.value || !contactId?.value) return;
+  conversationsStore.fetchCommunicationMessages(
+    entity.value,
+    id.value,
+    contactId.value,
+    {
+      page: 1,
+      search: conversationsStore.messagesFilters.search,
+    },
+  );
 }, 500);
 
 const isLoading = ref(false);
 
 const endConversation = async () => {
-  if (!entity || !id) return;
+  if (!entity?.value || !id?.value) return;
   try {
     isLoading.value = true;
-    await conversationsStore.updateConversation(
-      entity as EntityType,
-      id as number,
-      {
-        communication_status_id: 2, // 2 - completed
-      },
-    );
+    await conversationsStore.updateConversation(entity.value, id.value, {
+      communication_status_id: 2, // 2 - completed
+    });
     toast("Діалог завершено", {
       autoClose: 2000,
       type: "success",

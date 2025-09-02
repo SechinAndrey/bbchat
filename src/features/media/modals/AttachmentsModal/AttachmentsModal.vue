@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, inject } from "vue";
+import { ref, computed, inject, type Ref } from "vue";
 import type { IAttachment } from "@src/shared/types/types";
 import {
   ApiCommunicationLeadFull,
@@ -21,10 +21,10 @@ const props = defineProps<{
   closeModal: () => void;
 }>();
 
-const entity = inject("entity") as EntityType;
-const id = inject("id") as number;
+const entity = inject<Ref<EntityType>>("entity");
+const id = inject<Ref<number>>("id");
 const contragent_type = computed(() => {
-  return entity === "leads" ? "lead" : "client";
+  return entity?.value === "leads" ? "lead" : "client";
 });
 
 const conversationsStore = useConversationsStore();
@@ -138,7 +138,7 @@ async function sendMessage() {
     file_url: response,
     messenger_id: props.messengerId,
     contragent_type: contragent_type.value,
-    contragent_id: id,
+    contragent_id: id?.value || 0,
   });
 
   clean();

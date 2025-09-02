@@ -22,10 +22,10 @@ import type { EntityType } from "@src/shared/types/common";
 const store = useStore();
 const conversationsStore = useConversationsStore();
 
-const entity = inject("entity") as EntityType;
-const id = inject("id") as number;
+const entity = inject<Ref<EntityType>>("entity");
+const id = inject<Ref<number>>("id");
 const contragent_type = computed(() => {
-  return entity === "leads" ? "lead" : "client";
+  return entity?.value === "leads" ? "lead" : "client";
 });
 
 // the content of the message.
@@ -72,7 +72,7 @@ async function sendMessage() {
     file_url: "",
     messenger_id: messengerId.value,
     contragent_type: contragent_type.value,
-    contragent_id: id,
+    contragent_id: id?.value || 0,
   });
   value.value = "";
 }
