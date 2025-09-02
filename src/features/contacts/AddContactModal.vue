@@ -3,12 +3,14 @@ import { ref, computed } from "vue";
 import Modal from "@src/ui/modals/Modal.vue";
 import Button from "@src/ui/inputs/Button.vue";
 import LabeledTextInput from "@src/ui/inputs/LabeledTextInput.vue";
+import AutocompleteSelect from "@src/ui/inputs/AutocompleteSelect.vue";
 import {
   contactsService,
   type CreateContactRequest,
 } from "@src/api/contacts-service";
 import { toast, type ToastOptions } from "vue3-toastify";
 import useStore from "@src/shared/store/store";
+import useGlobalDataStore from "@src/shared/store/global-data-store";
 import { extractValidationErrors } from "@src/shared/utils/utils";
 
 interface Props {
@@ -26,12 +28,14 @@ const props = defineProps<Props>();
 const emit = defineEmits<Emits>();
 
 const store = useStore();
+const globalDataStore = useGlobalDataStore();
 
 const isLoading = ref(false);
 
 const fio = ref("");
 const phone = ref("");
 const email = ref("");
+const selectedJobTitleId = ref<number | string>("");
 
 const isFormValid = computed(() => {
   const isFioValid = fio.value.trim() !== "";
@@ -46,6 +50,7 @@ const clean = () => {
   fio.value = "";
   phone.value = "";
   email.value = "";
+  selectedJobTitleId.value = "";
   props.closeModal();
 };
 
@@ -60,6 +65,14 @@ const handleSubmit = async () => {
       phone: phone.value.trim(),
       email: email.value.trim(),
     };
+
+    if (
+      props.entityType === "client" &&
+      selectedJobTitleId.value &&
+      typeof selectedJobTitleId.value === "number"
+    ) {
+      contactData.post_id = selectedJobTitleId.value;
+    }
 
     if (props.entityType === "client") {
       await contactsService.addContactToClient(props.entityId, contactData);
@@ -85,6 +98,13 @@ const handleSubmit = async () => {
 const handleCancel = () => {
   clean();
 };
+
+const jobTitleOptions = computed(() => {
+  return globalDataStore.contactJobTitles.map((jobTitle) => ({
+    value: jobTitle.id,
+    label: jobTitle.name,
+  }));
+});
 </script>
 
 <template>
@@ -97,35 +117,77 @@ const handleCancel = () => {
           </h2>
         </div>
 
+        <!-- Form -->
         <div class="space-y-4">
-          <div class="grid grid-cols-2 gap-4">
-            <LabeledTextInput
-              v-model="fio"
-              label="ФИО"
-              placeholder="Іван Іванов"
-              bordered
-              :disabled="isLoading"
-            />
-            <LabeledTextInput
-              v-model="phone"
-              label="Телефон"
-              type="tel"
-              placeholder="+380123456789"
-              bordered
-              :disabled="isLoading"
-            />
-          </div>
+          <template v-if="props.entityType === 'client'">
+            <div class="grid grid-cols-2 gap-4">
+              <LabeledTextInput
+                v-model="fio"
+                label="ФИО"
+                placeholder="Іван Іванов"
+                bordered
+                :disabled="isLoading"
+              />
+              <AutocompleteSelect
+                v-model="selectedJobTitleId"
+                :options="jobTitleOptions"
+                label="Посада"
+                placeholder="Оберіть посаду..."
+                variant="bordered"
+                searchable
+              />
+            </div>
 
-          <div>
-            <LabeledTextInput
-              v-model="email"
-              label="E-mail"
-              type="email"
-              placeholder="example@mail.com"
-              bordered
-              :disabled="isLoading"
-            />
-          </div>
+            <div class="grid grid-cols-2 gap-4">
+              <LabeledTextInput
+                v-model="phone"
+                label="Телефон"
+                type="tel"
+                placeholder="+380123456789"
+                bordered
+                :disabled="isLoading"
+              />
+              <LabeledTextInput
+                v-model="email"
+                label="E-mail"
+                type="email"
+                placeholder="example@mail.com"
+                bordered
+                :disabled="isLoading"
+              />
+            </div>
+          </template>
+
+          <template v-else>
+            <div class="grid grid-cols-2 gap-4">
+              <LabeledTextInput
+                v-model="fio"
+                label="ФИО"
+                placeholder="Іван Іванов"
+                bordered
+                :disabled="isLoading"
+              />
+              <LabeledTextInput
+                v-model="phone"
+                label="Телефон"
+                type="tel"
+                placeholder="+380123456789"
+                bordered
+                :disabled="isLoading"
+              />
+            </div>
+
+            <div>
+              <LabeledTextInput
+                v-model="email"
+                label="E-mail"
+                type="email"
+                placeholder="example@mail.com"
+                bordered
+                :disabled="isLoading"
+              />
+            </div>
+          </template>
         </div>
 
         <div class="flex justify-end mt-6 space-x-3">

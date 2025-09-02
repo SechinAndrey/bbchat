@@ -5,6 +5,7 @@ export interface CreateContactRequest {
   fio: string;
   phone: string;
   email: string;
+  post_id?: number;
 }
 
 export interface CreateContactResponse {

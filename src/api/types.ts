@@ -532,11 +532,21 @@ export interface ApiManagerListItem {
   role_id: number;
 }
 
+export interface ApiContactJobTitle {
+  id: number;
+  name: string;
+  color: string;
+  background: string;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface ApiGlobalDataResponse {
   users: ApiManagerListItem[];
   usersForClients: ApiManagerListItem[];
   kanbanStatuses: ApiKanbanStatus[];
   cities: ApiCommunicationCity[];
+  contactJobTitle: ApiContactJobTitle[];
   selectionExportFormFields: {
     cols: {
       alias: string;

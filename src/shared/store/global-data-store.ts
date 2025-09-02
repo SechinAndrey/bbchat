@@ -5,6 +5,7 @@ import type {
   ApiGlobalDataResponse,
   ApiManagerListItem,
   ApiKanbanStatus,
+  ApiContactJobTitle,
 } from "@src/api/types";
 
 export const useGlobalDataStore = defineStore("globalData", () => {
@@ -43,6 +44,11 @@ export const useGlobalDataStore = defineStore("globalData", () => {
     return globalData.value.selectionExportFormFields.cols;
   });
 
+  const contactJobTitles = computed<ApiContactJobTitle[]>(() => {
+    if (!globalData.value) return [];
+    return globalData.value.contactJobTitle;
+  });
+
   const getKanbanStatusById = (id: number): ApiKanbanStatus | undefined => {
     return kanbanStatuses.value.find((status) => status.id === id);
   };
@@ -69,6 +75,7 @@ export const useGlobalDataStore = defineStore("globalData", () => {
     cities,
     error,
     exportCols,
+    contactJobTitles,
 
     fetchGlobalData,
     getKanbanStatusById,
