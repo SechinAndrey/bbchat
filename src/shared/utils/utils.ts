@@ -380,3 +380,38 @@ export const formatSeconds = (seconds: number): string => {
 
   return `${paddedMinutes}:${paddedSeconds}`;
 };
+
+/**
+ * Extract validation errors from API error response
+ * @param error - Axios error object
+ * @returns A formatted string with all validation errors
+ */
+export const extractValidationErrors = (error: any): string => {
+  if (!error?.response?.data?.errors) {
+    return "Unknown error";
+  }
+
+  const errors = error.response.data.errors;
+
+  if (typeof errors === "string") {
+    return errors;
+  }
+
+  if (typeof errors === "object" && errors !== null) {
+    const errorMessages: string[] = [];
+
+    for (const [field, messages] of Object.entries(errors)) {
+      if (Array.isArray(messages)) {
+        errorMessages.push(`${field}: ${messages.join(", ")}`);
+      } else if (typeof messages === "string") {
+        errorMessages.push(`${field}: ${messages}`);
+      }
+    }
+
+    return errorMessages.length > 0
+      ? errorMessages.join("; ")
+      : "Validation error";
+  }
+
+  return "Unknown error";
+};

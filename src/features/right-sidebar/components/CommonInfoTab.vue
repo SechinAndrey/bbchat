@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, inject, type Ref } from "vue";
+import { computed, inject, ref, type Ref } from "vue";
 import {
   ApiCommunicationLeadFull,
   ApiCommunicationClientFull,
@@ -9,16 +9,38 @@ import { formatConversationDate } from "@src/shared/utils/utils";
 import useConversationsStore from "@src/features/conversations/conversations-store";
 import { PhoneIcon, EnvelopeIcon, UserIcon } from "@heroicons/vue/24/outline";
 import CanbanSelect from "@src/shared/components/CanbanSelect.vue";
+import AddContactModal from "@src/features/contacts/AddContactModal.vue";
 
 const contactId = inject<Ref<number> | undefined>("contactId");
 
 const conversationsStore = useConversationsStore();
+const isAddContactModalOpen = ref(false);
 
 const activeConversationInfo = computed<
   ApiCommunicationLeadFull | ApiCommunicationClientFull | null
 >(() => {
   return conversationsStore.activeConversationInfo;
 });
+
+const entityType = computed(() => {
+  return activeConversationInfo.value?.entity === "clients" ? "client" : "lead";
+});
+
+const entityId = computed(() => {
+  return activeConversationInfo.value?.id || 0;
+});
+
+const openAddContactModal = () => {
+  isAddContactModalOpen.value = true;
+};
+
+const closeAddContactModal = () => {
+  isAddContactModalOpen.value = false;
+};
+
+const handleContactAdded = () => {
+  closeAddContactModal();
+};
 </script>
 
 <template>
@@ -35,7 +57,9 @@ const activeConversationInfo = computed<
     >
       <div class="flex items-center gap-2 mb-2">
         <UserIcon class="w-5 h-5 text-primary flex-shrink-0" />
-        <span class="text-[0.875rem] truncate">{{ contact.fio || "Не вказано" }}</span>
+        <span class="text-[0.875rem] truncate">{{
+          contact.fio || "Не вказано"
+        }}</span>
       </div>
 
       <div class="flex items-center gap-2 mb-2">
@@ -59,7 +83,9 @@ const activeConversationInfo = computed<
       </div>
     </div>
 
-    <Button variant="text" class="mt-3"> + Додати </Button>
+    <Button variant="text" class="mt-3" @click="openAddContactModal">
+      + Додати
+    </Button>
 
     <div class="my-4 text-app-text-secondary text-[0.813rem]">Створено</div>
 
@@ -127,6 +153,14 @@ const activeConversationInfo = computed<
         </div>
       </div>
     </div>
+
+    <AddContactModal
+      :open="isAddContactModalOpen"
+      :close-modal="closeAddContactModal"
+      :entity-type="entityType"
+      :entity-id="entityId"
+      @contact-added="handleContactAdded"
+    />
   </div>
 </template>
 
