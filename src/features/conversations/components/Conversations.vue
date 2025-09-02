@@ -4,7 +4,7 @@ import type { GetCommunicationsParams } from "../conversations-service";
 import type { CreateLeadRequest } from "@src/api/types";
 
 import { ref, watch, computed } from "vue";
-import { useInfiniteScroll } from "@vueuse/core";
+import { useInfiniteScroll, useDebounceFn } from "@vueuse/core";
 
 import { useGlobalDataStore } from "@src/shared/store/global-data-store";
 import conversationsService from "@src/features/conversations/conversations-service";
@@ -105,25 +105,26 @@ const hasMore = computed(() => {
     : conversationsStore.hasMoreClients;
 });
 
-// Watch for data fetching
-watch(
-  [keyword, selectedUser, selectedFilter, activeTab],
-  async () => {
-    const params: GetCommunicationsParams = {
-      page: 1,
-      search: keyword.value || undefined,
-      user_id: selectedUser.value === "all" ? undefined : selectedUser.value,
-      communication_status_id: activeTab.value === TAB.open ? 1 : undefined,
-    };
+const debouncedFetch = useDebounceFn(async () => {
+  const params: GetCommunicationsParams = {
+    page: 1,
+    search: keyword.value || undefined,
+    user_id: selectedUser.value === "all" ? undefined : selectedUser.value,
+    communication_status_id: activeTab.value === TAB.open ? 1 : undefined,
+  };
 
-    if (selectedFilter.value === "leads") {
-      await fetchLeads(params);
-    } else {
-      await fetchClients(params);
-    }
-  },
-  { immediate: true },
-);
+  if (selectedFilter.value === "leads") {
+    await fetchLeads(params);
+  } else {
+    await fetchClients(params);
+  }
+}, 500);
+
+watch([selectedUser, selectedFilter, activeTab], debouncedFetch, {
+  immediate: true,
+});
+
+watch(keyword, debouncedFetch);
 
 const leadClientIcon = computed(() => {
   return selectedFilter.value === "leads" ? flemeIcon : clientIcon;
