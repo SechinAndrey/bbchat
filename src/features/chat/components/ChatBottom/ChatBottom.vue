@@ -125,10 +125,11 @@ async function sendMessage() {
         <Textarea
           ref="textareaRef"
           v-model="value"
+          class="pr-7"
           no-resize
           variant="filled"
           :rows="1"
-          placeholder="Напишіть своє повідомлення тут"
+          placeholder="Повідомлення"
           @keydown.ctrl.enter.prevent="sendMessage"
         />
 
