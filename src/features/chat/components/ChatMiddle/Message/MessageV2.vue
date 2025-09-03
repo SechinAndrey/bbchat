@@ -90,6 +90,18 @@ const formatDuration = (seconds: number) => {
   }
   return `${remainingSeconds} сек`;
 };
+
+const formatMessageText = (text: string) => {
+  return linkifyStr(text, {
+    className: isSelf.value
+      ? "text-black opacity-50"
+      : "text-primary dark:text-primary",
+    format: {
+      url: (value) => (value.length > 50 ? value.slice(0, 50) + `…` : value),
+    },
+    target: "_blank",
+  });
+};
 </script>
 
 <template>
@@ -120,18 +132,8 @@ const formatDuration = (seconds: number) => {
           class="text-[0.8125rem] leading-relaxed relative pr-6"
         >
           <div
-            v-html="
-              linkifyStr(chaport.message, {
-                className: isSelf
-                  ? 'text-black opacity-50'
-                  : 'text-primary dark:text-primary',
-                format: {
-                  url: (value) =>
-                    value.length > 50 ? value.slice(0, 50) + `…` : value,
-                },
-                target: '_blank',
-              })
-            "
+            class="whitespace-pre-line"
+            v-html="formatMessageText(chaport.message)"
           ></div>
           <img
             src="/imgs/chaport.png"
@@ -148,18 +150,8 @@ const formatDuration = (seconds: number) => {
         >
           <div
             v-if="echat.message"
-            v-html="
-              linkifyStr(echat.message, {
-                className: isSelf
-                  ? 'text-black opacity-50'
-                  : 'text-primary dark:text-primary',
-                format: {
-                  url: (value) =>
-                    value.length > 50 ? value.slice(0, 50) + `…` : value,
-                },
-                target: '_blank',
-              })
-            "
+            class="whitespace-pre-line"
+            v-html="formatMessageText(echat.message)"
           ></div>
           <!--media preview-->
           <MediaPreview
