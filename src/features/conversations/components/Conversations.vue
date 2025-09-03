@@ -52,7 +52,7 @@ const conversationsStore = useConversationsStore();
 
 // State refs
 const selectedUser = ref<number | "all">("all");
-const selectedFilter = ref("leads");
+const selectedFilter = ref(entity.value);
 const keyword: Ref<string> = ref("");
 const composeOpen = ref(false);
 const newLeadModalOpen = ref(false);
@@ -125,6 +125,15 @@ watch([selectedUser, selectedFilter, activeTab], debouncedFetch, {
 });
 
 watch(keyword, debouncedFetch);
+
+watch(
+  () => route.params.entity,
+  (newEntity) => {
+    if (newEntity && newEntity !== selectedFilter.value) {
+      selectedFilter.value = newEntity as EntityType;
+    }
+  },
+);
 
 const leadClientIcon = computed(() => {
   return selectedFilter.value === "leads" ? flemeIcon : clientIcon;
