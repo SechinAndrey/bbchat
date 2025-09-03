@@ -24,7 +24,7 @@ const store = useStore();
       <!--chat-->
       <div
         id="mainContent"
-        class="bg-app-bg grow md:h-full scrollbar-hidden transition-all duration-500 xs:w-full xs:absolute xs:z-10 md:static md:w-fit mt-9 md:mt-0 h-[calc(100%-3rem)]"
+        class="bg-app-bg grow md:h-full scrollbar-hidden transition-all duration-500 xs:mt-[3.75rem] xs:w-full xs:absolute xs:z-10 md:static md:w-fit mt-9 md:mt-0 h-[calc(100%-3rem)]"
         :class="
           getActiveConversationId()
             ? ['xs:left-[0rem]', 'xs:static']

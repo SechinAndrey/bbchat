@@ -35,7 +35,7 @@ const handleActiveSidebarComponentChange = (value: string) => {
     ]"
   >
     <!--logo-->
-    <logoIcon class="xs:hidden md:block mb-6" />
+    <logoIcon class="md:mb-6" />
 
     <!--main navigation-->
     <div class="grow w-[2.25rem]">
@@ -45,7 +45,7 @@ const handleActiveSidebarComponentChange = (value: string) => {
       />
 
       <nav aria-label="Основна навігація">
-        <ul class="xs:flex md:block xs:justify-between xs:items-center">
+        <ul class="xs:flex xs:justify-end xs:items-center gap-3 md:block">
           <li class="md:mb-4">
             <NavItem
               :active="store.activeSidebarComponent === 'messages'"
@@ -54,14 +54,14 @@ const handleActiveSidebarComponentChange = (value: string) => {
               <ChatBubbleLeftRightIcon class="w-[20px] h-[20px]" />
             </NavItem>
           </li>
-          <li class="md:mb-4">
+          <!-- <li class="md:mb-4">
             <NavItem
               :active="store.activeSidebarComponent === 'contacts'"
               @click="() => handleActiveSidebarComponentChange('contacts')"
             >
               <UsersIcon />
             </NavItem>
-          </li>
+          </li> -->
 
           <!--settings button small screen-->
           <!-- <li class="xs:inline md:hidden">
@@ -89,8 +89,8 @@ const handleActiveSidebarComponentChange = (value: string) => {
     </div>
 
     <!--secondary navigation-->
-    <div class="w-[2.25rem]">
-      <nav aria-label="Додаткова навігація" class="xs:hidden md:block">
+    <div class="w-[2.25rem] xs:hidden md:block">
+      <nav aria-label="Додаткова навігація">
         <ul>
           <!--toggle dark mode button-->
           <li>

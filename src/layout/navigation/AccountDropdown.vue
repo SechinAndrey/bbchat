@@ -59,7 +59,7 @@ const handleCloseOnClickOutside = (event: Event) => {
       <div
         id="user-avatar"
         :style="{ backgroundImage: `url(${authStore.currentUser?.avatar})` }"
-        class="xs:w-6 xs:h-6 md:w-[2.25rem] md:h-[2.25rem] rounded-full bg-cover bg-center"
+        class="w-[2.25rem] h-[2.25rem] rounded-full bg-cover bg-center"
         :class="avatarColor"
       >
         <span
@@ -81,8 +81,8 @@ const handleCloseOnClickOutside = (event: Event) => {
         'md:left-0',
         'md:top-auto',
         'md:bottom-[3.125rem]',
-        'xs:bottom-[3rem]',
         'md:left-[-4.8125rem]',
+        'xs:bottom-[-120px]',
         'xs:left-[auto]',
         'xs:right-[-0.5rem]',
         'overflow-hidden',
