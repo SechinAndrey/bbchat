@@ -52,6 +52,8 @@ conversationsStore.initializeRouteWatchers();
 
     <RightSidebar
       v-if="conversationsStore.activeConversationInfo && store.rightSidebarOpen"
+      class="xs:absolute md:static"
+      @close="store.rightSidebarOpen = false"
     />
   </div>
 </template>
