@@ -270,16 +270,24 @@ const saveComment = async () => {
 
 <style scoped lang="scss">
 .current-contact {
-  // before triangle
   position: relative;
 
   &::before {
-    content: "";
+    content: "Поточний";
     position: absolute;
-    left: -0.938rem;
-    top: 0.625rem;
-    border: 0.5rem solid transparent;
-    border-left-color: #8e99f3;
+    top: 0;
+    right: 0;
+    color: var(--color-primary);
+    background: var(--color-bg-primary);
+    font-size: 0.6rem;
+    font-weight: 500;
+    padding: 0.1rem 0.2rem;
+    border-bottom-left-radius: 0.375rem;
+    border-bottom-right-radius: 0.375rem;
+    z-index: 10;
+    border: 1px dashed var(--color-primary);
+    white-space: nowrap;
+    border-top: none;
   }
 }
 </style>
