@@ -46,6 +46,15 @@ const handleActiveSidebarComponentChange = (value: string) => {
 
       <nav aria-label="Основна навігація">
         <ul class="xs:flex xs:justify-end xs:items-center gap-3 md:block">
+          <li>
+            <NavLink
+              class="flex justify-center"
+              :icon="isDarkMode ? SunIcon : MoonIcon"
+              title="Нічний режим"
+              @click="toggleDarkMode"
+            />
+          </li>
+
           <li class="md:mb-4">
             <NavItem
               :active="store.activeSidebarComponent === 'messages'"
@@ -73,7 +82,7 @@ const handleActiveSidebarComponentChange = (value: string) => {
             />
           </li> -->
 
-          <li>
+          <li class="md:hidden">
             <!--user avatar PC-->
             <AccountDropdown
               id="profile-menu"
