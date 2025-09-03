@@ -35,6 +35,10 @@ const props = defineProps<{
   activeTab: string;
 }>();
 
+const emit = defineEmits<{
+  emojiSelect: [emoji: string];
+}>();
+
 const store = useStore();
 
 // emojis filtered by skin tone and keyword
@@ -74,6 +78,13 @@ const filterEmojis = () => {
   return _emojiGroups;
 };
 
+const handleEmojiClick = (emoji: IEmoji) => {
+  if (emoji && emoji.r) {
+    const emojiChar = unicodeToEmoji(emoji.r);
+    emit("emojiSelect", emojiChar);
+  }
+};
+
 // (watcher) change the filtered emojis when the search keyword change
 watch(
   () => [props.keyword, props.activeTab, store.emojiSkinTone],
@@ -101,6 +112,7 @@ onMounted(() => {
             class="w-[1.875rem] h-[1.875rem] mr-1"
             :title="emoji.n[0]"
             :aria-label="emoji.n[0]"
+            @click="handleEmojiClick(emoji)"
           >
             {{ unicodeToEmoji(emoji.r) }}
           </IconButton>

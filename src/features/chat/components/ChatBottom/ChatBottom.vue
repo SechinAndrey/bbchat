@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Ref } from "vue";
 import useStore from "@src/shared/store/store";
-import { ref, inject, computed } from "vue";
+import { ref, inject, computed, nextTick } from "vue";
 
 import {
   FaceSmileIcon,
@@ -46,6 +46,25 @@ const showPicker = ref(false);
 
 // open modal used to send multiple attachments attachments.
 const openAttachmentsModal = ref(false);
+
+const textareaRef = ref();
+
+const handleEmojiSelect = (emoji: string) => {
+  const textareaComponent = textareaRef.value;
+  if (textareaComponent && textareaComponent.$el) {
+    const textarea = textareaComponent.$el as HTMLTextAreaElement;
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const text = value.value;
+    value.value = text.slice(0, start) + emoji + text.slice(end);
+    nextTick(() => {
+      textarea.focus();
+      textarea.setSelectionRange(start + emoji.length, start + emoji.length);
+    });
+  } else {
+    value.value += emoji;
+  }
+};
 
 // close picker when you click outside.
 const handleClickOutside = (event: Event) => {
@@ -104,6 +123,7 @@ async function sendMessage() {
         class="relative flex items-center grow md:mr-5 xs:mr-4"
       >
         <Textarea
+          ref="textareaRef"
           v-model="value"
           no-resize
           variant="filled"
@@ -136,7 +156,10 @@ async function sendMessage() {
               class="absolute z-10 bottom-[3.4375rem] md:right-0 xs:right-[-5rem] mt-2"
             >
               <div role="none">
-                <EmojiPicker :show="showPicker" />
+                <EmojiPicker
+                  :show="showPicker"
+                  @emoji-select="handleEmojiSelect"
+                />
               </div>
             </div>
           </ScaleTransition>
