@@ -46,7 +46,7 @@ const handleActiveSidebarComponentChange = (value: string) => {
 
       <nav aria-label="Основна навігація">
         <ul class="xs:flex xs:justify-end xs:items-center gap-3 md:block">
-          <li>
+          <li class="md:hidden">
             <NavLink
               class="flex justify-center"
               :icon="isDarkMode ? SunIcon : MoonIcon"
