@@ -155,8 +155,8 @@ const formatMessageText = (text: string) => {
           ></div>
           <!--media preview-->
           <MediaPreview
-            v-if="echatMessage.media"
-            :media="echatMessage.media"
+            v-if="echatMessage.media || echatMessage.file"
+            :media="echatMessage.media || echatMessage.file"
             :attachment-id="props.message.id"
             @open-image-gallery="
               (imageUrl) => {
