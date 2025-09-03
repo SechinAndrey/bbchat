@@ -110,17 +110,21 @@ const jobTitleOptions = computed(() => {
 <template>
   <Modal :open="props.open" :close-modal="props.closeModal">
     <template #content>
-      <div class="w-[32rem] bg-app-bg rounded-lg p-6">
-        <div class="mb-6">
-          <h2 class="text-xl font-semibold text-app-text dark:text-white">
+      <div
+        class="w-full max-w-[32rem] xs:w-full xs:max-w-none bg-app-bg xs:rounded-none md:rounded-lg p-4 xs:p-6 md:p-6"
+      >
+        <div class="mb-4 xs:mb-6">
+          <h2
+            class="text-lg xs:text-xl font-semibold text-app-text dark:text-white"
+          >
             Додати контакт
           </h2>
         </div>
 
         <!-- Form -->
-        <div class="space-y-4">
+        <div class="space-y-3 xs:space-y-4">
           <template v-if="props.entityType === 'client'">
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid xs:grid-cols-1 md:grid-cols-2 gap-3 xs:gap-4">
               <LabeledTextInput
                 v-model="fio"
                 label="ФИО"
@@ -138,7 +142,7 @@ const jobTitleOptions = computed(() => {
               />
             </div>
 
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid xs:grid-cols-1 md:grid-cols-2 gap-3 xs:gap-4">
               <LabeledTextInput
                 v-model="phone"
                 label="Телефон"
@@ -159,7 +163,7 @@ const jobTitleOptions = computed(() => {
           </template>
 
           <template v-else>
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid xs:grid-cols-1 md:grid-cols-2 gap-3 xs:gap-4">
               <LabeledTextInput
                 v-model="fio"
                 label="ФИО"
@@ -190,12 +194,21 @@ const jobTitleOptions = computed(() => {
           </template>
         </div>
 
-        <div class="flex justify-end mt-6 space-x-3">
-          <Button variant="text" @click="handleCancel"> Відмінити </Button>
+        <div
+          class="flex xs:flex-col md:flex-row xs:gap-3 md:justify-end md:space-x-3 mt-4 xs:mt-6"
+        >
+          <Button
+            variant="text"
+            class="xs:order-2 md:order-1"
+            @click="handleCancel"
+          >
+            Відмінити
+          </Button>
 
           <Button
             :disabled="!isFormValid || isLoading"
             :loading="isLoading"
+            class="xs:order-1 md:order-2"
             @click="handleSubmit"
           >
             Додати контакт

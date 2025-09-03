@@ -4,7 +4,7 @@ import ConversationInfoSection from "./ConversationInfoSection.vue";
 
 <template>
   <div class="w-full">
-    <div class="w-full min-h-[5.25rem] px-5 py-6">
+    <div class="w-full min-h-[5.25rem] px-5 py-3 md:py-6">
       <ConversationInfoSection />
     </div>
   </div>

@@ -90,18 +90,22 @@ const handleCancel = () => {
 <template>
   <Modal :open="props.open" :close-modal="props.closeModal">
     <template #content>
-      <div class="w-[32rem] bg-app-bg rounded-lg p-6">
+      <div
+        class="w-full max-w-[32rem] xs:w-full xs:max-w-none bg-app-bg xs:rounded-none md:rounded-lg p-4 xs:p-6 md:p-6"
+      >
         <!-- Header -->
-        <div class="mb-6">
-          <h2 class="text-xl font-semibold text-app-text dark:text-white">
+        <div class="mb-4 xs:mb-6">
+          <h2
+            class="text-lg xs:text-xl font-semibold text-app-text dark:text-white"
+          >
             Додати ліда
           </h2>
         </div>
 
         <!-- Form -->
-        <div class="space-y-4">
+        <div class="space-y-3 xs:space-y-4">
           <!-- Name and FIO -->
-          <div class="grid grid-cols-2 gap-4">
+          <div class="grid xs:grid-cols-1 md:grid-cols-2 gap-3 xs:gap-4">
             <LabeledTextInput
               v-model="name"
               label="Найменування"
@@ -117,7 +121,7 @@ const handleCancel = () => {
           </div>
 
           <!-- Email and Phone -->
-          <div class="grid grid-cols-2 gap-4">
+          <div class="grid xs:grid-cols-1 md:grid-cols-2 gap-3 xs:gap-4">
             <LabeledTextInput
               v-model="email"
               label="E-mail"
@@ -135,7 +139,7 @@ const handleCancel = () => {
           </div>
 
           <!-- Telegram Profile and City -->
-          <div class="grid grid-cols-2 gap-4">
+          <div class="grid xs:grid-cols-1 md:grid-cols-2 gap-3 xs:gap-4">
             <LabeledTextInput
               v-model="tgName"
               label="Профіль в Telegram"
@@ -154,23 +158,37 @@ const handleCancel = () => {
 
           <!-- Comment -->
           <div>
-            <label class="mb-3 block text-left">Коментар</label>
+            <label class="mb-2 xs:mb-3 block text-left text-sm xs:text-base"
+              >Коментар</label
+            >
             <Textarea
               v-model="comment"
               placeholder="Ваш коментар"
               variant="bordered"
               bordered
               auto-resize
-              :rows="5"
+              :rows="4"
             />
           </div>
         </div>
 
         <!-- Action buttons -->
-        <div class="flex justify-end mt-6 space-x-3">
-          <Button variant="text" @click="handleCancel"> Відмінити </Button>
+        <div
+          class="flex xs:flex-col md:flex-row xs:gap-3 md:justify-end md:space-x-3 mt-4 xs:mt-6"
+        >
+          <Button
+            variant="text"
+            class="xs:order-2 md:order-1"
+            @click="handleCancel"
+          >
+            Відмінити
+          </Button>
 
-          <Button :disabled="!isFormValid" @click="handleSubmit">
+          <Button
+            :disabled="!isFormValid"
+            class="xs:order-1 md:order-2"
+            @click="handleSubmit"
+          >
             Створити лід
           </Button>
         </div>

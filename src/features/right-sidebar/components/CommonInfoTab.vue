@@ -13,6 +13,7 @@ import {
   EnvelopeIcon,
   UserIcon,
   PencilIcon,
+  PlusIcon,
 } from "@heroicons/vue/24/outline";
 import KanbanSelect from "@src/shared/components/KanbanSelect.vue";
 import AddContactModal from "@src/features/contacts/AddContactModal.vue";
@@ -139,8 +140,11 @@ const saveComment = async () => {
       </div>
     </div>
 
-    <Button variant="text" class="mt-3" @click="openAddContactModal">
-      + Додати
+    <Button variant="text" class="mt-3 ml-2 !px-3" @click="openAddContactModal">
+      <template #icon>
+        <PlusIcon class="w-5 h-5" />
+      </template>
+      Додати
     </Button>
 
     <div class="my-4 text-app-text-secondary text-[0.813rem]">Створено</div>
