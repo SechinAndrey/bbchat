@@ -633,3 +633,15 @@ export interface CreateLeadRequest {
   comment?: string;
   status_id: number;
 }
+
+// todo: review
+export interface UpdateLeadRequest {
+  name?: string;
+  fio?: string;
+  email?: string;
+  phone?: string;
+  tg_name?: string;
+  city?: number[];
+  comment?: string;
+  status_id?: number;
+}

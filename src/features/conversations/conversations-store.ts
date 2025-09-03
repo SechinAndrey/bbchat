@@ -9,6 +9,7 @@ import type {
   ApiCommunicationClientFull,
   ApiCommunicationLeadFull,
   ApiMessageItem,
+  UpdateLeadRequest,
 } from "@src/api/types";
 import type { IConversation } from "@src/shared/types/types";
 import { adaptApiCommunicationToIConversation } from "@src/api/communication-adapters";
@@ -548,6 +549,10 @@ export const useConversationsStore = defineStore("conversations", () => {
     await conversationsService.changeStatus(id, status);
   };
 
+  const updateLead = async (id: number, leadData: UpdateLeadRequest) => {
+    return await conversationsService.updateLead(id, leadData);
+  };
+
   return {
     // State
     leads,
@@ -600,6 +605,7 @@ export const useConversationsStore = defineStore("conversations", () => {
     resetClientsFilters,
     updateConversation,
     changeStatus,
+    updateLead,
 
     initializeRouteWatchers,
   };

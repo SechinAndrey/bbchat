@@ -5,9 +5,15 @@ import {
   ApiCommunicationClientFull,
 } from "@src/api/types";
 import Button from "@src/ui/inputs/Button.vue";
+import TextInput from "@src/ui/inputs/TextInput.vue";
 import { formatConversationDate } from "@src/shared/utils/utils";
 import useConversationsStore from "@src/features/conversations/conversations-store";
-import { PhoneIcon, EnvelopeIcon, UserIcon } from "@heroicons/vue/24/outline";
+import {
+  PhoneIcon,
+  EnvelopeIcon,
+  UserIcon,
+  PencilIcon,
+} from "@heroicons/vue/24/outline";
 import KanbanSelect from "@src/shared/components/KanbanSelect.vue";
 import AddContactModal from "@src/features/contacts/AddContactModal.vue";
 
@@ -16,6 +22,9 @@ const entity = inject<Ref<"leads" | "clients">>("entity");
 
 const conversationsStore = useConversationsStore();
 const isAddContactModalOpen = ref(false);
+const isEditingComment = ref(false);
+const editCommentValue = ref("");
+const isSavingComment = ref(false);
 
 const activeConversationInfo = computed<
   ApiCommunicationLeadFull | ApiCommunicationClientFull | null
@@ -41,6 +50,52 @@ const closeAddContactModal = () => {
 
 const handleContactAdded = () => {
   closeAddContactModal();
+};
+
+const startEditingComment = () => {
+  editCommentValue.value = activeConversationInfo.value?.comment || "";
+  isEditingComment.value = true;
+};
+
+const cancelEditingComment = () => {
+  isEditingComment.value = false;
+  editCommentValue.value = "";
+};
+
+const saveComment = async () => {
+  if (!activeConversationInfo.value || entity?.value !== "leads") return;
+
+  try {
+    isSavingComment.value = true;
+
+    const leadData = {
+      name: activeConversationInfo.value.name,
+      fio: activeConversationInfo.value.fio || undefined,
+      email: activeConversationInfo.value.email || undefined,
+      phone: activeConversationInfo.value.phone || undefined,
+      tg_name: activeConversationInfo.value.tg_name || undefined,
+      city:
+        activeConversationInfo.value.cities?.map((city) => city.id) ||
+        undefined,
+      comment: editCommentValue.value,
+      status_id: activeConversationInfo.value.status_id || undefined,
+    };
+
+    await conversationsStore.updateLead(
+      activeConversationInfo.value.id,
+      leadData,
+    );
+
+    if (activeConversationInfo.value) {
+      activeConversationInfo.value.comment = editCommentValue.value;
+    }
+
+    isEditingComment.value = false;
+  } catch (error) {
+    console.error("Error updating comment:", error);
+  } finally {
+    isSavingComment.value = false;
+  }
 };
 </script>
 
@@ -113,8 +168,53 @@ const handleContactAdded = () => {
 
     <div class="my-4 text-app-text-secondary text-[0.813rem]">Коментар</div>
 
-    <div class="text-[0.875rem]">
-      {{ activeConversationInfo?.comment || "Не вказано" }}
+    <div v-if="!isEditingComment" class="flex items-start gap-2 group">
+      <div class="text-[0.875rem] flex-1">
+        {{ activeConversationInfo?.comment || "Не вказано" }}
+      </div>
+
+      <Button
+        v-if="entity === 'leads'"
+        variant="ghost"
+        size="xs"
+        :ring="false"
+        icon-only
+        class="opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+        @click="startEditingComment"
+      >
+        <template #icon>
+          <PencilIcon class="w-4 h-4 text-primary" />
+        </template>
+      </Button>
+    </div>
+
+    <div v-else class="space-y-3">
+      <TextInput
+        v-model="editCommentValue"
+        placeholder="Введіть коментар"
+        size="sm"
+        class="px-2"
+      />
+      <div class="flex justify-end gap-2 pr-2">
+        <Button
+          size="xs"
+          class="px-3"
+          variant="text"
+          @click="cancelEditingComment"
+        >
+          Скасувати
+        </Button>
+
+        <Button
+          :disabled="isSavingComment"
+          size="xs"
+          class="px-3"
+          variant="primary"
+          @click="saveComment"
+        >
+          {{ isSavingComment ? "Збереження..." : "Зберегти" }}
+        </Button>
+      </div>
     </div>
 
     <hr v-if="entity === 'leads'" class="my-5 border-app-border" />

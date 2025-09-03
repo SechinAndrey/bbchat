@@ -7,6 +7,7 @@ import type {
   ApiCommunicationClientFull,
   ApiMessagesResponse,
   CreateLeadRequest,
+  UpdateLeadRequest,
 } from "@src/api/types";
 
 import type { IAttachment } from "@src/shared/types/types";
@@ -226,6 +227,24 @@ export class ConversationsService {
     } catch (error) {
       console.error("Error creating lead:", error);
       throw new Error("Failed to create lead");
+    }
+  }
+
+  async updateLead(
+    id: number,
+    leadData: UpdateLeadRequest,
+  ): Promise<ApiCommunicationLeadFull> {
+    try {
+      const response = await apiClient.patch<ApiCommunicationLeadFull>(
+        `/leads/${id}`,
+        leadData,
+      );
+      console.log("Lead updated successfully:", response.data);
+
+      return response.data;
+    } catch (error) {
+      console.error("Error updating lead:", error);
+      throw new Error("Failed to update lead");
     }
   }
 
