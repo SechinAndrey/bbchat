@@ -44,7 +44,7 @@ const handleContactAdded = () => {
 </script>
 
 <template>
-  <div class="py-4">
+  <div class="py-4 pb-6">
     <div class="mb-4 text-app-text-secondary text-[0.813rem]">Контакти</div>
 
     <div

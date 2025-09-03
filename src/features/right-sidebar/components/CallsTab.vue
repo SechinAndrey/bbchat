@@ -33,13 +33,13 @@ function callTypeIcon(call: ApiCommunicationCallInfo) {
 </script>
 
 <template>
-  <div class="pt-5 h-[99%]">
+  <div class="pt-5 pb-6">
     <EmptyState
       v-if="!activeConversationInfo?.calls.length"
       :icon="PhoneIcon"
       title="Дзвінків немає"
     />
-    <div class="space-y-3 max-h-[96%] overflow-auto pb-6 scrollbar-thin pr-2">
+    <div class="space-y-3">
       <div v-for="call in activeConversationInfo?.calls || []" :key="call.id">
         <div class="flex gap-5">
           <component

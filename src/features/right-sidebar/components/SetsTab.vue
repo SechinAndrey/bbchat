@@ -55,11 +55,11 @@ if (entity.value && id.value) {
 </script>
 
 <template>
-  <div class="p-4 h-[99%]">
+  <div class="p-4 pb-6">
     <div v-if="selectionsStore.isLoading" class="flex justify-center pt-10">
       <Spinner />
     </div>
-    <div v-else class="max-h-[96%] overflow-auto pb-6 scrollbar-thin pr-2">
+    <div v-else class="space-y-3">
       <div v-if="selectionsStore.selections.length > 0" class="space-y-3">
         <div
           v-for="selection in selectionsStore.selections"
