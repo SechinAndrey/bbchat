@@ -46,6 +46,7 @@ const selectedColumns = ref<string[]>([]);
 
 const isLoading = ref(false);
 const dropdownRef = ref<InstanceType<typeof Dropdown> | null>(null);
+const dropdownMobileRef = ref<InstanceType<typeof Dropdown> | null>(null);
 
 const download = async () => {
   if (!props.selection?.id) return;
@@ -91,7 +92,7 @@ const unfollowBoards = async () => {
 
     selectionsStore.updateBoardsWatchStatus(
       props.selection.id,
-      selectedBoardIds.value
+      selectedBoardIds.value,
     );
     selectedBoardIds.value = [];
   } catch (error) {
@@ -159,35 +160,170 @@ const deleteBoards = async () => {
           :selection-items="props.selection?.boards_list"
         />
 
-        <div
-          class="flex fixed bottom-0 left-0 right-0 z-2 bg-app-bg py-4 px-[1.25rem] shadow-up"
-        >
-          <Dropdown ref="dropdownRef" position="top" trigger="click">
-            <template #activator>
-              <Button variant="text">
-                <ArrowDownTrayIcon class="w-5 inline-block mr-1" /> Завантажити
-                в .xls
-              </Button>
-            </template>
+        <!-- controls -->
+        <div class="fixed bottom-0 left-0 right-0 z-2 bg-app-bg shadow-up">
+          <!-- Mobile Layout -->
+          <div class="md:hidden">
+            <div class="px-4 py-3 border-b border-app-border">
+              <Dropdown ref="dropdownMobileRef" position="top" trigger="click">
+                <template #activator>
+                  <Button variant="text" block>
+                    <ArrowDownTrayIcon class="w-5 inline-block mr-1" />
+                    Завантажити в .xls
+                  </Button>
+                </template>
 
-            <div
-              class="flex flex-col max-h-[18.75rem] overflow-auto scrollbar-thin"
-            >
-              <Checkbox
-                v-for="col in globalStore.exportCols"
-                :key="col.alias"
-                v-model="selectedColumns"
-                :value="col.alias"
-                :label="col.name"
-                class="py-4 px-4 hover:bg-app-bg-secondary-lighter"
-              />
+                <div
+                  class="flex flex-col max-h-[18.75rem] overflow-auto scrollbar-thin"
+                >
+                  <Checkbox
+                    v-for="col in globalStore.exportCols"
+                    :key="col.alias"
+                    v-model="selectedColumns"
+                    :value="col.alias"
+                    :label="col.name"
+                    class="py-4 px-4 hover:bg-app-bg-secondary-lighter"
+                  />
 
-              <Button class="mx-4 mb-4" :loading="isLoading" @click="download">
-                <ArrowDownTrayIcon class="w-5 inline-block mr-1" /> Завантажити
-                в .xls
-              </Button>
+                  <Button
+                    class="mx-4 mb-4"
+                    :loading="isLoading"
+                    @click="download"
+                  >
+                    <ArrowDownTrayIcon class="w-5 inline-block mr-1" />
+                    Завантажити в .xls
+                  </Button>
+                </div>
+              </Dropdown>
             </div>
-          </Dropdown>
+
+            <!-- Selection Actions - Only when boards selected -->
+            <SlideTransition animation="slide-down">
+              <div v-if="selectedBoardIds.length" class="px-4 py-3 space-y-2">
+                <div class="text-sm text-app-text-secondary mb-3">
+                  Вибрано: {{ selectedBoardIds.length }} дошок
+                </div>
+
+                <div class="grid grid-cols-1 gap-2">
+                  <Button
+                    variant="text"
+                    block
+                    @click="isFollowBoardsModalOpen = true"
+                  >
+                    <EyeIcon class="w-5 inline-block mr-1" />Додати до
+                    спостереження
+                  </Button>
+
+                  <Button
+                    variant="text"
+                    block
+                    :loading="isUnfollowLoading"
+                    :disabled="isUnfollowLoading"
+                    @click="unfollowBoards"
+                  >
+                    <EyeSlashIcon class="w-5 inline-block mr-1" />Прибрати із
+                    спостереження
+                  </Button>
+
+                  <Button
+                    variant="text"
+                    block
+                    :loading="isDeleteLoading"
+                    :disabled="isDeleteLoading"
+                    @click="deleteBoards"
+                  >
+                    <TrashIcon class="w-5 inline-block mr-1" />Видалити
+                  </Button>
+                </div>
+              </div>
+            </SlideTransition>
+          </div>
+
+          <!-- Desktop Layout -->
+          <div
+            class="hidden md:flex items-center justify-between py-4 px-[1.25rem]"
+          >
+            <div class="flex items-center space-x-4">
+              <Dropdown ref="dropdownRef" position="top" trigger="click">
+                <template #activator>
+                  <Button variant="text">
+                    <ArrowDownTrayIcon class="w-5 inline-block mr-1" />
+                    Завантажити в .xls
+                  </Button>
+                </template>
+
+                <div
+                  class="flex flex-col max-h-[18.75rem] overflow-auto scrollbar-thin"
+                >
+                  <Checkbox
+                    v-for="col in globalStore.exportCols"
+                    :key="col.alias"
+                    v-model="selectedColumns"
+                    :value="col.alias"
+                    :label="col.name"
+                    class="py-4 px-4 hover:bg-app-bg-secondary-lighter"
+                  />
+
+                  <Button
+                    class="mx-4 mb-4"
+                    :loading="isLoading"
+                    @click="download"
+                  >
+                    <ArrowDownTrayIcon class="w-5 inline-block mr-1" />
+                    Завантажити в .xls
+                  </Button>
+                </div>
+              </Dropdown>
+
+              <SlideTransition animation="slide-down">
+                <div
+                  v-if="selectedBoardIds.length"
+                  class="flex items-center space-x-4"
+                >
+                  <Button
+                    variant="text"
+                    @click="isFollowBoardsModalOpen = true"
+                  >
+                    <EyeIcon class="w-5 inline-block mr-1" />Додати до
+                    спостереження
+                  </Button>
+
+                  <Button
+                    variant="text"
+                    :loading="isUnfollowLoading"
+                    :disabled="isUnfollowLoading"
+                    @click="unfollowBoards"
+                  >
+                    <EyeSlashIcon class="w-5 inline-block mr-1" />Прибрати із
+                    спостереження
+                  </Button>
+
+                  <Button
+                    variant="text"
+                    :loading="isDeleteLoading"
+                    :disabled="isDeleteLoading"
+                    @click="deleteBoards"
+                  >
+                    <TrashIcon class="w-5 inline-block mr-1" />Видалити
+                  </Button>
+                </div>
+              </SlideTransition>
+            </div>
+
+            <!-- Selection Counter for Desktop -->
+            <SlideTransition animation="slide-left">
+              <div
+                v-if="selectedBoardIds.length"
+                class="text-sm text-app-text-secondary"
+              >
+                Вибрано:
+                <span class="font-medium text-app-text">{{
+                  selectedBoardIds.length
+                }}</span>
+                дошок
+              </div>
+            </SlideTransition>
+          </div>
 
           <FollowBoardsModal
             v-model="isFollowBoardsModalOpen"
@@ -197,33 +333,6 @@ const deleteBoards = async () => {
             :entity-type="props.entityType"
             @followed="selectedBoardIds = []"
           />
-
-          <SlideTransition animation="slide-down">
-            <span v-if="selectedBoardIds.length">
-              <Button variant="text" @click="isFollowBoardsModalOpen = true">
-                <EyeIcon class="w-5 inline-block mr-1" />Додати до спостереження
-              </Button>
-
-              <Button
-                variant="text"
-                :loading="isUnfollowLoading"
-                :disabled="isUnfollowLoading"
-                @click="unfollowBoards"
-              >
-                <EyeSlashIcon class="w-5 inline-block mr-1" />Прибрати із
-                спостереження
-              </Button>
-
-              <Button
-                variant="text"
-                :loading="isDeleteLoading"
-                :disabled="isDeleteLoading"
-                @click="deleteBoards"
-              >
-                <TrashIcon class="w-5 inline-block mr-1" />Видалити
-              </Button>
-            </span>
-          </SlideTransition>
         </div>
       </div>
     </template>

@@ -178,6 +178,7 @@ defineExpose({
     <div
       v-if="isOpen && !handleClickOutside"
       class="fixed left-0 top-0 z-[50] w-full h-full"
+      @click="closeDropdown"
     ></div>
 
     <!-- Dropdown content -->

@@ -307,90 +307,184 @@ const changePrice = async (
     <div
       class="h-[calc(100%-113px)] overflow-auto scrollbar-thin md:hidden space-y-4 pb-3"
     >
+      <!-- Mobile Select All -->
+      <div class="bg-app-bg border border-app-border p-4 mb-4">
+        <div class="flex items-center justify-between">
+          <span class="font-medium">Вибрати всі</span>
+          <Checkbox
+            v-model="allSelected"
+            size="[1.25rem]"
+            @update:model-value="allSelectedChanged"
+          />
+        </div>
+      </div>
+
       <div
         v-for="item in props.selectionItems"
         :key="item.id"
-        class="shadow-shadow border border-theme-surface-variant overflow-hidden"
+        class="bg-app-bg border border-app-border overflow-hidden"
       >
-        <div class="p-4 flex items-center justify-between">
-          <div>ID</div>
-          <div>{{ item.id }}</div>
-        </div>
-        <div class="p-4 flex items-center justify-between">
-          <div>Місто</div>
-          <div>{{ item.city_name }}</div>
-        </div>
-        <div class="p-4 flex items-center justify-between">
-          <div>Фірма Код</div>
-          <div>{{ item.firm_name }} ({{ item.code }})</div>
-        </div>
-        <div class="p-4 flex items-center justify-between">
-          <div>Тип</div>
-          <div>{{ item.type }}</div>
-        </div>
-        <div class="p-4 flex items-center justify-between">
-          <div>Адреса</div>
-          <div>{{ item.addr }}</div>
-        </div>
-        <div class="p-4 flex items-center justify-between">
-          <div>Сторона</div>
-          <div>{{ item.side_type }}</div>
-        </div>
-        <div class="p-4 flex items-center justify-between">
-          <div>Підсвітка</div>
-          <div>{{ item.light ? "🔆" : "—" }}</div>
+        <!-- Selection Checkbox Header -->
+        <div
+          class="p-4 border-b border-app-border bg-app-bg-secondary flex items-center justify-between"
+        >
+          <span class="font-medium text-app-text">ID: {{ item.id }}</span>
+          <Checkbox v-model="model" :value="item.id" size="[1.25rem]" />
         </div>
 
-        <div class="p-4 flex items-center justify-between">
-          <div>Дата оновлення</div>
-          <div>{{ item.updated_at }}</div>
-        </div>
-
-        <div class="p-4 flex items-center justify-between">
-          <div>Фото</div>
-          <div v-if="item.image">📷</div>
-          <div v-else>—</div>
-        </div>
-
-        <div class="p-4 flex items-center justify-between">
-          <div>Зайнятість</div>
-          <div class="w-16 h-2 rounded-full overflow-hidden">
-            <div
-              class="h-full bg-success rounded-full"
-              style="width: 100%"
-            ></div>
+        <!-- Card Content -->
+        <div class="divide-y divide-app-border">
+          <div class="p-4 flex items-center justify-between">
+            <div class="text-app-text-secondary font-medium">Місто</div>
+            <div class="text-app-text">{{ item.city_name }}</div>
           </div>
-        </div>
 
-        <div class="p-4 flex items-center justify-between">
-          <div>Ціна системі</div>
-          <div>{{ item.price }} ₴</div>
-        </div>
+          <div class="p-4 flex items-center justify-between">
+            <div class="text-app-text-secondary font-medium">Фірма Код</div>
+            <div class="text-app-text text-right">
+              <div>{{ item.firm_name }}</div>
+              <div class="text-xs text-app-text-secondary">{{ item.code }}</div>
+            </div>
+          </div>
 
-        <div class="p-4 flex items-center justify-between">
-          <div>Ціна купівлі (без ПДВ)</div>
-          <div>{{ item.buying_price }} ₴</div>
-        </div>
+          <div class="p-4 flex items-center justify-between">
+            <div class="text-app-text-secondary font-medium">Тип</div>
+            <div class="text-app-text">{{ item.title }}</div>
+          </div>
 
-        <div class="p-4 flex items-center justify-between">
-          <div>Ціна продажу (без ПДВ)</div>
-          <div>{{ item.selling_price }} ₴</div>
-        </div>
+          <div class="p-4 flex items-start justify-between">
+            <div class="text-app-text-secondary font-medium">Адреса</div>
+            <div class="text-app-text text-right max-w-[60%]">
+              {{ item.addr }}
+            </div>
+          </div>
 
-        <div class="p-4 flex items-center justify-between">
-          <div>Ціна друку</div>
-          <div>{{ item.printing_price }} ₴</div>
-        </div>
+          <div class="p-4 flex items-center justify-between">
+            <div class="text-app-text-secondary font-medium">Сторона</div>
+            <div class="text-app-text">
+              <span
+                class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-app-bg-secondary text-sm font-medium"
+              >
+                {{ item.side_type }}
+              </span>
+            </div>
+          </div>
 
-        <div class="p-4 flex items-center justify-between">
-          <div>Ціна друку</div>
-          <div>{{ item.printing_price }} ₴</div>
-        </div>
+          <div class="p-4 flex items-center justify-between">
+            <div class="text-app-text-secondary font-medium">Підсвітка</div>
+            <div class="text-app-text">
+              <LightBulbIcon
+                class="w-6 h-6"
+                :class="
+                  item.light
+                    ? 'text-green-500'
+                    : 'text-gray-300 dark:text-gray-700'
+                "
+              />
+            </div>
+          </div>
 
-        <div class="p-4 flex items-center justify-between">
-          <div>Сповіщення</div>
-          <div class="text-warning">
-            {{ item.isWatched ? "⭐" : "Площина не під наглядом" }}
+          <div class="p-4 flex items-center justify-between">
+            <div class="text-app-text-secondary font-medium">
+              Дата оновлення
+            </div>
+            <div class="text-app-text text-right text-sm">
+              {{ dateWithTime(item.updated_at) }}
+            </div>
+          </div>
+
+          <div class="p-4 flex items-center justify-between">
+            <div class="text-app-text-secondary font-medium">Фото</div>
+            <div>
+              <Button
+                v-if="item.image"
+                variant="ghost"
+                icon-only
+                size="sm"
+                @click="openImagesModal(item)"
+              >
+                <template #icon>
+                  <PhotoIcon class="w-5 h-5" />
+                </template>
+              </Button>
+              <span v-else class="text-app-text-secondary">—</span>
+            </div>
+          </div>
+
+          <div class="p-4">
+            <div class="flex items-center justify-between mb-2">
+              <div class="text-app-text-secondary font-medium">Зайнятість</div>
+            </div>
+            <BoardAvailability :schedule="item.reserve_data" />
+          </div>
+
+          <div class="p-4 flex items-center justify-between">
+            <div class="text-app-text-secondary font-medium">Ціна системі</div>
+            <div class="text-app-text font-medium">{{ item.price }} ₴</div>
+          </div>
+
+          <div class="p-4">
+            <div class="flex items-center justify-between mb-2">
+              <div class="text-app-text-secondary font-medium">
+                Ціна купівлі (без ПДВ)
+              </div>
+            </div>
+            <CurrencyInput
+              v-model="item.buying_price"
+              size="sm"
+              block
+              @change="changePrice(item.id, item.buying_price, 'buying_price')"
+            />
+          </div>
+
+          <div class="p-4">
+            <div class="flex items-center justify-between mb-2">
+              <div class="text-app-text-secondary font-medium">
+                Ціна продажу (без ПДВ)
+              </div>
+            </div>
+            <CurrencyInput
+              v-model="item.selling_price"
+              size="sm"
+              block
+              @change="
+                changePrice(item.id, item.selling_price, 'selling_price')
+              "
+            />
+          </div>
+
+          <div class="p-4">
+            <div class="flex items-center justify-between mb-2">
+              <div class="text-app-text-secondary font-medium">Ціна друку</div>
+            </div>
+            <CurrencyInput
+              v-model="item.printing_price"
+              size="sm"
+              block
+              @change="
+                changePrice(item.id, item.printing_price, 'printing_price')
+              "
+            />
+          </div>
+
+          <div class="p-4 flex items-start justify-between">
+            <div class="text-app-text-secondary font-medium">Сповіщення</div>
+            <div class="text-right">
+              <div v-if="item.isWatched" class="text-app-text">
+                <span class="text-sm">
+                  {{ watchedDate(item.watchedFrom) }}
+                </span>
+                <span class="text-app-text-secondary mx-1">-</span>
+                <span class="text-sm">
+                  {{ watchedDate(item.watchedTo) }}
+                </span>
+              </div>
+              <div v-else class="bg-app-bg-secondary px-3 py-2 rounded text-sm">
+                <span class="text-app-text-secondary"
+                  >Площина не під наглядом</span
+                >
+              </div>
+            </div>
           </div>
         </div>
       </div>
