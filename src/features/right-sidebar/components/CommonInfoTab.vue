@@ -8,10 +8,11 @@ import Button from "@src/ui/inputs/Button.vue";
 import { formatConversationDate } from "@src/shared/utils/utils";
 import useConversationsStore from "@src/features/conversations/conversations-store";
 import { PhoneIcon, EnvelopeIcon, UserIcon } from "@heroicons/vue/24/outline";
-import CanbanSelect from "@src/shared/components/CanbanSelect.vue";
+import KanbanSelect from "@src/shared/components/KanbanSelect.vue";
 import AddContactModal from "@src/features/contacts/AddContactModal.vue";
 
 const contactId = inject<Ref<number> | undefined>("contactId");
+const entity = inject<Ref<"leads" | "clients">>("entity");
 
 const conversationsStore = useConversationsStore();
 const isAddContactModalOpen = ref(false);
@@ -116,14 +117,17 @@ const handleContactAdded = () => {
       {{ activeConversationInfo?.comment || "Не вказано" }}
     </div>
 
-    <hr class="my-5 border-app-border" />
+    <hr v-if="entity === 'leads'" class="my-5 border-app-border" />
 
-    <div class="my-4 text-app-text-secondary text-[0.813rem]">
+    <div
+      v-if="entity === 'leads'"
+      class="my-4 text-app-text-secondary text-[0.813rem]"
+    >
       Kanban статус
     </div>
 
-    <div>
-      <CanbanSelect />
+    <div v-if="entity === 'leads'">
+      <KanbanSelect />
     </div>
 
     <hr
