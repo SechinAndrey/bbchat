@@ -22,6 +22,7 @@ const container: Ref<HTMLElement | null> = ref(null);
 
 const currentEntity = computed(() => route.params.entity as EntityType);
 const currentId = computed(() => Number(route.params.id));
+const currentContactId = computed(() => Number(route.params.contactId));
 const isLoadingMore = ref(false);
 
 useInfiniteScroll(
@@ -47,6 +48,7 @@ useInfiniteScroll(
       await conversationsStore.loadMoreMessages(
         currentEntity.value,
         currentId.value,
+        currentContactId.value,
       );
 
       // Restore scroll position after new messages are loaded

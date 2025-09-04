@@ -2,6 +2,7 @@
 import { computed, ref } from "vue";
 
 import SlideTransition from "@src/ui/transitions/SlideTransition.vue";
+import type { SlideAnimationType } from "@src/ui/transitions/types";
 import PasswordSection from "@src/features/auth/components/RegisterForm/PasswordSection.vue";
 import PersonalSection from "@src/features/auth/components/RegisterForm/PersonalSection.vue";
 import { RouterLink } from "vue-router";
@@ -12,7 +13,7 @@ defineEmits(["activeSectionChange"]);
 const activeSectionName = ref("personal-section");
 
 // determines what direction the slide animation should use.
-const animation = ref("slide-left");
+const animation = ref<SlideAnimationType>("slide-left");
 
 // get the active section component from the section name
 const ActiveSection = computed((): any => {
@@ -26,7 +27,7 @@ const ActiveSection = computed((): any => {
 // (event) to move between modal pages
 const changeActiveSection = (event: {
   sectionName: string;
-  animationName: string;
+  animationName: SlideAnimationType;
 }) => {
   animation.value = event.animationName;
   activeSectionName.value = event.sectionName;

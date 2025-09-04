@@ -41,10 +41,10 @@ const handleCancel = () => {
         </div>
 
         <div class="mt-6 flex justify-end space-x-3">
-          <Button size="small" class="" @button-clicked="handleCancel">
+          <Button size="sm" class="" @button-clicked="handleCancel">
             {{ props.cancelText || "Скасувати" }}
           </Button>
-          <Button size="small" class="" @button-clicked="handleConfirm">
+          <Button size="sm" class="" @button-clicked="handleConfirm">
             {{ props.confirmText || "Підтвердити" }}
           </Button>
         </div>

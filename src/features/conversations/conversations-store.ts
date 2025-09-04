@@ -365,6 +365,7 @@ export const useConversationsStore = defineStore("conversations", () => {
   const setMessagesSearchFilter = async (
     entity: EntityType,
     id: number,
+    contactId: number,
     search: string,
   ) => {
     messagesFilters.value = {
@@ -372,7 +373,12 @@ export const useConversationsStore = defineStore("conversations", () => {
       search,
     };
 
-    return fetchCommunicationMessages(entity, id, messagesFilters.value);
+    return fetchCommunicationMessages(
+      entity,
+      id,
+      contactId,
+      messagesFilters.value,
+    );
   };
 
   const setSearchFilter = (search: string) => {

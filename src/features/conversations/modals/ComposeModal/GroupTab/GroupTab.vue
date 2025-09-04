@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
+import type { SlideAnimationType } from "@src/ui/transitions/types";
 
 import GroupInfo from "@src/features/conversations/modals/ComposeModal/GroupTab/GroupInfo.vue";
 import GroupMembers from "@src/features/conversations/modals/ComposeModal/GroupTab/GroupMembers.vue";
@@ -8,7 +9,7 @@ import SlideTransition from "@src/ui/transitions/SlideTransition.vue";
 defineEmits(["activePageChange"]);
 
 // used to determine whether to slide left or right
-const animation = ref("slide-left");
+const animation = ref<SlideAnimationType>("slide-left");
 
 // name of the active modal page
 const activePageName = ref("group-info");
@@ -22,7 +23,7 @@ const ActivePage = computed((): any => {
 // (event) to move between modal pages
 const handleChangeActiveTab = (event: {
   tabName: string;
-  animationName: string;
+  animationName: SlideAnimationType;
 }) => {
   animation.value = event.animationName;
   activePageName.value = event.tabName;

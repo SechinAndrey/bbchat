@@ -1,13 +1,14 @@
 <script setup lang="ts">
+import type { IConversation, IContact } from "@src/shared/types/types";
 import type { Ref } from "vue";
-import type { IContact, IConversation } from "@src/shared/types/types";
+import type { SlideAnimationType } from "@src/ui/transitions/types";
 
 import { computed, ref } from "vue";
 
 import ConversationInfoTab from "@src/features/conversations/modals/ConversationInfoModal/ConversationInfoTab/ConversationInfoTab.vue";
-import EditGroupInfoTab from "@src/features/conversations/modals/ConversationInfoModal/EditGroupInfoTab.vue";
 import ConversationMembersTab from "@src/features/conversations/modals/ConversationInfoModal/ConversationMembersTab.vue";
 import SharedMediaTab from "@src/features/conversations/modals/ConversationInfoModal/SharedMediaTab/SharedMediaTab.vue";
+import EditGroupInfoTab from "@src/features/conversations/modals/ConversationInfoModal/EditGroupInfoTab.vue";
 import Modal from "@src/ui/modals/Modal.vue";
 import SlideTransition from "@src/ui/transitions/SlideTransition.vue";
 
@@ -23,7 +24,7 @@ const props = defineProps<{
 const selectedMember: Ref<IContact | undefined> = ref();
 
 // used to determine whether to slide left or right
-const animation = ref("slide-left");
+const animation = ref<SlideAnimationType>("slide-left");
 
 // name of the active modal page
 const activePageName = ref("conversation-info");
@@ -40,7 +41,7 @@ const ActiveTab = computed((): any => {
 // (event) move between modal pages
 const handleChangeActiveTab = (event: {
   tabName: string;
-  animationName: string;
+  animationName: SlideAnimationType;
   contact?: IContact;
   removeContact?: boolean;
 }) => {
@@ -59,7 +60,7 @@ const handleChangeActiveTab = (event: {
 
 <template>
   <Modal :open="props.open" :close-modal="props.closeModal">
-    <template v-slot:content>
+    <template #content>
       <div class="overflow-x-hidden">
         <div
           class="w-[18.75rem] bg-theme-surface dark:bg-theme-surface rounded py-6"
@@ -67,12 +68,12 @@ const handleChangeActiveTab = (event: {
           <!--content-->
           <SlideTransition :animation="animation">
             <component
-              @active-page-change="handleChangeActiveTab"
               :is="ActiveTab"
+              :key="activePageName"
               :conversation="props.conversation"
               :close-modal="props.closeModal"
-              :key="activePageName"
               :contact="selectedMember"
+              @active-page-change="handleChangeActiveTab"
             />
           </SlideTransition>
         </div>

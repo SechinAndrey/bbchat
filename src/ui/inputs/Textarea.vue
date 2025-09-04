@@ -33,6 +33,8 @@ type TextareaVariant = keyof typeof TEXTAREA_VARIANTS;
 
 const props = withDefaults(
   defineProps<{
+    id?: string;
+    name?: string;
     placeholder?: string;
     noResize?: boolean;
     rows?: number;

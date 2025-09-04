@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { ICall } from "@src/shared/types/types";
+import type { SlideAnimationType } from "@src/ui/transitions/types";
 
 import { computed, ref } from "vue";
 
@@ -19,7 +20,7 @@ const props = defineProps<{
 
 const activePageName = ref("call-info");
 
-const animation = ref("slide-left");
+const animation = ref<SlideAnimationType>("slide-left");
 
 const ActivePage = computed((): any => {
   if (activePageName.value === "call-info") {
@@ -32,7 +33,7 @@ const ActivePage = computed((): any => {
 // (event) move between modal pages
 const handleChangeActiveTab = (event: {
   tabName: string;
-  animationName: string;
+  animationName: SlideAnimationType;
 }) => {
   animation.value = event.animationName;
   activePageName.value = event.tabName;
@@ -40,18 +41,18 @@ const handleChangeActiveTab = (event: {
 </script>
 
 <template>
-  <Modal :open="props.open" :closeModal="props.closeModal">
-    <template v-slot:content>
+  <Modal :open="props.open" :close-modal="props.closeModal">
+    <template #content>
       <div
         class="w-[18.75rem] py-6 overflow-x-hidden rounded bg-surface dark:bg-surface"
       >
         <!--modal content-->
         <SlideTransition :animation="animation">
           <component
-            @active-page-change="handleChangeActiveTab"
             :is="ActivePage"
             :call="props.call"
             :close-modal="closeModal"
+            @active-page-change="handleChangeActiveTab"
           />
         </SlideTransition>
 

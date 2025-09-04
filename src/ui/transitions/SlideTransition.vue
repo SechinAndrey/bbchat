@@ -1,13 +1,8 @@
 <script setup lang="ts">
+import type { SlideAnimationType } from "./types";
+
 const props = defineProps<{
-  animation:
-    | "slide-left"
-    | "slide-right"
-    | "slide-up"
-    | "slide-down"
-    | "slide-from-bottom"
-    | "shelf-up"
-    | "shelf-down";
+  animation: SlideAnimationType;
 }>();
 </script>
 
