@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
+import { useRoute } from "vue-router";
 
 import useStore from "@src/shared/store/store";
 
@@ -11,9 +12,16 @@ import Notifications from "@src/features/notifications/components/Notifications.
 import Settings from "@src/features/settings/components/Settings.vue";
 
 const store = useStore();
+const route = useRoute();
 
-// the selected sidebar component (e.g message/notifications/settings)
+const isChatRoute = computed(() => {
+  return route.path.startsWith("/chat");
+});
+
 const ActiveComponent = computed(() => {
+  if (isChatRoute.value) {
+    return Conversations;
+  }
   if (store.activeSidebarComponent === "messages") {
     return Conversations;
   } else if (store.activeSidebarComponent === "contacts") {

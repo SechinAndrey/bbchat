@@ -14,15 +14,29 @@ import AccountDropdown from "@src/layout/navigation/AccountDropdown.vue";
 import logoIcon from "@src/shared/icons/logoIcon.vue";
 import NavLink from "@src/layout/navigation/NavLink.vue";
 import NavItem from "@src/layout/navigation/NavItem.vue";
+import router from "@src/router";
+import route from "@src/router";
 
-const store = useStore();
+// const store = useStore();
 const { toggleDarkMode, isDarkMode } = useTheme();
 
 const showDropdown = ref(false);
 
 // (event) change the active sidebar component when clicking on a NavLink
-const handleActiveSidebarComponentChange = (value: string) => {
-  store.activeSidebarComponent = value;
+// const handleActiveSidebarComponentChange = (value: string) => {
+//   store.activeSidebarComponent = value;
+// };
+
+const openSuppliers = () => {
+  router.push({
+    path: "/chat/suppliers",
+  });
+};
+
+const openLeads = () => {
+  router.push({
+    path: "/chat/leads",
+  });
 };
 </script>
 
@@ -57,20 +71,22 @@ const handleActiveSidebarComponentChange = (value: string) => {
 
           <li class="md:mb-4">
             <NavItem
-              :active="store.activeSidebarComponent === 'messages'"
-              @click="() => handleActiveSidebarComponentChange('messages')"
+              :active="route.currentRoute.value.path.includes('/chat/leads')"
+              @click="openLeads"
             >
               <ChatBubbleLeftRightIcon class="w-[20px] h-[20px]" />
             </NavItem>
           </li>
-          <!-- <li class="md:mb-4">
+          <li class="md:mb-4">
             <NavItem
-              :active="store.activeSidebarComponent === 'contacts'"
-              @click="() => handleActiveSidebarComponentChange('contacts')"
+              :active="
+                route.currentRoute.value.path.includes('/chat/suppliers')
+              "
+              @click="openSuppliers"
             >
               <UsersIcon />
             </NavItem>
-          </li> -->
+          </li>
 
           <!--settings button small screen-->
           <!-- <li class="xs:inline md:hidden">

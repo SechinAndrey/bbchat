@@ -10,8 +10,7 @@ import type {
   ApiMessageContentBinotel,
   ApiCommunicationMessage,
   ApiContact,
-  ApiCommunicationLead,
-  ApiCommunicationClient,
+  ApiCommunicationEntity,
 } from "@src/api/types";
 
 export function adaptApiContactToIContact(contact: ApiContact): IContact {
@@ -82,7 +81,7 @@ export function adaptApiCommunicationMessageToIMessage(
 
 // Generic function to adapt API communication entities to IConversation
 export function adaptApiCommunicationToIConversation(
-  entity: ApiCommunicationLead | ApiCommunicationClient,
+  entity: ApiCommunicationEntity,
 ): IConversation {
   const lastMessage = entity.messages?.at(-1);
 

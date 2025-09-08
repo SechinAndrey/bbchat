@@ -336,6 +336,29 @@ export interface ApiCommunicationClient {
   draftMessage: string | null;
 }
 
+export interface ApiCommunicationSupplier {
+  id: number;
+  user_id: number;
+  entity: EntityType;
+  name: string;
+  fio: string | null;
+  avatar: string | null;
+  class_id: number | null;
+  contacts: ApiContact[];
+  email: string | null;
+  phone: string | null;
+  tg_name: string | null;
+  visible: number | null;
+  communication_status_id: number | null;
+  type: string | null;
+  messages: ApiMessageItem[] | null;
+  pinnedMessage: ApiMessageItem | null;
+  pinnedMessageHidden: boolean | null;
+  replyMessage: ApiMessageItem | null;
+  unread: number;
+  draftMessage: string | null;
+}
+
 export interface ApiResponseLinks {
   first: string;
   last: string;
@@ -364,6 +387,11 @@ export interface ApiCommunicationResponse {
     links: ApiResponseLinks;
     meta: ApiResponseMeta;
   };
+  suppliers: {
+    data: ApiCommunicationSupplier[];
+    links: ApiResponseLinks;
+    meta: ApiResponseMeta;
+  };
 }
 
 export interface ApiCommunicationLeadsResponse {
@@ -373,6 +401,7 @@ export interface ApiCommunicationLeadsResponse {
     meta: ApiResponseMeta;
   };
   clients: null;
+  suppliers: null;
 }
 
 export interface ApiCommunicationClientsResponse {
@@ -382,9 +411,33 @@ export interface ApiCommunicationClientsResponse {
     meta: ApiResponseMeta;
   };
   leads: null;
+  suppliers: null;
 }
 
-// -----------------
+export interface ApiCommunicationSuppliersResponse {
+  suppliers: {
+    data: ApiCommunicationSupplier[];
+    links: ApiResponseLinks;
+    meta: ApiResponseMeta;
+  };
+  leads: null;
+  clients: null;
+}
+
+export type ApiCommunicationEntity =
+  | ApiCommunicationLead
+  | ApiCommunicationClient
+  | ApiCommunicationSupplier;
+
+export type ApiCommunicationEntityFull =
+  | ApiCommunicationLeadFull
+  | ApiCommunicationClientFull
+  | ApiCommunicationSupplierFull;
+
+export type ApiCommunicationEntityResponse =
+  | ApiCommunicationLeadsResponse
+  | ApiCommunicationClientsResponse
+  | ApiCommunicationSuppliersResponse;
 
 export interface ApiCommunicationCity {
   id: number;
@@ -477,6 +530,10 @@ export interface ApiCommunicationLeadFull {
 
 // eslint-disable-next-line
 export interface ApiCommunicationClientFull extends ApiCommunicationLeadFull {}
+
+// eslint-disable-next-line
+export interface ApiCommunicationSupplierFull
+  extends ApiCommunicationLeadFull {}
 
 export interface ApiMessageFull {
   id: number;

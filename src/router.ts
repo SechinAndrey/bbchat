@@ -26,6 +26,15 @@ const routes = [
         meta: { requiresAuth: true },
       },
       {
+        path: "/chat/:entity",
+        name: "EntityChat",
+        component: Chat,
+        meta: { requiresAuth: true },
+        props: (route: RouteLocationNormalized) => ({
+          entity: route.params.entity,
+        }),
+      },
+      {
         path: "/chat/:entity/:id/contact/:contactId",
         name: "Chat",
         component: Chat,

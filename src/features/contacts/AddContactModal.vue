@@ -16,7 +16,7 @@ import { extractValidationErrors } from "@src/shared/utils/utils";
 interface Props {
   open: boolean;
   closeModal: () => void;
-  entityType: "client" | "lead";
+  entityType: "client" | "lead" | "supplier";
   entityId: number;
 }
 
@@ -54,6 +54,17 @@ const clean = () => {
   props.closeModal();
 };
 
+const getEntityApiEndpoint = (entityType: "client" | "lead" | "supplier") => {
+  switch (entityType) {
+    case "client":
+      return "clients";
+    case "supplier":
+      return "suppliers";
+    case "lead":
+      return "leads";
+  }
+};
+
 const handleSubmit = async () => {
   if (!isFormValid.value || isLoading.value) return;
 
@@ -74,11 +85,11 @@ const handleSubmit = async () => {
       contactData.post_id = selectedJobTitleId.value;
     }
 
-    if (props.entityType === "client") {
-      await contactsService.addContactToClient(props.entityId, contactData);
-    } else {
-      await contactsService.addContactToLead(props.entityId, contactData);
-    }
+    await contactsService.addContactToEntity(
+      getEntityApiEndpoint(props.entityType),
+      props.entityId,
+      contactData,
+    );
 
     emit("contactAdded");
     clean();
@@ -123,7 +134,11 @@ const jobTitleOptions = computed(() => {
 
         <!-- Form -->
         <div class="space-y-3 xs:space-y-4">
-          <template v-if="props.entityType === 'client'">
+          <template
+            v-if="
+              props.entityType === 'client' || props.entityType === 'supplier'
+            "
+          >
             <div class="grid xs:grid-cols-1 md:grid-cols-2 gap-3 xs:gap-4">
               <LabeledTextInput
                 v-model="fio"

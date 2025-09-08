@@ -3,6 +3,7 @@ import { computed, inject, ref, type Ref } from "vue";
 import {
   ApiCommunicationLeadFull,
   ApiCommunicationClientFull,
+  ApiCommunicationSupplierFull,
 } from "@src/api/types";
 import Button from "@src/ui/inputs/Button.vue";
 import TextInput from "@src/ui/inputs/TextInput.vue";
@@ -19,7 +20,7 @@ import KanbanSelect from "@src/shared/components/KanbanSelect.vue";
 import AddContactModal from "@src/features/contacts/AddContactModal.vue";
 
 const contactId = inject<Ref<number> | undefined>("contactId");
-const entity = inject<Ref<"leads" | "clients">>("entity");
+const entity = inject<Ref<"leads" | "clients" | "suppliers">>("entity");
 
 const conversationsStore = useConversationsStore();
 const isAddContactModalOpen = ref(false);
@@ -28,13 +29,18 @@ const editCommentValue = ref("");
 const isSavingComment = ref(false);
 
 const activeConversationInfo = computed<
-  ApiCommunicationLeadFull | ApiCommunicationClientFull | null
+  | ApiCommunicationLeadFull
+  | ApiCommunicationClientFull
+  | ApiCommunicationSupplierFull
+  | null
 >(() => {
   return conversationsStore.activeConversationInfo;
 });
 
 const entityType = computed(() => {
-  return activeConversationInfo.value?.entity === "clients" ? "client" : "lead";
+  if (activeConversationInfo.value?.entity === "clients") return "client";
+  if (activeConversationInfo.value?.entity === "suppliers") return "supplier";
+  return "lead";
 });
 
 const entityId = computed(() => {

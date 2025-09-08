@@ -38,12 +38,17 @@ import EmptyState from "@src/ui/states/empty-states/EmptyState.vue";
 const route = useRoute();
 const id = ref<number | null>(null);
 const entity = ref<EntityType>("leads");
-if (route.params.id) {
-  id.value = Number(route.params.id);
-}
-if (route.params.entity) {
-  entity.value = route.params.entity as EntityType;
-}
+
+const initializeFromRoute = () => {
+  if (route.params.id) {
+    id.value = Number(route.params.id);
+  }
+  if (route.params.entity) {
+    entity.value = route.params.entity as EntityType;
+  }
+};
+
+initializeFromRoute();
 
 // Store instances
 const authStore = useAuthStore();
@@ -52,7 +57,9 @@ const conversationsStore = useConversationsStore();
 
 // State refs
 const selectedUser = ref<number | "all">("all");
-const selectedFilter = ref(entity.value);
+const selectedFilter = ref<EntityType>(
+  (route.params.entity as EntityType) || "leads",
+);
 const keyword: Ref<string> = ref("");
 const composeOpen = ref(false);
 const newLeadModalOpen = ref(false);
@@ -64,8 +71,7 @@ const TAB = {
 };
 const activeTab = ref(TAB.all);
 
-const { fetchLeads, fetchClients, loadMoreLeads, loadMoreClients } =
-  conversationsStore;
+const { fetchEntityCommunications, loadMoreEntity } = conversationsStore;
 
 // Computed properties
 const userOptions = computed(() => [
@@ -88,21 +94,42 @@ const filterOptions = computed(() => {
 });
 
 const conversationsList = computed(() => {
-  return selectedFilter.value === "leads"
-    ? conversationsStore.leads
-    : conversationsStore.clients;
+  switch (selectedFilter.value) {
+    case "leads":
+      return conversationsStore.leads;
+    case "clients":
+      return conversationsStore.clients;
+    case "suppliers":
+      return conversationsStore.suppliers;
+    default:
+      return conversationsStore.leads;
+  }
 });
 
 const isLoading = computed(() => {
-  return selectedFilter.value === "leads"
-    ? conversationsStore.isLoadingLeads
-    : conversationsStore.isLoadingClients;
+  switch (selectedFilter.value) {
+    case "leads":
+      return conversationsStore.isLoadingLeads;
+    case "clients":
+      return conversationsStore.isLoadingClients;
+    case "suppliers":
+      return conversationsStore.isLoadingSuppliers;
+    default:
+      return conversationsStore.isLoadingLeads;
+  }
 });
 
 const hasMore = computed(() => {
-  return selectedFilter.value === "leads"
-    ? conversationsStore.hasMoreLeads
-    : conversationsStore.hasMoreClients;
+  switch (selectedFilter.value) {
+    case "leads":
+      return conversationsStore.hasMoreLeads;
+    case "clients":
+      return conversationsStore.hasMoreClients;
+    case "suppliers":
+      return conversationsStore.hasMoreSuppliers;
+    default:
+      return conversationsStore.hasMoreLeads;
+  }
 });
 
 const debouncedFetch = useDebounceFn(async () => {
@@ -112,12 +139,7 @@ const debouncedFetch = useDebounceFn(async () => {
     user_id: selectedUser.value === "all" ? undefined : selectedUser.value,
     communication_status_id: activeTab.value === TAB.open ? 1 : undefined,
   };
-
-  if (selectedFilter.value === "leads") {
-    await fetchLeads(params);
-  } else {
-    await fetchClients(params);
-  }
+  await fetchEntityCommunications(selectedFilter.value, params);
 }, 500);
 
 watch([selectedUser, selectedFilter, activeTab], debouncedFetch, {
@@ -128,11 +150,21 @@ watch(keyword, debouncedFetch);
 
 watch(
   () => route.params.entity,
-  (newEntity) => {
+  async (newEntity) => {
     if (newEntity && newEntity !== selectedFilter.value) {
       selectedFilter.value = newEntity as EntityType;
+
+      const params: GetCommunicationsParams = {
+        page: 1,
+        search: keyword.value || undefined,
+        user_id: selectedUser.value === "all" ? undefined : selectedUser.value,
+        communication_status_id: activeTab.value === TAB.open ? 1 : undefined,
+      };
+
+      await fetchEntityCommunications(selectedFilter.value, params);
     }
   },
+  { immediate: true },
 );
 
 const leadClientIcon = computed(() => {
@@ -143,11 +175,7 @@ const leadClientIcon = computed(() => {
 const scrollContainer = ref<HTMLElement | null>(null);
 
 const loadMore = () => {
-  if (selectedFilter.value === "leads") {
-    loadMoreLeads();
-  } else {
-    loadMoreClients();
-  }
+  loadMoreEntity(selectedFilter.value);
 };
 
 useInfiniteScroll(
@@ -230,6 +258,7 @@ const handleNewLeadSubmit = async (leadData: CreateLeadRequest) => {
           />
 
           <Select
+            v-if="route.params.entity !== 'suppliers'"
             v-model="selectedFilter"
             :options="filterOptions"
             size="sm"

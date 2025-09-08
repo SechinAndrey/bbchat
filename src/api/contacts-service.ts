@@ -1,5 +1,6 @@
 import apiClient from "./axios-instance";
 import type { ApiContact } from "./types";
+import type { EntityType } from "@src/shared/types/common";
 
 export interface CreateContactRequest {
   fio: string;
@@ -14,28 +15,15 @@ export interface CreateContactResponse {
 }
 
 export class ContactsService {
-  /**
-   * Add contact to client
-   */
-  async addContactToClient(
-    clientId: number,
+  async addContactToEntity(
+    entity: EntityType,
+    entityId: number,
     contact: CreateContactRequest,
   ): Promise<CreateContactResponse> {
     const response = await apiClient.post(
-      `/clients/${clientId}/contacts`,
+      `/${entity}/${entityId}/contacts`,
       contact,
     );
-    return response.data;
-  }
-
-  /**
-   * Add contact to lead
-   */
-  async addContactToLead(
-    leadId: number,
-    contact: CreateContactRequest,
-  ): Promise<CreateContactResponse> {
-    const response = await apiClient.post(`/leads/${leadId}/contacts`, contact);
     return response.data;
   }
 }
