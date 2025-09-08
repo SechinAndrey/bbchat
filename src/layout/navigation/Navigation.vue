@@ -84,7 +84,7 @@ const openLeads = () => {
               "
               @click="openSuppliers"
             >
-              <UsersIcon />
+              <UsersIcon class="w-[20px] h-[20px]" />
             </NavItem>
           </li>
 

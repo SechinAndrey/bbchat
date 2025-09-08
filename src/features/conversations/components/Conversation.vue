@@ -160,7 +160,7 @@ const lastMessageText = computed(() => {
           <!--conversation name-->
           <div class="flex items-start">
             <div class="grow mb-2 text-start">
-              <p class="">
+              <p class="line-clamp-2 text-ellipsis overflow-hidden">
                 {{ getName(props.conversation) }}
               </p>
             </div>

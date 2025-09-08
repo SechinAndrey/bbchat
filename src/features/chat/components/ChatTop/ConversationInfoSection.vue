@@ -83,16 +83,21 @@ const cityName = computed(() => {
     class="w-full flex flex-col sm:flex-row sm:justify-between sm:items-center"
   >
     <div class="flex items-center gap-3 mb-2">
-      <Button variant="text" icon-only @click="handleCloseConversation">
+      <Button
+        class="md:!hidden"
+        variant="text"
+        icon-only
+        @click="handleCloseConversation"
+      >
         <template #icon>
           <ChevronLeftIcon class="w-[1.25rem] h-[1.25rem]" />
         </template>
       </Button>
 
-      <div class="flex grow">
+      <div class="flex grow min-w-0">
         <!--avatar-->
         <button
-          class="mr-5 outline-none"
+          class="mr-5 outline-none flex-shrink-0"
           aria-label="profile avatar"
           @click="store.rightSidebarOpen = !store.rightSidebarOpen"
         >
@@ -103,19 +108,21 @@ const cityName = computed(() => {
           />
         </button>
 
-        <div class="flex flex-col">
+        <div class="flex flex-col min-w-0 flex-1">
           <Button
             variant="ghost"
             size="xs"
-            class="w-fit !text-app-text !px-3 !text-[0.813rem]"
+            class="w-fit !text-app-text !px-3 !text-[0.813rem] text-left !justify-start min-w-0 max-w-full"
             tabindex="0"
             @click="store.rightSidebarOpen = !store.rightSidebarOpen"
           >
-            {{ title }}
+            <span class="truncate">{{ title }}</span>
           </Button>
 
           <!-- font-size 11px in rem -->
-          <p class="text-[0.6875rem] text-app-text-secondary px-3">
+          <p
+            class="text-[0.6875rem] text-app-text-secondary px-3 truncate max-w-full"
+          >
             {{ cityName }}
           </p>
         </div>
@@ -131,17 +138,17 @@ const cityName = computed(() => {
       </Button>
     </div>
 
-    <div class="relative flex gap-4 justify-end">
+    <div class="relative flex gap-4 justify-end flex-shrink-0">
       <SearchInput
         v-model="conversationsStore.messagesFilters.search"
         size="sm"
         variant="filled"
-        class="w-full sm:max-w-[13.563rem]"
+        class="w-auto min-w-[8rem] sm:w-[13.563rem] flex-shrink-0"
         @update:model-value="debouncedFn"
       />
 
       <Button
-        class="whitespace-nowrap"
+        class="whitespace-nowrap flex-shrink-0"
         size="sm"
         :loading="isLoading"
         @click="endConversation"
@@ -152,7 +159,7 @@ const cityName = computed(() => {
       <Button
         variant="text"
         icon-only
-        class="!hidden md:!flex"
+        class="!hidden md:!flex flex-shrink-0"
         @click="store.rightSidebarOpen = !store.rightSidebarOpen"
       >
         <template #icon>
