@@ -504,7 +504,7 @@ export interface ApiCommunicationLeadFull {
   messages: ApiMessageItem[];
   replyMessage: ApiMessage | null;
   calls: ApiCommunicationCallInfo[];
-  info: unknown;
+  info: string;
   utm: unknown;
   utm_channel: unknown;
   ga_client_id: unknown;

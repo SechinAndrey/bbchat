@@ -18,9 +18,12 @@ import {
 } from "@heroicons/vue/24/outline";
 import KanbanSelect from "@src/shared/components/KanbanSelect.vue";
 import AddContactModal from "@src/features/contacts/AddContactModal.vue";
+import { useAuthStore } from "@src/features/auth/store/auth-store";
 
 const contactId = inject<Ref<number> | undefined>("contactId");
 const entity = inject<Ref<"leads" | "clients" | "suppliers">>("entity");
+
+const authStore = useAuthStore();
 
 const conversationsStore = useConversationsStore();
 const isAddContactModalOpen = ref(false);
@@ -104,6 +107,15 @@ const saveComment = async () => {
     isSavingComment.value = false;
   }
 };
+
+const sourceInfo = computed(() => {
+  try {
+    return JSON.parse(activeConversationInfo.value?.info || "{}");
+  } catch (error) {
+    console.error("Error parsing info:", error);
+    return {};
+  }
+});
 </script>
 
 <template>
@@ -224,6 +236,46 @@ const saveComment = async () => {
         >
           {{ isSavingComment ? "Збереження..." : "Зберегти" }}
         </Button>
+      </div>
+    </div>
+
+    <div
+      v-if="
+        authStore.currentUser?.roleId === 1 &&
+        (sourceInfo.utm || sourceInfo.page)
+      "
+    >
+      <hr class="my-5 border-app-border" />
+
+      <div
+        v-if="sourceInfo.utm"
+        class="my-4 text-app-text-secondary text-[0.813rem]"
+      >
+        Utm
+      </div>
+
+      <div v-if="sourceInfo.utm" class="text-[0.875rem] flex-1">
+        {{ sourceInfo.utm }}
+      </div>
+
+      <div
+        v-if="sourceInfo?.page?.title || sourceInfo?.page?.url"
+        class="my-4 text-app-text-secondary text-[0.813rem]"
+      >
+        Сторінка
+      </div>
+
+      <div v-if="sourceInfo?.page?.title" class="text-[0.875rem] flex-1">
+        {{ sourceInfo.page.title || "Не вказано" }}
+      </div>
+
+      <br v-if="sourceInfo?.page?.url" />
+
+      <div
+        v-if="sourceInfo?.page?.url"
+        class="text-[0.875rem] flex-1 break-all"
+      >
+        {{ sourceInfo.page.url || "Не вказано" }}
       </div>
     </div>
 
