@@ -6,6 +6,7 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   InformationCircleIcon,
+  EllipsisVerticalIcon,
 } from "@heroicons/vue/24/outline";
 import SearchInput from "@src/ui/inputs/SearchInput.vue";
 import Button from "@src/ui/inputs/Button.vue";
@@ -15,6 +16,8 @@ import { useDebounceFn } from "@vueuse/core";
 import { computed, inject, ref, type Ref } from "vue";
 import { toast, type ToastOptions } from "vue3-toastify";
 import type { EntityType } from "@src/shared/types/common";
+import VuePopper from "@kalimahapps/vue-popper";
+import LeadActionModal from "./LeadActionModal.vue";
 
 const entity = inject<Ref<EntityType>>("entity");
 const id = inject<Ref<number>>("id");
@@ -75,6 +78,18 @@ const cityName = computed(() => {
   const city = conversationsStore.activeConversationInfo?.cities?.at(0);
   return city?.name_new_ua || city?.name_ua || city?.name || "Невідоме місто";
 });
+
+const isActionModalOpen = ref(false);
+const currentActionType = ref<"client" | "supplier" | "manager" | "lead">(
+  "client",
+);
+
+const openActionModal = (
+  actionType: "client" | "supplier" | "manager" | "lead",
+) => {
+  currentActionType.value = actionType;
+  isActionModalOpen.value = true;
+};
 </script>
 
 <template>
@@ -156,6 +171,43 @@ const cityName = computed(() => {
         Завершити діалог
       </Button>
 
+      <VuePopper placement="bottom-end" :show-arrow="false">
+        <Button variant="text" icon-only class="flex-shrink-0">
+          <template #icon>
+            <EllipsisVerticalIcon />
+          </template>
+        </Button>
+
+        <template #content>
+          <ul>
+            <li>
+              <Button block variant="ghost" @click="openActionModal('lead')">
+                Додати в існуючого ліда
+              </Button>
+            </li>
+            <li>
+              <Button block variant="ghost" @click="openActionModal('client')">
+                Додати в існуючого клієнта
+              </Button>
+            </li>
+            <li>
+              <Button
+                block
+                variant="ghost"
+                @click="openActionModal('supplier')"
+              >
+                Додати в існуючого постачальника
+              </Button>
+            </li>
+            <li>
+              <Button block variant="ghost" @click="openActionModal('manager')">
+                Змінити менеджера
+              </Button>
+            </li>
+          </ul>
+        </template>
+      </VuePopper>
+
       <Button
         variant="text"
         icon-only
@@ -169,4 +221,12 @@ const cityName = computed(() => {
       </Button>
     </div>
   </div>
+
+  <LeadActionModal
+    :open="isActionModalOpen"
+    :close-modal="() => (isActionModalOpen = false)"
+    :action-type="currentActionType"
+    :lead-name="title"
+    :lead-id="id as number"
+  />
 </template>

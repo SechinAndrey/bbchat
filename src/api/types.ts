@@ -599,17 +599,20 @@ export interface ApiContactJobTitle {
 }
 
 export interface ApiGlobalDataResponse {
-  users: ApiManagerListItem[];
-  usersForClients: ApiManagerListItem[];
-  kanbanStatuses: ApiKanbanStatus[];
   cities: ApiCommunicationCity[];
+  clients: { id: number; name: string }[];
   contactJobTitle: ApiContactJobTitle[];
+  kanbanStatuses: ApiKanbanStatus[];
+  leads: { id: number; name: string }[];
   selectionExportFormFields: {
     cols: {
       alias: string;
       name: string;
     }[];
   };
+  suppliers: { id: number; name: string }[];
+  users: ApiManagerListItem[];
+  usersForClients: ApiManagerListItem[];
 }
 
 // --- selections ---

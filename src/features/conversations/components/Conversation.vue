@@ -132,6 +132,7 @@ const lastMessageText = computed(() => {
 
 <template>
   <div class="select-none">
+    <!-- @contextmenu.prevent="handleShowContextMenu" -->
     <button
       :aria-label="'Комунікація з ' + getName(props.conversation)"
       tabindex="0"
@@ -139,7 +140,6 @@ const lastMessageText = computed(() => {
       :class="{
         'bg-app-bg': isActive,
       }"
-      @contextmenu.prevent="handleShowContextMenu"
       @click="
         () => {
           handleRemoveUnread();

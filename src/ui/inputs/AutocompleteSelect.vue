@@ -240,11 +240,16 @@ const closeDropdown = (event?: MouseEvent) => {
     return;
   }
 
+  const target = event.target as Node;
+
   // Don't close if clicking inside the select element
-  if (selectElement.value?.contains(event.target as Node)) return;
+  if (selectElement.value?.contains(target)) return;
 
   // Don't close if clicking inside the dropdown menu
-  if (dropdownMenu.value?.contains(event.target as Node)) return;
+  if (dropdownMenu.value?.contains(target)) return;
+
+  const closestDropdown = (target as Element).closest?.(".z-50");
+  if (closestDropdown === dropdownMenu.value) return;
 
   isOpen.value = false;
   highlightedIndex.value = -1;
@@ -395,13 +400,13 @@ const debouncedUpdateDropdownPosition = () => {
 };
 
 onMounted(() => {
-  document.addEventListener("click", closeDropdown);
+  document.addEventListener("click", closeDropdown, true);
   window.addEventListener("scroll", debouncedUpdateDropdownPosition, true);
   window.addEventListener("resize", debouncedUpdateDropdownPosition);
 });
 
 onUnmounted(() => {
-  document.removeEventListener("click", closeDropdown);
+  document.removeEventListener("click", closeDropdown, true);
   window.removeEventListener("scroll", debouncedUpdateDropdownPosition, true);
   window.removeEventListener("resize", debouncedUpdateDropdownPosition);
 });
@@ -416,6 +421,12 @@ watch(isOpen, (value) => {
 
 watch(filteredOptions, () => {
   highlightedIndex.value = -1;
+});
+
+watch(modelValue, () => {
+  if (!isOpen.value) {
+    searchQuery.value = displayValue.value;
+  }
 });
 </script>
 
