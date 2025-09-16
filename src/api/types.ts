@@ -260,13 +260,18 @@ export interface ApiMessageItem {
   type_id: number;
   user_id: number;
   lead_id: number | null;
+  lead_contact_id: number | null;
   client_id: number | null;
+  client_contact_id: number | null;
+  supplier_id: number | null;
+  supplier_contact_id: number | null;
   chaport_message_id: number | null;
   call_id: number | null;
   echat_message_id: number | null;
   created_at: string;
   lead: ApiCommunicationLead | null;
   client: ApiCommunicationClient | null;
+  supplier: ApiCommunicationSupplier | null;
   type: ApiMessageType;
   user: ApiMessageItemUser;
   call: ApiCommunicationCallInfo | null;

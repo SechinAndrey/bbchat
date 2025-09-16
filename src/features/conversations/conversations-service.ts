@@ -7,6 +7,7 @@ import type {
   ApiCommunicationSuppliersResponse,
   ApiCommunicationEntityFull,
   ApiMessagesResponse,
+  ApiMessageItem,
   CreateLeadRequest,
   UpdateLeadRequest,
 } from "@src/api/types";
@@ -280,6 +281,18 @@ export class ConversationsService {
     } catch (error) {
       console.error("Error changing lead status:", error);
       throw new Error("Failed to change lead status");
+    }
+  }
+
+  async getCommunicationItemById(id: number): Promise<ApiMessageItem> {
+    try {
+      const response = await apiClient.get<ApiMessageItem>(
+        `/communications/messages/${id}`,
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching communication item by ID:", error);
+      throw new Error("Failed to fetch communication item");
     }
   }
 }

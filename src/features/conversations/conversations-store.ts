@@ -258,6 +258,7 @@ export const useConversationsStore = defineStore("conversations", () => {
       page: nextPage,
     });
   };
+
   const fetchMessages = async (
     entity: EntityType,
     id: number,
@@ -430,7 +431,8 @@ export const useConversationsStore = defineStore("conversations", () => {
   };
 
   const addMessageToConversation = (message: ApiMessageItem) => {
-    const conversationId = message.client_id || message.lead_id;
+    const conversationId =
+      message.client_id || message.lead_id || message.supplier_id;
 
     if (
       activeConversationInfo.value &&
@@ -451,9 +453,24 @@ export const useConversationsStore = defineStore("conversations", () => {
 
   // Initialize Pusher
   const { bindEvent } = usePusher();
-  bindEvent("e-chat-notification", "new-message", (data) => {
-    addMessageToConversation(data);
-  });
+  bindEvent(
+    "e-chat-notification",
+    "new-message",
+    async (data: { id: number }) => {
+      try {
+        const communicationItem =
+          await conversationsService.getCommunicationItemById(data.id);
+        console.log("Fetched communication item:", communicationItem);
+
+        addMessageToConversation(communicationItem);
+      } catch (error) {
+        console.error(
+          "Error fetching communication item from Pusher event:",
+          error,
+        );
+      }
+    },
+  );
 
   const initializeRouteWatchers = () => {
     watch(
