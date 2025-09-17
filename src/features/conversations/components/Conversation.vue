@@ -243,14 +243,11 @@ const lastMessageText = computed(() => {
             </p>
           </div>
 
-          <div v-if="props.conversation.unread">
-            <div
-              class="w-[1.125rem] h-[1.125rem] flex justify-center items-center rounded-[50%] bg-primary"
-            >
-              <p class="text-white">
-                {{ props.conversation.unread }}
-              </p>
-            </div>
+          <div
+            v-if="props.conversation.unread"
+            class="text-white bg-primary flex items-center justify-center text-xs font-medium min-w-[1.25rem] h-5 px-1.5 rounded-full"
+          >
+            {{ props.conversation.unread }}
           </div>
         </div>
       </div>
