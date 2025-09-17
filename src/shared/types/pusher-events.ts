@@ -1,4 +1,4 @@
-import type { ApiMessageItem } from "@src/api/types";
+import type { EntityType } from "@src/shared/types/common";
 
 /**
  * A map of all Pusher channels and the events they can receive.
@@ -7,7 +7,16 @@ import type { ApiMessageItem } from "@src/api/types";
  */
 export interface PusherEventMap {
   "e-chat-notification": {
-    "new-message": ApiMessageItem;
+    "new-message": {
+      /** message ID */
+      id: number;
+      /** contact ID */
+      contragent_contact_id: number | null;
+      /** entity ID */
+      contragent_id: number | null;
+      /** entity type: leads, clients, suppliers */
+      contragent_type: EntityType | null;
+    };
   };
 
   // "another-channel": {

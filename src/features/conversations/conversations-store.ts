@@ -110,6 +110,32 @@ export const useConversationsStore = defineStore("conversations", () => {
     return [...leads.value, ...clients.value, ...suppliers.value];
   });
 
+  // Current conversation item based on route params
+  const currentConversationsItem = computed(() => {
+    const { entity, id, contactId } = route.params;
+
+    if (!entity || !id || !contactId) return null;
+
+    const entityType = entity as EntityType;
+    const conversationId = Number(id);
+    const contactIdNum = Number(contactId);
+
+    const config = ENTITY_STORE_CONFIG[entityType];
+    if (!config) return null;
+
+    const conversation = config.dataRef.value.find(
+      (item) => item.id === conversationId,
+    );
+
+    if (!conversation) return null;
+
+    const contact = conversation.contacts?.find(
+      (contact) => contact.id === contactIdNum,
+    );
+
+    return contact ? { conversation, contact, entity: entityType } : null;
+  });
+
   const fetchEntityCommunications = async (
     entity: EntityType,
     params?: GetCommunicationsParams,
@@ -430,39 +456,153 @@ export const useConversationsStore = defineStore("conversations", () => {
     return fetchEntityCommunications(entity, filters.value);
   };
 
-  const addMessageToConversation = (message: ApiMessageItem) => {
-    const conversationId =
-      message.client_id || message.lead_id || message.supplier_id;
+  const findConversationInLists = (
+    entityType: EntityType,
+    entityId: number,
+  ): { conversation: IConversation; listRef: typeof leads } | null => {
+    const config = ENTITY_STORE_CONFIG[entityType];
+    if (!config) return null;
 
+    const conversation = config.dataRef.value.find(
+      (item) => item.id === entityId,
+    );
+
+    return conversation ? { conversation, listRef: config.dataRef } : null;
+  };
+
+  const moveConversationToTop = (
+    listRef: typeof leads,
+    conversationId: number,
+  ) => {
+    const index = listRef.value.findIndex((item) => item.id === conversationId);
+    if (index > 0) {
+      const conversation = listRef.value.splice(index, 1)[0];
+      listRef.value.unshift(conversation);
+    }
+  };
+
+  const updateUnreadCount = (conversation: IConversation, increment = 1) => {
+    conversation.unread = (conversation.unread || 0) + increment;
+  };
+
+  const loadMissingConversation = async (
+    entityType: EntityType,
+    entityId: number,
+    contactId: number,
+  ): Promise<IConversation | null> => {
+    try {
+      const conversationInfo =
+        await conversationsService.getCommunicationContactInfo(
+          entityType,
+          entityId,
+          contactId,
+        );
+
+      const adaptedConversation = adaptApiCommunicationToIConversation({
+        ...conversationInfo,
+        entity: entityType,
+      } as any);
+
+      const config = ENTITY_STORE_CONFIG[entityType];
+      if (config) {
+        config.dataRef.value.unshift(adaptedConversation);
+        return adaptedConversation;
+      }
+
+      return null;
+    } catch (error) {
+      console.error("Error loading missing conversation:", error);
+      return null;
+    }
+  };
+
+  const addMessageToConversation = async (message: ApiMessageItem) => {
+    const entityId =
+      message.client_id || message.lead_id || message.supplier_id;
+    const contactId =
+      message.client_contact_id ||
+      message.lead_contact_id ||
+      message.supplier_contact_id;
+
+    if (!entityId || !contactId) {
+      console.warn("Message missing entity or contact ID:", message);
+      return;
+    }
+
+    let entityType: EntityType;
+    if (message.client_id) entityType = "clients";
+    else if (message.lead_id) entityType = "leads";
+    else if (message.supplier_id) entityType = "suppliers";
+    else {
+      console.warn("Unknown entity type for message:", message);
+      return;
+    }
+
+    // 1. if current chat is open
     if (
       activeConversationInfo.value &&
-      activeConversationInfo.value.id === conversationId
+      activeConversationInfo.value.id === entityId
     ) {
       if (!activeConversationInfo.value.messages) {
         activeConversationInfo.value.messages = [];
       }
       activeConversationInfo.value.messages.unshift(message);
-    } else {
-      //  todo:
-      //  * find conversation in list
-      //  * or fetch it if not loaded
-      //  * lift conversation to top of list
-      //  * add message to conversation, update new message count
+
+      const found = findConversationInLists(entityType, entityId);
+      if (found) {
+        updateUnreadCount(found.conversation);
+        moveConversationToTop(found.listRef, entityId);
+      }
+      return;
+    }
+
+    // 2. if chat is in the list
+    const found = findConversationInLists(entityType, entityId);
+    if (found) {
+      updateUnreadCount(found.conversation);
+      moveConversationToTop(found.listRef, entityId);
+      return;
+    }
+
+    // 3. load missing conversation
+    const loadedConversation = await loadMissingConversation(
+      entityType,
+      entityId,
+      contactId,
+    );
+
+    if (loadedConversation) {
+      updateUnreadCount(loadedConversation);
+      console.log(
+        `Loaded missing conversation for ${entityType}:${entityId}`,
+        loadedConversation,
+      );
     }
   };
 
-  // Initialize Pusher
+  const resetUnreadCount = (entityType: EntityType, entityId: number) => {
+    const found = findConversationInLists(entityType, entityId);
+    if (found) {
+      found.conversation.unread = 0;
+    }
+  };
+
   const { bindEvent } = usePusher();
   bindEvent(
     "e-chat-notification",
     "new-message",
-    async (data: { id: number }) => {
+    async (data: {
+      id: number;
+      contragent_contact_id: number | null;
+      contragent_id: number | null;
+      contragent_type: EntityType | null;
+    }) => {
       try {
         const communicationItem =
           await conversationsService.getCommunicationItemById(data.id);
         console.log("Fetched communication item:", communicationItem);
 
-        addMessageToConversation(communicationItem);
+        await addMessageToConversation(communicationItem);
       } catch (error) {
         console.error(
           "Error fetching communication item from Pusher event:",
@@ -560,6 +700,7 @@ export const useConversationsStore = defineStore("conversations", () => {
     hasMore,
     hasMoreMessages,
     allCommunications,
+    currentConversationsItem,
 
     // Actions
     fetchCommunications,
@@ -580,6 +721,7 @@ export const useConversationsStore = defineStore("conversations", () => {
     updateConversation,
     changeStatus,
     updateLead,
+    resetUnreadCount,
 
     initializeRouteWatchers,
   };

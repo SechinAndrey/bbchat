@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Ref } from "vue";
 import useStore from "@src/shared/store/store";
-import { ref, inject, computed, nextTick } from "vue";
+import { ref, nextTick } from "vue";
 
 import {
   FaceSmileIcon,
@@ -14,19 +14,11 @@ import Button from "@src/ui/inputs/Button.vue";
 import ScaleTransition from "@src/ui/transitions/ScaleTransition.vue";
 import EmojiPicker from "@src/ui/inputs/EmojiPicker/EmojiPicker.vue";
 import Textarea from "@src/ui/inputs/Textarea.vue";
-import conversationsService from "@src/features/conversations/conversations-service";
-import useConversationsStore from "@src/features/conversations/conversations-store";
 import Select from "@src/ui/inputs/Select.vue";
-import type { EntityType } from "@src/shared/types/common";
+import { useMessageSending } from "@src/features/chat/composables/useMessageSending";
 
 const store = useStore();
-const conversationsStore = useConversationsStore();
-
-const entity = inject<Ref<EntityType>>("entity");
-const id = inject<Ref<number>>("id");
-const contragent_type = computed(() => {
-  return entity?.value === "leads" ? "lead" : "client";
-});
+const { sendTextMessage } = useMessageSending();
 
 // the content of the message.
 const value: Ref<string> = ref("");
@@ -85,15 +77,13 @@ async function sendMessage() {
   if (!value.value.trim()) {
     return;
   }
-  await conversationsService.sendMessage({
-    phone: conversationsStore.activeConversationInfo?.phone || "",
-    message: value.value,
-    file_url: "",
-    messenger_id: messengerId.value,
-    contragent_type: contragent_type.value,
-    contragent_id: id?.value || 0,
-  });
-  value.value = "";
+
+  try {
+    await sendTextMessage(value.value, messengerId.value);
+    value.value = "";
+  } catch (error) {
+    console.error("Error sending message:", error);
+  }
 }
 </script>
 

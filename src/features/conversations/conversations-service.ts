@@ -295,6 +295,22 @@ export class ConversationsService {
       throw new Error("Failed to fetch communication item");
     }
   }
+
+  async getCommunicationContactInfo(
+    entity: EntityType,
+    entityId: number,
+    contactId: number,
+  ): Promise<ApiCommunicationEntityFull> {
+    try {
+      const response = await apiClient.get<ApiCommunicationEntityFull>(
+        `/communications/${entity}/${entityId}/contacts/${contactId}/info`,
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching communication contact info:", error);
+      throw new Error("Failed to fetch communication contact info");
+    }
+  }
 }
 
 export const conversationsService = new ConversationsService();

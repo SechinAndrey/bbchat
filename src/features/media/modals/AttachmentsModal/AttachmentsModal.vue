@@ -1,19 +1,13 @@
 <script setup lang="ts">
-import { ref, computed, inject, type Ref } from "vue";
+import { ref, computed } from "vue";
 import type { IAttachment } from "@src/shared/types/types";
-import {
-  ApiCommunicationLeadFull,
-  ApiCommunicationClientFull,
-} from "@src/api/types";
 
 import Attachment from "@src/features/media/modals/AttachmentsModal/Attachment.vue";
 import Button from "@src/ui/inputs/Button.vue";
 import TextInput from "@src/ui/inputs/TextInput.vue";
 import Modal from "@src/ui/modals/Modal.vue";
 import ScrollBox from "@src/ui/utils/ScrollBox.vue";
-import conversationsService from "@src/features/conversations/conversations-service";
-import useConversationsStore from "@src/features/conversations/conversations-store";
-import type { EntityType } from "@src/shared/types/common";
+import { useMessageSending } from "@src/features/chat/composables/useMessageSending";
 
 const props = defineProps<{
   messengerId: number;
@@ -21,19 +15,7 @@ const props = defineProps<{
   closeModal: () => void;
 }>();
 
-const entity = inject<Ref<EntityType>>("entity");
-const id = inject<Ref<number>>("id");
-const contragent_type = computed(() => {
-  return entity?.value === "leads" ? "lead" : "client";
-});
-
-const conversationsStore = useConversationsStore();
-
-const activeConversationInfo = computed<
-  ApiCommunicationLeadFull | ApiCommunicationClientFull | null
->(() => {
-  return conversationsStore.activeConversationInfo;
-});
+const { sendMessageWithFile } = useMessageSending();
 
 const emit = defineEmits<{
   send: [attachments: IAttachment[], caption: string];
@@ -130,18 +112,16 @@ async function sendMessage() {
     return;
   }
 
-  const response = await conversationsService.uploadFile(attachments.value[0]);
-
-  await conversationsService.sendMessage({
-    phone: activeConversationInfo?.value?.phone || "",
-    message: caption.value,
-    file_url: response,
-    messenger_id: props.messengerId,
-    contragent_type: contragent_type.value,
-    contragent_id: id?.value || 0,
-  });
-
-  clean();
+  try {
+    await sendMessageWithFile(
+      attachments.value[0],
+      caption.value,
+      props.messengerId,
+    );
+    clean();
+  } catch (error) {
+    console.error("Error sending message with attachment:", error);
+  }
 }
 
 const handleDrop = (event: DragEvent) => {
