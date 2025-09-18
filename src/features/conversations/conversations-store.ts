@@ -640,6 +640,18 @@ export const useConversationsStore = defineStore("conversations", () => {
     );
   };
 
+  const playNotificationSound = () => {
+    try {
+      const audio = new Audio("/sound/new-message.mp3");
+      audio.currentTime = 0;
+      audio.play().catch((error) => {
+        console.warn("Audio play was prevented:", error);
+      });
+    } catch (error) {
+      console.warn("Error playing notification sound:", error);
+    }
+  };
+
   const { bindEvent } = usePusher();
   bindEvent(
     "e-chat-notification",
@@ -656,6 +668,8 @@ export const useConversationsStore = defineStore("conversations", () => {
         console.log("Fetched communication item:", communicationItem);
 
         await addMessageToConversation(communicationItem);
+
+        playNotificationSound();
       } catch (error) {
         console.error(
           "Error fetching communication item from Pusher event:",
