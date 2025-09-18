@@ -587,6 +587,59 @@ export const useConversationsStore = defineStore("conversations", () => {
     }
   };
 
+  const lastReadMessageIds = ref<Record<string, number>>({});
+
+  const getConversationKey = (
+    entityType: EntityType,
+    entityId: number,
+    contactId: number,
+  ) => {
+    return `${entityType}-${entityId}-${contactId}`;
+  };
+
+  const markMessagesAsRead = (
+    entityType: EntityType,
+    entityId: number,
+    contactId: number,
+  ) => {
+    const conversationKey = getConversationKey(entityType, entityId, contactId);
+
+    if (
+      activeConversationInfo.value?.messages &&
+      activeConversationInfo.value.messages.length > 0
+    ) {
+      const latestMessage = activeConversationInfo.value.messages[0];
+      lastReadMessageIds.value[conversationKey] = latestMessage.id;
+    }
+
+    resetUnreadCount(entityType, entityId);
+  };
+
+  const getLastReadMessageId = (
+    entityType: EntityType,
+    entityId: number,
+    contactId: number,
+  ): number | null => {
+    const conversationKey = getConversationKey(entityType, entityId, contactId);
+    return lastReadMessageIds.value[conversationKey] || null;
+  };
+
+  const hasUnreadMessages = (
+    entityType: EntityType,
+    entityId: number,
+    contactId: number,
+  ): boolean => {
+    const lastReadId = getLastReadMessageId(entityType, entityId, contactId);
+
+    if (!lastReadId || !activeConversationInfo.value?.messages) {
+      return false;
+    }
+
+    return activeConversationInfo.value.messages.some(
+      (message) => message.id > lastReadId,
+    );
+  };
+
   const { bindEvent } = usePusher();
   bindEvent(
     "e-chat-notification",
@@ -722,6 +775,9 @@ export const useConversationsStore = defineStore("conversations", () => {
     changeStatus,
     updateLead,
     resetUnreadCount,
+    markMessagesAsRead,
+    getLastReadMessageId,
+    hasUnreadMessages,
 
     initializeRouteWatchers,
   };

@@ -382,6 +382,47 @@ export const formatSeconds = (seconds: number): string => {
 };
 
 /**
+ * Format message date for timeline dividers - shows "Сьогодні", "Вчора" or formatted date
+ * @param dateInput - The date to format
+ * @param locale - The locale to use
+ * @returns Formatted date string for message timeline
+ */
+export const formatMessageDate = (
+  dateInput: Date | string | number | undefined | null,
+  locale: string = "uk-UA",
+): string => {
+  if (!dateInput) {
+    return "";
+  }
+
+  const date = new Date(dateInput);
+  if (isNaN(date.getTime())) {
+    return "";
+  }
+
+  const today = new Date();
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+
+  if (date.toDateString() === today.toDateString()) {
+    return "Сьогодні";
+  } else if (date.toDateString() === yesterday.toDateString()) {
+    return "Вчора";
+  } else {
+    return formatDate(
+      dateInput,
+      {
+        day: "numeric",
+        month: "long",
+        year:
+          date.getFullYear() !== today.getFullYear() ? "numeric" : undefined,
+      },
+      locale,
+    );
+  }
+};
+
+/**
  * Extract validation errors from API error response
  * @param error - Axios error object
  * @returns A formatted string with all validation errors

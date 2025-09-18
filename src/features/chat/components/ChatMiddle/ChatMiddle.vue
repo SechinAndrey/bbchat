@@ -7,12 +7,14 @@ import { useRoute } from "vue-router";
 
 import useStore from "@src/shared/store/store";
 import MessageV2 from "@src/features/chat/components/ChatMiddle/Message/MessageV2.vue";
+import NewMessagesDivider from "@src/features/chat/components/ChatMiddle/NewMessagesDivider.vue";
 import SimpleMediaModal from "@src/ui/data-display/SimpleMediaModal.vue";
 import { isImage } from "@src/shared/utils/media";
 import { useConversationsStore } from "@src/features/conversations/conversations-store";
 import Spinner from "@src/ui/states/loading-states/Spinner.vue";
 import NoChatSelected from "@src/ui/states/empty-states/NoChatSelected.vue";
 import type { EntityType } from "@src/shared/types/common";
+import TimelineDivider from "@src/features/chat/components/ChatMiddle/TimelineDivider.vue";
 
 const store = useStore();
 const conversationsStore = useConversationsStore();
@@ -24,6 +26,52 @@ const currentEntity = computed(() => route.params.entity as EntityType);
 const currentId = computed(() => Number(route.params.id));
 const currentContactId = computed(() => Number(route.params.contactId));
 const isLoadingMore = ref(false);
+
+const getMessageDate = (dateString: string): string => {
+  return new Date(dateString).toDateString();
+};
+
+const shouldShowTimelineDivider = (
+  currentMessage: any,
+  olderMessage?: any,
+): boolean => {
+  if (!olderMessage) return false;
+
+  const currentDate = getMessageDate(currentMessage.created_at);
+  const olderDate = getMessageDate(olderMessage.created_at);
+
+  return currentDate !== olderDate;
+};
+
+const shouldShowFirstMessageDivider = (messageIndex: number): boolean => {
+  const messages = conversationsStore.activeConversationInfo?.messages;
+  if (!messages || messages.length === 0) return false;
+
+  return messageIndex === messages.length - 1;
+};
+
+const currentConversation = computed(() => {
+  if (!currentEntity.value || !currentId.value) return null;
+
+  const config = {
+    leads: conversationsStore.leads,
+    clients: conversationsStore.clients,
+    suppliers: conversationsStore.suppliers,
+  }[currentEntity.value];
+
+  return config?.find((conv) => conv.id === currentId.value) || null;
+});
+
+const unreadCount = computed(() => {
+  return currentConversation.value?.unread || 0;
+});
+
+const shouldShowDividerAfterMessage = (messageIndex: number) => {
+  const messages = conversationsStore.activeConversationInfo?.messages;
+  if (!messages || unreadCount.value === 0) return false;
+  const shouldShow = messageIndex === unreadCount.value - 1;
+  return shouldShow;
+};
 
 useInfiniteScroll(
   container,
@@ -156,10 +204,26 @@ watch(
       class="flex flex-col-reverse"
     >
       <div
-        v-for="message in conversationsStore.activeConversationInfo.messages"
+        v-for="(message, index) in conversationsStore.activeConversationInfo
+          .messages"
         :key="message.id"
       >
-        <!-- <TimelineDivider v-if="renderDivider(index, index - 1)" /> -->
+        <NewMessagesDivider v-if="shouldShowDividerAfterMessage(index)" />
+
+        <TimelineDivider
+          v-if="
+            shouldShowTimelineDivider(
+              message,
+              conversationsStore.activeConversationInfo.messages[index + 1],
+            )
+          "
+          :date="message.created_at"
+        />
+
+        <TimelineDivider
+          v-if="shouldShowFirstMessageDivider(index)"
+          :date="message.created_at"
+        />
 
         <MessageV2 :message="message" @open-image-gallery="openImageGallery" />
       </div>

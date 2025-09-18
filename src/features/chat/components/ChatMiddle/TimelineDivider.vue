@@ -1,13 +1,27 @@
+<script setup lang="ts">
+import { computed } from "vue";
+import { formatMessageDate } from "@src/shared/utils/utils";
+
+interface Props {
+  date: string | Date;
+}
+
+const props = defineProps<Props>();
+
+const formattedDate = computed(() => formatMessageDate(props.date));
+</script>
+
 <template>
-  <div class="w-full my-7 flex items-center justify-center">
+  <div class="relative flex items-center justify-center my-3 px-4">
     <div
-      class="w-full h-0 border-t border-dashed dark:border-gray-600 dark:bg-opacity-0"
+      class="absolute inset-x-4 h-px border-t border-dashed border-app-divider"
     ></div>
-
-    <p class="mx-5">Today</p>
-
     <div
-      class="w-full h-0 border-t border-dashed dark:border-gray-600 dark:bg-opacity-0"
-    ></div>
+      class="relative flex items-center gap-2 px-3 py-1 bg-app-bg border border-app-border rounded-lg"
+    >
+      <span class="font-medium text-app-text-secondary text-[0.75rem]">
+        {{ formattedDate }}
+      </span>
+    </div>
   </div>
 </template>
