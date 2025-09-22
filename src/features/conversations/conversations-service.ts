@@ -2,9 +2,6 @@ import apiClient from "@src/api/axios-instance";
 import type {
   ApiCommunicationResponse,
   ApiCommunicationEntityResponse,
-  ApiCommunicationLeadsResponse,
-  ApiCommunicationClientsResponse,
-  ApiCommunicationSuppliersResponse,
   ApiCommunicationEntityFull,
   ApiMessagesResponse,
   ApiMessageItem,
@@ -15,14 +12,14 @@ import type {
 import type { IAttachment } from "@src/shared/types/types";
 import type { EntityType } from "@src/shared/types/common";
 
-export interface GetCommunicationsParams {
+export interface ConversationParams {
   page?: number;
   search?: string;
   user_id?: number;
   communication_status_id?: number;
 }
 
-export interface GetMessagesParams {
+export interface MessageParams {
   page?: number;
   search?: string;
 }
@@ -39,57 +36,51 @@ export interface SendMessageParams {
 interface EntityConfig {
   apiPath: string;
   contactsPath: string;
-  responseKey: EntityType;
 }
 
 const ENTITY_CONFIGS: Record<EntityType, EntityConfig> = {
   leads: {
     apiPath: "/communications/leads",
     contactsPath: "/communications/leads/contacts",
-    responseKey: "leads",
   },
   clients: {
     apiPath: "/communications/clients",
     contactsPath: "/communications/clients/contacts",
-    responseKey: "clients",
   },
   suppliers: {
     apiPath: "/communications/suppliers",
     contactsPath: "/communications/suppliers/contacts",
-    responseKey: "suppliers",
   },
 };
 
 export class ConversationsService {
-  async fetchEntityCommunications<T extends ApiCommunicationEntityResponse>(
+  /**
+   * Get conversations for specific entity type
+   * @example await service.getConversations('leads', { page: 1, search: 'john' })
+   */
+  async getConversations(
     entity: EntityType,
-    params?: GetCommunicationsParams,
-  ): Promise<T> {
+    params?: ConversationParams,
+  ): Promise<ApiCommunicationEntityResponse> {
     try {
       const config = ENTITY_CONFIGS[entity];
-      const response = await apiClient.get<T>(config.apiPath, { params });
+      const response = await apiClient.get<ApiCommunicationEntityResponse>(
+        config.contactsPath,
+        { params },
+      );
       return response.data;
     } catch (error) {
-      console.error(`Error fetching communications ${entity}:`, error);
-      throw new Error(`Failed to fetch communications ${entity}`);
+      console.error(`❌ Failed to fetch ${entity} conversations:`, error);
+      throw new Error(`Failed to fetch ${entity} conversations`);
     }
   }
 
-  async fetchEntityContactsConversations<
-    T extends ApiCommunicationEntityResponse,
-  >(entity: EntityType, params?: GetCommunicationsParams): Promise<T> {
-    try {
-      const config = ENTITY_CONFIGS[entity];
-      const response = await apiClient.get<T>(config.contactsPath, { params });
-      return response.data;
-    } catch (error) {
-      console.error(`Error fetching ${entity} contacts conversations:`, error);
-      throw new Error(`Failed to fetch ${entity} contacts conversations`);
-    }
-  }
-
-  async getCommunications(
-    params?: GetCommunicationsParams,
+  /**
+   * Get all conversations (leads + clients + suppliers)
+   * @example await service.getAllConversations({ page: 1 })
+   */
+  async getAllConversations(
+    params?: ConversationParams,
   ): Promise<ApiCommunicationResponse> {
     try {
       const response = await apiClient.get<ApiCommunicationResponse>(
@@ -98,86 +89,16 @@ export class ConversationsService {
       );
       return response.data;
     } catch (error) {
-      console.error("Error fetching communications:", error);
-      throw new Error("Failed to fetch communications");
+      console.error("❌ Failed to fetch all conversations:", error);
+      throw new Error("Failed to fetch all conversations");
     }
   }
 
-  async getCommunicationsLeads(
-    params?: GetCommunicationsParams,
-  ): Promise<ApiCommunicationLeadsResponse> {
-    return this.fetchEntityCommunications<ApiCommunicationLeadsResponse>(
-      "leads",
-      params,
-    );
-  }
-
-  async getLeadsContactsConversations(
-    params?: GetCommunicationsParams,
-  ): Promise<ApiCommunicationLeadsResponse> {
-    return this.fetchEntityContactsConversations<ApiCommunicationLeadsResponse>(
-      "leads",
-      params,
-    );
-  }
-
-  async getCommunicationsClients(
-    params?: GetCommunicationsParams,
-  ): Promise<ApiCommunicationClientsResponse> {
-    return this.fetchEntityCommunications<ApiCommunicationClientsResponse>(
-      "clients",
-      params,
-    );
-  }
-
-  async getClientsContactsConversations(
-    params?: GetCommunicationsParams,
-  ): Promise<ApiCommunicationClientsResponse> {
-    return this.fetchEntityContactsConversations<ApiCommunicationClientsResponse>(
-      "clients",
-      params,
-    );
-  }
-
-  async getCommunicationsSuppliers(
-    params?: GetCommunicationsParams,
-  ): Promise<ApiCommunicationSuppliersResponse> {
-    return this.fetchEntityCommunications<ApiCommunicationSuppliersResponse>(
-      "suppliers",
-      params,
-    );
-  }
-
-  async getSuppliersContactsConversations(
-    params?: GetCommunicationsParams,
-  ): Promise<ApiCommunicationSuppliersResponse> {
-    return this.fetchEntityContactsConversations<ApiCommunicationSuppliersResponse>(
-      "suppliers",
-      params,
-    );
-  }
-
-  async getCommunicationMessages(
-    entity: EntityType,
-    id: number,
-    contactId: number,
-    params?: GetMessagesParams,
-  ): Promise<ApiMessagesResponse> {
-    try {
-      const response = await apiClient.get<ApiMessagesResponse>(
-        `/communications/${entity}/${id}/contacts/${contactId}`,
-        {
-          params,
-        },
-      );
-      return response.data;
-    } catch (error) {
-      console.error("Error fetching communication messages:", error);
-      throw new Error("Failed to fetch communication messages");
-    }
-  }
-
-  async getCommunicationEntityById<T extends ApiCommunicationEntityFull>(
+  /**
+   * Get conversation details by ID
+   * @example await service.getConversationById('leads', 123)
+   */
+  async getConversationById<T extends ApiCommunicationEntityFull>(
     entity: EntityType,
     id: number,
   ): Promise<T> {
@@ -185,24 +106,86 @@ export class ConversationsService {
       const response = await apiClient.get<T>(`/${entity}/${id}`);
       return response.data;
     } catch (error) {
-      const entitySingular = entity.slice(0, -1);
-      console.error(
-        `Error fetching communication ${entitySingular} by ID:`,
-        error,
-      );
-      throw new Error(`Failed to fetch communication ${entitySingular}`);
+      console.error(`❌ Failed to fetch ${entity.slice(0, -1)} ${id}:`, error);
+      throw new Error(`Failed to fetch ${entity.slice(0, -1)} ${id}`);
     }
   }
 
-  async sendMessage(message: SendMessageParams): Promise<void> {
+  /**
+   * Get conversation contact info (for missing conversations)
+   * @example await service.getConversationContactInfo('leads', 123, 456)
+   */
+  async getConversationContactInfo(
+    entity: EntityType,
+    entityId: number,
+    contactId: number,
+  ): Promise<ApiCommunicationEntityFull> {
     try {
-      await apiClient.post("/e-chat/dialogs/messages", message);
+      const response = await apiClient.get<ApiCommunicationEntityFull>(
+        `/communications/${entity}/${entityId}/contacts/${contactId}/info`,
+      );
+      return response.data;
     } catch (error) {
-      console.error("Error sending message:", error);
+      console.error("❌ Failed to fetch conversation contact info:", error);
+      throw new Error("Failed to fetch conversation contact info");
+    }
+  }
+
+  /**
+   * Get messages for a conversation
+   * @example await service.getMessages('leads', 123, 456, { page: 1 })
+   */
+  async getMessages(
+    entity: EntityType,
+    id: number,
+    contactId: number,
+    params?: MessageParams,
+  ): Promise<ApiMessagesResponse> {
+    try {
+      const response = await apiClient.get<ApiMessagesResponse>(
+        `/communications/${entity}/${id}/contacts/${contactId}`,
+        { params },
+      );
+      return response.data;
+    } catch (error) {
+      console.error("❌ Failed to fetch messages:", error);
+      throw new Error("Failed to fetch messages");
+    }
+  }
+
+  /**
+   * Get message by ID (for Pusher events)
+   * @example await service.getMessageById(789)
+   */
+  async getMessageById(id: number): Promise<ApiMessageItem> {
+    try {
+      const response = await apiClient.get<ApiMessageItem>(
+        `/communications/messages/${id}`,
+      );
+      return response.data;
+    } catch (error) {
+      console.error("❌ Failed to fetch message by ID:", error);
+      throw new Error("Failed to fetch message by ID");
+    }
+  }
+
+  /**
+   * Send a message
+   * @example await service.sendMessage({ phone: '+123', message: 'Hello', ... })
+   */
+  async sendMessage(params: SendMessageParams): Promise<void> {
+    try {
+      await apiClient.post("/e-chat/dialogs/messages", params);
+    } catch (error) {
+      console.error("❌ Failed to send message:", error);
       throw new Error("Failed to send message");
     }
   }
 
+  /**
+   * Upload file for message
+   * @example const fileUrl = await service.uploadFile(attachment)
+   */
   async uploadFile(file: IAttachment): Promise<string> {
     const formData = new FormData();
     formData.append("file_for_message", file.file as Blob, file.name);
@@ -219,11 +202,32 @@ export class ConversationsService {
       );
       return response.data.file_url;
     } catch (error) {
-      console.error("Error uploading file:", error);
+      console.error("❌ Failed to upload file:", error);
       throw new Error("Failed to upload file");
     }
   }
 
+  /**
+   * Update conversation
+   * @example await service.updateConversation('leads', 123, { status_id: 2 })
+   */
+  async updateConversation(
+    entity: EntityType,
+    id: number,
+    data: Partial<ApiCommunicationEntityFull>,
+  ): Promise<void> {
+    try {
+      await apiClient.patch(`/communications/${entity}/${id}`, data);
+    } catch (error) {
+      console.error(`❌ Failed to update ${entity.slice(0, -1)}:`, error);
+      throw new Error(`Failed to update ${entity.slice(0, -1)}`);
+    }
+  }
+
+  /**
+   * Create new lead
+   * @example const lead = await service.createLead({ name: 'John', ... })
+   */
   async createLead(
     leadData: CreateLeadRequest,
   ): Promise<ApiCommunicationEntityFull> {
@@ -232,14 +236,17 @@ export class ConversationsService {
         "/leads",
         leadData,
       );
-      console.log("Lead created successfully:", response.data);
       return response.data;
     } catch (error) {
-      console.error("Error creating lead:", error);
+      console.error("❌ Failed to create lead:", error);
       throw new Error("Failed to create lead");
     }
   }
 
+  /**
+   * Update lead
+   * @example const lead = await service.updateLead(123, { name: 'John Updated' })
+   */
   async updateLead(
     id: number,
     leadData: UpdateLeadRequest,
@@ -249,70 +256,27 @@ export class ConversationsService {
         `/leads/${id}`,
         leadData,
       );
-      console.log("Lead updated successfully:", response.data);
       return response.data;
     } catch (error) {
-      console.error("Error updating lead:", error);
+      console.error("❌ Failed to update lead:", error);
       throw new Error("Failed to update lead");
     }
   }
 
-  async updateConversation(
-    entity: EntityType,
-    id: number,
-    data: Partial<ApiCommunicationEntityFull>,
-  ): Promise<void> {
+  /**
+   * Change lead status
+   * @example await service.changeLeadStatus(123, 2)
+   */
+  async changeLeadStatus(id: number, status: number): Promise<void> {
     try {
-      await apiClient.patch(`/communications/${entity}/${id}`, data);
-    } catch (error) {
-      console.error(
-        `Error updating communication ${entity.slice(0, -1)}:`,
-        error,
-      );
-      throw new Error(`Failed to update communication ${entity.slice(0, -1)}`);
-    }
-  }
-
-  async changeStatus(id: number, status: number) {
-    try {
-      return await apiClient.post(`/leads/${id}/change-status`, {
+      await apiClient.post(`/leads/${id}/change-status`, {
         new_status_id: status,
       });
     } catch (error) {
-      console.error("Error changing lead status:", error);
+      console.error("❌ Failed to change lead status:", error);
       throw new Error("Failed to change lead status");
     }
   }
-
-  async getCommunicationItemById(id: number): Promise<ApiMessageItem> {
-    try {
-      const response = await apiClient.get<ApiMessageItem>(
-        `/communications/messages/${id}`,
-      );
-      return response.data;
-    } catch (error) {
-      console.error("Error fetching communication item by ID:", error);
-      throw new Error("Failed to fetch communication item");
-    }
-  }
-
-  async getCommunicationContactInfo(
-    entity: EntityType,
-    entityId: number,
-    contactId: number,
-  ): Promise<ApiCommunicationEntityFull> {
-    try {
-      const response = await apiClient.get<ApiCommunicationEntityFull>(
-        `/communications/${entity}/${entityId}/contacts/${contactId}/info`,
-      );
-      return response.data;
-    } catch (error) {
-      console.error("Error fetching communication contact info:", error);
-      throw new Error("Failed to fetch communication contact info");
-    }
-  }
 }
-
 export const conversationsService = new ConversationsService();
-
 export default conversationsService;

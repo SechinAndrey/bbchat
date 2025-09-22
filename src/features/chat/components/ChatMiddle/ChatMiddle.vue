@@ -44,7 +44,7 @@ const shouldShowTimelineDivider = (
 };
 
 const shouldShowFirstMessageDivider = (messageIndex: number): boolean => {
-  const messages = conversationsStore.activeConversationInfo?.messages;
+  const messages = conversationsStore.activeConversation?.messages;
   if (!messages || messages.length === 0) return false;
 
   return messageIndex === messages.length - 1;
@@ -53,13 +53,10 @@ const shouldShowFirstMessageDivider = (messageIndex: number): boolean => {
 const currentConversation = computed(() => {
   if (!currentEntity.value || !currentId.value) return null;
 
-  const config = {
-    leads: conversationsStore.leads,
-    clients: conversationsStore.clients,
-    suppliers: conversationsStore.suppliers,
-  }[currentEntity.value];
-
-  return config?.find((conv) => conv.id === currentId.value) || null;
+  const conversations = conversationsStore.conversations[currentEntity.value];
+  return (
+    conversations?.find((conv: any) => conv.id === currentId.value) || null
+  );
 });
 
 const unreadCount = computed(() => {
@@ -67,7 +64,7 @@ const unreadCount = computed(() => {
 });
 
 const shouldShowDividerAfterMessage = (messageIndex: number) => {
-  const messages = conversationsStore.activeConversationInfo?.messages;
+  const messages = conversationsStore.activeConversation?.messages;
   if (!messages || unreadCount.value === 0) return false;
   const shouldShow = messageIndex === unreadCount.value - 1;
   return shouldShow;
@@ -128,8 +125,8 @@ const startingImageIndex = ref(0);
 const collectConversationImages = () => {
   const images: string[] = [];
 
-  if (conversationsStore.activeConversationInfo) {
-    for (const message of conversationsStore.activeConversationInfo.messages) {
+  if (conversationsStore.activeConversation) {
+    for (const message of conversationsStore.activeConversation.messages) {
       // Check echat messages for media
       if (message.echat_messages) {
         const echatMessage =
@@ -175,13 +172,13 @@ onMounted(() => {
 });
 
 watch(
-  () => conversationsStore.activeConversationInfo?.messages,
+  () => conversationsStore.activeConversation?.messages,
   () => {
     if (!isLoadingMore.value) {
       scrollToBottom();
     }
   },
-  { deep: true },
+  { immediate: true },
 );
 </script>
 
@@ -198,13 +195,13 @@ watch(
     <div
       v-if="
         store.status !== 'loading' &&
-        conversationsStore.activeConversationInfo?.messages &&
-        conversationsStore.activeConversationInfo.messages.length
+        conversationsStore.activeConversation?.messages &&
+        conversationsStore.activeConversation.messages.length
       "
       class="flex flex-col-reverse"
     >
       <div
-        v-for="(message, index) in conversationsStore.activeConversationInfo
+        v-for="(message, index) in conversationsStore.activeConversation
           .messages"
         :key="message.id"
       >
@@ -214,7 +211,7 @@ watch(
           v-if="
             shouldShowTimelineDivider(
               message,
-              conversationsStore.activeConversationInfo.messages[index + 1],
+              conversationsStore.activeConversation.messages[index + 1],
             )
           "
           :date="message.created_at"

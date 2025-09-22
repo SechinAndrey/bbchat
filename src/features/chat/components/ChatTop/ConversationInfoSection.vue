@@ -32,15 +32,10 @@ const handleCloseConversation = () => {
 
 const debouncedFn = useDebounceFn(() => {
   if (!entity?.value || !id?.value || !contactId?.value) return;
-  conversationsStore.fetchCommunicationMessages(
-    entity.value,
-    id.value,
-    contactId.value,
-    {
-      page: 1,
-      search: conversationsStore.messagesFilters.search,
-    },
-  );
+  conversationsStore.fetchMessages(entity.value, id.value, contactId.value, {
+    page: 1,
+    search: conversationsStore.messagesFilters.search,
+  });
 }, 500);
 
 const isLoading = ref(false);
@@ -71,11 +66,11 @@ const endConversation = async () => {
 };
 
 const title = computed(() => {
-  return conversationsStore.activeConversationInfo?.name || "Діалог";
+  return conversationsStore.activeConversation?.name || "Діалог";
 });
 
 const cityName = computed(() => {
-  const city = conversationsStore.activeConversationInfo?.cities?.at(0);
+  const city = conversationsStore.activeConversation?.cities?.at(0);
   return city?.name_new_ua || city?.name_ua || city?.name || "Невідоме місто";
 });
 
@@ -117,8 +112,8 @@ const openActionModal = (
           @click="store.rightSidebarOpen = !store.rightSidebarOpen"
         >
           <ConversationAvatar
-            v-if="conversationsStore.activeConversationInfo"
-            :conversation="conversationsStore.activeConversationInfo"
+            v-if="conversationsStore.activeConversation"
+            :conversation="conversationsStore.activeConversation"
             is-active
           />
         </button>

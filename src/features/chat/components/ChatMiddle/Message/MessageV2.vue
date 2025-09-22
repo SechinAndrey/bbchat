@@ -110,8 +110,8 @@ const formatMessageText = (text: string) => {
     :class="{ 'justify-end': isSelf }"
   >
     <ConversationAvatar
-      v-if="!isSelf && conversationsStore.activeConversationInfo"
-      :conversation="conversationsStore.activeConversationInfo"
+      v-if="!isSelf && conversationsStore.activeConversation"
+      :conversation="conversationsStore.activeConversation"
       is-active
     />
 

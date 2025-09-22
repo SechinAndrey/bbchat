@@ -32,14 +32,14 @@ conversationsStore.initializeRouteWatchers();
     <div class="h-full flex flex-col w-full scrollbar-hidden">
       <Spinner
         v-if="
-          (conversationsStore.isFetchingMessages &&
+          (conversationsStore.isLoadingMessages &&
             !conversationsStore.isLoadingMoreMessages) ||
-          conversationsStore.isFetchingActiveConversationInfo
+          conversationsStore.isLoadingConversation
         "
       />
 
       <div
-        v-else-if="conversationsStore.activeConversationInfo"
+        v-else-if="conversationsStore.activeConversation"
         class="h-full flex flex-col scrollbar-hidden"
       >
         <ChatTop />
@@ -51,7 +51,7 @@ conversationsStore.initializeRouteWatchers();
     </div>
 
     <RightSidebar
-      v-if="conversationsStore.activeConversationInfo && store.rightSidebarOpen"
+      v-if="conversationsStore.activeConversation && store.rightSidebarOpen"
       class="xs:absolute md:static"
       @close="store.rightSidebarOpen = false"
     />

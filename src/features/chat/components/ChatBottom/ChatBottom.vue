@@ -18,7 +18,7 @@ import Select from "@src/ui/inputs/Select.vue";
 import { useMessageSending } from "@src/features/chat/composables/useMessageSending";
 
 const store = useStore();
-const { sendTextMessage } = useMessageSending();
+const { sendMessage } = useMessageSending();
 
 // the content of the message.
 const value: Ref<string> = ref("");
@@ -73,13 +73,13 @@ const handleClickOutside = (event: Event) => {
   }
 };
 
-async function sendMessage() {
+async function handleSendMessage() {
   if (!value.value.trim()) {
     return;
   }
 
   try {
-    await sendTextMessage(value.value, messengerId.value);
+    await sendMessage(value.value, messengerId.value);
     value.value = "";
   } catch (error) {
     console.error("Error sending message:", error);
@@ -182,7 +182,7 @@ async function sendMessage() {
           icon-only
           title="Відправити повідомлення"
           aria-label="Відправити повідомлення"
-          @click="sendMessage"
+          @click="handleSendMessage"
         >
           <template #icon>
             <PaperAirplaneIcon />

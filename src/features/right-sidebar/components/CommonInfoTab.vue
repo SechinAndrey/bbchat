@@ -31,23 +31,23 @@ const isEditingComment = ref(false);
 const editCommentValue = ref("");
 const isSavingComment = ref(false);
 
-const activeConversationInfo = computed<
+const activeConversation = computed<
   | ApiCommunicationLeadFull
   | ApiCommunicationClientFull
   | ApiCommunicationSupplierFull
   | null
 >(() => {
-  return conversationsStore.activeConversationInfo;
+  return conversationsStore.activeConversation;
 });
 
 const entityType = computed(() => {
-  if (activeConversationInfo.value?.entity === "clients") return "client";
-  if (activeConversationInfo.value?.entity === "suppliers") return "supplier";
+  if (activeConversation.value?.entity === "clients") return "client";
+  if (activeConversation.value?.entity === "suppliers") return "supplier";
   return "lead";
 });
 
 const entityId = computed(() => {
-  return activeConversationInfo.value?.id || 0;
+  return activeConversation.value?.id || 0;
 });
 
 const openAddContactModal = () => {
@@ -63,7 +63,7 @@ const handleContactAdded = () => {
 };
 
 const startEditingComment = () => {
-  editCommentValue.value = activeConversationInfo.value?.comment || "";
+  editCommentValue.value = activeConversation.value?.comment || "";
   isEditingComment.value = true;
 };
 
@@ -73,31 +73,27 @@ const cancelEditingComment = () => {
 };
 
 const saveComment = async () => {
-  if (!activeConversationInfo.value || entity?.value !== "leads") return;
+  if (!activeConversation.value || entity?.value !== "leads") return;
 
   try {
     isSavingComment.value = true;
 
     const leadData = {
-      name: activeConversationInfo.value.name,
-      fio: activeConversationInfo.value.fio || undefined,
-      email: activeConversationInfo.value.email || undefined,
-      phone: activeConversationInfo.value.phone || undefined,
-      tg_name: activeConversationInfo.value.tg_name || undefined,
+      name: activeConversation.value.name,
+      fio: activeConversation.value.fio || undefined,
+      email: activeConversation.value.email || undefined,
+      phone: activeConversation.value.phone || undefined,
+      tg_name: activeConversation.value.tg_name || undefined,
       city:
-        activeConversationInfo.value.cities?.map((city) => city.id) ||
-        undefined,
+        activeConversation.value.cities?.map((city) => city.id) || undefined,
       comment: editCommentValue.value,
-      status_id: activeConversationInfo.value.status_id || undefined,
+      status_id: activeConversation.value.status_id || undefined,
     };
 
-    await conversationsStore.updateLead(
-      activeConversationInfo.value.id,
-      leadData,
-    );
+    await conversationsStore.updateLead(activeConversation.value.id, leadData);
 
-    if (activeConversationInfo.value) {
-      activeConversationInfo.value.comment = editCommentValue.value;
+    if (activeConversation.value) {
+      activeConversation.value.comment = editCommentValue.value;
     }
 
     isEditingComment.value = false;
@@ -110,7 +106,7 @@ const saveComment = async () => {
 
 const sourceInfo = computed(() => {
   try {
-    return JSON.parse(activeConversationInfo.value?.info || "{}");
+    return JSON.parse(activeConversation.value?.info || "{}");
   } catch (error) {
     console.error("Error parsing info:", error);
     return {};
@@ -123,7 +119,7 @@ const sourceInfo = computed(() => {
     <div class="mb-4 text-app-text-secondary text-[0.813rem]">Контакти</div>
 
     <div
-      v-for="contact in activeConversationInfo?.contacts"
+      v-for="contact in activeConversation?.contacts"
       :key="contact.id"
       class="last:mb-0 border-b border-t border-dashed border-app-border py-3"
       :class="{
@@ -151,9 +147,9 @@ const sourceInfo = computed(() => {
         <EnvelopeIcon class="w-5 h-5 text-primary flex-shrink-0" />
         <a
           class="text-[0.875rem] hover:underline underline-offset-4 truncate"
-          :href="`mailto:${activeConversationInfo?.email}`"
+          :href="`mailto:${activeConversation?.email}`"
         >
-          {{ activeConversationInfo?.email || "Не вказана" }}
+          {{ activeConversation?.email || "Не вказана" }}
         </a>
       </div>
     </div>
@@ -169,20 +165,19 @@ const sourceInfo = computed(() => {
 
     <div class="text-[0.875rem]">
       {{
-        formatConversationDate(activeConversationInfo?.created_at) ||
-        "Не вказано"
+        formatConversationDate(activeConversation?.created_at) || "Не вказано"
       }}
     </div>
 
     <div class="my-4 text-app-text-secondary text-[0.813rem]">Канал</div>
 
     <div class="text-[0.875rem]">
-      {{ activeConversationInfo?.channel || "Не вказано" }}
+      {{ activeConversation?.channel || "Не вказано" }}
     </div>
 
     <div class="my-4 text-app-text-secondary text-[0.813rem]">Місто</div>
-    <div v-if="activeConversationInfo?.cities.length" class="text-[0.875rem]">
-      <div v-for="city in activeConversationInfo?.cities || []" :key="city.id">
+    <div v-if="activeConversation?.cities.length" class="text-[0.875rem]">
+      <div v-for="city in activeConversation?.cities || []" :key="city.id">
         {{ city.name_ua }}
       </div>
     </div>
@@ -192,7 +187,7 @@ const sourceInfo = computed(() => {
 
     <div v-if="!isEditingComment" class="flex items-start gap-2 group">
       <div class="text-[0.875rem] flex-1">
-        {{ activeConversationInfo?.comment || "Не вказано" }}
+        {{ activeConversation?.comment || "Не вказано" }}
       </div>
 
       <Button
@@ -293,19 +288,19 @@ const sourceInfo = computed(() => {
     </div>
 
     <hr
-      v-if="activeConversationInfo?.status_log?.length"
+      v-if="activeConversation?.status_log?.length"
       class="my-5 border-app-border"
     />
 
     <div
-      v-if="activeConversationInfo?.status_log?.length"
+      v-if="activeConversation?.status_log?.length"
       class="my-4 text-app-text-secondary text-[0.813rem]"
     >
       Історія статусів
     </div>
 
     <div
-      v-for="status in activeConversationInfo?.status_log || []"
+      v-for="status in activeConversation?.status_log || []"
       :key="status.id"
       class="mb-4 text-[0.813rem]"
     >

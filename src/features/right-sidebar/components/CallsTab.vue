@@ -19,10 +19,10 @@ import EmptyState from "@src/ui/states/empty-states/EmptyState.vue";
 
 const conversationsStore = useConversationsStore();
 
-const activeConversationInfo = computed<
+const activeConversation = computed<
   ApiCommunicationLeadFull | ApiCommunicationClientFull | null
 >(() => {
-  return conversationsStore.activeConversationInfo;
+  return conversationsStore.activeConversation;
 });
 
 function callTypeIcon(call: ApiCommunicationCallInfo) {
@@ -35,12 +35,12 @@ function callTypeIcon(call: ApiCommunicationCallInfo) {
 <template>
   <div class="pt-5 pb-6">
     <EmptyState
-      v-if="!activeConversationInfo?.calls.length"
+      v-if="!activeConversation?.calls.length"
       :icon="PhoneIcon"
       title="Дзвінків немає"
     />
     <div class="space-y-3">
-      <div v-for="call in activeConversationInfo?.calls || []" :key="call.id">
+      <div v-for="call in activeConversation?.calls || []" :key="call.id">
         <div class="flex gap-5">
           <component
             :is="callTypeIcon(call)"
@@ -87,7 +87,7 @@ function callTypeIcon(call: ApiCommunicationCallInfo) {
                 ПІБ
               </div>
               <div class="text-[0.813rem]">
-                {{ activeConversationInfo?.fio || "не вказано" }}
+                {{ activeConversation?.fio || "не вказано" }}
               </div>
             </div>
             <div>

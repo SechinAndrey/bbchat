@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Ref } from "vue";
-import type { GetCommunicationsParams } from "../conversations-service";
+import type { ConversationParams } from "../conversations-service";
 import type { CreateLeadRequest } from "@src/api/types";
 
 import { ref, watch, computed } from "vue";
@@ -71,7 +71,16 @@ const TAB = {
 };
 const activeTab = ref(TAB.all);
 
-const { fetchEntityCommunications, loadMoreEntity } = conversationsStore;
+const fetchConversations = (
+  entity: EntityType,
+  params?: ConversationParams,
+) => {
+  return conversationsStore.fetch(entity, params);
+};
+
+const loadMoreConversations = (entity: EntityType) => {
+  return conversationsStore.loadMore(entity);
+};
 
 // Computed properties
 const userOptions = computed(() => [
@@ -94,52 +103,25 @@ const filterOptions = computed(() => {
 });
 
 const conversationsList = computed(() => {
-  switch (selectedFilter.value) {
-    case "leads":
-      return conversationsStore.leads;
-    case "clients":
-      return conversationsStore.clients;
-    case "suppliers":
-      return conversationsStore.suppliers;
-    default:
-      return conversationsStore.leads;
-  }
+  return conversationsStore.conversations[selectedFilter.value] || [];
 });
 
 const isLoading = computed(() => {
-  switch (selectedFilter.value) {
-    case "leads":
-      return conversationsStore.isLoadingLeads;
-    case "clients":
-      return conversationsStore.isLoadingClients;
-    case "suppliers":
-      return conversationsStore.isLoadingSuppliers;
-    default:
-      return conversationsStore.isLoadingLeads;
-  }
+  return conversationsStore.loading[selectedFilter.value] || false;
 });
 
 const hasMore = computed(() => {
-  switch (selectedFilter.value) {
-    case "leads":
-      return conversationsStore.hasMoreLeads;
-    case "clients":
-      return conversationsStore.hasMoreClients;
-    case "suppliers":
-      return conversationsStore.hasMoreSuppliers;
-    default:
-      return conversationsStore.hasMoreLeads;
-  }
+  return conversationsStore.hasMore(selectedFilter.value);
 });
 
 const debouncedFetch = useDebounceFn(async () => {
-  const params: GetCommunicationsParams = {
+  const params: ConversationParams = {
     page: 1,
     search: keyword.value || undefined,
     user_id: selectedUser.value === "all" ? undefined : selectedUser.value,
     communication_status_id: activeTab.value === TAB.open ? 1 : undefined,
   };
-  await fetchEntityCommunications(selectedFilter.value, params);
+  await fetchConversations(selectedFilter.value, params);
 }, 500);
 
 watch([selectedUser, selectedFilter, activeTab], debouncedFetch, {
@@ -154,14 +136,14 @@ watch(
     if (newEntity && newEntity !== selectedFilter.value) {
       selectedFilter.value = newEntity as EntityType;
 
-      const params: GetCommunicationsParams = {
+      const params: ConversationParams = {
         page: 1,
         search: keyword.value || undefined,
         user_id: selectedUser.value === "all" ? undefined : selectedUser.value,
         communication_status_id: activeTab.value === TAB.open ? 1 : undefined,
       };
 
-      await fetchEntityCommunications(selectedFilter.value, params);
+      await fetchConversations(selectedFilter.value, params);
     }
   },
   { immediate: true },
@@ -175,7 +157,7 @@ const leadClientIcon = computed(() => {
 const scrollContainer = ref<HTMLElement | null>(null);
 
 const loadMore = () => {
-  loadMoreEntity(selectedFilter.value);
+  loadMoreConversations(selectedFilter.value);
 };
 
 useInfiniteScroll(
@@ -213,10 +195,13 @@ globalDataStore.fetchGlobalData();
 
 // Error handling
 watch(
-  () => conversationsStore.error,
-  (hasError) => {
-    if (hasError) {
-      console.error("Communications store error:", conversationsStore.error);
+  () => conversationsStore.errors[selectedFilter.value],
+  (error) => {
+    if (error) {
+      console.error(
+        `Communications store error for ${selectedFilter.value}:`,
+        error,
+      );
     }
   },
 );

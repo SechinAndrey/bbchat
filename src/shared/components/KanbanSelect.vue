@@ -9,7 +9,7 @@ const globalDataStore = useGlobalDataStore();
 
 const options = computed(() => {
   const currentStatus = globalDataStore.getKanbanStatusById(
-    conversationsStore.activeConversationInfo?.status_id || 0,
+    conversationsStore.activeConversation?.status_id || 0,
   );
   return globalDataStore.kanbanStatuses.reduce<
     { value: number; label: string }[]
@@ -34,17 +34,15 @@ const options = computed(() => {
   }, []);
 });
 
-const selectedId = ref(
-  conversationsStore.activeConversationInfo?.status_id || "",
-);
+const selectedId = ref(conversationsStore.activeConversation?.status_id || "");
 
-selectedId.value = conversationsStore.activeConversationInfo?.status_id || "";
+selectedId.value = conversationsStore.activeConversation?.status_id || "";
 
 watch(
   () => selectedId.value,
   (newValue) => {
-    conversationsStore.changeStatus(
-      conversationsStore?.activeConversationInfo?.id as number,
+    conversationsStore.changeLeadStatus(
+      conversationsStore?.activeConversation?.id as number,
       newValue as number,
     );
   },

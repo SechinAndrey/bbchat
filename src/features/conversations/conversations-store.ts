@@ -2,7 +2,10 @@ import { defineStore } from "pinia";
 import { ref, computed, watch } from "vue";
 import { useRoute } from "vue-router";
 import conversationsService from "./conversations-service";
-import type { GetCommunicationsParams } from "./conversations-service";
+import type {
+  ConversationParams,
+  MessageParams,
+} from "./conversations-service";
 import type { EntityType } from "@src/shared/types/common";
 import type {
   ApiResponseMeta,
@@ -15,115 +18,78 @@ import { adaptApiCommunicationToIConversation } from "@src/api/communication-ada
 import { usePusher } from "@src/shared/composables/usePusher";
 
 export const useConversationsStore = defineStore("conversations", () => {
-  // State
-  const leads = ref<IConversation[]>([]);
-  const clients = ref<IConversation[]>([]);
-  const suppliers = ref<IConversation[]>([]);
-  const leadsMeta = ref<ApiResponseMeta | null>(null);
-  const clientsMeta = ref<ApiResponseMeta | null>(null);
-  const suppliersMeta = ref<ApiResponseMeta | null>(null);
-  const isLoading = ref(false);
-
-  const error = ref<string | null>(null);
-  const activeConversationInfo = ref<ApiCommunicationEntityFull | null>(null);
-  const isFetchingActiveConversationInfo = ref(false);
-
   const route = useRoute();
 
-  // Filter state
-  const filters = ref<GetCommunicationsParams>({
+  const conversations = ref<Record<EntityType, IConversation[]>>({
+    leads: [],
+    clients: [],
+    suppliers: [],
+  });
+
+  const meta = ref<Record<EntityType, ApiResponseMeta | null>>({
+    leads: null,
+    clients: null,
+    suppliers: null,
+  });
+
+  const loading = ref<Record<EntityType, boolean>>({
+    leads: false,
+    clients: false,
+    suppliers: false,
+  });
+
+  const errors = ref<Record<EntityType, string | null>>({
+    leads: null,
+    clients: null,
+    suppliers: null,
+  });
+
+  const activeConversation = ref<ApiCommunicationEntityFull | null>(null);
+  const isLoadingConversation = ref(false);
+  const isLoadingMessages = ref(false);
+  const isLoadingMoreMessages = ref(false);
+  const messagesError = ref<string | null>(null);
+  const messagesMeta = ref<ApiResponseMeta | null>(null);
+
+  const filters = ref<ConversationParams>({
     page: 1,
     search: "",
     user_id: undefined,
   });
 
-  // Loading states for specific requests
-  const isLoadingLeads = ref(false);
-  const isLoadingClients = ref(false);
-  const isLoadingSuppliers = ref(false);
-  const leadsError = ref<string | null>(null);
-  const clientsError = ref<string | null>(null);
-  const suppliersError = ref<string | null>(null);
-  const isFetchingMessages = ref(false);
-  const isLoadingMoreMessages = ref(false);
-  const messagesError = ref<string | null>(null);
-  const messagesMeta = ref<ApiResponseMeta | null>(null);
-
-  const messagesFilters = ref<{ page?: number; search?: string }>({
+  const messagesFilters = ref<MessageParams>({
     page: 1,
     search: "",
   });
 
-  // Getters
-  const hasMoreLeads = computed(() => {
-    if (!leadsMeta.value) return false;
-    return leadsMeta.value.current_page < leadsMeta.value.last_page;
+  const hasMore = computed(() => (entity: EntityType) => {
+    const entityMeta = meta.value[entity];
+    if (!entityMeta) return false;
+    return entityMeta.current_page < entityMeta.last_page;
   });
-
-  const hasMoreClients = computed(() => {
-    if (!clientsMeta.value) return false;
-    return clientsMeta.value.current_page < clientsMeta.value.last_page;
-  });
-
-  const hasMoreSuppliers = computed(() => {
-    if (!suppliersMeta.value) return false;
-    return suppliersMeta.value.current_page < suppliersMeta.value.last_page;
-  });
-
-  const ENTITY_STORE_CONFIG = {
-    leads: {
-      dataRef: leads,
-      metaRef: leadsMeta,
-      loadingRef: isLoadingLeads,
-      errorRef: leadsError,
-      hasMoreRef: hasMoreLeads,
-      serviceMethod: "getLeadsContactsConversations" as const,
-    },
-    clients: {
-      dataRef: clients,
-      metaRef: clientsMeta,
-      loadingRef: isLoadingClients,
-      errorRef: clientsError,
-      hasMoreRef: hasMoreClients,
-      serviceMethod: "getClientsContactsConversations" as const,
-    },
-    suppliers: {
-      dataRef: suppliers,
-      metaRef: suppliersMeta,
-      loadingRef: isLoadingSuppliers,
-      errorRef: suppliersError,
-      hasMoreRef: hasMoreSuppliers,
-      serviceMethod: "getSuppliersContactsConversations" as const,
-    },
-  };
-
-  const hasMore = computed(
-    () => hasMoreLeads.value || hasMoreClients.value || hasMoreSuppliers.value,
-  );
 
   const hasMoreMessages = computed(() => {
     if (!messagesMeta.value) return false;
     return messagesMeta.value.current_page < messagesMeta.value.last_page;
   });
 
-  const allCommunications = computed(() => {
-    return [...leads.value, ...clients.value, ...suppliers.value];
+  const allConversations = computed(() => {
+    return [
+      ...conversations.value.leads,
+      ...conversations.value.clients,
+      ...conversations.value.suppliers,
+    ];
   });
 
-  // Current conversation item based on route params
-  const currentConversationsItem = computed(() => {
+  const currentConversationItem = computed(() => {
     const { entity, id, contactId } = route.params;
-
     if (!entity || !id || !contactId) return null;
 
     const entityType = entity as EntityType;
     const conversationId = Number(id);
     const contactIdNum = Number(contactId);
 
-    const config = ENTITY_STORE_CONFIG[entityType];
-    if (!config) return null;
-
-    const conversation = config.dataRef.value.find(
+    const conversation = conversations.value[entityType]?.find(
       (item) => item.id === conversationId,
     );
 
@@ -136,183 +102,148 @@ export const useConversationsStore = defineStore("conversations", () => {
     return contact ? { conversation, contact, entity: entityType } : null;
   });
 
-  const fetchEntityCommunications = async (
-    entity: EntityType,
-    params?: GetCommunicationsParams,
-  ) => {
-    const config = ENTITY_STORE_CONFIG[entity];
-
+  /**
+   * Fetch conversations for specific entity
+   * @example await fetch('leads', { page: 1, search: 'john' })
+   */
+  const fetch = async (entity: EntityType, params?: ConversationParams) => {
     try {
-      config.loadingRef.value = true;
-      config.errorRef.value = null;
+      loading.value[entity] = true;
+      errors.value[entity] = null;
 
       const mergedParams = { ...filters.value, ...params };
-      if (params) {
-        filters.value = mergedParams;
-      }
+      if (params) filters.value = mergedParams;
 
-      const response =
-        await conversationsService[config.serviceMethod](mergedParams);
+      const response = await conversationsService.getConversations(
+        entity,
+        mergedParams,
+      );
       const entityData = response[entity];
 
       if (!entityData) {
         throw new Error(`No data found for entity: ${entity}`);
       }
 
-      if (mergedParams.page === 1) {
-        config.dataRef.value = entityData.data.map(
+      if (!mergedParams.page || mergedParams.page === 1) {
+        conversations.value[entity] = entityData.data.map(
           adaptApiCommunicationToIConversation,
         );
       } else {
-        config.dataRef.value = [
-          ...config.dataRef.value,
+        conversations.value[entity] = [
+          ...conversations.value[entity],
           ...entityData.data.map(adaptApiCommunicationToIConversation),
         ];
       }
 
-      config.metaRef.value = entityData.meta;
+      meta.value[entity] = entityData.meta;
       return response;
     } catch (err) {
-      config.errorRef.value =
+      errors.value[entity] =
         err instanceof Error ? err.message : "Unknown error occurred";
       throw err;
     } finally {
-      config.loadingRef.value = false;
+      loading.value[entity] = false;
     }
   };
 
-  const loadMoreEntity = async (entity: EntityType) => {
-    const config = ENTITY_STORE_CONFIG[entity];
-
-    if (!config.hasMoreRef.value || config.loadingRef.value) return;
+  /**
+   * Load more conversations for entity
+   * @example await loadMore('leads')
+   */
+  const loadMore = async (entity: EntityType) => {
+    if (!hasMore.value(entity) || loading.value[entity]) return;
 
     const nextPage = filters.value.page ? filters.value.page + 1 : 2;
-    return fetchEntityCommunications(entity, {
-      ...filters.value,
-      page: nextPage,
-    });
+    return fetch(entity, { ...filters.value, page: nextPage });
   };
 
-  // Actions
-  const fetchConversationById = async (entity: EntityType, id: number) => {
-    isFetchingActiveConversationInfo.value = true;
-    activeConversationInfo.value = null;
+  /**
+   * Search conversations
+   * @example await search('leads', 'john doe')
+   */
+  const search = async (entity: EntityType, query: string) => {
+    filters.value = { ...filters.value, search: query, page: 1 };
+    return fetch(entity, filters.value);
+  };
+
+  /**
+   * Filter by user
+   * @example await filterByUser('leads', 123)
+   */
+  const filterByUser = async (entity: EntityType, userId?: number) => {
+    filters.value = { ...filters.value, user_id: userId, page: 1 };
+    return fetch(entity, filters.value);
+  };
+
+  /**
+   * Reset filters
+   * @example await resetFilters('leads')
+   */
+  const resetFilters = async (entity: EntityType) => {
+    filters.value = { page: 1, search: "", user_id: undefined };
+    return fetch(entity, filters.value);
+  };
+
+  /**
+   * Fetch conversation by ID
+   * @example await fetchConversation('leads', 123)
+   */
+  const fetchConversation = async (entity: EntityType, id: number) => {
+    isLoadingConversation.value = true;
+    activeConversation.value = null;
+
     try {
       const conversation =
-        await conversationsService.getCommunicationEntityById<ApiCommunicationEntityFull>(
+        await conversationsService.getConversationById<ApiCommunicationEntityFull>(
           entity,
           id,
         );
       conversation.messages = [];
-      activeConversationInfo.value = conversation;
+      activeConversation.value = conversation;
       return conversation;
     } catch (err) {
-      error.value =
+      const error =
         err instanceof Error ? err.message : "Unknown error occurred";
+      errors.value[entity] = error;
       throw err;
     } finally {
-      isFetchingActiveConversationInfo.value = false;
+      isLoadingConversation.value = false;
     }
   };
 
-  const fetchCommunications = async (params?: GetCommunicationsParams) => {
-    try {
-      isLoading.value = true;
-      error.value = null;
-
-      // Merge provided params with stored filters
-      const mergedParams = { ...filters.value, ...params };
-
-      // Update filters with merged params
-      if (params) {
-        filters.value = mergedParams;
-      }
-
-      const response =
-        await conversationsService.getCommunications(mergedParams);
-
-      // If loading first page or resetting, replace the data
-      if (mergedParams.page === 1) {
-        leads.value = response.leads.data.map(
-          adaptApiCommunicationToIConversation,
-        );
-        clients.value = response.clients.data.map(
-          adaptApiCommunicationToIConversation,
-        );
-        suppliers.value = response.suppliers.data.map(
-          adaptApiCommunicationToIConversation,
-        );
-      } else {
-        // Otherwise append to existing data for "load more" functionality
-        leads.value = [
-          ...leads.value,
-          ...response.leads.data.map(adaptApiCommunicationToIConversation),
-        ];
-        clients.value = [
-          ...clients.value,
-          ...response.clients.data.map(adaptApiCommunicationToIConversation),
-        ];
-        suppliers.value = [
-          ...suppliers.value,
-          ...response.suppliers.data.map(adaptApiCommunicationToIConversation),
-        ];
-      }
-
-      // Store pagination metadata
-      leadsMeta.value = response.leads.meta;
-      clientsMeta.value = response.clients.meta;
-      suppliersMeta.value = response.suppliers.meta;
-
-      return response;
-    } catch (err) {
-      error.value =
-        err instanceof Error ? err.message : "Unknown error occurred";
-      throw err;
-    } finally {
-      isLoading.value = false;
-    }
-  };
-
-  const loadMoreCommunications = async () => {
-    if (!hasMore.value || isLoading.value) return;
-
-    // Increment page number for "load more" functionality
-    const nextPage = filters.value.page ? filters.value.page + 1 : 2;
-
-    return fetchCommunications({
-      ...filters.value,
-      page: nextPage,
-    });
-  };
-
+  /**
+   * Fetch messages for conversation
+   * @example await fetchMessages('leads', 123, 456, { page: 1 })
+   */
   const fetchMessages = async (
     entity: EntityType,
     id: number,
     contactId: number,
-    params?: { page?: number; search?: string },
-    loadingRef = isFetchingMessages,
+    params?: MessageParams,
+    loadingRef = isLoadingMessages,
   ) => {
     if (loadingRef.value) return;
 
     try {
       loadingRef.value = true;
       messagesError.value = null;
+
       const mergedParams = { ...messagesFilters.value, ...params };
       if (params) messagesFilters.value = mergedParams;
 
-      const response = await conversationsService.getCommunicationMessages(
+      const response = await conversationsService.getMessages(
         entity,
         id,
         contactId,
         mergedParams,
       );
 
-      if (activeConversationInfo.value) {
+      if (activeConversation.value) {
         if (!mergedParams.page || mergedParams.page === 1) {
-          activeConversationInfo.value.messages = response.data;
+          activeConversation.value.messages = response.data;
         } else {
-          activeConversationInfo.value.messages = [
-            ...activeConversationInfo.value.messages,
+          activeConversation.value.messages = [
+            ...activeConversation.value.messages,
             ...response.data,
           ];
         }
@@ -339,21 +270,17 @@ export const useConversationsStore = defineStore("conversations", () => {
     }
   };
 
-  // Wrapper for initial fetch
-  const fetchCommunicationMessages = async (
-    entity: EntityType,
-    id: number,
-    contactId: number,
-    params?: { page?: number; search?: string },
-  ) => fetchMessages(entity, id, contactId, params, isFetchingMessages);
-
-  // Wrapper for loading more messages
+  /**
+   * Load more messages
+   * @example await loadMoreMessages('leads', 123, 456)
+   */
   const loadMoreMessages = async (
     entity: EntityType,
     id: number,
     contactId: number,
   ) => {
     if (!hasMoreMessages.value || isLoadingMoreMessages.value) return;
+
     const nextPage = messagesMeta.value
       ? messagesMeta.value.current_page + 1
       : 2;
@@ -366,123 +293,83 @@ export const useConversationsStore = defineStore("conversations", () => {
     );
   };
 
-  const resetMessagesPagination = () => {
-    messagesMeta.value = null;
-    messagesFilters.value = {
-      page: 1,
-      search: "",
-    };
-  };
-
-  const setMessagesSearchFilter = async (
+  /**
+   * Search messages
+   * @example await searchMessages('leads', 123, 456, 'hello')
+   */
+  const searchMessages = async (
     entity: EntityType,
     id: number,
     contactId: number,
-    search: string,
+    query: string,
   ) => {
-    messagesFilters.value = {
-      page: 1,
-      search,
-    };
-
-    return fetchCommunicationMessages(
-      entity,
-      id,
-      contactId,
-      messagesFilters.value,
-    );
+    messagesFilters.value = { page: 1, search: query };
+    return fetchMessages(entity, id, contactId, messagesFilters.value);
   };
 
-  const setSearchFilter = (search: string) => {
-    // Reset to page 1 when changing search
-    filters.value = {
-      ...filters.value,
-      search,
-      page: 1,
-    };
-
-    return fetchCommunications(filters.value);
+  /**
+   * Reset messages pagination
+   */
+  const resetMessagesPagination = () => {
+    messagesMeta.value = null;
+    messagesFilters.value = { page: 1, search: "" };
   };
 
-  const setEntitySearchFilter = (entity: EntityType, search: string) => {
-    // Reset to page 1 when changing search
-    filters.value = {
-      ...filters.value,
-      search,
-      page: 1,
-    };
-
-    return fetchEntityCommunications(entity, filters.value);
+  /**
+   * Update conversation
+   * @example await updateConversation('leads', 123, { status_id: 2 })
+   */
+  const updateConversation = async (
+    entity: EntityType,
+    id: number,
+    data: Partial<ApiCommunicationEntityFull>,
+  ) => {
+    await conversationsService.updateConversation(entity, id, data);
   };
 
-  const setUserFilter = (userId?: number) => {
-    // Reset to page 1 when changing user filter
-    filters.value = {
-      ...filters.value,
-      user_id: userId,
-      page: 1,
-    };
-
-    return fetchCommunications(filters.value);
+  /**
+   * Update lead
+   * @example await updateLead(123, { name: 'Updated Name' })
+   */
+  const updateLead = async (id: number, leadData: UpdateLeadRequest) => {
+    return await conversationsService.updateLead(id, leadData);
   };
 
-  const setEntityUserFilter = (entity: EntityType, userId?: number) => {
-    // Reset to page 1 when changing user filter
-    filters.value = {
-      ...filters.value,
-      user_id: userId,
-      page: 1,
-    };
-
-    return fetchEntityCommunications(entity, filters.value);
+  /**
+   * Change lead status
+   * @example await changeLeadStatus(123, 2)
+   */
+  const changeLeadStatus = async (id: number, status: number) => {
+    await conversationsService.changeLeadStatus(id, status);
   };
 
-  // Helper function to reset filters to default values
-  const getDefaultFilters = (): GetCommunicationsParams => {
-    return {
-      page: 1,
-      search: "",
-      user_id: undefined,
-    };
-  };
-
-  const resetFilters = () => {
-    filters.value = getDefaultFilters();
-    return fetchCommunications(filters.value);
-  };
-
-  const resetEntityFilters = (entity: EntityType) => {
-    filters.value = getDefaultFilters();
-    return fetchEntityCommunications(entity, filters.value);
-  };
-
-  const findConversationInLists = (
-    entityType: EntityType,
-    entityId: number,
-  ): { conversation: IConversation; listRef: typeof leads } | null => {
-    const config = ENTITY_STORE_CONFIG[entityType];
-    if (!config) return null;
-
-    const conversation = config.dataRef.value.find(
+  const findConversation = (entityType: EntityType, entityId: number) => {
+    return conversations.value[entityType]?.find(
       (item) => item.id === entityId,
     );
-
-    return conversation ? { conversation, listRef: config.dataRef } : null;
   };
 
   const moveConversationToTop = (
-    listRef: typeof leads,
+    entityType: EntityType,
     conversationId: number,
   ) => {
-    const index = listRef.value.findIndex((item) => item.id === conversationId);
+    const list = conversations.value[entityType];
+    const index = list.findIndex((item) => item.id === conversationId);
     if (index > 0) {
-      const conversation = listRef.value.splice(index, 1)[0];
-      listRef.value.unshift(conversation);
+      const conversation = list.splice(index, 1)[0];
+      list.unshift(conversation);
     }
   };
 
   const updateUnreadCount = (conversation: IConversation, increment = 1) => {
     conversation.unread = (conversation.unread || 0) + increment;
+  };
+
+  const resetUnreadCount = (entityType: EntityType, entityId: number) => {
+    const conversation = findConversation(entityType, entityId);
+    if (conversation) {
+      conversation.unread = 0;
+    }
   };
 
   const loadMissingConversation = async (
@@ -492,7 +379,7 @@ export const useConversationsStore = defineStore("conversations", () => {
   ): Promise<IConversation | null> => {
     try {
       const conversationInfo =
-        await conversationsService.getCommunicationContactInfo(
+        await conversationsService.getConversationContactInfo(
           entityType,
           entityId,
           contactId,
@@ -503,13 +390,8 @@ export const useConversationsStore = defineStore("conversations", () => {
         entity: entityType,
       } as any);
 
-      const config = ENTITY_STORE_CONFIG[entityType];
-      if (config) {
-        config.dataRef.value.unshift(adaptedConversation);
-        return adaptedConversation;
-      }
-
-      return null;
+      conversations.value[entityType].unshift(adaptedConversation);
+      return adaptedConversation;
     } catch (error) {
       console.error("Error loading missing conversation:", error);
       return null;
@@ -538,39 +420,35 @@ export const useConversationsStore = defineStore("conversations", () => {
       return;
     }
 
-    // 1. if current chat is open
-    if (
-      activeConversationInfo.value &&
-      activeConversationInfo.value.id === entityId
-    ) {
-      if (!activeConversationInfo.value.messages) {
-        activeConversationInfo.value.messages = [];
+    // 1. If current chat is open
+    if (activeConversation.value && activeConversation.value.id === entityId) {
+      if (!activeConversation.value.messages) {
+        activeConversation.value.messages = [];
       }
-      activeConversationInfo.value.messages.unshift(message);
+      activeConversation.value.messages.unshift(message);
 
-      const found = findConversationInLists(entityType, entityId);
-      if (found) {
-        updateUnreadCount(found.conversation);
-        moveConversationToTop(found.listRef, entityId);
+      const conversation = findConversation(entityType, entityId);
+      if (conversation) {
+        updateUnreadCount(conversation);
+        moveConversationToTop(entityType, entityId);
       }
       return;
     }
 
-    // 2. if chat is in the list
-    const found = findConversationInLists(entityType, entityId);
-    if (found) {
-      updateUnreadCount(found.conversation);
-      moveConversationToTop(found.listRef, entityId);
+    // 2. If chat is in the list
+    const conversation = findConversation(entityType, entityId);
+    if (conversation) {
+      updateUnreadCount(conversation);
+      moveConversationToTop(entityType, entityId);
       return;
     }
 
-    // 3. load missing conversation
+    // 3. Load missing conversation
     const loadedConversation = await loadMissingConversation(
       entityType,
       entityId,
       contactId,
     );
-
     if (loadedConversation) {
       updateUnreadCount(loadedConversation);
       console.log(
@@ -578,66 +456,6 @@ export const useConversationsStore = defineStore("conversations", () => {
         loadedConversation,
       );
     }
-  };
-
-  const resetUnreadCount = (entityType: EntityType, entityId: number) => {
-    const found = findConversationInLists(entityType, entityId);
-    if (found) {
-      found.conversation.unread = 0;
-    }
-  };
-
-  const lastReadMessageIds = ref<Record<string, number>>({});
-
-  const getConversationKey = (
-    entityType: EntityType,
-    entityId: number,
-    contactId: number,
-  ) => {
-    return `${entityType}-${entityId}-${contactId}`;
-  };
-
-  const markMessagesAsRead = (
-    entityType: EntityType,
-    entityId: number,
-    contactId: number,
-  ) => {
-    const conversationKey = getConversationKey(entityType, entityId, contactId);
-
-    if (
-      activeConversationInfo.value?.messages &&
-      activeConversationInfo.value.messages.length > 0
-    ) {
-      const latestMessage = activeConversationInfo.value.messages[0];
-      lastReadMessageIds.value[conversationKey] = latestMessage.id;
-    }
-
-    resetUnreadCount(entityType, entityId);
-  };
-
-  const getLastReadMessageId = (
-    entityType: EntityType,
-    entityId: number,
-    contactId: number,
-  ): number | null => {
-    const conversationKey = getConversationKey(entityType, entityId, contactId);
-    return lastReadMessageIds.value[conversationKey] || null;
-  };
-
-  const hasUnreadMessages = (
-    entityType: EntityType,
-    entityId: number,
-    contactId: number,
-  ): boolean => {
-    const lastReadId = getLastReadMessageId(entityType, entityId, contactId);
-
-    if (!lastReadId || !activeConversationInfo.value?.messages) {
-      return false;
-    }
-
-    return activeConversationInfo.value.messages.some(
-      (message) => message.id > lastReadId,
-    );
   };
 
   const playNotificationSound = () => {
@@ -663,18 +481,13 @@ export const useConversationsStore = defineStore("conversations", () => {
       contragent_type: EntityType | null;
     }) => {
       try {
-        const communicationItem =
-          await conversationsService.getCommunicationItemById(data.id);
-        console.log("Fetched communication item:", communicationItem);
+        const messageItem = await conversationsService.getMessageById(data.id);
+        console.log("Fetched message item:", messageItem);
 
-        await addMessageToConversation(communicationItem);
-
+        await addMessageToConversation(messageItem);
         playNotificationSound();
       } catch (error) {
-        console.error(
-          "Error fetching communication item from Pusher event:",
-          error,
-        );
+        console.error("Error fetching message item from Pusher event:", error);
       }
     },
   );
@@ -696,21 +509,16 @@ export const useConversationsStore = defineStore("conversations", () => {
             const contactId = Number(newParams.contactId);
 
             try {
-              await fetchConversationById(entityType, conversationId);
+              await fetchConversation(entityType, conversationId);
               messagesMeta.value = null;
-              await fetchCommunicationMessages(
-                entityType,
-                conversationId,
-                contactId,
-                {
-                  page: 1,
-                },
-              );
+              await fetchMessages(entityType, conversationId, contactId, {
+                page: 1,
+              });
             } catch (err) {
               console.error("❌ Error fetching conversation from route:", err);
             }
           } else {
-            activeConversationInfo.value = null;
+            activeConversation.value = null;
             messagesMeta.value = null;
           }
         }
@@ -718,81 +526,50 @@ export const useConversationsStore = defineStore("conversations", () => {
       { immediate: true },
     );
   };
-
-  const updateConversation = async (
-    entity: EntityType,
-    id: number,
-    data: Partial<ApiCommunicationEntityFull>,
-  ) => {
-    await conversationsService.updateConversation(entity, id, data);
-  };
-
-  const changeStatus = async (id: number, status: number) => {
-    await conversationsService.changeStatus(id, status);
-  };
-
-  const updateLead = async (id: number, leadData: UpdateLeadRequest) => {
-    return await conversationsService.updateLead(id, leadData);
-  };
-
   return {
     // State
-    leads,
-    clients,
-    suppliers,
-    leadsMeta,
-    clientsMeta,
-    suppliersMeta,
-    isLoading,
-    isLoadingLeads,
-    isLoadingClients,
-    isLoadingSuppliers,
-    error,
-    leadsError,
-    clientsError,
-    suppliersError,
-    isFetchingMessages,
+    conversations,
+    meta,
+    loading,
+    errors,
+    activeConversation,
+    isLoadingConversation,
+    isLoadingMessages,
     isLoadingMoreMessages,
     messagesError,
     messagesMeta,
     messagesFilters,
     filters,
-    activeConversationInfo,
-    isFetchingActiveConversationInfo,
 
     // Getters
-    hasMoreLeads,
-    hasMoreClients,
-    hasMoreSuppliers,
     hasMore,
     hasMoreMessages,
-    allCommunications,
-    currentConversationsItem,
+    allConversations,
+    currentConversationItem,
 
-    // Actions
-    fetchCommunications,
-    loadMoreCommunications,
-    setSearchFilter,
-    setUserFilter,
+    // Actions - Conversations
+    fetch,
+    loadMore,
+    search,
+    filterByUser,
     resetFilters,
-    fetchConversationById,
-    fetchCommunicationMessages,
-    loadMoreMessages,
-    resetMessagesPagination,
-    setMessagesSearchFilter,
-    fetchEntityCommunications,
-    loadMoreEntity,
-    setEntitySearchFilter,
-    setEntityUserFilter,
-    resetEntityFilters,
-    updateConversation,
-    changeStatus,
-    updateLead,
-    resetUnreadCount,
-    markMessagesAsRead,
-    getLastReadMessageId,
-    hasUnreadMessages,
 
+    // Actions - Messages
+    fetchConversation,
+    fetchMessages,
+    loadMoreMessages,
+    searchMessages,
+    resetMessagesPagination,
+
+    // Actions - Entity Management
+    updateConversation,
+    updateLead,
+    changeLeadStatus,
+
+    // Actions - Unread Management
+    resetUnreadCount,
+
+    // Initialization
     initializeRouteWatchers,
   };
 });

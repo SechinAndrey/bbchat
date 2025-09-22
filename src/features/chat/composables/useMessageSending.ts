@@ -6,20 +6,24 @@ import useConversationsStore from "@src/features/conversations/conversations-sto
 export function useMessageSending() {
   const entity = inject<Ref<EntityType>>("entity");
   const id = inject<Ref<number>>("id");
-  const conversationsStore = useConversationsStore();
+  const store = useConversationsStore();
 
-  const contragent_type = computed(() => {
+  const contragentType = computed(() => {
     if (entity?.value === "leads") return "lead";
     if (entity?.value === "clients") return "client";
     if (entity?.value === "suppliers") return "supplier";
     return "lead";
   });
 
-  const activeConversationInfo = computed(() => {
-    return conversationsStore.activeConversationInfo;
+  const activeConversation = computed(() => {
+    return store.activeConversation;
   });
 
-  const sendTextMessage = async (
+  /**
+   * Send text message
+   * @example await sendMessage('Hello!', 1, 'https://file.url')
+   */
+  const sendMessage = async (
     message: string,
     messengerId: number,
     fileUrl = "",
@@ -30,23 +34,28 @@ export function useMessageSending() {
 
     try {
       await conversationsService.sendMessage({
-        phone: activeConversationInfo.value?.phone || "",
+        phone: activeConversation.value?.phone || "",
         message,
         file_url: fileUrl,
         messenger_id: messengerId,
-        contragent_type: contragent_type.value,
+        contragent_type: contragentType.value,
         contragent_id: id?.value || 0,
       });
 
+      // Reset unread count after sending
       if (entity?.value && id?.value) {
-        conversationsStore.resetUnreadCount(entity.value, id.value);
+        store.resetUnreadCount(entity.value, id.value);
       }
     } catch (error) {
-      console.error("Error sending message:", error);
+      console.error("❌ Failed to send message:", error);
       throw error;
     }
   };
 
+  /**
+   * Send message with file attachment
+   * @example await sendMessageWithFile(file, 'Caption', 1)
+   */
   const sendMessageWithFile = async (
     file: any,
     caption: string,
@@ -54,9 +63,9 @@ export function useMessageSending() {
   ): Promise<void> => {
     try {
       const fileUrl = await conversationsService.uploadFile(file);
-      await sendTextMessage(caption, messengerId, fileUrl);
+      await sendMessage(caption, messengerId, fileUrl);
     } catch (error) {
-      console.error("Error sending message with attachment:", error);
+      console.error("❌ Failed to send message with file:", error);
       throw error;
     }
   };
@@ -64,9 +73,10 @@ export function useMessageSending() {
   return {
     entity,
     id,
-    contragent_type,
-    activeConversationInfo,
-    sendTextMessage,
+    contragentType,
+    activeConversation,
+
+    sendMessage,
     sendMessageWithFile,
   };
 }
