@@ -17,6 +17,8 @@ import NoChatSelected from "@src/ui/states/empty-states/NoChatSelected.vue";
 import type { EntityType } from "@src/shared/types/common";
 import { ENTITY_TO_CONTRAGENT_MAP } from "@src/shared/types/common";
 import TimelineDivider from "@src/features/chat/components/ChatMiddle/TimelineDivider.vue";
+import type { ApiMessageItem } from "@src/api/types";
+import type { IConversation } from "@src/shared/types/types";
 
 const store = useStore();
 const conversationsStore = useConversationsStore();
@@ -34,8 +36,8 @@ const getMessageDate = (dateString: string): string => {
 };
 
 const shouldShowTimelineDivider = (
-  currentMessage: any,
-  previousMessage?: any,
+  currentMessage: ApiMessageItem,
+  previousMessage?: ApiMessageItem,
 ): boolean => {
   if (!previousMessage) return false;
 
@@ -52,12 +54,12 @@ const shouldShowFirstMessageDivider = (messageIndex: number): boolean => {
   return messageIndex === 0;
 };
 
-const currentConversation = computed(() => {
+const currentConversation = computed((): IConversation | null => {
   if (!currentEntity.value || !currentId.value) return null;
 
   const conversations = conversationsStore.conversations[currentEntity.value];
   return (
-    conversations?.find((conv: any) => conv.id === currentId.value) || null
+    conversations?.find((conv: IConversation) => conv.id === currentId.value) || null
   );
 });
 
