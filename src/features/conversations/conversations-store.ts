@@ -16,9 +16,11 @@ import type {
 import type { IConversation } from "@src/shared/types/types";
 import { adaptApiCommunicationToIConversation } from "@src/api/communication-adapters";
 import { usePusher } from "@src/shared/composables/usePusher";
+import { useAuthStore } from "@src/features/auth/store/auth-store";
 
 export const useConversationsStore = defineStore("conversations", () => {
   const route = useRoute();
+  const authStore = useAuthStore();
 
   const conversations = ref<Record<EntityType, IConversation[]>>({
     leads: [],
@@ -398,6 +400,13 @@ export const useConversationsStore = defineStore("conversations", () => {
     }
   };
 
+  /**
+   * Check if message is sent by current user (outgoing message)
+   */
+  const isOutgoingMessage = (message: ApiMessageItem): boolean => {
+    return message.user_id === authStore.currentUser?.id;
+  };
+
   const addMessageToConversation = async (message: ApiMessageItem) => {
     const entityId =
       message.client_id || message.lead_id || message.supplier_id;
@@ -420,6 +429,8 @@ export const useConversationsStore = defineStore("conversations", () => {
       return;
     }
 
+    const isOutgoing = isOutgoingMessage(message);
+
     // 1. If current chat is open
     if (activeConversation.value && activeConversation.value.id === entityId) {
       if (!activeConversation.value.messages) {
@@ -429,7 +440,9 @@ export const useConversationsStore = defineStore("conversations", () => {
 
       const conversation = findConversation(entityType, entityId);
       if (conversation) {
-        updateUnreadCount(conversation);
+        if (!isOutgoing) {
+          updateUnreadCount(conversation);
+        }
         moveConversationToTop(entityType, entityId);
       }
       return;
@@ -438,29 +451,34 @@ export const useConversationsStore = defineStore("conversations", () => {
     // 2. If chat is in the list
     const conversation = findConversation(entityType, entityId);
     if (conversation) {
-      updateUnreadCount(conversation);
+      if (!isOutgoing) {
+        updateUnreadCount(conversation);
+      } else {
+        conversation.unread = 0;
+      }
       moveConversationToTop(entityType, entityId);
       return;
     }
 
-    // 3. Load missing conversation
-    const loadedConversation = await loadMissingConversation(
-      entityType,
-      entityId,
-      contactId,
-    );
-    if (loadedConversation) {
-      updateUnreadCount(loadedConversation);
-      console.log(
-        `Loaded missing conversation for ${entityType}:${entityId}`,
-        loadedConversation,
+    // 3. Load missing conversation (only for incoming messages)
+    if (!isOutgoing) {
+      const loadedConversation = await loadMissingConversation(
+        entityType,
+        entityId,
+        contactId,
       );
+      if (loadedConversation) {
+        updateUnreadCount(loadedConversation);
+      }
     }
   };
 
-  const playNotificationSound = () => {
+  const playNotificationSound = (isOutgoing = false) => {
     try {
-      const audio = new Audio("/sound/new-message.mp3");
+      const soundFile = isOutgoing
+        ? "/sound/out-message.mp3"
+        : "/sound/new-message.mp3";
+      const audio = new Audio(soundFile);
       audio.currentTime = 0;
       audio.play().catch((error) => {
         console.warn("Audio play was prevented:", error);
@@ -484,8 +502,9 @@ export const useConversationsStore = defineStore("conversations", () => {
         const messageItem = await conversationsService.getMessageById(data.id);
         console.log("Fetched message item:", messageItem);
 
+        const isOutgoing = isOutgoingMessage(messageItem);
         await addMessageToConversation(messageItem);
-        playNotificationSound();
+        playNotificationSound(isOutgoing);
       } catch (error) {
         console.error("Error fetching message item from Pusher event:", error);
       }
