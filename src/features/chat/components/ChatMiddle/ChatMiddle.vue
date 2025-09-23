@@ -35,21 +35,21 @@ const getMessageDate = (dateString: string): string => {
 
 const shouldShowTimelineDivider = (
   currentMessage: any,
-  olderMessage?: any,
+  previousMessage?: any,
 ): boolean => {
-  if (!olderMessage) return false;
+  if (!previousMessage) return false;
 
   const currentDate = getMessageDate(currentMessage.created_at);
-  const olderDate = getMessageDate(olderMessage.created_at);
+  const previousDate = getMessageDate(previousMessage.created_at);
 
-  return currentDate !== olderDate;
+  return currentDate !== previousDate;
 };
 
 const shouldShowFirstMessageDivider = (messageIndex: number): boolean => {
   const messages = conversationsStore.activeConversation?.messages;
   if (!messages || messages.length === 0) return false;
 
-  return messageIndex === messages.length - 1;
+  return messageIndex === 0;
 };
 
 const currentConversation = computed(() => {
@@ -95,7 +95,8 @@ const currentTempMessages = computed(() => {
 const shouldShowDividerAfterMessage = (messageIndex: number) => {
   const messages = conversationsStore.activeConversation?.messages;
   if (!messages || unreadCount.value === 0) return false;
-  const shouldShow = messageIndex === unreadCount.value - 1;
+  const firstUnreadIndex = messages.length - unreadCount.value;
+  const shouldShow = messageIndex === firstUnreadIndex - 1;
   return shouldShow;
 };
 
@@ -230,38 +231,38 @@ watch(
         (conversationsStore.activeConversation?.messages?.length ||
           currentTempMessages.length)
       "
-      class="flex flex-col-reverse"
+      class="flex flex-col"
     >
-      <div
-        v-for="tempMessage in currentTempMessages"
-        :key="tempMessage.clientMessageUid"
-      >
-        <TempMessageV2 :temp-message="tempMessage" />
-      </div>
-
       <div
         v-for="(message, index) in conversationsStore.activeConversation
           ?.messages || []"
         :key="message.id"
       >
-        <NewMessagesDivider v-if="shouldShowDividerAfterMessage(index)" />
-
-        <TimelineDivider
-          v-if="
-            shouldShowTimelineDivider(
-              message,
-              conversationsStore.activeConversation?.messages?.[index + 1],
-            )
-          "
-          :date="message.created_at"
-        />
-
         <TimelineDivider
           v-if="shouldShowFirstMessageDivider(index)"
           :date="message.created_at"
         />
 
+        <TimelineDivider
+          v-if="
+            shouldShowTimelineDivider(
+              message,
+              conversationsStore.activeConversation?.messages?.[index - 1],
+            )
+          "
+          :date="message.created_at"
+        />
+
         <MessageV2 :message="message" @open-image-gallery="openImageGallery" />
+
+        <NewMessagesDivider v-if="shouldShowDividerAfterMessage(index)" />
+      </div>
+
+      <div
+        v-for="tempMessage in currentTempMessages"
+        :key="tempMessage.clientMessageUid"
+      >
+        <TempMessageV2 :temp-message="tempMessage" />
       </div>
     </div>
 

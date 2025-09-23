@@ -256,11 +256,11 @@ export const useConversationsStore = defineStore("conversations", () => {
 
       if (activeConversation.value) {
         if (!mergedParams.page || mergedParams.page === 1) {
-          activeConversation.value.messages = response.data;
+          activeConversation.value.messages = response.data.reverse();
         } else {
           activeConversation.value.messages = [
+            ...response.data.reverse(),
             ...activeConversation.value.messages,
-            ...response.data,
           ];
         }
       }
@@ -447,7 +447,7 @@ export const useConversationsStore = defineStore("conversations", () => {
       if (!activeConversation.value.messages) {
         activeConversation.value.messages = [];
       }
-      activeConversation.value.messages.unshift(message);
+      activeConversation.value.messages.push(message);
 
       const conversation = findConversation(entityType, entityId);
       if (conversation) {
@@ -500,7 +500,7 @@ export const useConversationsStore = defineStore("conversations", () => {
   };
 
   const addTempMessage = (tempMessage: TempMessage) => {
-    tempMessages.value.unshift(tempMessage);
+    tempMessages.value.push(tempMessage);
   };
 
   const updateTempMessageStatus = (
@@ -516,7 +516,6 @@ export const useConversationsStore = defineStore("conversations", () => {
       if (error) message.error = error;
     }
   };
-
 
   const findAndRemoveTempMessage = (
     clientMessageUid: string,
@@ -537,7 +536,6 @@ export const useConversationsStore = defineStore("conversations", () => {
 
     return null;
   };
-
 
   const { bindEvent } = usePusher();
   bindEvent(
