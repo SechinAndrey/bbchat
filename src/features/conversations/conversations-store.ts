@@ -6,7 +6,7 @@ import type {
   ConversationParams,
   MessageParams,
 } from "./conversations-service";
-import type { EntityType } from "@src/shared/types/common";
+import type { EntityType, ContragentType } from "@src/shared/types/common";
 import type {
   ApiResponseMeta,
   ApiCommunicationEntityFull,
@@ -16,11 +16,22 @@ import type {
 import type { IConversation } from "@src/shared/types/types";
 import { adaptApiCommunicationToIConversation } from "@src/api/communication-adapters";
 import { usePusher } from "@src/shared/composables/usePusher";
-import { useAuthStore } from "@src/features/auth/store/auth-store";
+
+export interface TempMessage {
+  clientMessageUid: string;
+  message: string;
+  fileUrl?: string;
+  messengerId: number;
+  status: "sending" | "sent" | "error";
+  timestamp: Date;
+  contragentType: ContragentType;
+  contragentId: number;
+  phone: string;
+  error?: string;
+}
 
 export const useConversationsStore = defineStore("conversations", () => {
   const route = useRoute();
-  const authStore = useAuthStore();
 
   const conversations = ref<Record<EntityType, IConversation[]>>({
     leads: [],
@@ -63,6 +74,9 @@ export const useConversationsStore = defineStore("conversations", () => {
     page: 1,
     search: "",
   });
+
+  // Temporary messages for optimistic updates
+  const tempMessages = ref<TempMessage[]>([]);
 
   const hasMore = computed(() => (entity: EntityType) => {
     const entityMeta = meta.value[entity];
@@ -400,11 +414,8 @@ export const useConversationsStore = defineStore("conversations", () => {
     }
   };
 
-  /**
-   * Check if message is sent by current user (outgoing message)
-   */
   const isOutgoingMessage = (message: ApiMessageItem): boolean => {
-    return message.user_id === authStore.currentUser?.id;
+    return !!message.user_id;
   };
 
   const addMessageToConversation = async (message: ApiMessageItem) => {
@@ -488,6 +499,46 @@ export const useConversationsStore = defineStore("conversations", () => {
     }
   };
 
+  const addTempMessage = (tempMessage: TempMessage) => {
+    tempMessages.value.unshift(tempMessage);
+  };
+
+  const updateTempMessageStatus = (
+    clientMessageUid: string,
+    status: TempMessage["status"],
+    error?: string,
+  ) => {
+    const message = tempMessages.value.find(
+      (msg) => msg.clientMessageUid === clientMessageUid,
+    );
+    if (message) {
+      message.status = status;
+      if (error) message.error = error;
+    }
+  };
+
+
+  const findAndRemoveTempMessage = (
+    clientMessageUid: string,
+  ): TempMessage | null => {
+    const index = tempMessages.value.findIndex(
+      (msg) => msg.clientMessageUid === clientMessageUid,
+    );
+
+    if (index !== -1) {
+      const tempMessage = tempMessages.value[index];
+      tempMessages.value.splice(index, 1);
+      console.log(
+        "✅ Removed temp message with client_message_uid:",
+        clientMessageUid,
+      );
+      return tempMessage;
+    }
+
+    return null;
+  };
+
+
   const { bindEvent } = usePusher();
   bindEvent(
     "e-chat-notification",
@@ -498,13 +549,41 @@ export const useConversationsStore = defineStore("conversations", () => {
       contragent_id: number | null;
       contragent_type: EntityType | null;
     }) => {
+      console.log("📨 Received Pusher new-message event:", data);
       try {
         const messageItem = await conversationsService.getMessageById(data.id);
-        console.log("Fetched message item:", messageItem);
-
         const isOutgoing = isOutgoingMessage(messageItem);
-        await addMessageToConversation(messageItem);
-        playNotificationSound(isOutgoing);
+
+        // Check for client_message_uid in both locations: top level and inside echat_messages
+        const clientMessageUid =
+          messageItem.client_message_uid ||
+          messageItem.echat_messages?.client_message_uid;
+
+        if (isOutgoing && clientMessageUid) {
+          const removedTempMessage = findAndRemoveTempMessage(clientMessageUid);
+          if (removedTempMessage) {
+            // Replace temp message with real message
+            await addMessageToConversation(messageItem);
+          } else {
+            console.warn(
+              "Could not find temp message with client_message_uid:",
+              clientMessageUid,
+              "- message might already be processed or temp message expired",
+            );
+            // Don't add to conversation to avoid duplicates
+          }
+        } else if (isOutgoing && !clientMessageUid) {
+          console.warn(
+            "Outgoing message without client_message_uid - this should not happen!",
+          );
+          await addMessageToConversation(messageItem);
+        } else {
+          await addMessageToConversation(messageItem);
+        }
+
+        if (!isOutgoing) {
+          playNotificationSound(false);
+        }
       } catch (error) {
         console.error("Error fetching message item from Pusher event:", error);
       }
@@ -587,6 +666,15 @@ export const useConversationsStore = defineStore("conversations", () => {
 
     // Actions - Unread Management
     resetUnreadCount,
+
+    // Actions - Notifications
+    playNotificationSound,
+
+    // Actions - Temporary Messages (Optimistic Updates)
+    tempMessages,
+    addTempMessage,
+    updateTempMessageStatus,
+    findAndRemoveTempMessage,
 
     // Initialization
     initializeRouteWatchers,

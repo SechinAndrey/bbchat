@@ -109,16 +109,15 @@ const hasAttachments = computed(() => attachments.value.length > 0);
 
 async function sendMessage() {
   if (!attachments.value.length) {
+    console.warn("⚠️ Attempted to send message without attachments");
     return;
   }
 
+  const attachment = attachments.value[0];
+  const captionText = caption.value;
+  clean();
   try {
-    await sendMessageWithFile(
-      attachments.value[0],
-      caption.value,
-      props.messengerId,
-    );
-    clean();
+    await sendMessageWithFile(attachment, captionText, props.messengerId);
   } catch (error) {
     console.error("Error sending message with attachment:", error);
   }

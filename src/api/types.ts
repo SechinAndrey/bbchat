@@ -240,6 +240,7 @@ export interface ApiEChatMessage {
   sender_id: string;
   sender_json: string;
   sender_number: string;
+  client_message_uid?: string | null;
   updated_at: string;
 }
 
@@ -268,6 +269,7 @@ export interface ApiMessageItem {
   chaport_message_id: number | null;
   call_id: number | null;
   echat_message_id: number | null;
+  client_message_uid: string | null;
   created_at: string;
   lead: ApiCommunicationLead | null;
   client: ApiCommunicationClient | null;

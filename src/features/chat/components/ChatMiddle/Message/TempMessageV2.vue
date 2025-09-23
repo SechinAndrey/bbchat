@@ -1,0 +1,98 @@
+<script setup lang="ts">
+import { computed } from "vue";
+import { CheckIcon, XMarkIcon } from "@heroicons/vue/24/outline";
+import type { TempMessage } from "@src/features/conversations/conversations-store";
+import { formatDate } from "@src/shared/utils/utils";
+
+const props = defineProps<{
+  tempMessage: TempMessage;
+}>();
+
+const statusIcon = computed(() => {
+  switch (props.tempMessage.status) {
+    case "sending":
+      return CheckIcon;
+    case "sent":
+      return CheckIcon;
+    case "error":
+      return XMarkIcon;
+    default:
+      return CheckIcon;
+  }
+});
+
+const showDoubleCheck = computed(() => {
+  return props.tempMessage.status === "sent";
+});
+
+const statusColor = computed(() => {
+  switch (props.tempMessage.status) {
+    case "sending":
+      return "text-gray-400";
+    case "sent":
+      return "text-blue-500";
+    case "error":
+      return "text-red-500";
+    default:
+      return "text-gray-400";
+  }
+});
+
+const messengerIcon = computed(() => {
+  return props.tempMessage.messengerId === 1
+    ? "/imgs/telegram.png"
+    : "/imgs/viber.png";
+});
+
+const messengerName = computed(() => {
+  return props.tempMessage.messengerId === 1 ? "Telegram" : "Viber";
+});
+</script>
+
+<template>
+  <div class="flex items-start gap-4 py-3 px-4 justify-end">
+    <!-- Message body -->
+    <div class="flex gap-3 items-end">
+      <!-- Message content -->
+      <div
+        class="bg-app-bg-secondary rounded-2xl rounded-tr-sm px-4 py-3 max-w-md relative"
+      >
+        <!-- Message text -->
+        <div class="text-[0.8125rem] leading-relaxed relative pr-6">
+          <div class="whitespace-pre-line">{{ tempMessage.message }}</div>
+
+          <!-- Messenger icon -->
+          <img
+            :src="messengerIcon"
+            :alt="messengerName"
+            class="absolute bottom-0 right-0 w-4 h-4 rounded-full bg-cover bg-center"
+          />
+        </div>
+
+        <!-- Status indicator -->
+        <div
+          class="absolute text-xs bottom-0 -right-[0.2rem]"
+          :class="statusColor"
+        >
+          <component :is="statusIcon" class="w-4 h-4" />
+          <component
+            :is="statusIcon"
+            v-if="showDoubleCheck"
+            class="w-4 h-4 absolute top-0 left-[0.188rem]"
+          />
+        </div>
+      </div>
+
+      <div class="flex items-end gap-1">
+        <div class="text-[0.625rem] font-light text-text-secondary">
+          {{
+            formatDate(tempMessage.timestamp, {
+              hour: "numeric",
+              minute: "numeric",
+            })
+          }}
+        </div>
+      </div>
+    </div>
+  </div>
+</template>

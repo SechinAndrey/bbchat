@@ -7,6 +7,7 @@ import { useRoute } from "vue-router";
 
 import useStore from "@src/shared/store/store";
 import MessageV2 from "@src/features/chat/components/ChatMiddle/Message/MessageV2.vue";
+import TempMessageV2 from "@src/features/chat/components/ChatMiddle/Message/TempMessageV2.vue";
 import NewMessagesDivider from "@src/features/chat/components/ChatMiddle/NewMessagesDivider.vue";
 import SimpleMediaModal from "@src/ui/data-display/SimpleMediaModal.vue";
 import { isImage } from "@src/shared/utils/media";
@@ -14,6 +15,7 @@ import { useConversationsStore } from "@src/features/conversations/conversations
 import Spinner from "@src/ui/states/loading-states/Spinner.vue";
 import NoChatSelected from "@src/ui/states/empty-states/NoChatSelected.vue";
 import type { EntityType } from "@src/shared/types/common";
+import { ENTITY_TO_CONTRAGENT_MAP } from "@src/shared/types/common";
 import TimelineDivider from "@src/features/chat/components/ChatMiddle/TimelineDivider.vue";
 
 const store = useStore();
@@ -61,6 +63,33 @@ const currentConversation = computed(() => {
 
 const unreadCount = computed(() => {
   return currentConversation.value?.unread || 0;
+});
+
+// Separate computed for better performance
+const currentContragentType = computed(() =>
+  currentEntity.value ? ENTITY_TO_CONTRAGENT_MAP[currentEntity.value] : null,
+);
+
+const currentPhone = computed(
+  () => conversationsStore.activeConversation?.phone,
+);
+
+const currentTempMessages = computed(() => {
+  if (
+    !currentEntity.value ||
+    !currentId.value ||
+    !currentPhone.value ||
+    !currentContragentType.value
+  ) {
+    return [];
+  }
+
+  return conversationsStore.tempMessages.filter(
+    (msg) =>
+      msg.contragentType === currentContragentType.value &&
+      msg.contragentId === currentId.value &&
+      msg.phone === currentPhone.value,
+  );
 });
 
 const shouldShowDividerAfterMessage = (messageIndex: number) => {
@@ -172,13 +201,16 @@ onMounted(() => {
 });
 
 watch(
-  () => conversationsStore.activeConversation?.messages,
+  () => [
+    conversationsStore.activeConversation?.messages,
+    currentTempMessages.value,
+  ],
   () => {
     if (!isLoadingMore.value) {
       scrollToBottom();
     }
   },
-  { immediate: true },
+  { immediate: true, deep: true },
 );
 </script>
 
@@ -195,14 +227,21 @@ watch(
     <div
       v-if="
         store.status !== 'loading' &&
-        conversationsStore.activeConversation?.messages &&
-        conversationsStore.activeConversation.messages.length
+        (conversationsStore.activeConversation?.messages?.length ||
+          currentTempMessages.length)
       "
       class="flex flex-col-reverse"
     >
       <div
+        v-for="tempMessage in currentTempMessages"
+        :key="tempMessage.clientMessageUid"
+      >
+        <TempMessageV2 :temp-message="tempMessage" />
+      </div>
+
+      <div
         v-for="(message, index) in conversationsStore.activeConversation
-          .messages"
+          ?.messages || []"
         :key="message.id"
       >
         <NewMessagesDivider v-if="shouldShowDividerAfterMessage(index)" />
@@ -211,7 +250,7 @@ watch(
           v-if="
             shouldShowTimelineDivider(
               message,
-              conversationsStore.activeConversation.messages[index + 1],
+              conversationsStore.activeConversation?.messages?.[index + 1],
             )
           "
           :date="message.created_at"

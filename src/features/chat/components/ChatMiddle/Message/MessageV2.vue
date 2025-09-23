@@ -8,6 +8,7 @@ import {
   ChevronDownIcon,
   ChevronUpIcon,
 } from "@heroicons/vue/24/solid";
+import { CheckIcon } from "@heroicons/vue/24/outline";
 import linkifyStr from "linkify-string";
 import MediaPreview from "@src/features/chat/components/ChatMiddle/Message/MediaPreview.vue";
 import ConversationAvatar from "@src/shared/components/ConversationAvatar.vue";
@@ -118,9 +119,8 @@ const formatMessageText = (text: string) => {
     <!-- Message body -->
     <div class="flex gap-3 items-end">
       <!-- Message content -->
-
       <div
-        class="bg-app-bg-secondary rounded-2xl rounded-tl-sm px-4 py-3 max-w-md transition-all duration-300"
+        class="relative bg-app-bg-secondary rounded-2xl rounded-tl-sm px-4 py-3 max-w-md transition-all duration-300"
         :class="{
           'w-[225px]': call && !isCallDetailsExpanded,
           'w-[260px]': call && isCallDetailsExpanded,
@@ -227,11 +227,23 @@ const formatMessageText = (text: string) => {
             </div>
           </Transition>
         </div>
+
+        <div
+          v-if="isSelf"
+          class="absolute text-xs bottom-0 -right-[0.2rem]"
+          style="color: #3b82f6"
+        >
+          <CheckIcon class="w-4 h-4" />
+          <CheckIcon class="w-4 h-4 absolute top-0 left-[0.188rem]" />
+        </div>
       </div>
       <!-- Time -->
       <div class="text-[0.625rem] font-light text-text-secondary">
         {{
-          formatDate(message.created_at, { hour: "numeric", minute: "numeric" })
+          formatDate(message.created_at, {
+            hour: "numeric",
+            minute: "numeric",
+          })
         }}
       </div>
     </div>

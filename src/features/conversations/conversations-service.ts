@@ -31,6 +31,7 @@ export interface SendMessageParams {
   messenger_id: number;
   contragent_type: "lead" | "client" | "supplier";
   contragent_id: number;
+  client_message_uid: string;
 }
 
 interface EntityConfig {

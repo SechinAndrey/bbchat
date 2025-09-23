@@ -78,9 +78,11 @@ async function handleSendMessage() {
     return;
   }
 
+  const messageText = value.value;
+  value.value = "";
+
   try {
-    await sendMessage(value.value, messengerId.value);
-    value.value = "";
+    await sendMessage(messageText, messengerId.value);
   } catch (error) {
     console.error("Error sending message:", error);
   }
