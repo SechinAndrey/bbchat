@@ -110,12 +110,14 @@ const handleCancel = () => {
               v-model="name"
               label="Найменування"
               placeholder="Binotel #2234"
+              name="company-name"
               bordered
             />
             <LabeledTextInput
               v-model="fio"
               label="Ім'я"
               placeholder="Іван Іванов"
+              name="contact-name"
               bordered
             />
           </div>
@@ -127,6 +129,7 @@ const handleCancel = () => {
               label="E-mail"
               type="email"
               placeholder="example@mail.com"
+              name="contact-email"
               bordered
             />
             <LabeledTextInput
@@ -134,6 +137,7 @@ const handleCancel = () => {
               label="Телефон"
               type="tel"
               placeholder="+380123456789"
+              name="contact-phone"
               bordered
             />
           </div>
@@ -144,6 +148,7 @@ const handleCancel = () => {
               v-model="tgName"
               label="Профіль в Telegram"
               placeholder="@tg_name"
+              name="contact-telegram-nickname"
               bordered
             />
             <AutocompleteSelect
@@ -152,6 +157,7 @@ const handleCancel = () => {
               label="Місто"
               placeholder="Виберіть місто"
               variant="bordered"
+              name="contact-city"
               searchable
             />
           </div>
@@ -167,6 +173,7 @@ const handleCancel = () => {
               variant="bordered"
               bordered
               auto-resize
+              name="comment"
               :rows="4"
             />
           </div>
