@@ -10,6 +10,7 @@ import {
   ArrowPathIcon,
   WindowIcon,
   ListBulletIcon,
+  CubeIcon,
 } from "@heroicons/vue/24/outline";
 
 const props = defineProps({
@@ -26,6 +27,7 @@ const navigationItems = [
   { id: "transitions", name: "Transitions", icon: ArrowPathIcon },
   { id: "modals", name: "Modals", icon: WindowIcon },
   { id: "dropdown", name: "Dropdowns", icon: ListBulletIcon },
+  { id: "composables", name: "Composables", icon: CubeIcon },
 ];
 
 const handleTabChange = function (tabId: string): void {
@@ -44,8 +46,8 @@ const toggleMobileMenu = function () {
     <!-- mobile -->
     <div class="md:hidden bg-white dark:bg-gray-800 p-4 sticky top-0 z-10">
       <div
-        @click="toggleMobileMenu"
         class="flex items-center justify-between cursor-pointer"
+        @click="toggleMobileMenu"
       >
         <h2 class="font-medium">
           {{ navigationItems.find((item) => item.id === activeTab)?.name }}
@@ -71,15 +73,15 @@ const toggleMobileMenu = function () {
         <template v-for="item in navigationItems" :key="item.id">
           <a
             href="#"
-            @click.prevent="
-              handleTabChange(item.id);
-              toggleMobileMenu();
-            "
             class="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600"
             :class="{
               'bg-primary-hover/10 dark:bg-primary-hover/30':
                 activeTab === item.id,
             }"
+            @click.prevent="
+              handleTabChange(item.id);
+              toggleMobileMenu();
+            "
           >
             <div class="flex items-center">
               <component :is="item.icon" class="w-5 h-5 mr-2" />
@@ -96,13 +98,13 @@ const toggleMobileMenu = function () {
         <h2 class="text-xl font-bold mb-4">UI Kit</h2>
         <template v-for="item in navigationItems" :key="item.id">
           <button
-            @click="handleTabChange(item.id)"
             class="text-left px-3 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out"
             :class="
               activeTab === item.id
                 ? 'bg-primary-hover/10 text-primary dark:bg-primary-hover/30 dark:text-primary'
                 : ' hover:bg-gray-100 dark:hover:bg-gray-700'
             "
+            @click="handleTabChange(item.id)"
           >
             <div class="flex items-center">
               <component :is="item.icon" class="w-5 h-5 mr-2" />

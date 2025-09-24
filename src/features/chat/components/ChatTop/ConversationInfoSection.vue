@@ -14,7 +14,7 @@ import ConversationAvatar from "@src/shared/components/ConversationAvatar.vue";
 import useConversationsStore from "@src/features/conversations/conversations-store";
 import { useDebounceFn } from "@vueuse/core";
 import { computed, inject, ref, type Ref } from "vue";
-import { toast, type ToastOptions } from "vue3-toastify";
+import { useToast } from "@src/shared/composables/useToast";
 import type { EntityType } from "@src/shared/types/common";
 import VuePopper from "@kalimahapps/vue-popper";
 import LeadActionModal from "./LeadActionModal.vue";
@@ -25,6 +25,7 @@ const contactId = inject<Ref<number>>("contactId");
 
 const store = useStore();
 const conversationsStore = useConversationsStore();
+const { toastSuccess, toastError } = useToast();
 
 const handleCloseConversation = () => {
   router.push({ path: "/chat/" });
@@ -47,19 +48,10 @@ const endConversation = async () => {
     await conversationsStore.updateConversation(entity.value, id.value, {
       communication_status_id: 2, // 2 - completed
     });
-    toast("Діалог завершено", {
-      autoClose: 2000,
-      type: "success",
-      position: toast.POSITION.BOTTOM_RIGHT,
-      theme: store.settings.darkMode ? "dark" : "light",
-    } as ToastOptions);
+    toastSuccess("Діалог завершено");
   } catch (error) {
     console.error("Error ending conversation:", error);
-    toast("Не вдалося завершити діалог", {
-      position: toast.POSITION.BOTTOM_RIGHT,
-      type: "error",
-      theme: store.settings.darkMode ? "dark" : "light",
-    } as ToastOptions);
+    toastError("Не вдалося завершити діалог");
   } finally {
     isLoading.value = false;
   }

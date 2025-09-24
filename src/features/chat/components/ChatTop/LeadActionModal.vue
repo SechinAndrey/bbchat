@@ -7,8 +7,7 @@ import useGlobalDataStore from "@src/shared/store/global-data-store";
 import leadActionsService, {
   type LeadActionType,
 } from "@src/shared/services/lead-actions-service";
-import { toast, type ToastOptions } from "vue3-toastify";
-import useStore from "@src/shared/store/store";
+import { useToast } from "@src/shared/composables/useToast";
 
 const props = defineProps<{
   open: boolean;
@@ -22,7 +21,7 @@ const selectedItemId = ref<string | number>("");
 const isLoading = ref(false);
 
 const globalDataStore = useGlobalDataStore();
-const store = useStore();
+const { toastSuccess, toastError } = useToast();
 
 const actionConfig = computed(() => {
   switch (props.actionType) {
@@ -64,6 +63,7 @@ const actionConfig = computed(() => {
         subtitle: "",
         placeholder: "",
         label: "",
+        successMessage: "",
       };
   }
 });
@@ -138,21 +138,11 @@ const handleSubmit = async () => {
 
     if (response.status === 200) {
       // TODO: update url after ufter successful action
-      toast(actionConfig.value.successMessage, {
-        autoClose: 2000,
-        type: "success",
-        position: toast.POSITION.BOTTOM_RIGHT,
-        theme: store.settings.darkMode ? "dark" : "light",
-      } as ToastOptions);
+      toastSuccess(actionConfig.value.successMessage);
       close();
     }
   } catch (error) {
-    toast("Помилка, щось пішло не так", {
-      autoClose: 2000,
-      type: "error",
-      position: toast.POSITION.BOTTOM_RIGHT,
-      theme: store.settings.darkMode ? "dark" : "light",
-    } as ToastOptions);
+    toastError("Помилка, щось пішло не так");
     console.error("Lead action error:", error);
   } finally {
     isLoading.value = false;

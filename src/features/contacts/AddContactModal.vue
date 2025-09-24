@@ -8,8 +8,7 @@ import {
   contactsService,
   type CreateContactRequest,
 } from "@src/api/contacts-service";
-import { toast, type ToastOptions } from "vue3-toastify";
-import useStore from "@src/shared/store/store";
+import { useToast } from "@src/shared/composables/useToast";
 import useGlobalDataStore from "@src/shared/store/global-data-store";
 import { extractValidationErrors } from "@src/shared/utils/utils";
 
@@ -27,7 +26,7 @@ interface Emits {
 const props = defineProps<Props>();
 const emit = defineEmits<Emits>();
 
-const store = useStore();
+const { toastError } = useToast();
 const globalDataStore = useGlobalDataStore();
 
 const isLoading = ref(false);
@@ -95,12 +94,7 @@ const handleSubmit = async () => {
     clean();
   } catch (error) {
     console.error("Error adding contact:", error);
-    toast(extractValidationErrors(error), {
-      autoClose: 2000,
-      type: "error",
-      position: toast.POSITION.BOTTOM_RIGHT,
-      theme: store.settings.darkMode ? "dark" : "light",
-    } as ToastOptions);
+    toastError(extractValidationErrors(error));
   } finally {
     isLoading.value = false;
   }

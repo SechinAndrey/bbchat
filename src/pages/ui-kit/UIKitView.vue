@@ -13,6 +13,7 @@ import StatesTab from "./components/StatesTab.vue";
 import TransitionsTab from "./components/TransitionsTab.vue";
 import ModalsTab from "./components/ModalsTab.vue";
 import DropdownTab from "./components/DropdownTab.vue";
+import ComposablesTab from "./components/ComposablesTab.vue";
 
 const activeTab = ref("inputs");
 
@@ -28,6 +29,7 @@ const tabComponents: Record<string, Component> = {
   transitions: TransitionsTab,
   modals: ModalsTab,
   dropdown: DropdownTab,
+  composables: ComposablesTab,
 };
 </script>
 
