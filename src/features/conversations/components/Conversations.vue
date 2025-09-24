@@ -31,13 +31,16 @@ import SlideTransition from "@src/ui/transitions/SlideTransition.vue";
 import Select from "@src/ui/inputs/Select.vue";
 import flemeIcon from "@src/ui/icons/flemeIcon.vue";
 import clientIcon from "@src/ui/icons/clientIcon.vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import type { EntityType } from "@src/shared/types/common";
 import EmptyState from "@src/ui/states/empty-states/EmptyState.vue";
+import { useToast } from "@src/shared/composables/useToast";
 
 const route = useRoute();
+const router = useRouter();
 const id = ref<number | null>(null);
 const entity = ref<EntityType>("leads");
+const { toastSuccess } = useToast();
 
 const initializeFromRoute = () => {
   if (route.params.id) {
@@ -216,8 +219,28 @@ const closeNewLeadModal = () => {
 };
 
 const handleNewLeadSubmit = async (leadData: CreateLeadRequest) => {
-  await conversationsService.createLead(leadData);
-  closeNewLeadModal();
+  try {
+    const newLead = await conversationsService.createLead(leadData);
+
+    conversationsStore.addNewConversation("leads", newLead);
+    closeNewLeadModal();
+
+    if (newLead.contacts && newLead.contacts.length > 0) {
+      const firstContact = newLead.contacts[0];
+      await router.push({
+        name: "Chat",
+        params: {
+          entity: "leads",
+          id: newLead.id.toString(),
+          contactId: firstContact.id.toString(),
+        },
+      });
+
+      toastSuccess("Лід успішно створений");
+    }
+  } catch (error) {
+    console.error("Failed to create lead:", error);
+  }
 };
 </script>
 

@@ -414,6 +414,22 @@ export const useConversationsStore = defineStore("conversations", () => {
     }
   };
 
+  /**
+   * Add new conversation to the top of the list
+   * @example addNewConversation('leads', newLeadData)
+   */
+  const addNewConversation = (
+    entityType: EntityType,
+    entityData: ApiCommunicationEntityFull,
+  ): IConversation => {
+    const adaptedConversation = adaptApiCommunicationToIConversation({
+      ...entityData,
+      entity: entityType,
+    } as any);
+    conversations.value[entityType].unshift(adaptedConversation);
+    return adaptedConversation;
+  };
+
   const isOutgoingMessage = (message: ApiMessageItem): boolean => {
     return !!message.user_id;
   };
@@ -661,6 +677,7 @@ export const useConversationsStore = defineStore("conversations", () => {
     updateConversation,
     updateLead,
     changeLeadStatus,
+    addNewConversation,
 
     // Actions - Unread Management
     resetUnreadCount,
