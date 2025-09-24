@@ -37,6 +37,7 @@ function callTypeIcon(call: ApiCommunicationCallInfo) {
     <EmptyState
       v-if="!activeConversation?.calls.length"
       :icon="PhoneIcon"
+      bg
       title="Дзвінків немає"
     />
     <div class="space-y-3">

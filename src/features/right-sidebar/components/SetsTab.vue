@@ -120,6 +120,7 @@ if (entity.value && id.value) {
 
       <EmptyState
         v-else
+        bg
         :icon="RectangleStackIcon"
         title="Добірок немає"
         class="py-5 rounded"

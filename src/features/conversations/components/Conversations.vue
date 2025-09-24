@@ -345,6 +345,7 @@ const handleNewLeadSubmit = async (leadData: CreateLeadRequest) => {
           <div v-else>
             <EmptyState
               :icon="ChatBubbleBottomCenterIcon"
+              bg
               title="Чати не знайдено"
               class="mx-5"
             />

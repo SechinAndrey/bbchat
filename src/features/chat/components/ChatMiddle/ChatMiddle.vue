@@ -5,7 +5,6 @@ import { onMounted, ref, watch, nextTick, computed } from "vue";
 import { useInfiniteScroll } from "@vueuse/core";
 import { useRoute } from "vue-router";
 
-import useStore from "@src/shared/store/store";
 import MessageV2 from "@src/features/chat/components/ChatMiddle/Message/MessageV2.vue";
 import TempMessageV2 from "@src/features/chat/components/ChatMiddle/Message/TempMessageV2.vue";
 import NewMessagesDivider from "@src/features/chat/components/ChatMiddle/NewMessagesDivider.vue";
@@ -13,14 +12,15 @@ import SimpleMediaModal from "@src/ui/data-display/SimpleMediaModal.vue";
 import { isImage } from "@src/shared/utils/media";
 import { useConversationsStore } from "@src/features/conversations/conversations-store";
 import Spinner from "@src/ui/states/loading-states/Spinner.vue";
-import NoChatSelected from "@src/ui/states/empty-states/NoChatSelected.vue";
+import EmptyState from "@src/ui/states/empty-states/EmptyState.vue";
+import LoadingState from "@src/ui/states/loading-states/LoadingState.vue";
 import type { EntityType } from "@src/shared/types/common";
 import { ENTITY_TO_CONTRAGENT_MAP } from "@src/shared/types/common";
 import TimelineDivider from "@src/features/chat/components/ChatMiddle/TimelineDivider.vue";
 import type { ApiMessageItem } from "@src/api/types";
 import type { IConversation } from "@src/shared/types/types";
+import { ChatBubbleLeftRightIcon } from "@heroicons/vue/24/outline";
 
-const store = useStore();
 const conversationsStore = useConversationsStore();
 const route = useRoute();
 
@@ -228,23 +228,6 @@ watch(
       class="flex justify-center py-4"
     />
 
-    <!-- Loading состояние при переключении чатов -->
-    <div
-      v-if="
-        conversationsStore.isLoadingMessages &&
-        conversationsStore.activeConversation &&
-        !conversationsStore.activeConversation.messages?.length
-      "
-      class="flex items-center justify-center h-full"
-    >
-      <div class="flex flex-col items-center space-y-3">
-        <Spinner size="md" />
-        <p class="text-app-text-secondary text-sm">
-          Завантаження повідомлень...
-        </p>
-      </div>
-    </div>
-
     <div
       class="flex flex-col transition-opacity duration-300"
       :class="
@@ -296,7 +279,22 @@ watch(
       "
       class="flex items-center justify-center h-full"
     >
-      <NoChatSelected title="Повідомлень немає" text="" />
+      <EmptyState :icon="ChatBubbleLeftRightIcon" title="Повідомлень немає" />
+    </div>
+
+    <div
+      v-if="
+        conversationsStore.isLoadingMessages &&
+        conversationsStore.activeConversation &&
+        !conversationsStore.activeConversation.messages?.length
+      "
+      class="flex items-center justify-center h-full"
+    >
+      <LoadingState
+        :icon="ChatBubbleLeftRightIcon"
+        title="Завантаження повідомлень..."
+        :loading="true"
+      />
     </div>
 
     <SimpleMediaModal

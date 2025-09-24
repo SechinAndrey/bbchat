@@ -6,6 +6,7 @@ const props = withDefaults(
     icon?: Component;
     title?: string;
     text?: string;
+    bg?: boolean;
   }>(),
   {
     title: "",
@@ -16,7 +17,10 @@ const props = withDefaults(
 
 <template>
   <div
-    class="flex flex-col justify-center items-center bg-app-bg p-6 rounded text-center"
+    :class="[
+      'flex flex-col justify-center items-center p-6 rounded text-center',
+      { 'bg-app-bg': props.bg },
+    ]"
   >
     <div
       v-if="props.icon"
