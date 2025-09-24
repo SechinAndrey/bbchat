@@ -11,6 +11,11 @@ import {
 import { useToast } from "@src/shared/composables/useToast";
 import useGlobalDataStore from "@src/shared/store/global-data-store";
 import { extractValidationErrors } from "@src/shared/utils/utils";
+import { CONTRAGENT_TO_ENTITY_MAP } from "@src/shared/types/common";
+import type { ApiCommunicationLead } from "@src/api/types";
+import { useConversationsStore } from "@src/features/conversations/conversations-store";
+import { useRouter } from "vue-router";
+import { adaptApiCommunicationToIConversation } from "@src/api/communication-adapters";
 
 interface Props {
   open: boolean;
@@ -20,14 +25,16 @@ interface Props {
 }
 
 interface Emits {
-  (e: "contactAdded"): void;
+  (e: "contactAdded", contact: ApiCommunicationLead): void;
 }
 
 const props = defineProps<Props>();
 const emit = defineEmits<Emits>();
 
-const { toastError } = useToast();
+const { toastError, toastSuccess } = useToast();
 const globalDataStore = useGlobalDataStore();
+const conversationsStore = useConversationsStore();
+const router = useRouter();
 
 const isLoading = ref(false);
 
@@ -53,17 +60,6 @@ const clean = () => {
   props.closeModal();
 };
 
-const getEntityApiEndpoint = (entityType: "client" | "lead" | "supplier") => {
-  switch (entityType) {
-    case "client":
-      return "clients";
-    case "supplier":
-      return "suppliers";
-    case "lead":
-      return "leads";
-  }
-};
-
 const handleSubmit = async () => {
   if (!isFormValid.value || isLoading.value) return;
 
@@ -84,14 +80,41 @@ const handleSubmit = async () => {
       contactData.post_id = selectedJobTitleId.value;
     }
 
-    await contactsService.addContactToEntity(
-      getEntityApiEndpoint(props.entityType),
+    const contactResponse = await contactsService.addContactToEntity(
+      CONTRAGENT_TO_ENTITY_MAP[props.entityType],
       props.entityId,
       contactData,
     );
 
-    emit("contactAdded");
+    if (!contactResponse?.id) {
+      throw new Error("Invalid response from server");
+    }
+
+    const entityTypeForStore = CONTRAGENT_TO_ENTITY_MAP[props.entityType];
+    const entityData: ApiCommunicationLead = {
+      ...contactResponse,
+      messages: contactResponse.messages || [],
+    };
+
+    conversationsStore.addNewConversation(entityTypeForStore, entityData);
+
+    emit("contactAdded", contactResponse);
     clean();
+
+    if (contactResponse.contacts && contactResponse.contacts.length > 0) {
+      const newContact =
+        contactResponse.contacts[contactResponse.contacts.length - 1];
+      await router.push({
+        name: "Chat",
+        params: {
+          entity: entityTypeForStore,
+          id: props.entityId.toString(),
+          contactId: newContact.id.toString(),
+        },
+      });
+
+      toastSuccess("Контакт успішно додано");
+    }
   } catch (error) {
     console.error("Error adding contact:", error);
     toastError(extractValidationErrors(error));
@@ -139,6 +162,7 @@ const jobTitleOptions = computed(() => {
                 label="ФИО"
                 placeholder="Іван Іванов"
                 bordered
+                name="fullName"
                 :disabled="isLoading"
               />
               <AutocompleteSelect
@@ -148,6 +172,7 @@ const jobTitleOptions = computed(() => {
                 placeholder="Оберіть посаду..."
                 variant="bordered"
                 searchable
+                name="jobTitle"
               />
             </div>
 
@@ -159,6 +184,7 @@ const jobTitleOptions = computed(() => {
                 placeholder="+380123456789"
                 bordered
                 :disabled="isLoading"
+                name="phone"
               />
               <LabeledTextInput
                 v-model="email"
@@ -167,6 +193,7 @@ const jobTitleOptions = computed(() => {
                 placeholder="example@mail.com"
                 bordered
                 :disabled="isLoading"
+                name="email"
               />
             </div>
           </template>
@@ -179,6 +206,7 @@ const jobTitleOptions = computed(() => {
                 placeholder="Іван Іванов"
                 bordered
                 :disabled="isLoading"
+                name="fullName"
               />
               <LabeledTextInput
                 v-model="phone"
@@ -187,6 +215,7 @@ const jobTitleOptions = computed(() => {
                 placeholder="+380123456789"
                 bordered
                 :disabled="isLoading"
+                name="phone"
               />
             </div>
 
@@ -198,6 +227,7 @@ const jobTitleOptions = computed(() => {
                 placeholder="example@mail.com"
                 bordered
                 :disabled="isLoading"
+                name="email"
               />
             </div>
           </template>

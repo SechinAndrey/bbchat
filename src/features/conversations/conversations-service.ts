@@ -3,6 +3,7 @@ import type {
   ApiCommunicationResponse,
   ApiCommunicationEntityResponse,
   ApiCommunicationEntityFull,
+  ApiCommunicationLead,
   ApiMessagesResponse,
   ApiMessageItem,
   CreateLeadRequest,
@@ -229,11 +230,9 @@ export class ConversationsService {
    * Create new lead
    * @example const lead = await service.createLead({ name: 'John', ... })
    */
-  async createLead(
-    leadData: CreateLeadRequest,
-  ): Promise<ApiCommunicationEntityFull> {
+  async createLead(leadData: CreateLeadRequest): Promise<ApiCommunicationLead> {
     try {
-      const response = await apiClient.post<ApiCommunicationEntityFull>(
+      const response = await apiClient.post<ApiCommunicationLead>(
         "/leads",
         leadData,
       );

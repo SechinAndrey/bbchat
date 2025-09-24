@@ -10,6 +10,7 @@ import type { EntityType, ContragentType } from "@src/shared/types/common";
 import type {
   ApiResponseMeta,
   ApiCommunicationEntityFull,
+  ApiCommunicationLead,
   ApiMessageItem,
   UpdateLeadRequest,
 } from "@src/api/types";
@@ -418,7 +419,7 @@ export const useConversationsStore = defineStore("conversations", () => {
    */
   const addNewConversation = (
     entityType: EntityType,
-    entityData: ApiCommunicationEntityFull,
+    entityData: ApiCommunicationLead,
   ): IConversation => {
     const adaptedConversation = adaptApiCommunicationToIConversation({
       ...entityData,

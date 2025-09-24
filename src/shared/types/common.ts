@@ -7,3 +7,9 @@ export const ENTITY_TO_CONTRAGENT_MAP: Record<EntityType, ContragentType> = {
   clients: "client",
   suppliers: "supplier",
 } as const;
+
+export const CONTRAGENT_TO_ENTITY_MAP: Record<ContragentType, EntityType> = {
+  lead: "leads",
+  client: "clients",
+  supplier: "suppliers",
+} as const;
