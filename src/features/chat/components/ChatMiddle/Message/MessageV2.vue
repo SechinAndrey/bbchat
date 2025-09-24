@@ -230,8 +230,7 @@ const formatMessageText = (text: string) => {
 
         <div
           v-if="isSelf"
-          class="absolute text-xs bottom-0 -right-[0.2rem]"
-          style="color: #3b82f6"
+          class="absolute text-xs bottom-0 -right-[0.2rem] text-success"
         >
           <CheckIcon class="w-4 h-4" />
           <CheckIcon class="w-4 h-4 absolute top-0 left-[0.188rem]" />

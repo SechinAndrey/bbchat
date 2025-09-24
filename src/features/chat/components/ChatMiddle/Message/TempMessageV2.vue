@@ -28,13 +28,13 @@ const showDoubleCheck = computed(() => {
 const statusColor = computed(() => {
   switch (props.tempMessage.status) {
     case "sending":
-      return "text-gray-400";
+      return "text-app-text-secondary";
     case "sent":
-      return "text-blue-500";
+      return "text-success";
     case "error":
-      return "text-red-500";
+      return "text-danger";
     default:
-      return "text-gray-400";
+      return "text-app-text";
   }
 });
 
