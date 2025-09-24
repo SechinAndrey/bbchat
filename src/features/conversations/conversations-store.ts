@@ -206,8 +206,6 @@ export const useConversationsStore = defineStore("conversations", () => {
    */
   const fetchConversation = async (entity: EntityType, id: number) => {
     isLoadingConversation.value = true;
-    activeConversation.value = null;
-
     try {
       const conversation =
         await conversationsService.getConversationById<ApiCommunicationEntityFull>(

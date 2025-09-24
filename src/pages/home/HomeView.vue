@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import useStore from "@src/shared/store/store";
 
-import FadeTransition from "@src/ui/transitions/FadeTransition.vue";
 import Navigation from "@src/layout/navigation/Navigation.vue";
 import Sidebar from "@src/layout/sidebar/Sidebar.vue";
 import { getActiveConversationId } from "@src/shared/utils/utils";
@@ -32,11 +31,7 @@ const store = useStore();
         "
         role="region"
       >
-        <router-view v-slot="{ Component }">
-          <FadeTransition name="fade" mode="out-in">
-            <component :is="Component" :key="getActiveConversationId()" />
-          </FadeTransition>
-        </router-view>
+        <router-view />
       </div>
     </div>
   </KeepAlive>

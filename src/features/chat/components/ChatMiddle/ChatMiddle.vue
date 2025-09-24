@@ -59,7 +59,8 @@ const currentConversation = computed((): IConversation | null => {
 
   const conversations = conversationsStore.conversations[currentEntity.value];
   return (
-    conversations?.find((conv: IConversation) => conv.id === currentId.value) || null
+    conversations?.find((conv: IConversation) => conv.id === currentId.value) ||
+    null
   );
 });
 
@@ -227,13 +228,31 @@ watch(
       class="flex justify-center py-4"
     />
 
+    <!-- Loading состояние при переключении чатов -->
     <div
       v-if="
-        store.status !== 'loading' &&
-        (conversationsStore.activeConversation?.messages?.length ||
-          currentTempMessages.length)
+        conversationsStore.isLoadingMessages &&
+        conversationsStore.activeConversation &&
+        !conversationsStore.activeConversation.messages?.length
       "
-      class="flex flex-col"
+      class="flex items-center justify-center h-full"
+    >
+      <div class="flex flex-col items-center space-y-3">
+        <Spinner size="md" />
+        <p class="text-app-text-secondary text-sm">
+          Завантаження повідомлень...
+        </p>
+      </div>
+    </div>
+
+    <div
+      class="flex flex-col transition-opacity duration-300"
+      :class="
+        conversationsStore.isLoadingMessages &&
+        conversationsStore.activeConversation?.messages?.length
+          ? 'opacity-50'
+          : 'opacity-100'
+      "
     >
       <div
         v-for="(message, index) in conversationsStore.activeConversation
@@ -268,7 +287,17 @@ watch(
       </div>
     </div>
 
-    <NoChatSelected v-else title="Повідомлень немає" text="" />
+    <div
+      v-if="
+        !conversationsStore.activeConversation?.messages?.length &&
+        !currentTempMessages.length &&
+        !conversationsStore.isLoadingMessages &&
+        !conversationsStore.isLoadingConversation
+      "
+      class="flex items-center justify-center h-full"
+    >
+      <NoChatSelected title="Повідомлень немає" text="" />
+    </div>
 
     <SimpleMediaModal
       :open="isImageGalleryOpen"
