@@ -678,6 +678,7 @@ export const useConversationsStore = defineStore("conversations", () => {
     updateLead,
     changeLeadStatus,
     addNewConversation,
+    loadMissingConversation,
 
     // Actions - Unread Management
     resetUnreadCount,

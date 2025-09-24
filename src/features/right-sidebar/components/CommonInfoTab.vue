@@ -9,21 +9,26 @@ import Button from "@src/ui/inputs/Button.vue";
 import TextInput from "@src/ui/inputs/TextInput.vue";
 import { formatConversationDate } from "@src/shared/utils/utils";
 import useConversationsStore from "@src/features/conversations/conversations-store";
+import { useRouter } from "vue-router";
 import {
   PhoneIcon,
   EnvelopeIcon,
   UserIcon,
   PencilIcon,
   PlusIcon,
+  ChatBubbleLeftIcon,
 } from "@heroicons/vue/24/outline";
 import KanbanSelect from "@src/shared/components/KanbanSelect.vue";
 import AddContactModal from "@src/features/contacts/AddContactModal.vue";
 import { useAuthStore } from "@src/features/auth/store/auth-store";
+import { useToast } from "@src/shared/composables/useToast";
 
 const contactId = inject<Ref<number> | undefined>("contactId");
 const entity = inject<Ref<"leads" | "clients" | "suppliers">>("entity");
 
 const authStore = useAuthStore();
+const router = useRouter();
+const { toastError } = useToast();
 
 const conversationsStore = useConversationsStore();
 const isAddContactModalOpen = ref(false);
@@ -49,6 +54,10 @@ const entityType = computed(() => {
 const entityId = computed(() => {
   return activeConversation.value?.id || 0;
 });
+
+const isCurrentContact = (contact: { id: number }) => {
+  return contactId?.value && contact.id === contactId.value;
+};
 
 const openAddContactModal = () => {
   isAddContactModalOpen.value = true;
@@ -104,6 +113,56 @@ const saveComment = async () => {
   }
 };
 
+const openChatWithContact = async (contactIdToOpen: number) => {
+  if (!activeConversation.value || !entity?.value) {
+    toastError("Не вдалося відкрити чат");
+    return;
+  }
+
+  const entityType = entity.value;
+  const entityId = activeConversation.value.id;
+
+  try {
+    const existingConversation = conversationsStore.conversations[
+      entityType
+    ]?.find((conv) => conv.id === entityId);
+
+    if (existingConversation) {
+      await router.push({
+        name: "Chat",
+        params: {
+          entity: entityType,
+          id: entityId.toString(),
+          contactId: contactIdToOpen.toString(),
+        },
+      });
+    } else {
+      const loadedConversation =
+        await conversationsStore.loadMissingConversation(
+          entityType,
+          entityId,
+          contactIdToOpen,
+        );
+
+      if (loadedConversation) {
+        await router.push({
+          name: "Chat",
+          params: {
+            entity: entityType,
+            id: entityId.toString(),
+            contactId: contactIdToOpen.toString(),
+          },
+        });
+      } else {
+        toastError("Не вдалося завантажити чат");
+      }
+    }
+  } catch (err) {
+    console.error("Error opening chat with contact:", err);
+    toastError("Помилка при відкритті чату");
+  }
+};
+
 const sourceInfo = computed(() => {
   try {
     return JSON.parse(activeConversation.value?.info || "{}");
@@ -121,12 +180,17 @@ const sourceInfo = computed(() => {
     <div
       v-for="contact in activeConversation?.contacts"
       :key="contact.id"
-      class="last:mb-0 border-b border-t border-dashed border-app-border py-3"
+      class="relative last:mb-0 border-b border-t border-dashed border-app-border py-3"
       :class="{
-        'border-primary current-contact': contactId && contact.id === contactId,
+        'border-primary current-contact': isCurrentContact(contact),
       }"
     >
-      <div class="flex items-center gap-2 mb-2">
+      <div
+        :class="[
+          'flex items-center gap-2 mb-2 pr-6',
+          { 'pr-[2.75rem]': isCurrentContact(contact) },
+        ]"
+      >
         <UserIcon class="w-5 h-5 text-primary flex-shrink-0" />
         <span class="text-[0.875rem] truncate">{{
           contact.fio || "Не вказано"
@@ -152,6 +216,21 @@ const sourceInfo = computed(() => {
           {{ activeConversation?.email || "Не вказана" }}
         </a>
       </div>
+
+      <Button
+        v-if="!isCurrentContact(contact)"
+        variant="ghost"
+        size="xs"
+        :ring="false"
+        icon-only
+        class="absolute top-[0.438rem] right-0"
+        :title="`Відкрити чат з ${contact.fio || 'контактом'}`"
+        @click="openChatWithContact(contact.id)"
+      >
+        <template #icon>
+          <ChatBubbleLeftIcon class="w-4 h-4 text-primary" />
+        </template>
+      </Button>
     </div>
 
     <Button variant="text" class="mt-3 ml-2 !px-3" @click="openAddContactModal">
