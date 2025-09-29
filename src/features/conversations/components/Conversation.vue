@@ -21,6 +21,11 @@ import {
   InformationCircleIcon,
   TrashIcon,
 } from "@heroicons/vue/24/outline";
+import {
+  PhoneIcon,
+  PhoneArrowUpRightIcon,
+  PhoneArrowDownLeftIcon,
+} from "@heroicons/vue/24/solid";
 import Dropdown from "@src/ui/navigation/Dropdown/Dropdown.vue";
 import ConversationAvatar from "@src/shared/components/ConversationAvatar.vue";
 
@@ -83,7 +88,12 @@ const echat = computed(() => {
 
 const echatMessage = computed(() => {
   if (typeof echat.value?.message_json === "string") {
-    return JSON.parse(echat.value.message_json);
+    try {
+      const parsed = JSON.parse(echat.value.message_json);
+      return parsed;
+    } catch (error) {
+      return {};
+    }
   }
   return echat.value?.message_json || {};
 });
@@ -121,12 +131,22 @@ const lastMessageText = computed(() => {
     return `Дзвінок ${call.value.billsec}c`;
   } else if (chaport.value?.message) {
     return chaport.value?.message;
+  } else if (echat.value?.message) {
+    return echat.value.message;
   } else if (echatMessage.value?.message) {
     return echatMessage.value.message;
   } else if (echatMessage.value?.media) {
     return "Медіа повідомлення";
   }
   return "";
+});
+
+const callTypeIcon = computed(() => {
+  if (!call.value) return PhoneIcon;
+  // call_type: 0 - incoming, 1 - outgoing
+  return call.value.call_type === 0
+    ? PhoneArrowDownLeftIcon
+    : PhoneArrowUpRightIcon;
 });
 </script>
 
@@ -136,7 +156,7 @@ const lastMessageText = computed(() => {
     <button
       :aria-label="'Комунікація з ' + getName(props.conversation)"
       tabindex="0"
-      class="w-full h-[5.75rem] px-5 py-6 mb-3 flex focus:outline-none transition duration-500 ease-out"
+      class="w-full h-[5.75rem] px-6 py-4 mb-3 flex focus:outline-none transition duration-500 ease-out"
       :class="{
         'bg-app-bg': isActive,
       }"
@@ -159,8 +179,11 @@ const lastMessageText = computed(() => {
         <div class="w-full">
           <!--conversation name-->
           <div class="flex items-start">
-            <div class="grow mb-2 text-start">
-              <p class="line-clamp-2 text-ellipsis overflow-hidden">
+            <div class="grow text-start">
+              <p
+                :title="getName(props.conversation)"
+                class="line-clamp-1 text-ellipsis overflow-hidden"
+              >
                 {{ getName(props.conversation) }}
               </p>
             </div>
@@ -178,7 +201,7 @@ const lastMessageText = computed(() => {
           {{ props.conversation.contacts?.at(0)?.firstName }}
         </div>
 
-        <div class="flex justify-between">
+        <div class="flex justify-between mt-2">
           <div>
             <!--draft Message-->
             <!-- <p
@@ -234,12 +257,41 @@ const lastMessageText = computed(() => {
 
             <p
               v-if="lastMessageText"
-              class="flex justify-start items-center text-[0.688rem]"
+              class="flex justify-start items-center text-[0.688rem] relative pr-6"
               :class="{ 'text-primary': props.conversation.unread }"
             >
+              <component
+                v-if="call"
+                :is="callTypeIcon"
+                class="w-4 h-4 text-blue-500 mr-2"
+              />
+              <img
+                v-else-if="echat?.dialog?.messenger_id"
+                :src="
+                  echat.dialog.messenger_id == 1
+                    ? '/imgs/telegram.png'
+                    : '/imgs/viber.png'
+                "
+                :alt="echat.dialog.messenger_id == 1 ? 'Telegram' : 'Viber'"
+                class="w-4 h-4 rounded-full bg-cover bg-center mr-2"
+              />
+              <img
+                v-else-if="chaport"
+                src="/imgs/chaport.png"
+                alt="Chaport"
+                class="w-4 h-4 mr-2"
+              />
+
               <span :class="{ 'text-primary': props.conversation.unread }">
                 {{ shorten(lastMessageText) }}
               </span>
+            </p>
+
+            <p
+              v-else
+              class="flex justify-start items-center text-[0.688rem] italic"
+            >
+              Почніть розмову
             </p>
           </div>
 
