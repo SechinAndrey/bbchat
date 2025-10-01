@@ -39,7 +39,7 @@ const ActiveComponent = computed(() => {
 
 <template>
   <aside
-    class="bg-app-bg-secondary xs:w-full md:w-[18.75rem] h-full p-0 flex flex-col overflow-visible transition-all duration-500"
+    class="bg-app-bg-secondary xs:w-full md:min-w-[18.75rem] md:max-w-[18.75rem] h-full p-0 flex flex-col overflow-visible transition-all duration-500"
   >
     <FadeTransition>
       <component :is="ActiveComponent" class="h-full flex flex-col" />
