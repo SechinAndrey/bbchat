@@ -466,6 +466,11 @@ export const useConversationsStore = defineStore("conversations", () => {
 
       const conversation = findConversation(entityType, entityId);
       if (conversation) {
+        if (!conversation.messages) {
+          conversation.messages = [];
+        }
+        conversation.messages.push(message);
+
         if (!isOutgoing) {
           updateUnreadCount(conversation);
         }
@@ -477,6 +482,11 @@ export const useConversationsStore = defineStore("conversations", () => {
     // 2. If chat is in the list
     const conversation = findConversation(entityType, entityId);
     if (conversation) {
+      if (!conversation.messages) {
+        conversation.messages = [];
+      }
+      conversation.messages.push(message);
+
       if (!isOutgoing) {
         updateUnreadCount(conversation);
       } else {
