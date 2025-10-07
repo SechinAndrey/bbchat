@@ -10,6 +10,7 @@ import { useGlobalDataStore } from "@src/shared/store/global-data-store";
 import conversationsService from "@src/features/conversations/conversations-service";
 import { useConversationsStore } from "@src/features/conversations/conversations-store";
 import { useAuthStore } from "@src/features/auth/store/auth-store";
+import useStore from "@src/shared/store/store";
 
 import {
   PencilSquareIcon,
@@ -54,6 +55,7 @@ const initializeFromRoute = () => {
 initializeFromRoute();
 
 // Store instances
+const store = useStore();
 const authStore = useAuthStore();
 const globalDataStore = useGlobalDataStore();
 const conversationsStore = useConversationsStore();
@@ -253,7 +255,7 @@ const handleNewLeadSubmit = async (leadData: CreateLeadRequest) => {
       </template>
 
       <!--side actions-->
-      <template #actions>
+      <template #actions v-if="!store.isWidget">
         <div class="flex items-center gap-3">
           <Select
             v-if="authStore.currentUser?.roleId === 1"
@@ -298,7 +300,7 @@ const handleNewLeadSubmit = async (leadData: CreateLeadRequest) => {
       <SearchInput v-model="keyword" />
     </div>
 
-    <Tabs class="mx-5 mb-4">
+    <Tabs v-if="!store.isWidget" class="mx-5 mb-4">
       <Tab
         :active="activeTab === TAB.all"
         name="Всі"

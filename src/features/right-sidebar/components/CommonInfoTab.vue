@@ -21,12 +21,14 @@ import {
 import KanbanSelect from "@src/shared/components/KanbanSelect.vue";
 import AddContactModal from "@src/features/contacts/AddContactModal.vue";
 import { useAuthStore } from "@src/features/auth/store/auth-store";
+import useStore from "@src/shared/store/store";
 import { useToast } from "@src/shared/composables/useToast";
 
 const contactId = inject<Ref<number> | undefined>("contactId");
 const entity = inject<Ref<"leads" | "clients" | "suppliers">>("entity");
 
 const authStore = useAuthStore();
+const store = useStore();
 const router = useRouter();
 const { toastError } = useToast();
 
@@ -129,7 +131,7 @@ const openChatWithContact = async (contactIdToOpen: number) => {
 
     if (existingConversation) {
       await router.push({
-        name: "Chat",
+        name: store.isWidget ? "Widget" : "Chat",
         params: {
           entity: entityType,
           id: entityId.toString(),

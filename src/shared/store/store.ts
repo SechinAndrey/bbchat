@@ -15,6 +15,13 @@ import type {
   IEmoji,
 } from "@src/shared/types/types";
 
+import type { EntityType } from "@src/shared/types/common";
+
+interface Widget {
+  entity: EntityType;
+  entityId: number;
+}
+
 const useStore = defineStore("chat", () => {
   // local storage
   const storage = JSON.parse(localStorage.getItem("chat") || "{}");
@@ -66,6 +73,8 @@ const useStore = defineStore("chat", () => {
   );
   const callMinimized = ref(false);
   const openVoiceCall = ref(false);
+  const isWidget = ref(false);
+  const widget = ref<Widget>(storage.widget);
 
   const initializeData = async () => {
     try {
@@ -179,6 +188,8 @@ const useStore = defineStore("chat", () => {
     callMinimized,
     openVoiceCall,
     rightSidebarOpen,
+    isWidget,
+    widget,
 
     // actions
     sendMessage,

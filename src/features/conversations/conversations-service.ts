@@ -3,11 +3,13 @@ import type {
   ApiCommunicationResponse,
   ApiCommunicationEntityResponse,
   ApiCommunicationEntityFull,
-  ApiCommunicationLead,
   ApiMessagesResponse,
   ApiMessageItem,
   CreateLeadRequest,
   UpdateLeadRequest,
+  ApiCommunicationLead,
+  ApiResponseLinks,
+  ApiResponseMeta,
 } from "@src/api/types";
 
 import type { IAttachment } from "@src/shared/types/types";
@@ -74,6 +76,34 @@ export class ConversationsService {
     } catch (error) {
       console.error(`❌ Failed to fetch ${entity} conversations:`, error);
       throw new Error(`Failed to fetch ${entity} conversations`);
+    }
+  }
+
+  async getConversationsForEntity(
+    entity: EntityType,
+    entityId: number,
+    params?: ConversationParams,
+  ): Promise<{
+    data: ApiCommunicationEntityFull;
+    links: ApiResponseLinks;
+    meta: ApiResponseMeta;
+  }> {
+    try {
+      const config = ENTITY_CONFIGS[entity];
+
+      const response = await apiClient.get<{
+        data: ApiCommunicationEntityFull;
+        links: ApiResponseLinks;
+        meta: ApiResponseMeta;
+      }>(`${config.apiPath}/${entityId}/contacts`, { params });
+
+      return response.data;
+    } catch (error) {
+      console.error(
+        `❌ Failed to fetch ${entity} ${entityId} conversations:`,
+        error,
+      );
+      throw new Error(`Failed to fetch ${entity} ${entityId} conversations`);
     }
   }
 

@@ -10,6 +10,8 @@ import PasswordResetView from "@src/pages/password-reset/PasswordResetView.vue";
 import UIKitView from "@src/pages/ui-kit/UIKitView.vue";
 import Chat from "@src/features/chat/components/Chat.vue";
 
+import Widget from "@src/pages/widget/index.vue";
+
 const routes = [
   {
     path: "/chat/",
@@ -37,6 +39,38 @@ const routes = [
       {
         path: "/chat/:entity/:id/contact/:contactId",
         name: "Chat",
+        component: Chat,
+        meta: { requiresAuth: true },
+        props: (route: RouteLocationNormalized) => ({
+          entity: route.params.entity,
+          id: Number(route.params.id),
+          contactId: Number(route.params.contactId),
+        }),
+      },
+    ],
+  },
+
+  // Iframe routes
+  {
+    path: "/widget/",
+    name: "Widget",
+    component: Widget,
+    meta: { requiresAuth: true },
+
+    children: [
+      {
+        path: "/widget/:entity/:id",
+        name: "Widget-EntityChat",
+        component: Chat,
+        meta: { requiresAuth: true },
+        props: (route: RouteLocationNormalized) => ({
+          entity: route.params.entity,
+          id: Number(route.params.id),
+        }),
+      },
+      {
+        path: "/widget/:entity/:id/contact/:contactId",
+        name: "Widget-Chat",
         component: Chat,
         meta: { requiresAuth: true },
         props: (route: RouteLocationNormalized) => ({

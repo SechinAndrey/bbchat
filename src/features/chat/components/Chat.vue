@@ -33,12 +33,13 @@ conversationsStore.initializeRouteWatchers();
       <Spinner
         v-if="
           conversationsStore.isLoadingConversation &&
-          !conversationsStore.activeConversation
+          !conversationsStore.activeConversation &&
+          contactId
         "
       />
 
       <div
-        v-else-if="conversationsStore.activeConversation"
+        v-else-if="conversationsStore.activeConversation && contactId"
         class="h-full flex flex-col scrollbar-hidden"
       >
         <ChatTop />
@@ -46,11 +47,17 @@ conversationsStore.initializeRouteWatchers();
         <ChatBottom />
       </div>
 
-      <NoChatSelected v-else-if="!conversationsStore.isLoadingConversation" />
+      <NoChatSelected
+        v-else-if="!conversationsStore.isLoadingConversation && !contactId"
+      />
     </div>
 
     <RightSidebar
-      v-if="store.rightSidebarOpen && conversationsStore.activeConversation"
+      v-if="
+        store.rightSidebarOpen &&
+        conversationsStore.activeConversation &&
+        contactId
+      "
       class="xs:absolute md:static"
       @close="store.rightSidebarOpen = false"
     />

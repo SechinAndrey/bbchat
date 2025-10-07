@@ -68,8 +68,10 @@ const handleCloseContextMenu = () => {
 const handleSelectConversation = () => {
   showContextMenu.value = false;
   const id = Number(props.conversation.id);
+  let url = store.isWidget ? "/widget" : "/chat";
+  url += `/${props.conversation.entity}/${id}/contact/${contact.value?.id}`;
   router.push({
-    path: `/chat/${props.conversation.entity}/${id}/contact/${contact.value?.id}`,
+    path: url,
   });
 };
 

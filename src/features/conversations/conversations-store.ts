@@ -17,6 +17,7 @@ import type {
 import type { IConversation } from "@src/shared/types/types";
 import { adaptApiCommunicationToIConversation } from "@src/api/communication-adapters";
 import { usePusher } from "@src/shared/composables/usePusher";
+import useStore from "@src/shared/store/store";
 
 export interface TempMessage {
   clientMessageUid: string;
@@ -33,6 +34,7 @@ export interface TempMessage {
 
 export const useConversationsStore = defineStore("conversations", () => {
   const route = useRoute();
+  const store = useStore();
 
   const conversations = ref<Record<EntityType, IConversation[]>>({
     leads: [],
@@ -131,11 +133,23 @@ export const useConversationsStore = defineStore("conversations", () => {
       const mergedParams = { ...filters.value, ...params };
       if (params) filters.value = mergedParams;
 
-      const response = await conversationsService.getConversations(
-        entity,
-        mergedParams,
-      );
-      const entityData = response[entity];
+      let response;
+      let entityData;
+
+      if (store.isWidget) {
+        response = await conversationsService.getConversationsForEntity(
+          store.widget.entity,
+          store.widget.entityId,
+          mergedParams,
+        );
+        entityData = response;
+      } else {
+        response = await conversationsService.getConversations(
+          entity,
+          mergedParams,
+        );
+        entityData = response[entity];
+      }
 
       if (!entityData) {
         throw new Error(`No data found for entity: ${entity}`);
@@ -632,9 +646,11 @@ export const useConversationsStore = defineStore("conversations", () => {
             try {
               await fetchConversation(entityType, conversationId);
               messagesMeta.value = null;
-              await fetchMessages(entityType, conversationId, contactId, {
-                page: 1,
-              });
+              if (contactId) {
+                await fetchMessages(entityType, conversationId, contactId, {
+                  page: 1,
+                });
+              }
             } catch (err) {
               console.error("❌ Error fetching conversation from route:", err);
             }
