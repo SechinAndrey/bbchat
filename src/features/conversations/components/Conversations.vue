@@ -30,8 +30,6 @@ import Tabs from "@src/ui/navigation/Tabs/Tabs.vue";
 import Tab from "@src/ui/navigation/Tabs/Tab.vue";
 import SlideTransition from "@src/ui/transitions/SlideTransition.vue";
 import Select from "@src/ui/inputs/Select.vue";
-import flemeIcon from "@src/ui/icons/flemeIcon.vue";
-import clientIcon from "@src/ui/icons/clientIcon.vue";
 import { useRoute, useRouter } from "vue-router";
 import type { EntityType } from "@src/shared/types/common";
 import EmptyState from "@src/ui/states/empty-states/EmptyState.vue";
@@ -62,9 +60,6 @@ const conversationsStore = useConversationsStore();
 
 // State refs
 const selectedUser = ref<number | "all">("all");
-const selectedFilter = ref<EntityType>(
-  (route.params.entity as EntityType) || "leads",
-);
 const keyword: Ref<string> = ref("");
 const composeOpen = ref(false);
 const newLeadModalOpen = ref(false);
@@ -96,27 +91,16 @@ const userOptions = computed(() => [
   })),
 ]);
 
-const filterOptions = computed(() => {
-  const options = [{ value: "leads", label: "Ліди" }];
-  if (
-    authStore.currentUser?.roleId === 1 ||
-    authStore.currentUser?.roleId === 2
-  ) {
-    options.push({ value: "clients", label: "Клієнти" });
-  }
-  return options;
-});
-
 const conversationsList = computed(() => {
-  return conversationsStore.conversations[selectedFilter.value] || [];
+  return conversationsStore.conversations[entity.value] || [];
 });
 
 const isLoading = computed(() => {
-  return conversationsStore.loading[selectedFilter.value] || false;
+  return conversationsStore.loading[entity.value] || false;
 });
 
 const hasMore = computed(() => {
-  return conversationsStore.hasMore(selectedFilter.value);
+  return conversationsStore.hasMore(entity.value);
 });
 
 const debouncedFetch = useDebounceFn(async () => {
@@ -126,10 +110,10 @@ const debouncedFetch = useDebounceFn(async () => {
     user_id: selectedUser.value === "all" ? undefined : selectedUser.value,
     communication_status_id: activeTab.value === TAB.open ? 1 : undefined,
   };
-  await fetchConversations(selectedFilter.value, params);
+  await fetchConversations(entity.value, params);
 }, 500);
 
-watch([selectedUser, selectedFilter, activeTab], debouncedFetch, {
+watch([selectedUser, entity, activeTab], debouncedFetch, {
   immediate: true,
 });
 
@@ -138,8 +122,8 @@ watch(keyword, debouncedFetch);
 watch(
   () => route.params.entity,
   async (newEntity) => {
-    if (newEntity && newEntity !== selectedFilter.value) {
-      selectedFilter.value = newEntity as EntityType;
+    if (newEntity && newEntity !== entity.value) {
+      entity.value = newEntity as EntityType;
 
       const params: ConversationParams = {
         page: 1,
@@ -148,21 +132,17 @@ watch(
         communication_status_id: activeTab.value === TAB.open ? 1 : undefined,
       };
 
-      await fetchConversations(selectedFilter.value, params);
+      await fetchConversations(entity.value, params);
     }
   },
   { immediate: true },
 );
 
-const leadClientIcon = computed(() => {
-  return selectedFilter.value === "leads" ? flemeIcon : clientIcon;
-});
-
 // Infinite scroll
 const scrollContainer = ref<HTMLElement | null>(null);
 
 const loadMore = () => {
-  loadMoreConversations(selectedFilter.value);
+  loadMoreConversations(entity.value);
 };
 
 useInfiniteScroll(
@@ -200,13 +180,10 @@ globalDataStore.fetchGlobalData();
 
 // Error handling
 watch(
-  () => conversationsStore.errors[selectedFilter.value],
+  () => conversationsStore.errors[entity.value],
   (error) => {
     if (error) {
-      console.error(
-        `Communications store error for ${selectedFilter.value}:`,
-        error,
-      );
+      console.error(`Communications store error for ${entity.value}:`, error);
     }
   },
 );
@@ -265,15 +242,6 @@ const handleNewLeadSubmit = async (leadData: CreateLeadRequest) => {
             :icon="UserIcon"
             class="w-12"
             size="sm"
-          />
-
-          <Select
-            v-if="route.params.entity !== 'suppliers'"
-            v-model="selectedFilter"
-            :options="filterOptions"
-            size="sm"
-            :class="{ 'w-10': authStore.currentUser?.roleId === 1 }"
-            :icon="leadClientIcon"
           />
 
           <div title="Додати ліда">

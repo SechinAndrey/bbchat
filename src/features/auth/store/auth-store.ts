@@ -44,6 +44,28 @@ export const useAuthStore = defineStore("auth", () => {
     }
   }
 
+  async function loginWithToken(loginToken: string) {
+    loading.value = true;
+    error.value = null;
+
+    try {
+      const newToken = await authService.loginWithToken(loginToken);
+      token.value = newToken;
+
+      await fetchCurrentUser();
+
+      return true;
+    } catch (err) {
+      error.value =
+        err instanceof Error
+          ? err.message
+          : "An error occurred during authentication";
+      return false;
+    } finally {
+      loading.value = false;
+    }
+  }
+
   async function fetchCurrentUser() {
     if (!token.value) return null;
 
@@ -93,6 +115,7 @@ export const useAuthStore = defineStore("auth", () => {
     isAuthenticated,
 
     login,
+    loginWithToken,
     logout,
     init,
     fetchCurrentUser,

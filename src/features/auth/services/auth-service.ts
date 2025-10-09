@@ -48,6 +48,27 @@ export class AuthService {
     }
   }
 
+  async loginWithToken(token: string): Promise<string> {
+    try {
+      const response = await apiClient.post<AuthResponse>(
+        `${this.baseUrl}/sanctum/verify`,
+        { verification_token: token },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
+      );
+
+      this.saveToken(response.data.token);
+
+      return response.data.token;
+    } catch (error) {
+      console.error("Error during token validation:", error);
+      throw error;
+    }
+  }
+
   /**
    * Gets information about the current user
    * @returns Promise with user data

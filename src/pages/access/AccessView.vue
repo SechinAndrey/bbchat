@@ -6,6 +6,7 @@ import LoginForm from "@src/features/auth/components/LoginForm.vue";
 import RegisterForm from "@src/features/auth/components/RegisterForm/RegisterForm.vue";
 import Cover from "@src/pages/access/Cover.vue";
 import FadeTransition from "@src/ui/transitions/FadeTransition.vue";
+import WidgetAuth from "@src/features/auth/components/WidgetAuth.vue";
 
 const route = useRoute();
 
@@ -14,6 +15,8 @@ const ActiveMethod = computed((): any => {
     return RegisterForm;
   } else if (route.params.method === "sign-in") {
     return LoginForm;
+  } else if (route.params.method === "widget-auth") {
+    return WidgetAuth;
   }
 });
 </script>
@@ -25,7 +28,7 @@ const ActiveMethod = computed((): any => {
       <FadeTransition>
         <component :is="ActiveMethod" />
       </FadeTransition>
-      <Cover />
+      <Cover v-if="route.params.method !== 'widget-auth'" />
     </div>
   </div>
 </template>

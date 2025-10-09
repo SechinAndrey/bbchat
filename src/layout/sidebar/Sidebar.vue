@@ -15,7 +15,7 @@ const store = useStore();
 const route = useRoute();
 
 const isChatRoute = computed(() => {
-  return route.path.startsWith("/chat");
+  return route.path.startsWith("/chat") || route.path.startsWith("/widget");
 });
 
 const ActiveComponent = computed(() => {

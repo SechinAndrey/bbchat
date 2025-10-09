@@ -28,7 +28,10 @@ const conversationsStore = useConversationsStore();
 const { toastSuccess, toastError } = useToast();
 
 const handleCloseConversation = () => {
-  router.push({ path: "/chat/" });
+  const url = store.isWidget
+    ? `/widget/${entity?.value}/${id?.value}`
+    : "/chat";
+  router.push({ path: url });
 };
 
 const debouncedFn = useDebounceFn(() => {

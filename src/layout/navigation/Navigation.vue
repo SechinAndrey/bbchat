@@ -9,6 +9,7 @@ import {
   SunIcon,
   ChatBubbleLeftRightIcon,
   UsersIcon,
+  FireIcon,
 } from "@heroicons/vue/24/solid";
 import AccountDropdown from "@src/layout/navigation/AccountDropdown.vue";
 import logoIcon from "@src/shared/icons/logoIcon.vue";
@@ -17,7 +18,7 @@ import NavItem from "@src/layout/navigation/NavItem.vue";
 import router from "@src/router";
 import route from "@src/router";
 
-// const store = useStore();
+const store = useStore();
 const { toggleDarkMode, isDarkMode } = useTheme();
 
 const showDropdown = ref(false);
@@ -36,6 +37,12 @@ const openSuppliers = () => {
 const openLeads = () => {
   router.push({
     path: "/chat/leads",
+  });
+};
+
+const openClients = () => {
+  router.push({
+    path: "/chat/clients",
   });
 };
 </script>
@@ -69,15 +76,23 @@ const openLeads = () => {
             />
           </li>
 
-          <li class="md:mb-4">
+          <li v-if="!store.isWidget" class="md:mb-4">
             <NavItem
               :active="route.currentRoute.value.path.includes('/chat/leads')"
               @click="openLeads"
             >
+              <FireIcon class="w-[22px] h-[22px]" />
+            </NavItem>
+          </li>
+          <li v-if="!store.isWidget" class="md:mb-4">
+            <NavItem
+              :active="route.currentRoute.value.path.includes('/chat/clients')"
+              @click="openClients"
+            >
               <ChatBubbleLeftRightIcon class="w-[20px] h-[20px]" />
             </NavItem>
           </li>
-          <li class="md:mb-4">
+          <li v-if="!store.isWidget" class="md:mb-4">
             <NavItem
               :active="
                 route.currentRoute.value.path.includes('/chat/suppliers')
