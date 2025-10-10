@@ -29,6 +29,8 @@ import {
 import Dropdown from "@src/ui/navigation/Dropdown/Dropdown.vue";
 import ConversationAvatar from "@src/shared/components/ConversationAvatar.vue";
 
+type MessageDirection = "in" | "out";
+
 const props = defineProps<{
   conversation: IConversation;
 }>();
@@ -150,6 +152,26 @@ const callTypeIcon = computed(() => {
     ? PhoneArrowDownLeftIcon
     : PhoneArrowUpRightIcon;
 });
+
+const lastMessageDirection = computed(() => {
+  if (call.value) {
+    return call.value.call_type === 0 ? "in" : "out";
+  } else if (chaport.value) {
+    return chaport.value?.type_id === 1 ? "in" : "out";
+  } else if (echat.value) {
+    return echat.value?.direction === 0 ? "in" : "out";
+  }
+});
+
+const displayName = computed(() => {
+  if (lastMessageDirection.value === "in") {
+    return props.conversation.contacts?.at(0)?.firstName + ":";
+  } else if (lastMessageDirection.value === "out") {
+    return "Ви: ";
+  }
+
+  return "";
+});
 </script>
 
 <template>
@@ -200,63 +222,11 @@ const callTypeIcon = computed(() => {
         </div>
 
         <div class="text-[0.5625rem] text-left text-app-text-secondary">
-          {{ props.conversation.contacts?.at(0)?.firstName }}
+          {{ displayName }}
         </div>
 
         <div class="flex justify-between mt-2">
           <div>
-            <!--draft Message-->
-            <!-- <p
-              v-if="
-                props.conversation.draftMessage &&
-                props.conversation.id !== getActiveConversationId()
-              "
-              class=" flex justify-start items-center text-danger"
-            >
-              draft: {{ shorten(props.conversation.draftMessage) }}
-            </p> -->
-
-            <!--recording name-->
-            <!-- <p
-              v-else-if="
-                lastMessage &&
-                lastMessage.type === 'recording' &&
-                lastMessage.content
-              "
-              class="  flex justify-start items-center"
-            >
-              <MicrophoneIcon
-                class="w-4 h-4 mr-2 text-black opacity-60 dark:text-white dark:opacity-70"
-                :class="{ 'text-primary': props.conversation.unread }"
-              />
-              <span :class="{ 'text-primary': props.conversation.unread }">
-                Recording
-                {{ (lastMessage.content as IRecording).duration }}
-              </span>
-            </p> -->
-
-            <!--attachments title-->
-            <!-- <p
-              v-else-if="lastMessage && hasAttachments(lastMessage)"
-              class="  flex justify-start items-center"
-              :class="{ 'text-primary': props.conversation.unread }"
-            >
-              <span :class="{ 'text-primary': props.conversation.unread }">
-                {{ (lastMessage?.attachments as IAttachment[])[0].name }}
-              </span>
-            </p> -->
-
-            <!--last message content -->
-            <!-- <p
-              v-else-if="lastMessage"
-              class="  flex justify-start items-center"
-              :class="{ 'text-primary': props.conversation.unread }"
-            >
-              <span :class="{ 'text-primary': props.conversation.unread }">
-                {{ shorten(lastMessage) }}
-              </span>
-            </p> -->
-
             <p
               v-if="lastMessageText"
               class="flex justify-start items-center text-[0.688rem] relative pr-6"
