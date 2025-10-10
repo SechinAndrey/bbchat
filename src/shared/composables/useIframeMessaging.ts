@@ -1,7 +1,7 @@
 import { onMounted, onUnmounted } from "vue";
 
 export interface IframeMessageTypes {
-  "bb-widget:auth-by-token": { token: string };
+  "bb-widget:auth-by-token": { token: string; clientId: string };
   "bb-widget:ping": undefined;
   "bb-widget:pong": undefined;
   "bb-widget:loaded": undefined;

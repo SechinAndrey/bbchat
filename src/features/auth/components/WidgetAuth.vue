@@ -1,41 +1,128 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, computed } from "vue";
 import { useIframeMessaging } from "@src/shared/composables/useIframeMessaging";
 import { useAuthStore } from "@src/features/auth/store/auth-store";
 import { useRouter } from "vue-router";
+import { CheckIcon, XMarkIcon } from "@heroicons/vue/24/outline";
+import LogoIcon from "@src/shared/icons/logoIcon.vue";
+import SpinnerDots from "@src/ui/states/loading-states/SpinnerDots.vue";
 
-const messageFromParent = ref("");
+type AuthStatus = "waiting" | "authenticating" | "success" | "error";
+
+const authStatus = ref<AuthStatus>("waiting");
+const errorMessage = ref("");
+
 const { on } = useIframeMessaging({
   allowedOrigin: import.meta.env.VITE_IFRAME_PARENT,
 });
 const authStore = useAuthStore();
 const router = useRouter();
 
-on("bb-widget:auth-by-token", (data) => {
+const statusText = computed(() => {
+  switch (authStatus.value) {
+    case "waiting":
+      return "З'єднання з чатом";
+    case "authenticating":
+      return "Авторизація";
+    case "success":
+      return "Успішно авторизовано!";
+    case "error":
+      return errorMessage.value || "Помилка авторизації";
+    default:
+      return "";
+  }
+});
+
+const statusColor = computed(() => {
+  switch (authStatus.value) {
+    case "waiting":
+      return "text-app-text";
+    case "authenticating":
+      return "text-app-text";
+    case "success":
+      return "text-success";
+    case "error":
+      return "text-danger";
+    default:
+      return "text-app-text";
+  }
+});
+
+on("bb-widget:auth-by-token", async (data) => {
   console.log("Received token-auth message:", data);
 
   if (authStore.isAuthenticated) {
-    messageFromParent.value = "Already authenticated";
-    router.push({ path: "/widget/clients/1115" });
+    authStatus.value = "success";
+    router.push({ path: `/widget/clients/${data.clientId}` });
   } else {
-    authStore
-      .loginWithToken(data.token)
-      .then(() => {
-        messageFromParent.value = "Authenticated successfully";
-        router.push({ path: "/widget/clients/1115" });
-      })
-      .catch((error) => {
-        messageFromParent.value = "Authentication failed: " + error.message;
-      });
+    authStatus.value = "authenticating";
+
+    setTimeout(async () => {
+      try {
+        await authStore.loginWithToken(data.token);
+        authStatus.value = "success";
+        setTimeout(() => {
+          router.push({ path: `/widget/clients/${data.clientId}` });
+        }, 800);
+      } catch (error) {
+        authStatus.value = "error";
+        errorMessage.value = "Не вдалося авторизуватися";
+        console.error("Authentication error:", error);
+      }
+    }, 800);
   }
 });
 </script>
 
 <template>
-  <div class="w-full h-full flex items-center justify-center dark:bg-gray-800">
-    <h1 class="text-2xl font-bold text-center text-gray-600 dark:text-gray-300">
-      authentication:
-      <pre>{{ messageFromParent }}</pre>
-    </h1>
+  <div
+    class="w-full h-full flex flex-col items-center justify-center bg-app-bg relative overflow-hidden"
+  >
+    <!-- Animated gradient background -->
+    <div class="absolute inset-0 opacity-3 dark:opacity-5"></div>
+
+    <!-- Content -->
+    <div class="relative z-10 flex flex-col items-center">
+      <!-- Logo -->
+      <div class="mb-6">
+        <div
+          class="w-16 h-16 flex items-center justify-center rounded-lg shadow-md"
+        >
+          <LogoIcon />
+        </div>
+      </div>
+
+      <!-- Status -->
+      <div class="text-center mb-6">
+        <p class="text-lg font-medium mb-3" :class="statusColor">
+          {{ statusText }}
+        </p>
+
+        <!-- Loading spinner -->
+        <div
+          v-if="authStatus === 'authenticating' || authStatus === 'waiting'"
+          class="flex justify-center"
+        >
+          <div class="w-6 h-6">
+            <SpinnerDots class="text-primary" />
+          </div>
+        </div>
+
+        <!-- Success icon -->
+        <div v-else-if="authStatus === 'success'" class="flex justify-center">
+          <CheckIcon class="w-6 h-6 text-success" />
+        </div>
+
+        <!-- Error icon -->
+        <div v-else-if="authStatus === 'error'" class="flex justify-center">
+          <XMarkIcon class="w-6 h-6 text-danger" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Brand -->
+    <p class="fixed bottom-7 text-sm text-app-text-secondary font-light">
+      Billboards Комунікації
+    </p>
   </div>
 </template>
