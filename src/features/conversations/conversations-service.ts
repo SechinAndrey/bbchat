@@ -8,6 +8,7 @@ import type {
   CreateLeadRequest,
   UpdateLeadRequest,
   ApiCommunicationLead,
+  ApiCommunicationEntity,
   ApiResponseLinks,
   ApiResponseMeta,
 } from "@src/api/types";
@@ -84,7 +85,7 @@ export class ConversationsService {
     entityId: number,
     params?: ConversationParams,
   ): Promise<{
-    data: ApiCommunicationEntityFull;
+    data: ApiCommunicationEntity[];
     links: ApiResponseLinks;
     meta: ApiResponseMeta;
   }> {
@@ -92,7 +93,7 @@ export class ConversationsService {
       const config = ENTITY_CONFIGS[entity];
 
       const response = await apiClient.get<{
-        data: ApiCommunicationEntityFull;
+        data: ApiCommunicationEntity[];
         links: ApiResponseLinks;
         meta: ApiResponseMeta;
       }>(`${config.apiPath}/${entityId}/contacts`, { params });
