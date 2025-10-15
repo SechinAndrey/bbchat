@@ -28,6 +28,7 @@ const messengerId: Ref<number> = ref(1);
 const messengerOptions = ref([
   { value: 1, label: "Telegram", image: "/imgs/telegram.png" },
   { value: 2, label: "Viber", image: "/imgs/viber.png" },
+  { value: 3, label: "Chaport", image: "/imgs/chaport.png" },
 ]);
 
 // determines whether the app is recording or not.
