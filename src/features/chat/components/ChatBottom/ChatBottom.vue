@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Ref } from "vue";
 import useStore from "@src/shared/store/store";
-import { ref, nextTick } from "vue";
+import { ref, computed, nextTick } from "vue";
 
 import {
   FaceSmileIcon,
@@ -16,20 +16,100 @@ import EmojiPicker from "@src/ui/inputs/EmojiPicker/EmojiPicker.vue";
 import Textarea from "@src/ui/inputs/Textarea.vue";
 import Select from "@src/ui/inputs/Select.vue";
 import { useMessageSending } from "@src/features/chat/composables/useMessageSending";
+import useConversationsStore from "@src/features/conversations/conversations-store";
+import {
+  ApiCommunicationLeadFull,
+  ApiCommunicationClientFull,
+  ApiCommunicationSupplierFull,
+  ApiMessageItem,
+} from "@src/api/types";
+import { useEventBus } from "@vueuse/core";
+const eventBus = useEventBus("chat:messages-loaded");
 
 const store = useStore();
 const { sendMessage } = useMessageSending();
+const conversationsStore = useConversationsStore();
+
+const activeConversation = computed<
+  | ApiCommunicationLeadFull
+  | ApiCommunicationClientFull
+  | ApiCommunicationSupplierFull
+  | null
+>(() => {
+  return conversationsStore.activeConversation;
+});
+
+const lastMessage = computed<ApiMessageItem | null>(() => {
+  if (!activeConversation.value) return null;
+  const messages = activeConversation.value.messages;
+  return messages.length > 0 ? messages[messages.length - 1] : null;
+});
 
 // the content of the message.
 const value: Ref<string> = ref("");
+/**
+ * Available messenger options for sending messages.
+ *
+ * [
+ *   { value: 1, label: "Telegram", image: "/imgs/telegram.png" },
+ *   { value: 2, label: "Viber", image: "/imgs/viber.png" },
+ *   { value: 3, label: "Chaport", image: "/imgs/chaport.png" },
+ * ]
+ */
+type MessengerOption = {
+  value: number;
+  label: string;
+  image: string;
+};
+
+const messengerOptions = computed<MessengerOption[]>(() => {
+  const options: MessengerOption[] = [];
+
+  if (activeConversation.value?.chaport_id) {
+    options.push({
+      value: 3,
+      label: "Chaport",
+      image: "/imgs/chaport.png",
+    });
+  }
+
+  if (activeConversation.value?.tg_name) {
+    options.push({
+      value: 1,
+      label: "Telegram",
+      image: "/imgs/telegram.png",
+    });
+  }
+
+  if (activeConversation.value?.phone) {
+    options.push(
+      {
+        value: 2,
+        label: "Viber",
+        image: "/imgs/viber.png",
+      },
+      { value: 1, label: "Telegram", image: "/imgs/telegram.png" },
+    );
+  }
+
+  return options;
+});
 
 const messengerId: Ref<number> = ref(1);
 
-const messengerOptions = ref([
-  { value: 1, label: "Telegram", image: "/imgs/telegram.png" },
-  { value: 2, label: "Viber", image: "/imgs/viber.png" },
-  { value: 3, label: "Chaport", image: "/imgs/chaport.png" },
-]);
+const setMessengerId = () => {
+  if (lastMessage.value?.chaport_message_id) return (messengerId.value = 3);
+  if (lastMessage.value?.echat_messages?.dialog?.messenger_id)
+    return (messengerId.value =
+      lastMessage.value.echat_messages.dialog.messenger_id);
+  return messengerOptions.value.length > 0
+    ? (messengerId.value = messengerOptions.value[0].value)
+    : null;
+};
+
+eventBus.on(() => {
+  setMessengerId();
+});
 
 // determines whether the app is recording or not.
 const recording = ref(false);

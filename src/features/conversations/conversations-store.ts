@@ -18,6 +18,7 @@ import type { IConversation } from "@src/shared/types/types";
 import { adaptApiCommunicationToIConversation } from "@src/api/communication-adapters";
 import { usePusher } from "@src/shared/composables/usePusher";
 import useStore from "@src/shared/store/store";
+import { useEventBus } from "@vueuse/core";
 
 export interface TempMessage {
   clientMessageUid: string;
@@ -35,6 +36,7 @@ export interface TempMessage {
 export const useConversationsStore = defineStore("conversations", () => {
   const route = useRoute();
   const store = useStore();
+  const eventBus = useEventBus("chat:messages-loaded");
 
   const conversations = ref<Record<EntityType, IConversation[]>>({
     leads: [],
@@ -650,6 +652,7 @@ export const useConversationsStore = defineStore("conversations", () => {
                 await fetchMessages(entityType, conversationId, contactId, {
                   page: 1,
                 });
+                eventBus.emit();
               }
             } catch (err) {
               console.error("❌ Error fetching conversation from route:", err);
