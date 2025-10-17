@@ -16,6 +16,7 @@ export class AuthService {
   private baseUrl: string;
 
   private static readonly TOKEN_KEY = "auth_token";
+  private static readonly ROLE_ID_KEY = "role_id";
 
   constructor() {
     this.baseUrl =
@@ -76,6 +77,7 @@ export class AuthService {
   async getCurrentUser(): Promise<ApiUser | undefined> {
     try {
       const response = await apiClient.get("/sanctum/user");
+      this.saveRoleId(response.data.role_id);
       return response.data;
     } catch (error) {
       console.error("Error fetching user:", error);
@@ -87,6 +89,7 @@ export class AuthService {
    */
   logout(): void {
     localStorage.removeItem(AuthService.TOKEN_KEY);
+    localStorage.removeItem(AuthService.ROLE_ID_KEY);
   }
 
   /**
@@ -98,12 +101,25 @@ export class AuthService {
   }
 
   /**
+   * Get role ID from localStorage
+   * @returns role ID or null if not found
+   */
+  getRoleId(): number | null {
+    const roleId = localStorage.getItem(AuthService.ROLE_ID_KEY);
+    return roleId ? Number(roleId) : null;
+  }
+
+  /**
    * Save token to localStorage
    * @param token - token to save
    */
   saveToken(token: string): void {
     setAuthToken(token);
     localStorage.setItem(AuthService.TOKEN_KEY, token);
+  }
+
+  saveRoleId(roleId: number): void {
+    localStorage.setItem(AuthService.ROLE_ID_KEY, roleId.toString());
   }
 
   /**

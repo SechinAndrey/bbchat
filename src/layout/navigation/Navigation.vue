@@ -2,6 +2,7 @@
 import { ref } from "vue";
 
 import useStore from "@src/shared/store/store";
+import { useAuthStore } from "@src/features/auth/store/auth-store";
 import useTheme from "@src/shared/theme-system/useTheme";
 
 import {
@@ -19,6 +20,7 @@ import router from "@src/router";
 import route from "@src/router";
 
 const store = useStore();
+const authStore = useAuthStore();
 const { toggleDarkMode, isDarkMode } = useTheme();
 
 const showDropdown = ref(false);
@@ -84,7 +86,10 @@ const openClients = () => {
               <FireIcon class="w-[22px] h-[22px]" />
             </NavItem>
           </li>
-          <li v-if="!store.isWidget" class="md:mb-4">
+          <li
+            v-if="!store.isWidget && authStore.currentUser?.roleId !== 7"
+            class="md:mb-4"
+          >
             <NavItem
               :active="route.currentRoute.value.path.includes('/chat/clients')"
               @click="openClients"
@@ -92,7 +97,10 @@ const openClients = () => {
               <ChatBubbleLeftRightIcon class="w-[20px] h-[20px]" />
             </NavItem>
           </li>
-          <li v-if="!store.isWidget" class="md:mb-4">
+          <li
+            v-if="!store.isWidget && authStore.currentUser?.roleId !== 7"
+            class="md:mb-4"
+          >
             <NavItem
               :active="
                 route.currentRoute.value.path.includes('/chat/suppliers')

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import router from "@src/router";
 import useStore from "@src/shared/store/store";
+import { useAuthStore } from "@src/features/auth/store/auth-store";
 
 import {
   ChevronLeftIcon,
@@ -24,6 +25,7 @@ const id = inject<Ref<number>>("id");
 const contactId = inject<Ref<number>>("contactId");
 
 const store = useStore();
+const authStore = useAuthStore();
 const conversationsStore = useConversationsStore();
 const { toastSuccess, toastError } = useToast();
 
@@ -176,12 +178,18 @@ const openActionModal = (
               </Button>
             </li>
             <li>
-              <Button block variant="ghost" @click="openActionModal('client')">
+              <Button
+                v-if="authStore.currentUser?.roleId !== 7"
+                block
+                variant="ghost"
+                @click="openActionModal('client')"
+              >
                 Додати в існуючого клієнта
               </Button>
             </li>
             <li>
               <Button
+                v-if="authStore.currentUser?.roleId !== 7"
                 block
                 variant="ghost"
                 @click="openActionModal('supplier')"

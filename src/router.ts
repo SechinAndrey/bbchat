@@ -113,14 +113,14 @@ router.beforeEach((to, from, next) => {
     } else {
       next({ path: "/access/sign-in/", query: { redirect: to.fullPath } });
     }
-  } else if (
-    from.name === "Chat" &&
-    to.name === "Chat" &&
-    window.innerWidth <= 967
-  ) {
-    next({ name: "No-Chat" });
   } else {
-    next();
+    const entity = to.params.entity as string | undefined;
+
+    if (authService.getRoleId() === 7 && entity && entity !== "leads") {
+      next({ path: "/chat/leads" });
+    } else {
+      next();
+    }
   }
 });
 
