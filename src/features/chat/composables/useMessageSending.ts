@@ -35,7 +35,7 @@ export function useMessageSending() {
     }
 
     const phone = activeConversation.value?.phone || "";
-    if (!phone || !entity?.value || !id?.value) {
+    if (!entity?.value || !id?.value) {
       console.error("❌ Missing required data for sending message");
       return;
     }
