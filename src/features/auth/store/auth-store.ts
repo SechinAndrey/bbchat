@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import { authService } from "../services/auth-service";
 import { adaptUser } from "@src/api/adapters";
 import type { IUser } from "@src/shared/types/types";
@@ -12,6 +12,7 @@ interface LoginCredentials {
 export const useAuthStore = defineStore("auth", () => {
   // State
   const token = ref<string | null>(authService.getToken());
+  const fcmToken = ref<string>("");
   const loading = ref<boolean>(false);
   const error = ref<string | null>(null);
   const currentUser = ref<IUser | null>(null);
@@ -66,6 +67,15 @@ export const useAuthStore = defineStore("auth", () => {
     }
   }
 
+  async function postFirebaseMessagingToken() {
+    if (!currentUser.value?.id || !fcmToken.value) return;
+
+    authService.postFirebaseMessagingToken(
+      currentUser.value.id,
+      fcmToken.value || "",
+    );
+  }
+
   async function fetchCurrentUser() {
     if (!token.value) return null;
 
@@ -104,8 +114,29 @@ export const useAuthStore = defineStore("auth", () => {
     }
   }
 
+  watch(
+    currentUser,
+    (newVal) => {
+      if (newVal) {
+        postFirebaseMessagingToken();
+      }
+    },
+    { immediate: true },
+  );
+
+  watch(
+    fcmToken,
+    (newVal) => {
+      if (newVal) {
+        postFirebaseMessagingToken();
+      }
+    },
+    { immediate: true },
+  );
+
   return {
     token,
+    fcmToken,
     loading,
     error,
     currentUser,
@@ -116,6 +147,7 @@ export const useAuthStore = defineStore("auth", () => {
 
     login,
     loginWithToken,
+    postFirebaseMessagingToken,
     logout,
     init,
     fetchCurrentUser,

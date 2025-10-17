@@ -7,6 +7,7 @@ import { setupErrorInterceptor } from "@src/features/auth/services/error-interce
 import ThemeProvider from "@src/shared/theme-system/ThemeProvider.vue";
 
 import FadeTransition from "@src/ui/transitions/FadeTransition.vue";
+import { useFCM } from "@src/shared/composables/useFCM";
 
 // Refactoring code:
 // todo reorganize component structure
@@ -67,6 +68,7 @@ onMounted(async () => {
       if (!success) {
         initError.value = "Не удалось загрузить данные";
       }
+      useFCM();
     }
   } catch (error) {
     console.error("Error initializing app:", error);

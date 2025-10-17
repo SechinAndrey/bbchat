@@ -140,6 +140,13 @@ export class AuthService {
       setAuthToken(token);
     }
   }
+
+  postFirebaseMessagingToken(userId: number, firebaseToken: string): void {
+    apiClient.post("/user-firebase-messaging-token", {
+      user_id: userId,
+      token: firebaseToken,
+    });
+  }
 }
 
 export const authService = new AuthService();

@@ -9,7 +9,7 @@ const rootDir = resolve(__dirname);
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
 
-  return{
+  return {
     plugins: [vue(), alias()],
     resolve: {
       alias: {
@@ -20,5 +20,5 @@ export default defineConfig(({ mode }) => {
     server: {
       allowedHosts: [env.VITE_ALLOWED_HOSTS],
     },
-  }
+  };
 });

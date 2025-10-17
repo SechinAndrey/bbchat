@@ -16,9 +16,10 @@ import type {
 } from "@src/api/types";
 import type { IConversation } from "@src/shared/types/types";
 import { adaptApiCommunicationToIConversation } from "@src/api/communication-adapters";
-import { usePusher } from "@src/shared/composables/usePusher";
 import useStore from "@src/shared/store/store";
 import { useEventBus } from "@vueuse/core";
+import { useFCM } from "@src/shared/composables/useFCM";
+import type { FCMEventMap } from "@src/shared/types/fcm-events";
 
 export interface TempMessage {
   clientMessageUid: string;
@@ -578,56 +579,49 @@ export const useConversationsStore = defineStore("conversations", () => {
     return null;
   };
 
-  const { bindEvent } = usePusher();
-  bindEvent(
-    "e-chat-notification",
-    "new-message",
-    async (data: {
-      id: number;
-      contragent_contact_id: number | null;
-      contragent_id: number | null;
-      contragent_type: EntityType | null;
-    }) => {
-      console.log("📨 Received Pusher new-message event:", data);
-      try {
-        const messageItem = await conversationsService.getMessageById(data.id);
-        const isOutgoing = isOutgoingMessage(messageItem);
+  const { on } = useFCM();
 
-        // Check for client_message_uid in both locations: top level and inside echat_messages
-        const clientMessageUid =
-          messageItem.client_message_uid ||
-          messageItem.echat_messages?.client_message_uid;
+  on("new-message", async (payload: FCMEventMap["new-message"]) => {
+    try {
+      const messageItem = await conversationsService.getMessageById(
+        Number(payload.id),
+      );
+      const isOutgoing = isOutgoingMessage(messageItem);
 
-        if (isOutgoing && clientMessageUid) {
-          const removedTempMessage = findAndRemoveTempMessage(clientMessageUid);
-          if (removedTempMessage) {
-            // Replace temp message with real message
-            await addMessageToConversation(messageItem);
-          } else {
-            console.warn(
-              "Could not find temp message with client_message_uid:",
-              clientMessageUid,
-              "- message might already be processed or temp message expired",
-            );
-            // Don't add to conversation to avoid duplicates
-          }
-        } else if (isOutgoing && !clientMessageUid) {
-          console.warn(
-            "Outgoing message without client_message_uid - this should not happen!",
-          );
+      // Check for client_message_uid in both locations: top level and inside echat_messages
+      const clientMessageUid =
+        messageItem.client_message_uid ||
+        messageItem.echat_messages?.client_message_uid;
+
+      if (isOutgoing && clientMessageUid) {
+        const removedTempMessage = findAndRemoveTempMessage(clientMessageUid);
+        if (removedTempMessage) {
+          // Replace temp message with real message
           await addMessageToConversation(messageItem);
         } else {
-          await addMessageToConversation(messageItem);
+          console.warn(
+            "Could not find temp message with client_message_uid:",
+            clientMessageUid,
+            "- message might already be processed or temp message expired",
+          );
+          // Don't add to conversation to avoid duplicates
         }
-
-        if (!isOutgoing) {
-          playNotificationSound(false);
-        }
-      } catch (error) {
-        console.error("Error fetching message item from Pusher event:", error);
+      } else if (isOutgoing && !clientMessageUid) {
+        console.warn(
+          "Outgoing message without client_message_uid - this should not happen!",
+        );
+        await addMessageToConversation(messageItem);
+      } else {
+        await addMessageToConversation(messageItem);
       }
-    },
-  );
+
+      if (!isOutgoing) {
+        playNotificationSound(false);
+      }
+    } catch (error) {
+      console.error("Error fetching message item from Pusher event:", error);
+    }
+  });
 
   const initializeRouteWatchers = () => {
     watch(
@@ -666,6 +660,7 @@ export const useConversationsStore = defineStore("conversations", () => {
       { immediate: true },
     );
   };
+
   return {
     // State
     conversations,
