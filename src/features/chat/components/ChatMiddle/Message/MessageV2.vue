@@ -16,6 +16,7 @@ import { formatDate } from "@src/shared/utils/utils";
 import { useConversationsStore } from "@src/features/conversations/conversations-store";
 import CallPlayer from "@src/features/chat/components/ChatMiddle/Message/CallPlayer.vue";
 import Button from "@src/ui/inputs/Button.vue";
+import Robo1Icon from "@src/shared/icons/Robo1Icon.vue";
 
 const props = defineProps<{
   message: ApiMessageItem;
@@ -31,7 +32,11 @@ const conversationsStore = useConversationsStore();
 const isCallDetailsExpanded = ref(true);
 
 const isSelf = computed(() => {
-  return props.message.user_id;
+  return (
+    props.message.user_id ||
+    props.message.chaport_messages?.type_id === 2 ||
+    props.message.chaport_messages?.type_id === 3
+  );
 });
 
 const toggleCallDetails = () => {
@@ -164,6 +169,7 @@ const formatMessageText = (text: string) => {
               }
             "
           />
+
           <img
             :src="
               echat.dialog.messenger_id == 1
@@ -237,7 +243,12 @@ const formatMessageText = (text: string) => {
         </div>
       </div>
       <!-- Time -->
-      <div class="text-[0.625rem] font-light text-text-secondary">
+
+      <div class="text-[0.625rem] font-light text-text-secondary flex-col">
+        <Robo1Icon
+          v-if="chaport?.type_id === 3"
+          class="text-app-text opacity-70 w-5 h-5 mb-1"
+        />
         {{
           formatDate(message.created_at, {
             hour: "numeric",
