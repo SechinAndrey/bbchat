@@ -1,9 +1,18 @@
 import { initializeApp } from "firebase/app";
-import { getMessaging, onMessage, getToken } from "firebase/messaging";
+import {
+  getMessaging,
+  onMessage,
+  getToken,
+  deleteToken,
+} from "firebase/messaging";
 import { ref, computed, onScopeDispose } from "vue";
 import type { FCMEventMap } from "@src/shared/types/fcm-events";
 import { useAuthStore } from "@src/features/auth/store/auth-store";
 import { useDocumentVisibility, useWindowFocus } from "@vueuse/core";
+
+import { useEventBus } from "@vueuse/core";
+// const loginEvent = useEventBus("auth:login");
+const logoutEvent = useEventBus("auth:logout");
 
 const firebaseConfig = {
   apiKey: "AIzaSyDjULRs4Uf6uLjEIDs2H2Vml-nKC_kh1hw",
@@ -51,6 +60,18 @@ export function useFCM() {
     } catch (err) {
       console.error("FCM token error:", err);
       return null;
+    }
+  };
+
+  const clearToken = async () => {
+    if (!token.value) return;
+
+    try {
+      await deleteToken(messaging);
+      token.value = null;
+      authStore.fcmToken = "";
+    } catch (err) {
+      console.error("FCM delete token error:", err);
     }
   };
 
@@ -146,9 +167,19 @@ export function useFCM() {
   ensureToken();
   initMessageListener();
 
+  // loginEvent.on(() => {
+  //   ensureToken();
+  //   initMessageListener();
+  // });
+
+  logoutEvent.on(() => {
+    clearToken();
+  });
+
   return {
     token,
     ensureToken,
+    clearToken,
     on,
     off,
   };

@@ -4,6 +4,10 @@ import { authService } from "../services/auth-service";
 import { adaptUser } from "@src/api/adapters";
 import type { IUser } from "@src/shared/types/types";
 
+import { useEventBus } from "@vueuse/core";
+const loginEvent = useEventBus("auth:login");
+const logoutEvent = useEventBus("auth:logout");
+
 interface LoginCredentials {
   email: string;
   password: string;
@@ -32,6 +36,8 @@ export const useAuthStore = defineStore("auth", () => {
       token.value = newToken;
 
       await fetchCurrentUser();
+
+      loginEvent.emit();
 
       return true;
     } catch (err) {
@@ -105,6 +111,7 @@ export const useAuthStore = defineStore("auth", () => {
     authService.logout();
     token.value = null;
     currentUser.value = null;
+    logoutEvent.emit();
   }
 
   function init() {

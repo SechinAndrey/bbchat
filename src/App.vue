@@ -8,6 +8,9 @@ import ThemeProvider from "@src/shared/theme-system/ThemeProvider.vue";
 
 import FadeTransition from "@src/ui/transitions/FadeTransition.vue";
 import { useFCM } from "@src/shared/composables/useFCM";
+import { useEventBus } from "@vueuse/core";
+
+const loginEvent = useEventBus("auth:login");
 
 // Refactoring code:
 // todo reorganize component structure
@@ -87,6 +90,10 @@ const height = ref(`${window.innerHeight}px`);
 const resizeWindow = () => {
   height.value = `${window.innerHeight}px`;
 };
+
+loginEvent.on(() => {
+  useFCM();
+});
 
 // and add the resize event when the component mounts.
 onMounted(() => {
