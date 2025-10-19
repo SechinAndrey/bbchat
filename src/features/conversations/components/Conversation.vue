@@ -168,9 +168,9 @@ const displayName = computed(() => {
     return props.conversation.contacts?.at(0)?.firstName + ":";
   } else if (lastMessageDirection.value === "out") {
     return "Ви: ";
+  } else {
+    return props.conversation.contacts?.at(0)?.firstName;
   }
-
-  return "";
 });
 </script>
 
@@ -233,8 +233,8 @@ const displayName = computed(() => {
               :class="{ 'text-primary': props.conversation.unread }"
             >
               <component
-                v-if="call"
                 :is="callTypeIcon"
+                v-if="call"
                 class="w-4 h-4 text-blue-500 mr-2"
               />
               <img

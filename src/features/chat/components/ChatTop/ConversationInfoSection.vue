@@ -71,6 +71,10 @@ const cityName = computed(() => {
   return city?.name_new_ua || city?.name_ua || city?.name || "Невідоме місто";
 });
 
+const contactName = computed(() => {
+  return conversationsStore.activeConversation?.fio || "";
+});
+
 const isActionModalOpen = ref(false);
 const currentActionType = ref<"client" | "supplier" | "manager" | "lead">(
   "client",
@@ -130,7 +134,7 @@ const openActionModal = (
           <p
             class="text-[0.6875rem] text-app-text-secondary px-3 truncate max-w-full"
           >
-            {{ cityName }}
+            {{ contactName }}
           </p>
         </div>
       </div>
