@@ -220,6 +220,7 @@ export interface ApiChaportMessage {
   name: string;
   message: string;
   created_at: string;
+  client_message_uid?: string;
 }
 
 export interface ApiEChatMessage {

@@ -39,13 +39,29 @@ const statusColor = computed(() => {
 });
 
 const messengerIcon = computed(() => {
-  return props.tempMessage.messengerId === 1
-    ? "/imgs/telegram.png"
-    : "/imgs/viber.png";
+  switch (props.tempMessage.messengerId) {
+    case 1:
+      return "/imgs/telegram.png";
+    case 2:
+      return "/imgs/viber.png";
+    case 3:
+      return "/imgs/chaport.png";
+    default:
+      return "/imgs/default-messenger.png";
+  }
 });
 
 const messengerName = computed(() => {
-  return props.tempMessage.messengerId === 1 ? "Telegram" : "Viber";
+  switch (props.tempMessage.messengerId) {
+    case 1:
+      return "Telegram";
+    case 2:
+      return "Viber";
+    case 3:
+      return "Chaport";
+    default:
+      return "Unknown Messenger";
+  }
 });
 </script>
 

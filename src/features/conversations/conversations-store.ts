@@ -585,7 +585,8 @@ export const useConversationsStore = defineStore("conversations", () => {
 
       const clientMessageUid =
         messageItem.client_message_uid ||
-        messageItem.echat_messages?.client_message_uid;
+        messageItem.echat_messages?.client_message_uid ||
+        messageItem.chaport_messages?.client_message_uid;
 
       if (isOutgoing && clientMessageUid) {
         const removedTempMessage = findAndRemoveTempMessage(clientMessageUid);
