@@ -1,7 +1,12 @@
 import { onMounted, onUnmounted } from "vue";
+import type { FCMEventMap } from "@src/shared/types/fcm-events";
 
 export interface IframeMessageTypes {
-  "bb-widget:auth-by-token": { token: string; clientId: string };
+  "bb-widget:auth-by-token": {
+    token: string;
+    entity: string;
+    entityId: number;
+  };
   "bb-widget:ping": undefined;
   "bb-widget:pong": undefined;
   "bb-widget:loaded": undefined;
@@ -19,7 +24,7 @@ type MessageCallback<
 > = (payload: IframeMessageTypes[T]) => void;
 
 let attached = false;
-let listeners: Record<string, Set<MessageCallback<any>>> = {};
+export const listeners: Record<string, Set<MessageCallback<any>>> = {};
 
 export function useIframeMessaging(options: { allowedOrigin: string }) {
   function on<T extends keyof IframeMessageTypes>(
@@ -95,5 +100,5 @@ export function useIframeMessaging(options: { allowedOrigin: string }) {
     stopListening();
   });
 
-  return { on, send };
+  return { on, send, startListening };
 }

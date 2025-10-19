@@ -13,5 +13,8 @@ export interface FCMEventMap {
     contragent_contact_id: string;
     contragent_id: string;
     contragent_type: EntityType;
+    entity_title: string;
+    entity_name: string | undefined;
+    from_manager: string;
   };
 }

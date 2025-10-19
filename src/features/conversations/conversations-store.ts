@@ -18,8 +18,7 @@ import type { IConversation } from "@src/shared/types/types";
 import { adaptApiCommunicationToIConversation } from "@src/api/communication-adapters";
 import useStore from "@src/shared/store/store";
 import { useEventBus } from "@vueuse/core";
-import { useFCM } from "@src/shared/composables/useFCM";
-import type { FCMEventMap } from "@src/shared/types/fcm-events";
+import { usePusher } from "@src/shared/composables/usePusher";
 
 export interface TempMessage {
   clientMessageUid: string;
@@ -579,16 +578,11 @@ export const useConversationsStore = defineStore("conversations", () => {
     return null;
   };
 
-  const { on } = useFCM();
-
-  on("new-message", async (payload: FCMEventMap["new-message"]) => {
+  const handleNewMessage = async (messageId: number) => {
     try {
-      const messageItem = await conversationsService.getMessageById(
-        Number(payload.id),
-      );
+      const messageItem = await conversationsService.getMessageById(messageId);
       const isOutgoing = isOutgoingMessage(messageItem);
 
-      // Check for client_message_uid in both locations: top level and inside echat_messages
       const clientMessageUid =
         messageItem.client_message_uid ||
         messageItem.echat_messages?.client_message_uid;
@@ -596,7 +590,6 @@ export const useConversationsStore = defineStore("conversations", () => {
       if (isOutgoing && clientMessageUid) {
         const removedTempMessage = findAndRemoveTempMessage(clientMessageUid);
         if (removedTempMessage) {
-          // Replace temp message with real message
           await addMessageToConversation(messageItem);
         } else {
           console.warn(
@@ -604,13 +597,7 @@ export const useConversationsStore = defineStore("conversations", () => {
             clientMessageUid,
             "- message might already be processed or temp message expired",
           );
-          // Don't add to conversation to avoid duplicates
         }
-      } else if (isOutgoing && !clientMessageUid) {
-        console.warn(
-          "Outgoing message without client_message_uid - this should not happen!",
-        );
-        await addMessageToConversation(messageItem);
       } else {
         await addMessageToConversation(messageItem);
       }
@@ -619,9 +606,24 @@ export const useConversationsStore = defineStore("conversations", () => {
         playNotificationSound(false);
       }
     } catch (error) {
-      console.error("Error fetching message item from Pusher event:", error);
+      console.error("Error handling new message:", error);
     }
-  });
+  };
+
+  const { bindEvent } = usePusher();
+  bindEvent(
+    "e-chat-notification",
+    "new-message",
+    async (data: {
+      id: number;
+      contragent_contact_id: number | null;
+      contragent_id: number | null;
+      contragent_type: EntityType | null;
+    }) => {
+      console.log("📨 Received Pusher new-message event:", data);
+      await handleNewMessage(data.id);
+    },
+  );
 
   const initializeRouteWatchers = () => {
     watch(

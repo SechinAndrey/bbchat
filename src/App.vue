@@ -68,7 +68,9 @@ onMounted(async () => {
       if (!success) {
         initError.value = "Не удалось загрузить данные";
       }
-      useFCM();
+      if (!store.isWidget) {
+        useFCM();
+      }
     }
   } catch (error) {
     console.error("Error initializing app:", error);

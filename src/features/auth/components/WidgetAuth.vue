@@ -53,7 +53,7 @@ on("bb-widget:auth-by-token", async (data) => {
 
   if (authStore.isAuthenticated) {
     authStatus.value = "success";
-    router.push({ path: `/widget/clients/${data.clientId}` });
+    router.push({ path: `/widget/${data.entity}/${data.entityId}` });
   } else {
     authStatus.value = "authenticating";
 
@@ -62,7 +62,7 @@ on("bb-widget:auth-by-token", async (data) => {
         await authStore.loginWithToken(data.token);
         authStatus.value = "success";
         setTimeout(() => {
-          router.push({ path: `/widget/clients/${data.clientId}` });
+          router.push({ path: `/widget/${data.entity}/${data.entityId}` });
         }, 800);
       } catch (error) {
         authStatus.value = "error";
