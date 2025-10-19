@@ -81,7 +81,7 @@ const handleCloseOnClickOutside = (event: Event) => {
         'md:left-0',
         'md:top-auto',
         'md:bottom-[3.125rem]',
-        'md:left-[-4.8125rem]',
+
         'xs:bottom-[-120px]',
         'xs:left-[auto]',
         'xs:right-[-0.5rem]',
@@ -90,7 +90,7 @@ const handleCloseOnClickOutside = (event: Event) => {
       :handle-click-outside="handleCloseOnClickOutside"
       :close-dropdown="props.handleCloseDropdown"
     >
-      <button
+      <!-- <button
         class="flex items-center w-full px-4 py-3 text-sm text-app-text hover:bg-app-bg-secondary focus:bg-app-bg-secondary focus:outline-none transition-all duration-200"
         aria-label="Show profile information"
         role="menuitem"
@@ -113,7 +113,7 @@ const handleCloseOnClickOutside = (event: Event) => {
           class="w-5 h-5 mr-3 opacity-70 hover:opacity-100 transition-opacity duration-200"
         />
         Password Change
-      </RouterLink>
+      </RouterLink> -->
 
       <button
         class="flex items-center w-full px-4 py-3 text-sm text-danger hover:bg-app-bg-secondary focus:bg-app-bg-secondary focus:outline-none transition-all duration-200"
@@ -124,7 +124,7 @@ const handleCloseOnClickOutside = (event: Event) => {
         <ArrowLeftStartOnRectangleIcon
           class="w-5 h-5 mr-3 opacity-70 hover:opacity-100 transition-opacity duration-200"
         />
-        Logout
+        Вийти
       </button>
     </Dropdown>
   </div>
