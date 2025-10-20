@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from "vue";
 import TextInput from "@src/ui/inputs/TextInput.vue";
 
 const model = defineModel<string>();
@@ -23,11 +24,29 @@ const props = withDefaults(
     size: "sm",
   },
 );
+
+const labelTextSize = computed(() => {
+  switch (props.size) {
+    case "sm":
+      return "text-sm";
+    case "md":
+      return "text-base";
+    case "lg":
+      return "text-lg";
+    default:
+      return "text-sm";
+  }
+});
 </script>
 
 <template>
-  <div class="flex flex-col">
-    <label v-if="props.label" :id="props.id" class="mb-3 text-left text-sm">
+  <div class="flex flex-col" :class="props.class">
+    <label
+      v-if="props.label"
+      :id="props.id"
+      class="mb-3 text-left text-base"
+      :class="labelTextSize"
+    >
       {{ props.label }}
     </label>
 
@@ -46,11 +65,11 @@ const props = withDefaults(
         :placeholder="props.placeholder"
         :variant="props.variant"
         :size="props.size"
-      />
-
-      <div class="absolute top-0 right-0">
-        <slot name="endAdornment"></slot>
-      </div>
+      >
+        <template #iconRight>
+          <slot name="iconRight"></slot>
+        </template>
+      </TextInput>
     </div>
   </div>
 </template>

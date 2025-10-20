@@ -4,7 +4,6 @@ import { computed } from "vue";
 
 import LoginForm from "@src/features/auth/components/LoginForm.vue";
 import RegisterForm from "@src/features/auth/components/RegisterForm/RegisterForm.vue";
-import Cover from "@src/pages/access/Cover.vue";
 import FadeTransition from "@src/ui/transitions/FadeTransition.vue";
 import WidgetAuth from "@src/features/auth/components/WidgetAuth.vue";
 
@@ -28,7 +27,6 @@ const ActiveMethod = computed((): any => {
       <FadeTransition>
         <component :is="ActiveMethod" />
       </FadeTransition>
-      <Cover v-if="route.params.method !== 'widget-auth'" />
     </div>
   </div>
 </template>

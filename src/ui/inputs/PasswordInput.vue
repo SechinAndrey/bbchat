@@ -9,12 +9,14 @@ const modelValue = defineModel<string>();
 
 const props = defineProps<{
   id?: string;
-  type?: string;
   label?: string;
-  placeholder?: string;
-  description?: string;
-  bordered?: boolean;
+  name?: string;
   class?: string;
+  placeholder?: string;
+  bordered?: boolean;
+  inputClass?: string;
+  variant?: "default" | "bordered" | "filled";
+  size?: "sm" | "md" | "lg";
 }>();
 
 const showPassword = ref(false);
@@ -26,15 +28,18 @@ const showPassword = ref(false);
     v-model="modelValue"
     :type="showPassword ? 'text' : 'password'"
     :label="props.label"
+    :name="props.name"
     :placeholder="props.placeholder"
-    :class="props.class"
     :bordered="props.bordered"
+    :class="props.class"
+    :input-class="props.inputClass"
+    :variant="props.variant"
+    :size="props.size"
   >
-    <template #endAdornment>
+    <template #iconRight>
       <IconButton
         title="toggle password visibility"
         aria-label="toggle password visibility"
-        class="m-[.5rem] p-2"
         @click="showPassword = !showPassword"
       >
         <EyeSlashIcon v-if="showPassword" class="w-5 h-5" />

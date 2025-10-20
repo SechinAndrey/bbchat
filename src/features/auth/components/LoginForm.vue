@@ -2,11 +2,15 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 
+import { MoonIcon, SunIcon } from "@heroicons/vue/24/solid";
+
 import Button from "@src/ui/inputs/Button.vue";
 import LabeledTextInput from "@src/ui/inputs/LabeledTextInput.vue";
 import PasswordInput from "@src/ui/inputs/PasswordInput.vue";
-import { RouterLink } from "vue-router";
 import { useAuthStore } from "@src/features/auth/store/auth-store";
+import LogoIcon from "@src/shared/icons/logoIcon.vue";
+import useTheme from "@src/shared/theme-system/useTheme";
+const { toggleDarkMode, isDarkMode } = useTheme();
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -51,84 +55,115 @@ const handleLogin = async () => {
 
 <template>
   <div
-    class="p-5 md:basis-1/2 xs:basis-full flex flex-col justify-center items-center"
+    class="min-h-screen w-full flex items-center justify-center relative overflow-hidden"
   >
-    <div class="w-full md:px-[26%] xs:px-[10%]">
-      <!--header-->
-      <div class="mb-6 flex flex-col">
-        <img
-          src="@src/shared/assets/vectors/logo-gradient.svg"
-          class="w-[1.375rem] h-[1.125rem] mb-4 opacity-70"
-          alt="bird logo"
-        />
-        <p class="mb-4">Welcome back</p>
-        <p class="text-opacity-75 font-light">Sign in to start messaging!</p>
-      </div>
+    <div
+      class="absolute inset-0 opacity-60"
+      style="
+        background: linear-gradient(
+          135deg,
+          var(--color-auth-gradient-start) 0%,
+          var(--color-auth-gradient-end) 100%
+        );
+      "
+    />
 
-      <!-- Error message -->
+    <!-- Main content -->
+    <div class="relative z-10 w-full max-w-md mx-auto p-6">
+      <!-- Login card -->
       <div
-        v-if="loginError"
-        class="mb-4 p-3 bg-danger/20 dark:bg-danger/20 rounded text-danger dark:text-danger"
+        class="bg-app-bg-secondary rounded-2xl border border-app-border p-8 backdrop-blur-sm"
+        :class="isDarkMode ? '' : 'shadow-lg'"
       >
-        {{ loginError }}
-      </div>
+        <div class="text-center mb-8">
+          <div
+            class="inline-flex items-center justify-center border border-app-border w-20 h-20 rounded-2xl mb-6"
+          >
+            <LogoIcon />
+          </div>
 
-      <!--form-->
-      <div class="mb-6">
-        <LabeledTextInput
-          v-model="email"
-          label="Email"
-          placeholder="Enter your email"
-          class="mb-5"
-        />
-        <PasswordInput
-          v-model="password"
-          label="Password"
-          placeholder="Enter your password"
-        />
-      </div>
+          <h1 class="text-2xl font-semibold text-app-text mb-2">
+            Billboards Комунікації
+          </h1>
+          <p class="text-app-text-secondary text-sm">
+            Усі канали зв'язку в одному місці
+          </p>
+        </div>
 
-      <!--local controls-->
-      <div class="mb-6">
-        <Button class="w-full mb-4" :loading="isLoading" @click="handleLogin">
-          Sign in
-        </Button>
-      </div>
-
-      <!--divider-->
-      <div class="mb-6 flex items-center">
-        <span
-          class="w-full border border-dashed border-gray-100 dark:border-gray-600 rounded-[.0625rem]"
-        ></span>
-        <p class="px-4 text-opacity-75 font-light">or</p>
-        <span
-          class="w-full border border-dashed border-gray-100 dark:border-gray-600 rounded-[.0625rem]"
-        ></span>
-      </div>
-
-      <!--oauth controls-->
-      <div>
-        <Button class="w-full mb-5">
-          <span class="flex">
-            <img
-              src="@src/shared/assets/vectors/google-logo.svg"
-              class="mr-3"
-              alt="google logo"
+        <!-- Error message -->
+        <div
+          v-if="loginError"
+          class="mb-6 p-4 bg-danger/10 border border-danger/20 rounded-xl text-danger text-sm flex items-start gap-3"
+        >
+          <svg
+            class="w-5 h-5 mt-0.5 flex-shrink-0"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+              clip-rule="evenodd"
             />
-            Sign in with Google
-          </span>
-        </Button>
+          </svg>
+          <span>{{ loginError }}</span>
+        </div>
 
-        <!--bottom text-->
-        <div class="flex justify-center">
-          <p>
-            Don't have an account?
-            <RouterLink to="/access/sign-up/" class="text-primary opacity-100">
-              Sign up
-            </RouterLink>
+        <!-- Form -->
+        <form class="space-y-6" @submit.prevent="handleLogin">
+          <div class="space-y-5">
+            <LabeledTextInput
+              v-model="email"
+              label="Електронна пошта"
+              placeholder="your@email.com"
+              size="md"
+              type="email"
+              autocomplete="email"
+              :disabled="isLoading"
+            />
+            <PasswordInput
+              v-model="password"
+              size="md"
+              label="Пароль"
+              placeholder="Введіть ваш пароль"
+              autocomplete="current-password"
+              :disabled="isLoading"
+            />
+          </div>
+
+          <!-- Login button -->
+          <Button
+            type="submit"
+            class="w-full"
+            size="lg"
+            :loading="isLoading"
+            :disabled="!email || !password"
+          >
+            <template v-if="!isLoading"> Увійти </template>
+          </Button>
+        </form>
+
+        <!-- Footer -->
+        <div class="mt-8 pt-6 border-t border-app-border/50">
+          <p class="text-center text-xs text-app-text-secondary">
+            *Використовуйте свій основний акаунт Billboards для входу
           </p>
         </div>
       </div>
     </div>
+
+    <!-- Theme toggle -->
+    <Button
+      icon-only
+      title="Перемкнути тему"
+      variant="ghost"
+      size="md"
+      class="fixed top-6 right-6 z-50"
+      @click="toggleDarkMode"
+    >
+      <template #icon>
+        <component :is="isDarkMode ? SunIcon : MoonIcon" class="w-5 h-5" />
+      </template>
+    </Button>
   </div>
 </template>
