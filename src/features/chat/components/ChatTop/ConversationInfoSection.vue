@@ -15,8 +15,8 @@ import SearchInput from "@src/ui/inputs/SearchInput.vue";
 import Button from "@src/ui/inputs/Button.vue";
 import ConversationAvatar from "@src/shared/components/ConversationAvatar.vue";
 import useConversationsStore from "@src/features/conversations/conversations-store";
-import { useDebounceFn } from "@vueuse/core";
-import { computed, inject, ref, type Ref } from "vue";
+import { useDebounceFn, useMediaQuery } from "@vueuse/core";
+import { computed, inject, ref, watch, type Ref } from "vue";
 import { useToast } from "@src/shared/composables/useToast";
 import type { EntityType } from "@src/shared/types/common";
 import VuePopper from "@kalimahapps/vue-popper";
@@ -32,6 +32,13 @@ const authStore = useAuthStore();
 const conversationsStore = useConversationsStore();
 const { toastSuccess, toastError } = useToast();
 const { currentMessenger, messengerOptions } = useMessenger();
+
+const isMobile = useMediaQuery("(max-width: 968px)");
+watch(isMobile, (newValue) => {
+  if (newValue) {
+    store.rightSidebarOpen = false;
+  }
+});
 
 const handleCloseConversation = () => {
   const url = store.isWidget
@@ -91,7 +98,7 @@ const openActionModal = (
 <template>
   <!--conversation info-->
   <div
-    class="w-full flex flex-col sm:flex-row sm:justify-between sm:items-center"
+    class="w-full flex flex-col xl:flex-row xl:justify-between xl:items-center"
   >
     <div class="flex items-center gap-3 mb-2">
       <Button
@@ -119,7 +126,14 @@ const openActionModal = (
           />
         </button>
 
-        <div class="flex flex-col min-w-0 flex-1">
+        <div
+          class="flex flex-col min-w-[10rem]"
+          :class="
+            store.rightSidebarOpen
+              ? 'max-w-[calc(100vw-26rem-42.563rem)]'
+              : 'max-w-[calc(100vw-26rem-23.81rem)]'
+          "
+        >
           <Button
             variant="ghost"
             size="xs"
@@ -127,7 +141,9 @@ const openActionModal = (
             tabindex="0"
             @click="store.rightSidebarOpen = !store.rightSidebarOpen"
           >
-            <span class="truncate">{{ title }}</span>
+            <span class="truncate"
+              >text-app-text-secondary px-3{{ title }}</span
+            >
           </Button>
 
           <!-- font-size 11px in rem -->
@@ -140,20 +156,105 @@ const openActionModal = (
       </div>
 
       <Button
+        v-if="
+          messengerOptions.length === 1 && currentMessenger?.label === 'Chaport'
+        "
+        class="whitespace-nowrap flex-shrink-0 color-white xl:!hidden"
+        size="sm"
+        icon-only
+        title="Синхронізцувати"
+        variant="text"
+      >
+        <template #icon>
+          <ArrowPathIcon />
+        </template>
+      </Button>
+
+      <Button
+        class="whitespace-nowrap flex-shrink-0 color-white xl:!hidden"
+        size="sm"
+        icon-only
+        :loading="isEndLoading"
+        title="Завершити діалог"
+        variant="text"
+        @click="endConversation"
+      >
+        <template #icon>
+          <StopCircleIcon />
+        </template>
+      </Button>
+
+      <VuePopper placement="bottom-end" :show-arrow="false">
+        <Button variant="text" icon-only class="flex-shrink-0 xl:!hidden">
+          <template #icon>
+            <EllipsisVerticalIcon />
+          </template>
+        </Button>
+
+        <template #content>
+          <ul>
+            <li>
+              <Button block variant="ghost" @click="openActionModal('lead')">
+                Додати в існуючого ліда
+              </Button>
+            </li>
+            <li>
+              <Button
+                v-if="authStore.currentUser?.roleId !== 7"
+                block
+                variant="ghost"
+                @click="openActionModal('client')"
+              >
+                Додати в існуючого клієнта
+              </Button>
+            </li>
+            <li>
+              <Button
+                v-if="authStore.currentUser?.roleId !== 7"
+                block
+                variant="ghost"
+                @click="openActionModal('supplier')"
+              >
+                Додати в існуючого постачальника
+              </Button>
+            </li>
+            <li>
+              <Button block variant="ghost" @click="openActionModal('manager')">
+                Змінити менеджера
+              </Button>
+            </li>
+          </ul>
+        </template>
+      </VuePopper>
+
+      <Button
         variant="text"
         icon-only
-        class="sm:!hidden"
+        class="md:!hidden"
         @click="store.rightSidebarOpen = !store.rightSidebarOpen"
       >
         <template #icon> <InformationCircleIcon /> </template>
       </Button>
+
+      <Button
+        variant="text"
+        icon-only
+        class="flex-shrink-0 !hidden md:!block xl:!hidden"
+        @click="store.rightSidebarOpen = !store.rightSidebarOpen"
+      >
+        <template #icon>
+          <ChevronRightIcon v-if="store.rightSidebarOpen" />
+          <ChevronLeftIcon v-else />
+        </template>
+      </Button>
     </div>
 
-    <div class="relative flex gap-4 justify-end flex-shrink-0">
+    <div class="relative flex gap-4 justify-end flex-shrink-0 hidden xl:flex">
       <SearchInput
         v-model="conversationsStore.messagesFilters.search"
         size="sm"
         variant="filled"
+        title="pc-search"
         class="w-auto min-w-[8rem] sm:w-[13.563rem] flex-shrink-0"
         @update:model-value="debouncedFn"
       />
@@ -233,7 +334,7 @@ const openActionModal = (
       <Button
         variant="text"
         icon-only
-        class="!hidden md:!flex flex-shrink-0"
+        class="flex-shrink-0"
         @click="store.rightSidebarOpen = !store.rightSidebarOpen"
       >
         <template #icon>
@@ -242,6 +343,15 @@ const openActionModal = (
         </template>
       </Button>
     </div>
+
+    <SearchInput
+      v-model="conversationsStore.messagesFilters.search"
+      size="sm"
+      variant="filled"
+      class="xl:!hidden"
+      title="mobile-search"
+      @update:model-value="debouncedFn"
+    />
   </div>
 
   <LeadActionModal
