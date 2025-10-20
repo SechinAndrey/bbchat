@@ -254,7 +254,6 @@ async function handleSendMessage() {
           size="sm"
           icon-only
           class="md:mr-5 xs:mr-4"
-          title="Додати вкладення"
           aria-label="Додати вкладення"
           @click="openAttachmentsModal = true"
         >
