@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Ref } from "vue";
 import useStore from "@src/shared/store/store";
-import { ref, computed, nextTick } from "vue";
+import { ref, computed, nextTick, watch } from "vue";
 
 import {
   FaceSmileIcon,
@@ -23,8 +23,6 @@ import {
   ApiCommunicationSupplierFull,
   ApiMessageItem,
 } from "@src/api/types";
-import { useEventBus } from "@vueuse/core";
-const eventBus = useEventBus("chat:messages-loaded");
 
 const store = useStore();
 const { sendMessage } = useMessageSending();
@@ -107,9 +105,13 @@ const setMessengerId = () => {
     : null;
 };
 
-eventBus.on(() => {
-  setMessengerId();
-});
+watch(
+  lastMessage,
+  () => {
+    setMessengerId();
+  },
+  { immediate: true },
+);
 
 // determines whether the app is recording or not.
 const recording = ref(false);
