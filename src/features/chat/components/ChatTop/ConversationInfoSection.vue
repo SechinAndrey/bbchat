@@ -8,6 +8,8 @@ import {
   ChevronRightIcon,
   InformationCircleIcon,
   EllipsisVerticalIcon,
+  ArrowPathIcon,
+  StopCircleIcon,
 } from "@heroicons/vue/24/outline";
 import SearchInput from "@src/ui/inputs/SearchInput.vue";
 import Button from "@src/ui/inputs/Button.vue";
@@ -19,6 +21,7 @@ import { useToast } from "@src/shared/composables/useToast";
 import type { EntityType } from "@src/shared/types/common";
 import VuePopper from "@kalimahapps/vue-popper";
 import LeadActionModal from "./LeadActionModal.vue";
+import { useMessenger } from "@src/features/chat/composables/useMessengerSelection";
 
 const entity = inject<Ref<EntityType>>("entity");
 const id = inject<Ref<number>>("id");
@@ -28,6 +31,7 @@ const store = useStore();
 const authStore = useAuthStore();
 const conversationsStore = useConversationsStore();
 const { toastSuccess, toastError } = useToast();
+const { currentMessenger, messengerOptions } = useMessenger();
 
 const handleCloseConversation = () => {
   const url = store.isWidget
@@ -44,12 +48,12 @@ const debouncedFn = useDebounceFn(() => {
   });
 }, 500);
 
-const isLoading = ref(false);
+const isEndLoading = ref(false);
 
 const endConversation = async () => {
   if (!entity?.value || !id?.value) return;
   try {
-    isLoading.value = true;
+    isEndLoading.value = true;
     await conversationsStore.updateConversation(entity.value, id.value, {
       communication_status_id: 2, // 2 - completed
     });
@@ -58,7 +62,7 @@ const endConversation = async () => {
     console.error("Error ending conversation:", error);
     toastError("Не вдалося завершити діалог");
   } finally {
-    isLoading.value = false;
+    isEndLoading.value = false;
   }
 };
 
@@ -69,10 +73,6 @@ const title = computed(() => {
 const cityName = computed(() => {
   const city = conversationsStore.activeConversation?.cities?.at(0);
   return city?.name_new_ua || city?.name_ua || city?.name || "Невідоме місто";
-});
-
-const contactName = computed(() => {
-  return conversationsStore.activeConversation?.fio || "";
 });
 
 const isActionModalOpen = ref(false);
@@ -134,7 +134,7 @@ const openActionModal = (
           <p
             class="text-[0.6875rem] text-app-text-secondary px-3 truncate max-w-full"
           >
-            {{ contactName }}
+            {{ cityName }}
           </p>
         </div>
       </div>
@@ -159,12 +159,32 @@ const openActionModal = (
       />
 
       <Button
-        class="whitespace-nowrap flex-shrink-0"
+        v-if="
+          messengerOptions.length === 1 && currentMessenger?.label === 'Chaport'
+        "
+        class="whitespace-nowrap flex-shrink-0 color-white"
         size="sm"
-        :loading="isLoading"
+        icon-only
+        title="Синхронізцувати"
+        variant="text"
+      >
+        <template #icon>
+          <ArrowPathIcon />
+        </template>
+      </Button>
+
+      <Button
+        class="whitespace-nowrap flex-shrink-0 color-white"
+        size="sm"
+        icon-only
+        :loading="isEndLoading"
+        title="Завершити діалог"
+        variant="text"
         @click="endConversation"
       >
-        Завершити діалог
+        <template #icon>
+          <StopCircleIcon />
+        </template>
       </Button>
 
       <VuePopper placement="bottom-end" :show-arrow="false">

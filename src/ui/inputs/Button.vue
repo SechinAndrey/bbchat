@@ -167,7 +167,7 @@ const componentProps = computed(() => {
     </template>
 
     <!-- Loading text for screen readers -->
-    <span v-if="loading"> {{ loadingText }} </span>
+    <span v-if="loading && !iconOnly"> {{ loadingText }} </span>
   </component>
 </template>
 
