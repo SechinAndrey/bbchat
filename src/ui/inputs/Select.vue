@@ -25,7 +25,7 @@ const props = withDefaults(
     modelValue: (string | number)[] | string | number;
     multiple?: boolean;
     placeholder?: string;
-    icon?: Component;
+    icon?: Component | false;
     size?: "xs" | "sm" | "md" | "lg";
     displayMode?: "icon-label" | "icon-only";
     selectedIconClass?: string;
