@@ -2,7 +2,7 @@
 import type { Ref } from "vue";
 
 import { onMounted, ref, watch, nextTick, computed } from "vue";
-import { useInfiniteScroll } from "@vueuse/core";
+import { useInfiniteScroll, useResizeObserver } from "@vueuse/core";
 import { useRoute } from "vue-router";
 
 import MessageV2 from "@src/features/chat/components/ChatMiddle/Message/MessageV2.vue";
@@ -31,7 +31,7 @@ import { useToast } from "@src/shared/composables/useToast";
 
 const conversationsStore = useConversationsStore();
 const route = useRoute();
-const { toastSuccess, toastError, toastInfo } = useToast();
+const { toastError, toastInfo } = useToast();
 
 const container: Ref<HTMLElement | null> = ref(null);
 
@@ -47,6 +47,8 @@ const currentEntity = computed(() => route.params.entity as EntityType);
 const currentId = computed(() => Number(route.params.id));
 const currentContactId = computed(() => Number(route.params.contactId));
 const isLoadingMore = ref(false);
+const messagesContainer: Ref<HTMLElement | null> = ref(null);
+const shouldAutoScroll = ref(true);
 
 const getMessageDate = (dateString: string): string => {
   return new Date(dateString).toDateString();
@@ -266,8 +268,29 @@ const scrollToBottom = () => {
   });
 };
 
+const checkIfShouldAutoScroll = () => {
+  if (!container.value) return;
+
+  const scrollElement = container.value;
+  const isNearBottom =
+    scrollElement.scrollHeight -
+      scrollElement.scrollTop -
+      scrollElement.clientHeight <
+    150;
+
+  shouldAutoScroll.value = isNearBottom;
+};
+
+// Track resize of messages container to handle image loading
+useResizeObserver(messagesContainer, () => {
+  if (!isLoadingMore.value && shouldAutoScroll.value) {
+    scrollToBottom();
+  }
+});
+
 onMounted(() => {
   scrollToBottom();
+  container.value?.addEventListener("scroll", checkIfShouldAutoScroll);
 });
 
 watch(
@@ -277,6 +300,7 @@ watch(
   ],
   () => {
     if (!isLoadingMore.value) {
+      shouldAutoScroll.value = true;
       scrollToBottom();
     }
   },
@@ -295,6 +319,7 @@ watch(
     />
 
     <div
+      ref="messagesContainer"
       class="flex flex-col transition-opacity duration-300"
       :class="
         conversationsStore.isLoadingMessages &&
