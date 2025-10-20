@@ -4,9 +4,8 @@ import { computed } from "vue";
 interface Props {
   active?: boolean;
   disabled?: boolean;
-  value?: any;
+  value?: unknown;
   danger?: boolean;
-  handleClick?: () => void;
   label?: string;
 }
 
@@ -20,27 +19,28 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits(["click"]);
 
 const itemClasses = computed(() => [
-  "",
-  props.danger ? "" : "",
+  "flex items-center w-full px-4 py-3 text-sm transition-all duration-200",
+  "hover:bg-app-bg-secondary focus:bg-app-bg-secondary focus:outline-none",
   {
-    "opacity-50 cursor-not-allowed": props.disabled,
-    "bg-gray-100 dark:bg-gray-600": props.active,
+    "opacity-50 cursor-not-allowed pointer-events-none": props.disabled,
+
+    "bg-app-bg-secondary font-medium": props.active,
+
+    "text-danger": props.danger,
+
+    "text-app-text": !props.danger,
   },
 ]);
 
-function handleClick(event: MouseEvent) {
+function handleItemClick(event: MouseEvent) {
   if (props.disabled) return;
-
-  if (props.handleClick) {
-    props.handleClick();
-  }
 
   emit("click", {
     event,
     value: props.value,
   });
 
-  // Send click event to parent component
+  // Send custom event for Dropdown closeOnSelect functionality
   const parentEl = event.currentTarget as HTMLElement;
   parentEl.dispatchEvent(
     new CustomEvent("dropdown-item-click", {
@@ -53,52 +53,13 @@ function handleClick(event: MouseEvent) {
 
 <template>
   <button
+    type="button"
     :class="itemClasses"
-    @click="handleClick"
-    role="menuitem"
+    :disabled="disabled"
     :aria-label="label"
+    role="menuitem"
+    @click="handleItemClick"
   >
     <slot></slot>
   </button>
 </template>
-
-<style scoped>
-.dropdown-item {
-  padding: 8px 16px;
-  font-size: 14px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  color: #4a5568;
-}
-
-.dropdown-item:hover:not(.dropdown-item-disabled) {
-  background-color: #f7fafc;
-}
-
-.dropdown-item-active {
-  background-color: #ebf8ff;
-  color: #3182ce;
-  font-weight: 500;
-}
-
-.dropdown-item-disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-/* Dark theme */
-@media (prefers-color-scheme: dark) {
-  .dropdown-item {
-    color: #e2e8f0;
-  }
-
-  .dropdown-item:hover:not(.dropdown-item-disabled) {
-    background-color: #4a5568;
-  }
-
-  .dropdown-item-active {
-    background-color: #2c5282;
-    color: #90cdf4;
-  }
-}
-</style>

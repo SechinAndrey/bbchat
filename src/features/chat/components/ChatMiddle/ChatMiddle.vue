@@ -19,12 +19,29 @@ import { ENTITY_TO_CONTRAGENT_MAP } from "@src/shared/types/common";
 import TimelineDivider from "@src/features/chat/components/ChatMiddle/TimelineDivider.vue";
 import type { ApiMessageItem } from "@src/api/types";
 import type { IConversation } from "@src/shared/types/types";
-import { ChatBubbleLeftRightIcon } from "@heroicons/vue/24/outline";
+import {
+  ChatBubbleLeftRightIcon,
+  ClipboardDocumentIcon,
+  ArrowUturnLeftIcon,
+} from "@heroicons/vue/24/outline";
+import { useContextMenu } from "@src/shared/composables/useContextMenu";
+import { ContextMenu } from "@src/ui/navigation/ContextMenu";
+import { DropdownItem } from "@src/ui/navigation/DropdownV3";
+import { useToast } from "@src/shared/composables/useToast";
 
 const conversationsStore = useConversationsStore();
 const route = useRoute();
+const { toastSuccess, toastError, toastInfo } = useToast();
 
 const container: Ref<HTMLElement | null> = ref(null);
+
+const {
+  isOpen: isContextMenuOpen,
+  position: contextMenuPosition,
+  selectedItem: selectedMessage,
+  open: openContextMenu,
+  close: closeContextMenu,
+} = useContextMenu<ApiMessageItem>();
 
 const currentEntity = computed(() => route.params.entity as EntityType);
 const currentId = computed(() => Number(route.params.id));
@@ -192,6 +209,55 @@ const closeImageGallery = () => {
   startingImageIndex.value = 0;
 };
 
+const handleOpenContextMenu = (
+  message: ApiMessageItem,
+  event: MouseEvent | TouchEvent,
+) => {
+  openContextMenu(event, message);
+};
+
+const getMessageText = (message: ApiMessageItem): string => {
+  if (message.echat_messages?.message) {
+    return message.echat_messages.message;
+  }
+  if (message.chaport_messages?.message) {
+    return message.chaport_messages.message;
+  }
+  return "";
+};
+
+const handleCopyMessage = async () => {
+  if (!selectedMessage.value) return;
+
+  const text = getMessageText(selectedMessage.value);
+
+  if (!text) {
+    toastError("Немає тексту для копіювання");
+    closeContextMenu();
+    return;
+  }
+
+  try {
+    await navigator.clipboard.writeText(text);
+  } catch (error) {
+    console.error("Failed to copy text:", error);
+    toastError("Помилка копіювання");
+  }
+
+  closeContextMenu();
+};
+
+const handleReplyMessage = () => {
+  if (!selectedMessage.value) return;
+
+  // TODO: Add
+
+  console.log("Reply to message:", selectedMessage.value);
+  toastInfo("Функція відповіді в розробці");
+
+  closeContextMenu();
+};
+
 const scrollToBottom = () => {
   nextTick(() => {
     if (container.value) {
@@ -257,7 +323,11 @@ watch(
           :date="message.created_at"
         />
 
-        <MessageV2 :message="message" @open-image-gallery="openImageGallery" />
+        <MessageV2
+          :message="message"
+          @open-image-gallery="openImageGallery"
+          @open-context-menu="handleOpenContextMenu"
+        />
 
         <NewMessagesDivider v-if="shouldShowDividerAfterMessage(index)" />
       </div>
@@ -303,5 +373,26 @@ watch(
       :starting-index="startingImageIndex"
       @close="closeImageGallery"
     />
+
+    <!-- Context Menu для повідомлень -->
+    <ContextMenu
+      v-model:show="isContextMenuOpen"
+      :position="contextMenuPosition"
+      @close="closeContextMenu"
+    >
+      <DropdownItem label="Копіювати" @click="handleCopyMessage">
+        <ClipboardDocumentIcon class="w-5 h-5 mr-3" />
+        Копіювати
+      </DropdownItem>
+
+      <DropdownItem
+        v-if="selectedMessage?.echat_messages?.dialog?.messenger_id === 1"
+        label="Відповісти"
+        @click="handleReplyMessage"
+      >
+        <ArrowUturnLeftIcon class="w-5 h-5 mr-3" />
+        Відповісти
+      </DropdownItem>
+    </ContextMenu>
   </div>
 </template>

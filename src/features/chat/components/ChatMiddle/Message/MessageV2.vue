@@ -17,6 +17,7 @@ import { useConversationsStore } from "@src/features/conversations/conversations
 import CallPlayer from "@src/features/chat/components/ChatMiddle/Message/CallPlayer.vue";
 import Button from "@src/ui/inputs/Button.vue";
 import Robo1Icon from "@src/shared/icons/Robo1Icon.vue";
+import { useLongPress } from "@src/shared/composables/useLongPress";
 
 const props = defineProps<{
   message: ApiMessageItem;
@@ -25,11 +26,24 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   openImageGallery: [imageUrl: string];
+  openContextMenu: [message: ApiMessageItem, event: MouseEvent | TouchEvent];
 }>();
 
 const conversationsStore = useConversationsStore();
 
 const isCallDetailsExpanded = ref(true);
+
+const { onTouchStart, onTouchEnd, onTouchMove } = useLongPress({
+  delay: 500,
+  onLongPress: (event) => {
+    emit("openContextMenu", props.message, event);
+  },
+});
+
+const handleContextMenu = (event: MouseEvent) => {
+  event.preventDefault();
+  emit("openContextMenu", props.message, event);
+};
 
 const isSelf = computed(() => {
   return (
@@ -114,6 +128,10 @@ const formatMessageText = (text: string) => {
   <div
     class="flex items-start gap-4 py-3 px-4"
     :class="{ 'justify-end': isSelf }"
+    @contextmenu="handleContextMenu"
+    @touchstart="onTouchStart"
+    @touchend="onTouchEnd"
+    @touchmove="onTouchMove"
   >
     <ConversationAvatar
       v-if="!isSelf && conversationsStore.activeConversation"

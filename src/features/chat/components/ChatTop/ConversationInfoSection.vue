@@ -194,7 +194,7 @@ const openActionModal = (
         <template #content>
           <ul>
             <li>
-              <Button block variant="ghost" @click="openActionModal('lead')">
+              <Button block variant="text" @click="openActionModal('lead')">
                 Додати в існуючого ліда
               </Button>
             </li>
@@ -202,7 +202,7 @@ const openActionModal = (
               <Button
                 v-if="authStore.currentUser?.roleId !== 7"
                 block
-                variant="ghost"
+                variant="text"
                 @click="openActionModal('client')"
               >
                 Додати в існуючого клієнта
@@ -212,14 +212,14 @@ const openActionModal = (
               <Button
                 v-if="authStore.currentUser?.roleId !== 7"
                 block
-                variant="ghost"
+                variant="text"
                 @click="openActionModal('supplier')"
               >
                 Додати в існуючого постачальника
               </Button>
             </li>
             <li>
-              <Button block variant="ghost" @click="openActionModal('manager')">
+              <Button block variant="text" @click="openActionModal('manager')">
                 Змінити менеджера
               </Button>
             </li>
@@ -298,7 +298,7 @@ const openActionModal = (
         <template #content>
           <ul>
             <li>
-              <Button block variant="ghost" @click="openActionModal('lead')">
+              <Button block variant="text" @click="openActionModal('lead')">
                 Додати в існуючого ліда
               </Button>
             </li>
@@ -306,7 +306,7 @@ const openActionModal = (
               <Button
                 v-if="authStore.currentUser?.roleId !== 7"
                 block
-                variant="ghost"
+                variant="text"
                 @click="openActionModal('client')"
               >
                 Додати в існуючого клієнта
@@ -316,14 +316,14 @@ const openActionModal = (
               <Button
                 v-if="authStore.currentUser?.roleId !== 7"
                 block
-                variant="ghost"
+                variant="text"
                 @click="openActionModal('supplier')"
               >
                 Додати в існуючого постачальника
               </Button>
             </li>
             <li>
-              <Button block variant="ghost" @click="openActionModal('manager')">
+              <Button block variant="text" @click="openActionModal('manager')">
                 Змінити менеджера
               </Button>
             </li>

@@ -1,5 +1,13 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, nextTick, watch } from "vue";
+import {
+  ref,
+  computed,
+  onMounted,
+  onUnmounted,
+  nextTick,
+  watch,
+  type Component,
+} from "vue";
 import UserIcon from "../../shared/icons/UserIcon.vue";
 import ChevronDownIcon from "../../shared/icons/ChevronDownIcon.vue";
 import Checkbox from "./Checkbox.vue";
@@ -17,7 +25,7 @@ const props = withDefaults(
     modelValue: (string | number)[] | string | number;
     multiple?: boolean;
     placeholder?: string;
-    icon?: any;
+    icon?: Component;
     size?: "xs" | "sm" | "md" | "lg";
     displayMode?: "icon-label" | "icon-only";
     selectedIconClass?: string;
@@ -281,38 +289,33 @@ const handleOptionClick = (option: Option) => {
           >
             <slot name="header" />
           </div>
-          <ul class="divide-y">
+          <ul>
             <li
               v-for="option in options"
               :key="option.value"
-              class="text-app-text relative cursor-pointer select-none border-app-border"
-              :class="sizeClasses.optionText"
+              class="flex items-center w-full px-4 py-3 text-sm text-app-text cursor-pointer select-none transition-all duration-200 hover:bg-app-bg-secondary"
+              :class="{
+                'bg-app-bg-secondary font-medium': isSelected(option.value),
+              }"
               @click="handleOptionClick(option)"
             >
-              <div
-                class="p-2 flex items-center space-x-3 rounded-sm"
-                :class="{
-                  'font-bold': isSelected(option.value),
-                }"
+              <Checkbox
+                v-if="multiple"
+                :model-value="isSelected(option.value)"
+                class="mr-2"
+              />
+
+              <span
+                v-if="option.image"
+                class="flex-shrink-0 inline-flex items-center justify-center overflow-hidden mr-3"
+                :style="{ width: iconSizeRem, height: iconSizeRem }"
               >
-                <Checkbox
-                  v-if="multiple"
-                  :model-value="isSelected(option.value)"
-                  class="mr-2"
+                <img
+                  :src="option.image"
+                  class="block max-w-full max-h-full object-contain"
                 />
-                <!-- Strict size wrapper for option image as well -->
-                <span
-                  v-if="option.image"
-                  class="flex-shrink-0 inline-flex items-center justify-center overflow-hidden"
-                  :style="{ width: iconSizeRem, height: iconSizeRem }"
-                >
-                  <img
-                    :src="option.image"
-                    class="block max-w-full max-h-full object-contain"
-                  />
-                </span>
-                <span class="truncate">{{ option.label }}</span>
-              </div>
+              </span>
+              <span class="truncate">{{ option.label }}</span>
             </li>
           </ul>
         </div>
