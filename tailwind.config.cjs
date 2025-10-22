@@ -32,7 +32,7 @@ module.exports = {
           DEFAULT: "var(--color-state-info)",
         },
         warning: {
-          DEFAULT: "var(--color-warning)",
+          DEFAULT: "var(--color-state-warning)",
         },
         danger: {
           DEFAULT: "var(--color-state-danger)",

@@ -241,7 +241,7 @@ const jobTitleOptions = computed(() => {
             class="xs:order-2 md:order-1"
             @click="handleCancel"
           >
-            Відмінити
+            Скасувати
           </Button>
 
           <Button

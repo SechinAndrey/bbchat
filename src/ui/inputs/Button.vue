@@ -44,6 +44,7 @@ const BUTTON_VARIANTS = {
   outline: "btn-outline",
   ghost: "btn-ghost",
   text: "btn-text",
+  danger: "btn-danger",
 } as const;
 
 type ButtonSize = keyof typeof BUTTON_SIZES;
@@ -210,6 +211,10 @@ const componentProps = computed(() => {
   background-color: var(--color-btn-secondary-bg-active);
 }
 
+.btn-danger:hover:not(.btn-disabled):not(.btn-loading) {
+  background-color: var(--color-btn-danger-bg-hover);
+}
+
 .btn-outline {
   background-color: var(--color-btn-outline-bg);
   color: var(--color-btn-outline-text);
@@ -243,6 +248,11 @@ const componentProps = computed(() => {
   background-color: var(--color-btn-text-bg);
   color: var(--color-btn-text-text);
   --tw-ring-color: var(--color-btn-text-focus);
+}
+
+.btn-danger {
+  background-color: var(--color-btn-danger-bg);
+  color: var(--color-btn-danger-text);
 }
 
 a.btn-text {

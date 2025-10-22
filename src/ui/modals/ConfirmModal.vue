@@ -4,10 +4,12 @@ import Button from "@src/ui/inputs/Button.vue";
 import { ExclamationTriangleIcon } from "@heroicons/vue/24/outline";
 const props = defineProps<{
   open: boolean;
-  title: string;
-  text: string;
+  showIcon?: boolean;
+  title?: string;
+  text?: string;
   confirmText?: string;
   cancelText?: string;
+  isLoading?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -27,24 +29,38 @@ const handleCancel = () => {
 <template>
   <Modal :open="props.open" :close-modal="handleCancel">
     <template #content>
-      <div
-        class="relative transform overflow-hidden rounded-lg bg-theme-surface px-6 py-6 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg"
-      >
-        <div>
-          <p class="flex text-lg font-medium leading-6 text-theme-text mb-2">
-            <ExclamationTriangleIcon class="h-6 w-6 text-danger-active mr-4" />
-            {{ props.title }}
-          </p>
-          <p class="text-sm text-theme-t-alt">
-            {{ props.text }}
-          </p>
+      <div class="w-full max-w-md bg-app-bg rounded-lg p-6 shadow-xl">
+        <!-- Header with Icon -->
+        <div class="flex items-center gap-3 mb-4">
+          <div v-if="props.showIcon" class="flex-shrink-0">
+            <slot name="icon">
+              <ExclamationTriangleIcon class="h-6 w-6 text-danger" />
+            </slot>
+          </div>
+          <h2 class="text-lg text-app-text">
+            <slot name="header">
+              {{ props.title }}
+            </slot>
+          </h2>
         </div>
 
-        <div class="mt-6 flex justify-end space-x-3">
-          <Button size="sm" class="" @button-clicked="handleCancel">
+        <!-- Description -->
+        <p class="text-left text-sm text-app-text-secondary mb-6">
+          <slot name="body">
+            {{ props.text }}
+          </slot>
+        </p>
+
+        <!-- Action buttons -->
+        <div class="flex justify-end gap-3">
+          <Button variant="text" @click="handleCancel">
             {{ props.cancelText || "Скасувати" }}
           </Button>
-          <Button size="sm" class="" @button-clicked="handleConfirm">
+          <Button
+            variant="danger"
+            :loading="props.isLoading"
+            @click="handleConfirm"
+          >
             {{ props.confirmText || "Підтвердити" }}
           </Button>
         </div>

@@ -17,6 +17,7 @@ const entity = inject<Ref<EntityType>>("entity", ref("leads" as EntityType));
 const id = inject<Ref<number>>("id", ref(0));
 
 // Modal state
+const isDeleting = ref(false);
 const showDeleteModal = ref(false);
 const selectedSelection = ref<ApiSelection | null>(null);
 
@@ -25,17 +26,23 @@ const openDeleteModal = (selection: ApiSelection) => {
   showDeleteModal.value = true;
 };
 
-const handleDeleteConfirm = () => {
+const handleDeleteConfirm = async () => {
   if (selectedSelection.value) {
-    selectionsStore.deleteSelection(selectedSelection.value.id);
+    isDeleting.value = true;
+    await selectionsStore.deleteSelection(selectedSelection.value.id);
+    isDeleting.value = false;
   }
   showDeleteModal.value = false;
-  selectedSelection.value = null;
+  setTimeout(() => {
+    selectedSelection.value = null;
+  }, 300);
 };
 
 const handleDeleteCancel = () => {
   showDeleteModal.value = false;
-  selectedSelection.value = null;
+  setTimeout(() => {
+    selectedSelection.value = null;
+  }, 300);
 };
 
 const isSelectionsModalOpen = ref(false);
@@ -129,15 +136,22 @@ if (entity.value && id.value) {
 
     <ConfirmModal
       :open="showDeleteModal"
-      title="Видалити підбірку?"
-      text="Ви впевнені, що хочете видалити цю підбірку? Цю дію неможливо скасувати."
+      :title="`Видалити добірку: #${selectedSelection?.id}?`"
       confirm-text="Видалити"
       cancel-text="Скасувати"
+      :is-loading="isDeleting"
       @confirm="handleDeleteConfirm"
       @cancel="handleDeleteCancel"
-    />
+    >
+      <template #body>
+        Ви впевнені, що хочете видалити цю добірку? <br />
+        Цю дію неможливо скасувати.
+      </template>
+    </ConfirmModal>
+
     <SelectionsModal
       :open="isSelectionsModalOpen"
+      :show-icon="false"
       :selection="selectedSelection"
       :entity-id="id"
       :entity-type="entity"

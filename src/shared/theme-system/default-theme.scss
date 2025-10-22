@@ -21,7 +21,7 @@ html.theme-default {
   // States colors
   --color-state-success: #4fb14b;
   --color-state-warning: #ff9800;
-  --color-state-danger: #f44336;
+  --color-state-danger: #ff4e51;
   --color-state-info: #2196f3;
 
   // Text colors
@@ -76,6 +76,12 @@ html.theme-default {
   --color-btn-text-bg-active: rgba(142, 153, 243, 0.2);
   --color-btn-text-text: #8e99f3;
   --color-btn-text-focus: rgba(142, 153, 243, 0.5);
+
+  --color-btn-danger-bg: #ff4e51;
+  --color-btn-danger-bg-hover: #f44336;
+  --color-btn-danger-bg-active: #e53935;
+  --color-btn-danger-text: #ffffff;
+  --color-btn-danger-focus: rgba(244, 67, 54, 0.5);
 
   --color-btn-disabled-bg: #e8ebf1;
   --color-btn-disabled-text: #8b8f9d;
