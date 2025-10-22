@@ -141,9 +141,7 @@ const openActionModal = (
             tabindex="0"
             @click="store.rightSidebarOpen = !store.rightSidebarOpen"
           >
-            <span class="truncate"
-              >text-app-text-secondary px-3{{ title }}</span
-            >
+            <span class="truncate">{{ title }}</span>
           </Button>
 
           <!-- font-size 11px in rem -->

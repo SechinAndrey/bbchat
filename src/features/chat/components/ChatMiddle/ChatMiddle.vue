@@ -186,8 +186,10 @@ const collectConversationImages = () => {
             ? JSON.parse(message.echat_messages.message_json)
             : message.echat_messages.message_json || {};
 
-        if (echatMessage.media && isImage(echatMessage.media)) {
-          images.push(echatMessage.media);
+        const img = echatMessage.media || echatMessage.file;
+
+        if (img && isImage(img)) {
+          images.push(img);
         }
       }
     }

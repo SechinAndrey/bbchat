@@ -112,7 +112,7 @@ watch(
       <img
         :src="currentImageUrl"
         alt="Зображення"
-        class="max-w-full max-h-full object-contain rounded-lg"
+        class="max-w-[90vw] max-h-[85vh] object-contain rounded-lg"
         style="opacity: 0; transition: opacity 0.3s ease"
         @load="($event.target as HTMLImageElement).style.opacity = '1'"
       />
