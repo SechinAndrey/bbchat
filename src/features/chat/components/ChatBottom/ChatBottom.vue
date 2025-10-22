@@ -132,7 +132,7 @@ async function handleSendMessage() {
           variant="filled"
           :rows="1"
           :placeholder="placeholderText"
-          @keydown.ctrl.enter.prevent="handleSendMessage"
+          @keydown.enter.exact.prevent="handleSendMessage"
         />
 
         <!--emojis-->
