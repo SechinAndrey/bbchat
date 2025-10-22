@@ -1,21 +1,19 @@
 {
   "name": "bb-chat",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
     "build:ignore-types": "vite build",
     "preview": "vite preview",
-    "commit": "cz",
-    "release": "standard-version",
-    "release:preview": "standard-version --dry-run",
-    "release:preview:detailed": "standard-version --dry-run --verbose",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "eslint . --ext .vue,.js,.ts,.jsx,.tsx",
-    "lint:fix": "eslint . --ext .vue,.js,.ts,.jsx,.tsx --fix"
+    "lint:fix": "eslint . --ext .vue,.js,.ts,.jsx,.tsx --fix",
+    "changelog": "git-cliff --latest --prepend CHANGELOG.md",
+    "changelog:full": "git-cliff --config cliff.full.toml --latest --prepend CHANGELOG.full.md"
   },
   "dependencies": {
     "@capacitor/android": "^7.2.0",
@@ -57,9 +55,9 @@
     "autoprefixer": "^10.4.15",
     "eslint": "^8.49.0",
     "eslint-plugin-vue": "^9.17.0",
+    "git-cliff": "^2.10.1",
     "postcss": "^8.4.29",
     "sass-embedded": "^1.93.0",
-    "standard-version": "^9.5.0",
     "tailwindcss": "^3.3.3",
     "typescript": "^5.2.2",
     "vite": "^6.2.4",
