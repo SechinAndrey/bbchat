@@ -112,6 +112,8 @@ const formatDuration = (seconds: number) => {
 };
 
 const formatMessageText = (text: string) => {
+  if (!text) return "";
+
   return linkifyStr(text, {
     className: isSelf.value
       ? "text-black opacity-50"
@@ -143,7 +145,7 @@ const formatMessageText = (text: string) => {
     <div class="flex gap-3 items-end">
       <!-- Message content -->
       <div
-        class="relative bg-app-bg-secondary rounded-2xl rounded-tl-sm px-4 py-3 max-w-md transition-all duration-300"
+        class="relative bg-app-bg-secondary rounded-2xl rounded-tl-sm min-h-[2.313rem] min-w-10 px-4 py-3 max-w-md transition-all duration-300"
         :class="{
           'w-[225px]': call && !isCallDetailsExpanded,
           'w-[260px]': call && isCallDetailsExpanded,
@@ -158,11 +160,6 @@ const formatMessageText = (text: string) => {
             class="whitespace-pre-line"
             v-html="formatMessageText(chaport.message)"
           ></div>
-          <img
-            src="/imgs/chaport.png"
-            alt="Chaport"
-            class="absolute bottom-0 right-0 w-4 h-4"
-          />
         </div>
 
         <!-- 2 - мессенджер -->
@@ -186,16 +183,6 @@ const formatMessageText = (text: string) => {
                 emit('openImageGallery', imageUrl);
               }
             "
-          />
-
-          <img
-            :src="
-              echat.dialog.messenger_id == 1
-                ? '/imgs/telegram.png'
-                : '/imgs/viber.png'
-            "
-            :alt="echat.dialog.messenger_id == 1 ? 'Telegram' : 'Viber'"
-            class="absolute bottom-0 right-0 w-4 h-4 rounded-full bg-cover bg-center"
           />
         </div>
 
@@ -251,6 +238,24 @@ const formatMessageText = (text: string) => {
             </div>
           </Transition>
         </div>
+
+        <img
+          v-if="chaport"
+          src="/imgs/chaport.png"
+          alt="Chaport"
+          class="absolute bottom-3 right-3 w-4 h-4"
+        />
+
+        <img
+          v-if="echat"
+          :src="
+            echat.dialog.messenger_id == 1
+              ? '/imgs/telegram.png'
+              : '/imgs/viber.png'
+          "
+          :alt="echat.dialog.messenger_id == 1 ? 'Telegram' : 'Viber'"
+          class="absolute bottom-3 right-3 w-4 h-4 rounded-full bg-cover bg-center"
+        />
 
         <div
           v-if="isSelf"
