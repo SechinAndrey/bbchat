@@ -691,6 +691,31 @@ export interface ApiMessagesResponse {
   data: ApiMessageItem[];
 }
 
+export interface ApiSendMessageSuccess {
+  client_message_uid: string;
+  contragent_id: number;
+  contragent_type: "lead" | "client" | "supplier";
+  file_url: string;
+  message: string;
+  messenger_id: number;
+  phone: string;
+}
+
+export interface ApiSendMessageError {
+  status: "Error";
+  description: string;
+}
+
+export type ApiSendMessageResponse =
+  | ApiSendMessageSuccess
+  | ApiSendMessageError;
+
+export function isApiSendMessageError(
+  response: ApiSendMessageResponse,
+): response is ApiSendMessageError {
+  return "status" in response && response.status === "Error";
+}
+
 export interface CreateLeadRequest {
   name: string;
   fio: string;

@@ -11,6 +11,7 @@ import type {
   ApiCommunicationEntity,
   ApiResponseLinks,
   ApiResponseMeta,
+  ApiSendMessageResponse,
 } from "@src/api/types";
 
 import type { IAttachment } from "@src/shared/types/types";
@@ -206,9 +207,15 @@ export class ConversationsService {
    * Send a message
    * @example await service.sendMessage({ phone: '+123', message: 'Hello', ... })
    */
-  async sendMessage(params: SendMessageParams): Promise<void> {
+  async sendMessage(
+    params: SendMessageParams,
+  ): Promise<ApiSendMessageResponse> {
     try {
-      await apiClient.post("/e-chat/dialogs/messages", params);
+      const response = await apiClient.post<ApiSendMessageResponse>(
+        "/e-chat/dialogs/messages",
+        params,
+      );
+      return response.data;
     } catch (error) {
       console.error("❌ Failed to send message:", error);
       throw new Error("Failed to send message");

@@ -5,11 +5,16 @@ import conversationsService from "@src/features/conversations/conversations-serv
 import useConversationsStore, {
   type TempMessage,
 } from "@src/features/conversations/conversations-store";
+import { isApiSendMessageError, type ApiContact } from "@src/api/types";
+import { useRoute } from "vue-router";
+import { useToast } from "@src/shared/composables/useToast";
 
 export function useMessageSending() {
   const entity = inject<Ref<EntityType>>("entity");
   const id = inject<Ref<number>>("id");
   const store = useConversationsStore();
+  const route = useRoute();
+  const { toastError } = useToast();
 
   const contragentType = computed(() => {
     if (!entity?.value) return "lead";
@@ -34,8 +39,20 @@ export function useMessageSending() {
       return;
     }
 
-    const phone = activeConversation.value?.phone || "";
-    if (!entity?.value || !id?.value) {
+    const currentContactId = route.params.contactId;
+
+    const currentContact: ApiContact | undefined =
+      activeConversation.value?.contacts.find(
+        (contact) => contact.id === Number(currentContactId),
+      );
+
+    const { phone, tg_name } = currentContact || {};
+    let phoneOrTg = phone;
+    if (messengerId === 1 && tg_name) {
+      phoneOrTg = phone || tg_name;
+    }
+
+    if (!entity?.value || !id?.value || !phoneOrTg) {
       console.error("❌ Missing required data for sending message");
       return;
     }
@@ -51,7 +68,7 @@ export function useMessageSending() {
       timestamp: new Date(),
       contragentType: contragentType.value,
       contragentId: id.value,
-      phone,
+      phone: phoneOrTg,
     };
     // 2. Immediately add temporary message to chat
     store.addTempMessage(tempMessage);
@@ -64,8 +81,8 @@ export function useMessageSending() {
 
     try {
       // 5. Send API request in background
-      await conversationsService.sendMessage({
-        phone,
+      const response = await conversationsService.sendMessage({
+        phone: phoneOrTg,
         message,
         file_url: fileUrl,
         messenger_id: messengerId,
@@ -73,6 +90,17 @@ export function useMessageSending() {
         contragent_id: id.value,
         client_message_uid: clientMessageUid,
       });
+
+      if (isApiSendMessageError(response)) {
+        console.log("❌ Error detected:", response.description);
+        toastError("Щось пішло не так. Зверніться до технічного відділу.");
+        store.updateTempMessageStatus(
+          tempMessage.clientMessageUid,
+          "error",
+          response.description,
+        );
+        return;
+      }
 
       // 6. Update status to "sent"
       store.updateTempMessageStatus(tempMessage.clientMessageUid, "sent");
