@@ -103,7 +103,7 @@ async function handleSendMessage() {
   <div class="w-full">
     <div
       v-if="store.status !== 'loading'"
-      class="h-auto min-h-[5.25rem] p-5 flex items-center"
+      class="h-auto p-5 pb-[1.125rem] flex items-end border-t border-app-border"
       :class="recording ? ['justify-between'] : []"
     >
       <Select
@@ -128,9 +128,10 @@ async function handleSendMessage() {
           ref="textareaRef"
           v-model="value"
           class="placeholder-truncate pr-7"
-          no-resize
           variant="filled"
           :rows="1"
+          extendable
+          :max-rows="5"
           :placeholder="placeholderText"
           @keydown.enter.exact.prevent="handleSendMessage"
         />

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref, watch, nextTick } from "vue";
 
 const modelValue = defineModel<string>();
 
@@ -42,6 +42,8 @@ const props = withDefaults(
     variant?: TextareaVariant;
     block?: boolean;
     disabled?: boolean;
+    extendable?: boolean;
+    maxRows?: number;
   }>(),
   {
     placeholder: "Введіть текст...",
@@ -51,8 +53,37 @@ const props = withDefaults(
     variant: "default",
     block: false,
     disabled: false,
+    extendable: false,
+    maxRows: 6,
   },
 );
+
+const textareaRef = ref<HTMLTextAreaElement>();
+
+const adjustHeight = () => {
+  if (!props.extendable || !textareaRef.value) return;
+
+  const textarea = textareaRef.value;
+  textarea.style.height = "auto";
+
+  const style = window.getComputedStyle(textarea);
+  const lineHeight = parseInt(style.lineHeight);
+  const paddingTop = parseInt(style.paddingTop);
+  const paddingBottom = parseInt(style.paddingBottom);
+
+  const maxHeight = lineHeight * props.maxRows + paddingTop + paddingBottom;
+  const newHeight = Math.min(textarea.scrollHeight, maxHeight);
+  textarea.style.height = `${newHeight}px`;
+
+  textarea.style.overflowY =
+    textarea.scrollHeight > maxHeight ? "auto" : "hidden";
+};
+
+watch(modelValue, () => {
+  if (props.extendable) {
+    nextTick(() => adjustHeight());
+  }
+});
 
 const textareaClasses = computed(() => {
   const sizeConfig = TEXTAREA_SIZES[props.size] || TEXTAREA_SIZES.md;
@@ -68,21 +99,28 @@ const textareaClasses = computed(() => {
     {
       "textarea-block": props.block,
       "textarea-disabled": props.disabled,
-      "resize-none": props.noResize,
+      "resize-none": props.noResize || props.extendable,
+      "textarea-extendable": props.extendable,
     },
   ];
+});
+
+defineExpose({
+  textareaRef,
 });
 </script>
 
 <template>
   <textarea
     :id="props.id"
+    ref="textareaRef"
     v-model="modelValue"
     :name="props.name"
     :class="textareaClasses"
     :placeholder="props.placeholder"
     :rows="props.rows"
     :disabled="props.disabled"
+    @input="adjustHeight"
   />
 </template>
 
@@ -135,5 +173,10 @@ const textareaClasses = computed(() => {
 
 .textarea-block {
   @apply w-full;
+}
+
+.textarea-extendable {
+  overflow-y: hidden;
+  transition: height 0.1s ease;
 }
 </style>
