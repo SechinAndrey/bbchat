@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.1.1 - 2025-10-23
+
+### Bug Fixes
+
+- Два контакта. Один чат. [WS-18700430-20945805](https://trp4438.worksection.com/project/257910/18700430/20945805/)
+- MessageV2 when empty message text
+- Отправка сообщения. Энтер. [WS-18700430-20929257](https://trp4438.worksection.com/project/257910/18700430/20929257/)
+- Картинки просмотр. [WS-18700430-20929863](https://trp4438.worksection.com/project/257910/18700430/20929863/)
+- Модальное окно. Видалити підбірку? [WS-18700430-20936883](https://trp4438.worksection.com/project/257910/18700430/20936883/)
+- MainContent layout height
+
+### Features
+
+- Размер поля сообщения. - [WS-18700430-20932458](https://trp4438.worksection.com/project/257910/18700430/20932458/)
+- Линия перед полем для сообщения. - [WS-18700430-20932395](https://trp4438.worksection.com/project/257910/18700430/20932395/)
+
 ### Bug Fixes
 
 - Select
