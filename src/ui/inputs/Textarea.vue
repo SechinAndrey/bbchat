@@ -44,7 +44,6 @@ const props = withDefaults(
     disabled?: boolean;
     extendable?: boolean;
     maxRows?: number;
-    error?: string;
   }>(),
   {
     placeholder: "Введіть текст...",
@@ -102,7 +101,6 @@ const textareaClasses = computed(() => {
       "textarea-disabled": props.disabled,
       "resize-none": props.noResize || props.extendable,
       "textarea-extendable": props.extendable,
-      "textarea-error": props.error,
     },
   ];
 });
@@ -113,48 +111,17 @@ defineExpose({
 </script>
 
 <template>
-  <div :class="{ 'w-full': props.block, 'pb-4': true }">
-    <div class="relative">
-      <textarea
-        :id="props.id"
-        ref="textareaRef"
-        v-model="modelValue"
-        :name="props.name"
-        :class="textareaClasses"
-        :placeholder="props.placeholder"
-        :rows="props.rows"
-        :disabled="props.disabled"
-        @input="adjustHeight"
-      />
-
-      <!-- Error icon -->
-      <span
-        v-if="props.error"
-        class="absolute top-2 right-2 pointer-events-none"
-      >
-        <svg
-          class="h-4 w-4 text-danger"
-          fill="currentColor"
-          viewBox="0 0 20 20"
-        >
-          <path
-            fill-rule="evenodd"
-            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-            clip-rule="evenodd"
-          />
-        </svg>
-      </span>
-    </div>
-
-    <!-- Error message with absolute positioning -->
-    <div
-      v-if="props.error"
-      class="absolute left-0 mt-0.5 text-[0.6875rem] leading-tight"
-      style="color: var(--color-state-danger)"
-    >
-      {{ props.error }}
-    </div>
-  </div>
+  <textarea
+    :id="props.id"
+    ref="textareaRef"
+    v-model="modelValue"
+    :name="props.name"
+    :class="textareaClasses"
+    :placeholder="props.placeholder"
+    :rows="props.rows"
+    :disabled="props.disabled"
+    @input="adjustHeight"
+  />
 </template>
 
 <style scoped>
@@ -202,11 +169,6 @@ defineExpose({
   background-color: var(--color-btn-disabled-bg) !important;
   border-color: var(--color-btn-disabled-bg) !important;
   color: var(--color-btn-disabled-text) !important;
-}
-
-.textarea-error {
-  border-color: var(--color-state-danger) !important;
-  --tw-ring-color: var(--color-state-danger);
 }
 
 .textarea-block {
