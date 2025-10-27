@@ -516,7 +516,7 @@ watch(modelValue, () => {
         >
           <div
             v-if="filteredOptions.length === 0"
-            class="px-3 py-2 text-text-secondary"
+            class="px-3 py-4 bg-app-bg text-app-text text-center"
           >
             Нічого не знайдено
           </div>
