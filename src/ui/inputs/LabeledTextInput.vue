@@ -16,6 +16,7 @@ const props = withDefaults(
     inputClass?: string;
     variant?: "default" | "bordered" | "filled";
     size?: "sm" | "md" | "lg";
+    error?: string;
   }>(),
   {
     type: "text",
@@ -65,6 +66,7 @@ const labelTextSize = computed(() => {
         :placeholder="props.placeholder"
         :variant="props.variant"
         :size="props.size"
+        :error="props.error"
       >
         <template #iconRight>
           <slot name="iconRight"></slot>

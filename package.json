@@ -21,6 +21,7 @@
     "@capacitor/ios": "^7.2.0",
     "@heroicons/vue": "^2.0.18",
     "@kalimahapps/vue-popper": "^1.2.2",
+    "@vee-validate/zod": "^4.15.1",
     "@videojs-player/vue": "^1.0.0",
     "@vueuse/core": "^13.4.0",
     "@vueuse/integrations": "^10.4.1",
@@ -34,11 +35,13 @@
     "prettier": "^3.0.3",
     "pusher-js": "^8.4.0",
     "tailwind-merge": "^1.14.0",
+    "vee-validate": "^4.15.1",
     "video.js": "7.21.6",
     "vue": "^3.3.4",
     "vue-router": "4",
     "vue3-toastify": "^0.2.8",
-    "wavesurfer.js": "^7.3.0"
+    "wavesurfer.js": "^7.3.0",
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "@capacitor/cli": "^7.2.0",

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, type Ref } from "vue";
 import Button from "@src/ui/inputs/Button.vue";
 import LabeledTextInput from "@src/ui/inputs/LabeledTextInput.vue";
 import AutocompleteSelect from "@src/ui/inputs/AutocompleteSelect.vue";
@@ -17,14 +17,9 @@ const emit = defineEmits<{
   submit: [leadData: CreateLeadRequest];
 }>();
 
-// Form fields
-const name = ref("");
-const fio = ref("");
-const email = ref("");
-const phone = ref("");
-const tgName = ref("");
-const comment = ref("");
-const statusId = ref<number>(3);
+import { useForm } from "vee-validate";
+import { toTypedSchema } from "@vee-validate/zod";
+import * as z from "zod";
 
 const globalDataStore = useGlobalDataStore();
 const cityOptions = computed(() => {
@@ -34,56 +29,107 @@ const cityOptions = computed(() => {
   }));
 });
 
-const selectedCityId = ref<string | number>("");
+const statusId = ref<number>(3);
 
-const isFormValid = computed(() => {
-  const isNameValid = name.value.trim() !== "";
-  const isFioValid = fio.value.trim() !== "";
+const schema = toTypedSchema(
+  z
+    .object({
+      name: z.string().min(1, "*обов'язкове поле"),
+      fio: z.string().min(1, "*обов'язкове поле"),
+      city: z
+        .union([z.string(), z.number()])
+        .refine((val) => val !== "" && val !== null && val !== undefined, {
+          message: "*обов'язкове поле",
+        }),
+      email: z
+        .string()
+        .refine(
+          (val) => !val || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val),
+          "Невірний формат email",
+        ),
+      phone: z
+        .string()
+        .refine(
+          (val) => !val || /^\+?[\d\s\-()]{7,}$/.test(val),
+          "Невірний формат телефону",
+        ),
+      tgName: z.string(),
+      comment: z.string(),
+    })
+    .superRefine((data, ctx) => {
+      const hasAtLeastOne =
+        (data.email && data.email.trim() !== "") ||
+        (data.phone && data.phone.trim() !== "") ||
+        (data.tgName && data.tgName.trim() !== "");
 
-  // Email validation (optional)
-  const isEmailValid =
-    !email.value || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value);
+      if (!hasAtLeastOne) {
+        ctx.addIssue({
+          code: "custom",
+          message: "*зповніть: пошту, телефон або tg",
+          path: ["email"],
+        });
+        ctx.addIssue({
+          code: "custom",
+          message: "*зповніть: пошту, телефон або tg",
+          path: ["phone"],
+        });
+        ctx.addIssue({
+          code: "custom",
+          message: "*зповніть: пошту, телефон або tg",
+          path: ["tgName"],
+        });
+      }
+    }),
+);
 
-  // Phone validation (optional)
-  const isPhoneValid = !phone.value || /^\+?[\d\s\-()]{7,}$/.test(phone.value);
-
-  return isNameValid && isFioValid && isEmailValid && isPhoneValid;
+const { defineField, handleSubmit, errors, meta, resetForm } = useForm({
+  validationSchema: schema,
+  initialValues: {
+    name: "",
+    fio: "",
+    city: "",
+    email: "",
+    phone: "",
+    tgName: "",
+    comment: "",
+  },
 });
 
-const clean = () => {
-  name.value = "";
-  fio.value = "";
-  email.value = "";
-  phone.value = "";
-  tgName.value = "";
-  selectedCityId.value = "";
-  comment.value = "";
-  statusId.value = 3;
-  props.closeModal();
-};
+const [name] = defineField("name");
+const [fio] = defineField("fio");
+const [cityField] = defineField("city");
+const [email] = defineField("email");
+const [phone] = defineField("phone");
+const [tgName] = defineField("tgName");
+const [comment] = defineField("comment");
 
-const handleSubmit = () => {
-  if (!isFormValid.value) {
-    return;
-  }
+const city = computed<string | number>({
+  get: () => cityField.value || "",
+  set: (value) => {
+    cityField.value = value;
+  },
+});
 
+const onSubmit = handleSubmit((values) => {
   const leadData: CreateLeadRequest = {
-    name: name.value.trim(),
-    fio: fio.value.trim(),
-    email: email.value.trim() || undefined,
-    phone: phone.value.trim() || undefined,
-    tg_name: tgName.value.trim() || undefined,
-    city: selectedCityId.value ? [selectedCityId.value as number] : [],
-    comment: comment.value.trim() || undefined,
+    name: values.name.trim(),
+    fio: values.fio.trim(),
+    email: values.email?.trim() || undefined,
+    phone: values.phone?.trim() || undefined,
+    tg_name: values.tgName?.trim() || undefined,
+    city: values.city ? [values.city as number] : [],
+    comment: values.comment?.trim() || undefined,
     status_id: statusId.value,
   };
 
   emit("submit", leadData);
-  clean();
-};
+  handleCancel();
+});
 
 const handleCancel = () => {
-  clean();
+  resetForm();
+  statusId.value = 3;
+  props.closeModal();
 };
 </script>
 
@@ -103,61 +149,67 @@ const handleCancel = () => {
         </div>
 
         <!-- Form -->
-        <div class="space-y-3 xs:space-y-4">
+        <div class="space-y-0 xs:space-y-3">
           <!-- Name and FIO -->
-          <div class="grid xs:grid-cols-1 md:grid-cols-2 gap-3 xs:gap-4">
+          <div class="grid xs:grid-cols-1 md:grid-cols-2 gap-3">
             <LabeledTextInput
               v-model="name"
+              name="name"
               label="Найменування"
               placeholder="Binotel #2234"
-              name="company-name"
+              :error="errors.name"
               bordered
             />
             <LabeledTextInput
               v-model="fio"
+              name="fio"
               label="Ім'я"
               placeholder="Іван Іванов"
-              name="contact-name"
+              :error="errors.fio"
               bordered
             />
           </div>
 
           <!-- Email and Phone -->
-          <div class="grid xs:grid-cols-1 md:grid-cols-2 gap-3 xs:gap-4">
+          <div class="grid xs:grid-cols-1 md:grid-cols-2 gap-3">
             <LabeledTextInput
               v-model="email"
+              name="email"
               label="E-mail"
               type="email"
               placeholder="example@mail.com"
-              name="contact-email"
+              :error="errors.email"
               bordered
             />
             <LabeledTextInput
               v-model="phone"
+              name="phone"
               label="Телефон"
               type="tel"
               placeholder="+380123456789"
-              name="contact-phone"
+              :error="errors.phone"
               bordered
             />
           </div>
 
           <!-- Telegram Profile and City -->
-          <div class="grid xs:grid-cols-1 md:grid-cols-2 gap-3 xs:gap-4">
+          <div class="grid xs:grid-cols-1 md:grid-cols-2 gap-3">
             <LabeledTextInput
               v-model="tgName"
+              name="tgName"
               label="Профіль в Telegram"
               placeholder="@tg_name"
-              name="contact-telegram-nickname"
+              :error="errors.tgName"
               bordered
             />
             <AutocompleteSelect
-              v-model="selectedCityId"
+              v-model="city"
               :options="cityOptions"
               label="Місто"
               placeholder="Виберіть місто"
               variant="bordered"
-              name="contact-city"
+              name="city"
+              :error="errors.city"
               searchable
             />
           </div>
@@ -169,11 +221,12 @@ const handleCancel = () => {
             >
             <Textarea
               v-model="comment"
+              name="comment"
               placeholder="Ваш коментар"
               variant="bordered"
+              :error="errors.comment"
               bordered
               auto-resize
-              name="comment"
               :rows="4"
             />
           </div>
@@ -191,11 +244,7 @@ const handleCancel = () => {
             Скасувати
           </Button>
 
-          <Button
-            :disabled="!isFormValid"
-            class="xs:order-1 md:order-2"
-            @click="handleSubmit"
-          >
+          <Button class="xs:order-1 md:order-2" @click="onSubmit">
             Створити лід
           </Button>
         </div>

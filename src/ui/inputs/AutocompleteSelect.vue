@@ -54,6 +54,7 @@ const props = withDefaults(
     variant?: InputVariant;
     block?: boolean;
     disabled?: boolean;
+    error?: string;
   }>(),
   {
     multiple: false,
@@ -99,6 +100,7 @@ const inputClasses = computed(() => {
     {
       "input-block": props.block,
       "input-disabled": props.disabled,
+      "input-error": props.error,
     },
   ];
 });
@@ -431,14 +433,14 @@ watch(modelValue, () => {
 </script>
 
 <template>
-  <div class="flex flex-col">
+  <div class="flex flex-col pb-4 relative">
     <!-- Label -->
-    <label v-if="label" class="mb-3 text-left">
+    <label v-if="label" class="mb-3 text-left text-sm">
       {{ label }}
     </label>
 
     <!-- Input container -->
-    <div ref="selectElement" class="relative" :class="{ 'w-full': block }">
+    <div ref="selectElement" class="relative">
       <input
         ref="inputElement"
         v-model="searchQuery"
@@ -456,6 +458,17 @@ watch(modelValue, () => {
       <div
         class="absolute top-1/2 transform -translate-y-1/2 right-3 flex items-center space-x-2 text-gray-400 z-10"
       >
+        <!-- Error icon -->
+        <span v-if="props.error" class="text-danger pointer-events-none">
+          <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+            <path
+              fill-rule="evenodd"
+              d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+              clip-rule="evenodd"
+            />
+          </svg>
+        </span>
+
         <!-- Clear button -->
         <button
           v-if="showClearButton"
@@ -474,6 +487,15 @@ watch(modelValue, () => {
           />
         </button>
       </div>
+    </div>
+
+    <!-- Error message -->
+    <div
+      v-if="props.error"
+      class="text-left mt-0.5 text-[0.6875rem] leading-tight"
+      style="color: var(--color-state-danger)"
+    >
+      {{ props.error }}
     </div>
 
     <!-- Dropdown -->
@@ -575,6 +597,11 @@ watch(modelValue, () => {
   background-color: var(--color-btn-disabled-bg) !important;
   border-color: var(--color-btn-disabled-bg) !important;
   color: var(--color-btn-disabled-text) !important;
+}
+
+.input-error {
+  border-color: var(--color-state-danger) !important;
+  --tw-ring-color: var(--color-state-danger);
 }
 
 .input-block {
