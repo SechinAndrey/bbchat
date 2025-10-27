@@ -1,18 +1,21 @@
 <script setup lang="ts">
-import { inject, ref, type Ref } from "vue";
+import { inject, ref, watch, type Ref } from "vue";
 import { useSelectionsStore } from "@src/features/selections/selection-store";
 import { formatConversationDate } from "@src/shared/utils/utils";
 import ConfirmModal from "@src/ui/modals/ConfirmModal.vue";
 import type { EntityType } from "@src/shared/types/common";
 import type { ApiSelection } from "@src/api/types";
+import useStore from "@src/shared/store/store";
 
 // components
 import Spinner from "@src/ui/states/loading-states/Spinner.vue";
 import EmptyState from "@src/ui/states/empty-states/EmptyState.vue";
 import { RectangleStackIcon, TrashIcon } from "@heroicons/vue/24/outline";
 import SelectionsModal from "@src/features/selections/SelectionsModal.vue";
+import { set } from "zod";
 
 const selectionsStore = useSelectionsStore();
+const store = useStore();
 const entity = inject<Ref<EntityType>>("entity", ref("leads" as EntityType));
 const id = inject<Ref<number>>("id", ref(0));
 
@@ -59,6 +62,14 @@ const closeSelectionModal = () => {
 if (entity.value && id.value) {
   selectionsStore.fetchSelections(entity.value, id.value);
 }
+
+watch([entity, id], ([newEntity, newId]) => {
+  if (newEntity && newId && store.rightSidebarOpen) {
+    setTimeout(() => {
+      selectionsStore.fetchSelections(newEntity, newId);
+    }, 1000);
+  }
+});
 </script>
 
 <template>
