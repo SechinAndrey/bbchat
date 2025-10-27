@@ -52,7 +52,7 @@ export function useMessageSending() {
       phoneOrTg = phone || tg_name;
     }
 
-    if (!entity?.value || !id?.value || !phoneOrTg) {
+    if (!entity?.value || !id?.value || (!phoneOrTg && messengerId !== 3)) {
       console.error("❌ Missing required data for sending message");
       return;
     }
