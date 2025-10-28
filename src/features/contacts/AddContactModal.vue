@@ -17,7 +17,6 @@ import { useConversationsStore } from "@src/features/conversations/conversations
 import { useRouter } from "vue-router";
 import { adaptApiCommunicationToIConversation } from "@src/api/communication-adapters";
 import { useForm } from "vee-validate";
-import { toTypedSchema } from "@vee-validate/zod";
 import * as z from "zod";
 
 interface Props {
@@ -41,50 +40,48 @@ const router = useRouter();
 
 const isLoading = ref(false);
 
-const schema = toTypedSchema(
-  z
-    .object({
-      fio: z.string().min(1, "*обов'язкове поле"),
-      email: z
-        .string()
-        .refine(
-          (val) => !val || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val),
-          "Невірний формат email",
-        ),
-      phone: z
-        .string()
-        .refine(
-          (val) => !val || /^\+?[\d\s\-()]{7,}$/.test(val),
-          "Невірний формат телефону",
-        ),
-      tgName: z.string(),
-      jobTitleId: z.union([z.string(), z.number()]),
-    })
-    .superRefine((data, ctx) => {
-      const hasAtLeastOne =
-        (data.email && data.email.trim() !== "") ||
-        (data.phone && data.phone.trim() !== "") ||
-        (data.tgName && data.tgName.trim() !== "");
+const schema = z
+  .object({
+    fio: z.string().min(1, "*обов'язкове поле"),
+    email: z
+      .string()
+      .refine(
+        (val) => !val || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val),
+        "Невірний формат email",
+      ),
+    phone: z
+      .string()
+      .refine(
+        (val) => !val || /^\+?[\d\s\-()]{7,}$/.test(val),
+        "Невірний формат телефону",
+      ),
+    tgName: z.string(),
+    jobTitleId: z.union([z.string(), z.number()]),
+  })
+  .superRefine((data, ctx) => {
+    const hasAtLeastOne =
+      (data.email && data.email.trim() !== "") ||
+      (data.phone && data.phone.trim() !== "") ||
+      (data.tgName && data.tgName.trim() !== "");
 
-      if (!hasAtLeastOne) {
-        ctx.addIssue({
-          code: "custom",
-          message: "*заповніть: пошту, телефон або tg",
-          path: ["email"],
-        });
-        ctx.addIssue({
-          code: "custom",
-          message: "*заповніть: пошту, телефон або tg",
-          path: ["phone"],
-        });
-        ctx.addIssue({
-          code: "custom",
-          message: "*заповніть: пошту, телефон або tg",
-          path: ["tgName"],
-        });
-      }
-    }),
-);
+    if (!hasAtLeastOne) {
+      ctx.addIssue({
+        code: "custom",
+        message: "*заповніть: пошту, телефон або tg",
+        path: ["email"],
+      });
+      ctx.addIssue({
+        code: "custom",
+        message: "*заповніть: пошту, телефон або tg",
+        path: ["phone"],
+      });
+      ctx.addIssue({
+        code: "custom",
+        message: "*заповніть: пошту, телефон або tg",
+        path: ["tgName"],
+      });
+    }
+  });
 
 const { defineField, handleSubmit, errors, meta, resetForm } = useForm({
   validationSchema: schema,

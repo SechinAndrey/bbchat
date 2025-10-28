@@ -18,7 +18,6 @@ const emit = defineEmits<{
 }>();
 
 import { useForm } from "vee-validate";
-import { toTypedSchema } from "@vee-validate/zod";
 import * as z from "zod";
 
 const globalDataStore = useGlobalDataStore();
@@ -31,56 +30,54 @@ const cityOptions = computed(() => {
 
 const statusId = ref<number>(3);
 
-const schema = toTypedSchema(
-  z
-    .object({
-      name: z.string().min(1, "*обов'язкове поле"),
-      fio: z.string().min(1, "*обов'язкове поле"),
-      city: z
-        .union([z.string(), z.number()])
-        .refine((val) => val !== "" && val !== null && val !== undefined, {
-          message: "*обов'язкове поле",
-        }),
-      email: z
-        .string()
-        .refine(
-          (val) => !val || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val),
-          "Невірний формат email",
-        ),
-      phone: z
-        .string()
-        .refine(
-          (val) => !val || /^\+?[\d\s\-()]{7,}$/.test(val),
-          "Невірний формат телефону",
-        ),
-      tgName: z.string(),
-      comment: z.string(),
-    })
-    .superRefine((data, ctx) => {
-      const hasAtLeastOne =
-        (data.email && data.email.trim() !== "") ||
-        (data.phone && data.phone.trim() !== "") ||
-        (data.tgName && data.tgName.trim() !== "");
+const schema = z
+  .object({
+    name: z.string().min(1, "*обов'язкове поле"),
+    fio: z.string().min(1, "*обов'язкове поле"),
+    city: z
+      .union([z.string(), z.number()])
+      .refine((val) => val !== "" && val !== null && val !== undefined, {
+        message: "*обов'язкове поле",
+      }),
+    email: z
+      .string()
+      .refine(
+        (val) => !val || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val),
+        "Невірний формат email",
+      ),
+    phone: z
+      .string()
+      .refine(
+        (val) => !val || /^\+?[\d\s\-()]{7,}$/.test(val),
+        "Невірний формат телефону",
+      ),
+    tgName: z.string(),
+    comment: z.string(),
+  })
+  .superRefine((data, ctx) => {
+    const hasAtLeastOne =
+      (data.email && data.email.trim() !== "") ||
+      (data.phone && data.phone.trim() !== "") ||
+      (data.tgName && data.tgName.trim() !== "");
 
-      if (!hasAtLeastOne) {
-        ctx.addIssue({
-          code: "custom",
-          message: "*зповніть: пошту, телефон або tg",
-          path: ["email"],
-        });
-        ctx.addIssue({
-          code: "custom",
-          message: "*зповніть: пошту, телефон або tg",
-          path: ["phone"],
-        });
-        ctx.addIssue({
-          code: "custom",
-          message: "*зповніть: пошту, телефон або tg",
-          path: ["tgName"],
-        });
-      }
-    }),
-);
+    if (!hasAtLeastOne) {
+      ctx.addIssue({
+        code: "custom",
+        message: "*зповніть: пошту, телефон або tg",
+        path: ["email"],
+      });
+      ctx.addIssue({
+        code: "custom",
+        message: "*зповніть: пошту, телефон або tg",
+        path: ["phone"],
+      });
+      ctx.addIssue({
+        code: "custom",
+        message: "*зповніть: пошту, телефон або tg",
+        path: ["tgName"],
+      });
+    }
+  });
 
 const { defineField, handleSubmit, errors, meta, resetForm } = useForm({
   validationSchema: schema,
