@@ -4,8 +4,9 @@ import type { EntityType } from "@src/shared/types/common";
 
 export interface CreateContactRequest {
   fio: string;
-  phone: string;
-  email: string;
+  phone?: string;
+  email?: string;
+  tg_name?: string;
   post_id?: number;
 }
 

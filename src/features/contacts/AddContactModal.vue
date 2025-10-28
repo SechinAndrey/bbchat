@@ -16,6 +16,9 @@ import type { ApiCommunicationLead } from "@src/api/types";
 import { useConversationsStore } from "@src/features/conversations/conversations-store";
 import { useRouter } from "vue-router";
 import { adaptApiCommunicationToIConversation } from "@src/api/communication-adapters";
+import { useForm } from "vee-validate";
+import { toTypedSchema } from "@vee-validate/zod";
+import * as z from "zod";
 
 interface Props {
   open: boolean;
@@ -38,46 +41,99 @@ const router = useRouter();
 
 const isLoading = ref(false);
 
-const fio = ref("");
-const phone = ref("");
-const email = ref("");
-const selectedJobTitleId = ref<number | string>("");
+const schema = toTypedSchema(
+  z
+    .object({
+      fio: z.string().min(1, "*обов'язкове поле"),
+      email: z
+        .string()
+        .refine(
+          (val) => !val || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val),
+          "Невірний формат email",
+        ),
+      phone: z
+        .string()
+        .refine(
+          (val) => !val || /^\+?[\d\s\-()]{7,}$/.test(val),
+          "Невірний формат телефону",
+        ),
+      tgName: z.string(),
+      jobTitleId: z.union([z.string(), z.number()]),
+    })
+    .superRefine((data, ctx) => {
+      const hasAtLeastOne =
+        (data.email && data.email.trim() !== "") ||
+        (data.phone && data.phone.trim() !== "") ||
+        (data.tgName && data.tgName.trim() !== "");
 
-const isFormValid = computed(() => {
-  const isFioValid = fio.value.trim() !== "";
-  const isPhoneValid = phone.value.trim() !== "";
-  const isEmailValid =
-    email.value.trim() !== "" && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value);
+      if (!hasAtLeastOne) {
+        ctx.addIssue({
+          code: "custom",
+          message: "*заповніть: пошту, телефон або tg",
+          path: ["email"],
+        });
+        ctx.addIssue({
+          code: "custom",
+          message: "*заповніть: пошту, телефон або tg",
+          path: ["phone"],
+        });
+        ctx.addIssue({
+          code: "custom",
+          message: "*заповніть: пошту, телефон або tg",
+          path: ["tgName"],
+        });
+      }
+    }),
+);
 
-  return isFioValid && isPhoneValid && isEmailValid;
+const { defineField, handleSubmit, errors, meta, resetForm } = useForm({
+  validationSchema: schema,
+  initialValues: {
+    fio: "",
+    email: "",
+    phone: "",
+    tgName: "",
+    jobTitleId: "",
+  },
+});
+
+const [fio] = defineField("fio");
+const [email] = defineField("email");
+const [phone] = defineField("phone");
+const [tgName] = defineField("tgName");
+const [jobTitleIdField] = defineField("jobTitleId");
+
+const selectedJobTitleId = computed<string | number>({
+  get: () => jobTitleIdField.value || "",
+  set: (value) => {
+    jobTitleIdField.value = value;
+  },
 });
 
 const clean = () => {
-  fio.value = "";
-  phone.value = "";
-  email.value = "";
-  selectedJobTitleId.value = "";
+  resetForm();
   props.closeModal();
 };
 
-const handleSubmit = async () => {
-  if (!isFormValid.value || isLoading.value) return;
+const onSubmit = handleSubmit(async (values) => {
+  if (isLoading.value) return;
 
   try {
     isLoading.value = true;
 
     const contactData: CreateContactRequest = {
-      fio: fio.value.trim(),
-      phone: phone.value.trim(),
-      email: email.value.trim(),
+      fio: values.fio.trim(),
+      phone: values.phone?.trim() || undefined,
+      email: values.email?.trim() || undefined,
+      tg_name: values.tgName?.trim() || undefined,
     };
 
     if (
       props.entityType === "client" &&
-      selectedJobTitleId.value &&
-      typeof selectedJobTitleId.value === "number"
+      values.jobTitleId &&
+      typeof values.jobTitleId === "number"
     ) {
-      contactData.post_id = selectedJobTitleId.value;
+      contactData.post_id = values.jobTitleId;
     }
 
     const contactResponse = await contactsService.addContactToEntity(
@@ -121,7 +177,7 @@ const handleSubmit = async () => {
   } finally {
     isLoading.value = false;
   }
-};
+});
 
 const handleCancel = () => {
   clean();
@@ -150,7 +206,7 @@ const jobTitleOptions = computed(() => {
         </div>
 
         <!-- Form -->
-        <div class="space-y-3 xs:space-y-4">
+        <div class="space-y-0 xs:space-y-3">
           <template
             v-if="
               props.entityType === 'client' || props.entityType === 'supplier'
@@ -162,7 +218,8 @@ const jobTitleOptions = computed(() => {
                 label="ФИО"
                 placeholder="Іван Іванов"
                 bordered
-                name="fullName"
+                name="fio"
+                :error="errors.fio"
                 :disabled="isLoading"
               />
               <AutocompleteSelect
@@ -172,28 +229,43 @@ const jobTitleOptions = computed(() => {
                 placeholder="Оберіть посаду..."
                 variant="bordered"
                 searchable
-                name="jobTitle"
+                name="jobTitleId"
+                :error="errors.jobTitleId"
               />
             </div>
 
             <div class="grid xs:grid-cols-1 md:grid-cols-2 gap-3 xs:gap-4">
-              <LabeledTextInput
-                v-model="phone"
-                label="Телефон"
-                type="tel"
-                placeholder="+380123456789"
-                bordered
-                :disabled="isLoading"
-                name="phone"
-              />
               <LabeledTextInput
                 v-model="email"
                 label="E-mail"
                 type="email"
                 placeholder="example@mail.com"
                 bordered
-                :disabled="isLoading"
                 name="email"
+                :error="errors.email"
+                :disabled="isLoading"
+              />
+              <LabeledTextInput
+                v-model="phone"
+                label="Телефон"
+                type="tel"
+                placeholder="+380123456789"
+                bordered
+                name="phone"
+                :error="errors.phone"
+                :disabled="isLoading"
+              />
+            </div>
+
+            <div class="grid xs:grid-cols-1 md:grid-cols-2 gap-3 xs:gap-4">
+              <LabeledTextInput
+                v-model="tgName"
+                label="Профіль в Telegram"
+                placeholder="@tg_name"
+                bordered
+                name="tgName"
+                :error="errors.tgName"
+                :disabled="isLoading"
               />
             </div>
           </template>
@@ -205,29 +277,41 @@ const jobTitleOptions = computed(() => {
                 label="ФИО"
                 placeholder="Іван Іванов"
                 bordered
+                name="fio"
+                :error="errors.fio"
                 :disabled="isLoading"
-                name="fullName"
               />
-              <LabeledTextInput
-                v-model="phone"
-                label="Телефон"
-                type="tel"
-                placeholder="+380123456789"
-                bordered
-                :disabled="isLoading"
-                name="phone"
-              />
-            </div>
-
-            <div>
               <LabeledTextInput
                 v-model="email"
                 label="E-mail"
                 type="email"
                 placeholder="example@mail.com"
                 bordered
-                :disabled="isLoading"
                 name="email"
+                :error="errors.email"
+                :disabled="isLoading"
+              />
+            </div>
+
+            <div class="grid xs:grid-cols-1 md:grid-cols-2 gap-3 xs:gap-4">
+              <LabeledTextInput
+                v-model="phone"
+                label="Телефон"
+                type="tel"
+                placeholder="+380123456789"
+                bordered
+                name="phone"
+                :error="errors.phone"
+                :disabled="isLoading"
+              />
+              <LabeledTextInput
+                v-model="tgName"
+                label="Профіль в Telegram"
+                placeholder="@tg_name"
+                bordered
+                name="tgName"
+                :error="errors.tgName"
+                :disabled="isLoading"
               />
             </div>
           </template>
@@ -245,10 +329,9 @@ const jobTitleOptions = computed(() => {
           </Button>
 
           <Button
-            :disabled="!isFormValid || isLoading"
             :loading="isLoading"
             class="xs:order-1 md:order-2"
-            @click="handleSubmit"
+            @click="onSubmit"
           >
             Додати контакт
           </Button>
