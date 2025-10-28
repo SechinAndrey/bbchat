@@ -10,6 +10,7 @@ import {
   EllipsisVerticalIcon,
   ArrowPathIcon,
   StopCircleIcon,
+  LinkIcon,
 } from "@heroicons/vue/24/outline";
 import SearchInput from "@src/ui/inputs/SearchInput.vue";
 import Button from "@src/ui/inputs/Button.vue";
@@ -93,6 +94,16 @@ const openActionModal = (
   currentActionType.value = actionType;
   isActionModalOpen.value = true;
 };
+
+const copyLink = async () => {
+  try {
+    const url = window.location.href;
+    await navigator.clipboard.writeText(url);
+  } catch (error) {
+    console.error("Error copying link:", error);
+    toastError("Не вдалося скопіювати посилання");
+  }
+};
 </script>
 
 <template>
@@ -165,6 +176,19 @@ const openActionModal = (
       >
         <template #icon>
           <ArrowPathIcon />
+        </template>
+      </Button>
+
+      <Button
+        class="whitespace-nowrap flex-shrink-0 color-white xl:!hidden"
+        size="sm"
+        icon-only
+        title="Скопіювати посилання на діалог"
+        variant="text"
+        @click="copyLink"
+      >
+        <template #icon>
+          <LinkIcon />
         </template>
       </Button>
 
@@ -269,6 +293,19 @@ const openActionModal = (
       >
         <template #icon>
           <ArrowPathIcon />
+        </template>
+      </Button>
+
+      <Button
+        class="whitespace-nowrap flex-shrink-0 color-white"
+        size="sm"
+        icon-only
+        title="Скопіювати посилання на діалог"
+        variant="text"
+        @click="copyLink"
+      >
+        <template #icon>
+          <LinkIcon />
         </template>
       </Button>
 
