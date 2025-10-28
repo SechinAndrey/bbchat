@@ -23,6 +23,7 @@ import AddContactModal from "@src/features/contacts/AddContactModal.vue";
 import { useAuthStore } from "@src/features/auth/store/auth-store";
 import useStore from "@src/shared/store/store";
 import { useToast } from "@src/shared/composables/useToast";
+import TgLineIcon from "@src/shared/icons/TgLineIcon.vue";
 
 const contactId = inject<Ref<number> | undefined>("contactId");
 const entity = inject<Ref<"leads" | "clients" | "suppliers">>("entity");
@@ -217,6 +218,13 @@ const sourceInfo = computed(() => {
         >
           {{ activeConversation?.email || "Не вказана" }}
         </a>
+      </div>
+
+      <div class="flex items-center gap-2 mb-2">
+        <TgLineIcon class="w-5 h-5 text-primary flex-shrink-0" />
+        <span class="text-[0.875rem] truncate">
+          {{ activeConversation?.tg_name || "Не вказаний" }}
+        </span>
       </div>
 
       <Button
