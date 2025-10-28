@@ -57,6 +57,8 @@ export function useMessageSending() {
       return;
     }
 
+    const phoneValue = phoneOrTg || "";
+
     // 1. Create temporary message for optimistic update
     const clientMessageUid = `msg_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
     const tempMessage: TempMessage = {
@@ -68,7 +70,7 @@ export function useMessageSending() {
       timestamp: new Date(),
       contragentType: contragentType.value,
       contragentId: id.value,
-      phone: phoneOrTg,
+      phone: phoneValue,
     };
     // 2. Immediately add temporary message to chat
     store.addTempMessage(tempMessage);
@@ -82,7 +84,7 @@ export function useMessageSending() {
     try {
       // 5. Send API request in background
       const response = await conversationsService.sendMessage({
-        phone: phoneOrTg,
+        phone: phoneValue,
         message,
         file_url: fileUrl,
         messenger_id: messengerId,
