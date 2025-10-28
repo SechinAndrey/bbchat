@@ -26,7 +26,7 @@ const openCarousel = () => {
     <img
       v-if="isImage(props.media)"
       :src="props.media"
-      class="rounded-lg max-w-full cursor-pointer"
+      class="rounded-lg max-w-full cursor-pointer max-h-[50vh]"
       alt="медіа контент"
       @click="openCarousel"
     />
