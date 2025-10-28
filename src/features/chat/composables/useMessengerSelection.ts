@@ -1,10 +1,12 @@
 import { computed, ref, watch, type Ref } from "vue";
+import { useRoute } from "vue-router";
 import useConversationsStore from "@src/features/conversations/conversations-store";
 import type {
   ApiCommunicationLeadFull,
   ApiCommunicationClientFull,
   ApiCommunicationSupplierFull,
   ApiMessageItem,
+  ApiContact,
 } from "@src/api/types";
 
 export type MessengerOption = {
@@ -15,6 +17,7 @@ export type MessengerOption = {
 
 export function useMessenger() {
   const conversationsStore = useConversationsStore();
+  const route = useRoute();
 
   const messengerId: Ref<number> = ref(1);
 
@@ -33,6 +36,14 @@ export function useMessenger() {
     return messages.length > 0 ? messages[messages.length - 1] : null;
   });
 
+  const activeContact = computed<ApiContact | undefined>(() => {
+    if (!activeConversation.value) return undefined;
+    const currentContactId = route.params.contactId;
+    return activeConversation.value.contacts.find(
+      (contact) => contact.id === Number(currentContactId),
+    );
+  });
+
   const messengerOptions = computed<MessengerOption[]>(() => {
     const options: MessengerOption[] = [];
 
@@ -44,7 +55,7 @@ export function useMessenger() {
       });
     }
 
-    if (activeConversation.value?.tg_name) {
+    if (activeContact.value?.tg_name) {
       options.push({
         value: 1,
         label: "Telegram",
@@ -52,15 +63,20 @@ export function useMessenger() {
       });
     }
 
-    if (activeConversation.value?.phone) {
-      options.push(
-        {
-          value: 2,
-          label: "Viber",
-          image: "/imgs/viber.png",
-        },
-        { value: 1, label: "Telegram", image: "/imgs/telegram.png" },
-      );
+    if (activeContact.value?.phone) {
+      options.push({
+        value: 2,
+        label: "Viber",
+        image: "/imgs/viber.png",
+      });
+
+      if (!activeContact.value?.tg_name) {
+        options.push({
+          value: 1,
+          label: "Telegram",
+          image: "/imgs/telegram.png",
+        });
+      }
     }
 
     return options;
@@ -100,8 +116,8 @@ export function useMessenger() {
     messengerOptions,
     currentMessenger,
     lastMessage,
-    // same as activeConversation in conversationsStore
     activeConversation,
+    activeContact,
     setMessengerId,
   };
 }
