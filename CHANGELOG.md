@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.1.2 - 2025-10-28
+
+### Features
+
+- Контакты. Ник телеграмма. [WS-18700430-20952219](https://trp4438.worksection.com/project/257910/18700430/20952219/)
+- Додати контакт. Выбор контакта. [WS-18700430-20952039](https://trp4438.worksection.com/project/257910/18700430/20952039/)
+- Добірки. Смена чата. [WS-18700430-20936955](https://trp4438.worksection.com/project/257910/18700430/20936955/)
+- Setup validation system with vee-validate; zod; Додати ліда. Обязательные поля. [WS-18700430-20274098](https://trp4438.worksection.com/project/257910/18700430/20274098/)
+
+### Bug Fixes
+
+- Ensure phone value is never undefined when sending messages
+- Нічого не знайдено AutocompleteSelect [WS-18700430-20952981](https://trp4438.worksection.com/project/257910/18700430/20952981/)
+- Use useMessageSending for chaport
+
+### Project Maintenance
+
+- Upgrade vee-validate to v5 beta and remove @vee-validate/zod dependency
+
+### Revert
+
+- Textarea before validation system
+
 ## 0.1.1 - 2025-10-23
 
 ### Bug Fixes
