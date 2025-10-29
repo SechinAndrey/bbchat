@@ -15,7 +15,7 @@ export interface UpdateContactRequest {
   phone?: string;
   email?: string;
   tg_name?: string;
-  post_id?: number;
+  post_id?: number | string;
 }
 
 export class ContactsService {

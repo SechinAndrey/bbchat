@@ -293,6 +293,8 @@ export interface ApiContact {
   email: string | null;
   phone: string | null;
   tg_name: string | null;
+  post_id: number | null;
+  post_name: string | null;
   lastSeen: string | null;
 }
 

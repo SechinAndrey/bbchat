@@ -124,7 +124,7 @@ watch(
         email: contact.email || "",
         phone: contact.phone || "",
         tgName: contact.tg_name || "",
-        jobTitleId: "",
+        jobTitleId: contact.post_id || "",
       });
     } else if (open && props.mode === "create") {
       resetForm();
@@ -151,12 +151,8 @@ const onSubmit = handleSubmit(async (values) => {
       tg_name: values.tgName?.trim() || "",
     };
 
-    if (
-      props.entityType === "client" &&
-      values.jobTitleId &&
-      typeof values.jobTitleId === "number"
-    ) {
-      contactData.post_id = values.jobTitleId;
+    if (props.entityType === "client" || props.entityType === "supplier") {
+      contactData.post_id = values.jobTitleId || "";
     }
 
     const entityTypeForStore = CONTRAGENT_TO_ENTITY_MAP[props.entityType];

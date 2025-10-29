@@ -17,6 +17,7 @@ import {
   PencilIcon,
   PlusIcon,
   ChatBubbleLeftIcon,
+  BriefcaseIcon,
 } from "@heroicons/vue/24/outline";
 import KanbanSelect from "@src/shared/components/KanbanSelect.vue";
 import ContactModal from "@src/features/contacts/ContactModal.vue";
@@ -207,6 +208,35 @@ const sourceInfo = computed(() => {
           isCurrentContact(contact),
       }"
     >
+      <Button
+        variant="ghost"
+        size="xs"
+        :ring="false"
+        icon-only
+        :title="`Редагувати контакт`"
+        class="common-info-tab__contact-edit-btn absolute bottom-[0.6rem] right-0"
+        @click="openEditContactModal(contact)"
+      >
+        <template #icon>
+          <PencilIcon class="w-4 h-4 text-primary" />
+        </template>
+      </Button>
+
+      <Button
+        v-if="!isCurrentContact(contact)"
+        variant="ghost"
+        size="xs"
+        :ring="false"
+        icon-only
+        class="absolute top-[0.438rem] right-0"
+        :title="`Відкрити чат з ${contact.fio || 'контактом'}`"
+        @click="openChatWithContact(contact.id)"
+      >
+        <template #icon>
+          <ChatBubbleLeftIcon class="w-4 h-4 text-primary" />
+        </template>
+      </Button>
+
       <div
         :class="[
           'flex items-center gap-2 mb-2 pr-6',
@@ -216,6 +246,13 @@ const sourceInfo = computed(() => {
         <UserIcon class="w-5 h-5 text-primary flex-shrink-0" />
         <span class="text-[0.875rem] truncate">{{
           contact.fio || "Не вказано"
+        }}</span>
+      </div>
+
+      <div v-if="contact?.post_name" class="flex items-center gap-2 mb-2">
+        <BriefcaseIcon class="w-5 h-5 text-primary flex-shrink-0" />
+        <span class="text-[0.875rem] truncate">{{
+          contact.post_name || "Не вказано"
         }}</span>
       </div>
 
@@ -245,35 +282,6 @@ const sourceInfo = computed(() => {
           {{ contact?.tg_name || "Не вказаний" }}
         </span>
       </div>
-
-      <Button
-        variant="ghost"
-        size="xs"
-        :ring="false"
-        icon-only
-        :title="`Редагувати контакт`"
-        class="common-info-tab__contact-edit-btn absolute bottom-[0.6rem] right-0"
-        @click="openEditContactModal(contact)"
-      >
-        <template #icon>
-          <PencilIcon class="w-4 h-4 text-primary" />
-        </template>
-      </Button>
-
-      <Button
-        v-if="!isCurrentContact(contact)"
-        variant="ghost"
-        size="xs"
-        :ring="false"
-        icon-only
-        class="absolute top-[0.438rem] right-0"
-        :title="`Відкрити чат з ${contact.fio || 'контактом'}`"
-        @click="openChatWithContact(contact.id)"
-      >
-        <template #icon>
-          <ChatBubbleLeftIcon class="w-4 h-4 text-primary" />
-        </template>
-      </Button>
     </div>
 
     <Button variant="text" class="mt-3 ml-2 !px-3" @click="openAddContactModal">
@@ -453,6 +461,10 @@ const sourceInfo = computed(() => {
 <style scoped lang="scss">
 .common-info-tab {
   &__contact-item {
+    > div:last-child {
+      padding-right: 1.5rem;
+    }
+
     .common-info-tab__contact-edit-btn {
       display: none;
     }
