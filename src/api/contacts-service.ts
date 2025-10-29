@@ -10,6 +10,14 @@ export interface CreateContactRequest {
   post_id?: number;
 }
 
+export interface UpdateContactRequest {
+  fio: string;
+  phone?: string;
+  email?: string;
+  tg_name?: string;
+  post_id?: number;
+}
+
 export class ContactsService {
   async addContactToEntity(
     entity: EntityType,
@@ -18,6 +26,19 @@ export class ContactsService {
   ): Promise<ApiCommunicationLead> {
     const response = await apiClient.post(
       `/${entity}/${entityId}/contacts`,
+      contact,
+    );
+    return response.data;
+  }
+
+  async updateContact(
+    entity: EntityType,
+    entityId: number,
+    contactId: number,
+    contact: UpdateContactRequest,
+  ): Promise<ApiCommunicationLead> {
+    const response = await apiClient.patch(
+      `/${entity}/${entityId}/contacts/${contactId}`,
       contact,
     );
     return response.data;

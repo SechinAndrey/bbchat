@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import Modal from "@src/ui/modals/Modal.vue";
 import Button from "@src/ui/inputs/Button.vue";
 import LabeledTextInput from "@src/ui/inputs/LabeledTextInput.vue";
@@ -7,15 +7,15 @@ import AutocompleteSelect from "@src/ui/inputs/AutocompleteSelect.vue";
 import {
   contactsService,
   type CreateContactRequest,
+  type UpdateContactRequest,
 } from "@src/api/contacts-service";
 import { useToast } from "@src/shared/composables/useToast";
 import useGlobalDataStore from "@src/shared/store/global-data-store";
 import { extractValidationErrors } from "@src/shared/utils/utils";
 import { CONTRAGENT_TO_ENTITY_MAP } from "@src/shared/types/common";
-import type { ApiCommunicationLead } from "@src/api/types";
+import type { ApiCommunicationLead, ApiContact } from "@src/api/types";
 import { useConversationsStore } from "@src/features/conversations/conversations-store";
 import { useRouter } from "vue-router";
-import { adaptApiCommunicationToIConversation } from "@src/api/communication-adapters";
 import { useForm } from "vee-validate";
 import * as z from "zod";
 
@@ -24,10 +24,13 @@ interface Props {
   closeModal: () => void;
   entityType: "client" | "lead" | "supplier";
   entityId: number;
+  mode: "create" | "edit";
+  contact?: ApiContact | null;
 }
 
 interface Emits {
   (e: "contactAdded", contact: ApiCommunicationLead): void;
+  (e: "contactUpdated"): void;
 }
 
 const props = defineProps<Props>();
@@ -83,7 +86,7 @@ const schema = z
     }
   });
 
-const { defineField, handleSubmit, errors, meta, resetForm } = useForm({
+const { defineField, handleSubmit, errors, resetForm, setValues } = useForm({
   validationSchema: schema,
   initialValues: {
     fio: "",
@@ -107,6 +110,29 @@ const selectedJobTitleId = computed<string | number>({
   },
 });
 
+watch(
+  () => [props.contact, props.open] as const,
+  ([contact, open]) => {
+    if (
+      open &&
+      props.mode === "edit" &&
+      contact &&
+      typeof contact === "object"
+    ) {
+      setValues({
+        fio: contact.fio || "",
+        email: contact.email || "",
+        phone: contact.phone || "",
+        tgName: contact.tg_name || "",
+        jobTitleId: "",
+      });
+    } else if (open && props.mode === "create") {
+      resetForm();
+    }
+  },
+  { immediate: true },
+);
+
 const clean = () => {
   resetForm();
   props.closeModal();
@@ -118,11 +144,11 @@ const onSubmit = handleSubmit(async (values) => {
   try {
     isLoading.value = true;
 
-    const contactData: CreateContactRequest = {
+    const contactData: CreateContactRequest | UpdateContactRequest = {
       fio: values.fio.trim(),
-      phone: values.phone?.trim() || undefined,
-      email: values.email?.trim() || undefined,
-      tg_name: values.tgName?.trim() || undefined,
+      phone: values.phone?.trim() || "",
+      email: values.email?.trim() || "",
+      tg_name: values.tgName?.trim() || "",
     };
 
     if (
@@ -133,43 +159,72 @@ const onSubmit = handleSubmit(async (values) => {
       contactData.post_id = values.jobTitleId;
     }
 
-    const contactResponse = await contactsService.addContactToEntity(
-      CONTRAGENT_TO_ENTITY_MAP[props.entityType],
-      props.entityId,
-      contactData,
-    );
-
-    if (!contactResponse?.id) {
-      throw new Error("Invalid response from server");
-    }
-
     const entityTypeForStore = CONTRAGENT_TO_ENTITY_MAP[props.entityType];
-    const entityData: ApiCommunicationLead = {
-      ...contactResponse,
-      messages: contactResponse.messages || [],
-    };
 
-    conversationsStore.addNewConversation(entityTypeForStore, entityData);
+    if (props.mode === "create") {
+      const contactResponse = await contactsService.addContactToEntity(
+        entityTypeForStore,
+        props.entityId,
+        contactData as CreateContactRequest,
+      );
 
-    emit("contactAdded", contactResponse);
-    clean();
+      if (!contactResponse?.id) {
+        throw new Error("Invalid response from server");
+      }
 
-    if (contactResponse.contacts && contactResponse.contacts.length > 0) {
-      const newContact =
-        contactResponse.contacts[contactResponse.contacts.length - 1];
-      await router.push({
-        name: "Chat",
-        params: {
-          entity: entityTypeForStore,
-          id: props.entityId.toString(),
-          contactId: newContact.id.toString(),
-        },
-      });
+      const entityData: ApiCommunicationLead = {
+        ...contactResponse,
+        messages: contactResponse.messages || [],
+      };
+
+      conversationsStore.addNewConversation(entityTypeForStore, entityData);
+
+      emit("contactAdded", contactResponse);
+      clean();
+
+      if (contactResponse.contacts && contactResponse.contacts.length > 0) {
+        const newContact =
+          contactResponse.contacts[contactResponse.contacts.length - 1];
+        await router.push({
+          name: "Chat",
+          params: {
+            entity: entityTypeForStore,
+            id: props.entityId.toString(),
+            contactId: newContact.id.toString(),
+          },
+        });
+      }
 
       toastSuccess("Контакт успішно додано");
+    } else {
+      if (!props.contact) {
+        throw new Error("Contact is required for edit mode");
+      }
+
+      await contactsService.updateContact(
+        entityTypeForStore,
+        props.entityId,
+        props.contact.id,
+        contactData as UpdateContactRequest,
+      );
+
+      if (conversationsStore.activeConversation?.id === props.entityId) {
+        await conversationsStore.fetchConversation(
+          entityTypeForStore,
+          props.entityId,
+        );
+      }
+
+      emit("contactUpdated");
+      clean();
+
+      toastSuccess("Контакт успішно оновлено");
     }
   } catch (error) {
-    console.error("Error adding contact:", error);
+    console.error(
+      `Error ${props.mode === "create" ? "adding" : "updating"} contact:`,
+      error,
+    );
     toastError(extractValidationErrors(error));
   } finally {
     isLoading.value = false;
@@ -186,6 +241,17 @@ const jobTitleOptions = computed(() => {
     label: jobTitle.name,
   }));
 });
+
+const modalTitle = computed(() => {
+  return props.mode === "create" ? "Додати контакт" : "Редагувати контакт";
+});
+
+const submitButtonText = computed(() => {
+  if (isLoading.value) {
+    return props.mode === "create" ? "Додавання..." : "Збереження...";
+  }
+  return props.mode === "create" ? "Додати контакт" : "Зберегти зміни";
+});
 </script>
 
 <template>
@@ -198,7 +264,7 @@ const jobTitleOptions = computed(() => {
           <h2
             class="text-lg xs:text-xl font-semibold text-app-text dark:text-white"
           >
-            Додати контакт
+            {{ modalTitle }}
           </h2>
         </div>
 
@@ -330,7 +396,7 @@ const jobTitleOptions = computed(() => {
             class="xs:order-1 md:order-2"
             @click="onSubmit"
           >
-            Додати контакт
+            {{ submitButtonText }}
           </Button>
         </div>
       </div>

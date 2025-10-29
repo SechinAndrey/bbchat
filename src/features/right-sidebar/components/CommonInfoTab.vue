@@ -19,11 +19,12 @@ import {
   ChatBubbleLeftIcon,
 } from "@heroicons/vue/24/outline";
 import KanbanSelect from "@src/shared/components/KanbanSelect.vue";
-import AddContactModal from "@src/features/contacts/AddContactModal.vue";
+import ContactModal from "@src/features/contacts/ContactModal.vue";
 import { useAuthStore } from "@src/features/auth/store/auth-store";
 import useStore from "@src/shared/store/store";
 import { useToast } from "@src/shared/composables/useToast";
 import TgLineIcon from "@src/shared/icons/TgLineIcon.vue";
+import type { ApiContact } from "@src/api/types";
 
 const contactId = inject<Ref<number> | undefined>("contactId");
 const entity = inject<Ref<"leads" | "clients" | "suppliers">>("entity");
@@ -34,7 +35,9 @@ const router = useRouter();
 const { toastError } = useToast();
 
 const conversationsStore = useConversationsStore();
-const isAddContactModalOpen = ref(false);
+const isContactModalOpen = ref(false);
+const contactModalMode = ref<"create" | "edit">("create");
+const editingContact = ref<ApiContact | null>(null);
 const isEditingComment = ref(false);
 const editCommentValue = ref("");
 const isSavingComment = ref(false);
@@ -63,15 +66,28 @@ const isCurrentContact = (contact: { id: number }) => {
 };
 
 const openAddContactModal = () => {
-  isAddContactModalOpen.value = true;
+  contactModalMode.value = "create";
+  editingContact.value = null;
+  isContactModalOpen.value = true;
 };
 
-const closeAddContactModal = () => {
-  isAddContactModalOpen.value = false;
+const openEditContactModal = (contact: ApiContact) => {
+  contactModalMode.value = "edit";
+  editingContact.value = contact;
+  isContactModalOpen.value = true;
+};
+
+const closeContactModal = () => {
+  isContactModalOpen.value = false;
+  editingContact.value = null;
 };
 
 const handleContactAdded = () => {
-  closeAddContactModal();
+  closeContactModal();
+};
+
+const handleContactUpdated = () => {
+  closeContactModal();
 };
 
 const startEditingComment = () => {
@@ -178,14 +194,17 @@ const sourceInfo = computed(() => {
 
 <template>
   <div class="py-4 pb-6">
-    <div class="mb-4 text-app-text-secondary text-[0.813rem]">Контакти</div>
+    <div class="common-info-tab mb-4 text-app-text-secondary text-[0.813rem]">
+      Контакти
+    </div>
 
     <div
       v-for="contact in activeConversation?.contacts"
       :key="contact.id"
-      class="relative last:mb-0 border-b border-t border-dashed border-app-border py-3"
+      class="common-info-tab__contact-item relative last:mb-0 border-b border-t border-dashed border-app-border py-3"
       :class="{
-        'border-primary current-contact': isCurrentContact(contact),
+        'border-primary common-info-tab__contact-item--current':
+          isCurrentContact(contact),
       }"
     >
       <div
@@ -214,18 +233,32 @@ const sourceInfo = computed(() => {
         <EnvelopeIcon class="w-5 h-5 text-primary flex-shrink-0" />
         <a
           class="text-[0.875rem] hover:underline underline-offset-4 truncate"
-          :href="`mailto:${activeConversation?.email}`"
+          :href="`mailto:${contact?.email}`"
         >
-          {{ activeConversation?.email || "Не вказана" }}
+          {{ contact?.email || "Не вказана" }}
         </a>
       </div>
 
       <div class="flex items-center gap-2 mb-2">
         <TgLineIcon class="w-5 h-5 text-primary flex-shrink-0" />
         <span class="text-[0.875rem] truncate">
-          {{ activeConversation?.tg_name || "Не вказаний" }}
+          {{ contact?.tg_name || "Не вказаний" }}
         </span>
       </div>
+
+      <Button
+        variant="ghost"
+        size="xs"
+        :ring="false"
+        icon-only
+        :title="`Редагувати контакт`"
+        class="common-info-tab__contact-edit-btn absolute bottom-[0.6rem] right-0"
+        @click="openEditContactModal(contact)"
+      >
+        <template #icon>
+          <PencilIcon class="w-4 h-4 text-primary" />
+        </template>
+      </Button>
 
       <Button
         v-if="!isCurrentContact(contact)"
@@ -404,36 +437,53 @@ const sourceInfo = computed(() => {
       </div>
     </div>
 
-    <AddContactModal
-      :open="isAddContactModalOpen"
-      :close-modal="closeAddContactModal"
+    <ContactModal
+      :open="isContactModalOpen"
+      :close-modal="closeContactModal"
       :entity-type="entityType"
       :entity-id="entityId"
+      :mode="contactModalMode"
+      :contact="editingContact"
       @contact-added="handleContactAdded"
+      @contact-updated="handleContactUpdated"
     />
   </div>
 </template>
 
 <style scoped lang="scss">
-.current-contact {
-  position: relative;
+.common-info-tab {
+  &__contact-item {
+    .common-info-tab__contact-edit-btn {
+      display: none;
+    }
 
-  &::before {
-    content: "Поточний";
-    position: absolute;
-    top: 0;
-    right: 0;
-    color: var(--color-primary);
-    background: var(--color-bg-primary);
-    font-size: 0.6rem;
-    font-weight: 500;
-    padding: 0.1rem 0.2rem;
-    border-bottom-left-radius: 0.375rem;
-    border-bottom-right-radius: 0.375rem;
-    z-index: 10;
-    border: 1px dashed var(--color-primary);
-    white-space: nowrap;
-    border-top: none;
+    &:hover {
+      .common-info-tab__contact-edit-btn {
+        display: block;
+      }
+    }
+
+    &--current {
+      position: relative;
+
+      &::before {
+        content: "Поточний";
+        position: absolute;
+        top: 0;
+        right: 0;
+        color: var(--color-primary);
+        background: var(--color-bg-primary);
+        font-size: 0.6rem;
+        font-weight: 500;
+        padding: 0.1rem 0.2rem;
+        border-bottom-left-radius: 0.375rem;
+        border-bottom-right-radius: 0.375rem;
+        z-index: 10;
+        border: 1px dashed var(--color-primary);
+        white-space: nowrap;
+        border-top: none;
+      }
+    }
   }
 }
 </style>
