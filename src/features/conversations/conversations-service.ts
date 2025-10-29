@@ -269,16 +269,11 @@ export class ConversationsService {
    * @example const lead = await service.createLead({ name: 'John', ... })
    */
   async createLead(leadData: CreateLeadRequest): Promise<ApiCommunicationLead> {
-    try {
-      const response = await apiClient.post<ApiCommunicationLead>(
-        "/leads",
-        leadData,
-      );
-      return response.data;
-    } catch (error) {
-      console.error("❌ Failed to create lead:", error);
-      throw new Error("Failed to create lead");
-    }
+    const response = await apiClient.post<ApiCommunicationLead>(
+      "/leads",
+      leadData,
+    );
+    return response.data;
   }
 
   /**

@@ -1,12 +1,15 @@
 <script setup lang="ts">
-import { ref, computed, type Ref } from "vue";
+import { ref, computed } from "vue";
 import Button from "@src/ui/inputs/Button.vue";
 import LabeledTextInput from "@src/ui/inputs/LabeledTextInput.vue";
 import AutocompleteSelect from "@src/ui/inputs/AutocompleteSelect.vue";
 import Textarea from "@src/ui/inputs/Textarea.vue";
 import Modal from "@src/ui/modals/Modal.vue";
-import type { CreateLeadRequest } from "@src/api/types";
+import type { CreateLeadRequest, ApiCommunicationLead } from "@src/api/types";
 import useGlobalDataStore from "@src/shared/store/global-data-store";
+import conversationsService from "@src/features/conversations/conversations-service";
+import { useToast } from "@src/shared/composables/useToast";
+import axios from "axios";
 
 const props = defineProps<{
   open: boolean;
@@ -14,11 +17,13 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  submit: [leadData: CreateLeadRequest];
+  success: [lead: ApiCommunicationLead];
 }>();
 
 import { useForm } from "vee-validate";
 import * as z from "zod";
+
+const { toastError } = useToast();
 
 const globalDataStore = useGlobalDataStore();
 const cityOptions = computed(() => {
@@ -79,18 +84,20 @@ const schema = z
     }
   });
 
-const { defineField, handleSubmit, errors, meta, resetForm } = useForm({
-  validationSchema: schema,
-  initialValues: {
-    name: "",
-    fio: "",
-    city: "",
-    email: "",
-    phone: "",
-    tgName: "",
-    comment: "",
+const { defineField, handleSubmit, errors, resetForm, setFieldError } = useForm(
+  {
+    validationSchema: schema,
+    initialValues: {
+      name: "",
+      fio: "",
+      city: "",
+      email: "",
+      phone: "",
+      tgName: "",
+      comment: "",
+    },
   },
-});
+);
 
 const [name] = defineField("name");
 const [fio] = defineField("fio");
@@ -107,7 +114,9 @@ const city = computed<string | number>({
   },
 });
 
-const onSubmit = handleSubmit((values) => {
+const isSubmitting = ref(false);
+
+const onSubmit = handleSubmit(async (values) => {
   const leadData: CreateLeadRequest = {
     name: values.name.trim(),
     fio: values.fio.trim(),
@@ -119,8 +128,54 @@ const onSubmit = handleSubmit((values) => {
     status_id: statusId.value,
   };
 
-  emit("submit", leadData);
-  handleCancel();
+  isSubmitting.value = true;
+
+  try {
+    const newLead = await conversationsService.createLead(leadData);
+    emit("success", newLead);
+    handleCancel();
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      const status = error.response.status;
+      const validationErrors = error.response.data?.errors;
+
+      if ((status === 422 || status === 400) && validationErrors) {
+        const fieldMap: Record<string, string> = {
+          email: "email",
+          phone: "phone",
+          tg_name: "tgName",
+          name: "name",
+          fio: "fio",
+          city: "city",
+          comment: "comment",
+        };
+
+        Object.keys(validationErrors).forEach((field) => {
+          const messages = validationErrors[field];
+          const formField = fieldMap[field] as
+            | "name"
+            | "fio"
+            | "city"
+            | "email"
+            | "phone"
+            | "tgName"
+            | "comment";
+
+          if (formField && Array.isArray(messages) && messages.length > 0) {
+            setFieldError(formField, messages[0]);
+          }
+        });
+      } else if (status === 500) {
+        toastError("Помилка сервера. Спробуйте пізніше");
+      } else {
+        toastError("Не вдалося створити ліда");
+      }
+    } else {
+      toastError("Не вдалося створити ліда");
+    }
+  } finally {
+    isSubmitting.value = false;
+  }
 });
 
 const handleCancel = () => {
@@ -236,12 +291,18 @@ const handleCancel = () => {
           <Button
             variant="text"
             class="xs:order-2 md:order-1"
+            :disabled="isSubmitting"
             @click="handleCancel"
           >
             Скасувати
           </Button>
 
-          <Button class="xs:order-1 md:order-2" @click="onSubmit">
+          <Button
+            class="xs:order-1 md:order-2"
+            :disabled="isSubmitting"
+            :loading="isSubmitting"
+            @click="onSubmit"
+          >
             Створити лід
           </Button>
         </div>

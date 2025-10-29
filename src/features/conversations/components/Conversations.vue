@@ -1,13 +1,12 @@
 <script setup lang="ts">
 import type { Ref } from "vue";
 import type { ConversationParams } from "../conversations-service";
-import type { CreateLeadRequest } from "@src/api/types";
+import type { ApiCommunicationLead } from "@src/api/types";
 
 import { ref, watch, computed } from "vue";
 import { useInfiniteScroll, useDebounceFn } from "@vueuse/core";
 
 import { useGlobalDataStore } from "@src/shared/store/global-data-store";
-import conversationsService from "@src/features/conversations/conversations-service";
 import { useConversationsStore } from "@src/features/conversations/conversations-store";
 import { useAuthStore } from "@src/features/auth/store/auth-store";
 import useStore from "@src/shared/store/store";
@@ -197,28 +196,23 @@ const closeNewLeadModal = () => {
   newLeadModalOpen.value = false;
 };
 
-const handleNewLeadSubmit = async (leadData: CreateLeadRequest) => {
-  try {
-    const newLead = await conversationsService.createLead(leadData);
+const handleNewLeadSuccess = async (newLead: ApiCommunicationLead) => {
+  conversationsStore.addNewConversation("leads", newLead);
 
-    conversationsStore.addNewConversation("leads", newLead);
-    closeNewLeadModal();
+  closeNewLeadModal();
 
-    if (newLead.contacts && newLead.contacts.length > 0) {
-      const firstContact = newLead.contacts[0];
-      await router.push({
-        name: "Chat",
-        params: {
-          entity: "leads",
-          id: newLead.id.toString(),
-          contactId: firstContact.id.toString(),
-        },
-      });
+  if (newLead.contacts && newLead.contacts.length > 0) {
+    const firstContact = newLead.contacts[0];
+    await router.push({
+      name: "Chat",
+      params: {
+        entity: "leads",
+        id: newLead.id.toString(),
+        contactId: firstContact.id.toString(),
+      },
+    });
 
-      toastSuccess("Лід успішно створений");
-    }
-  } catch (error) {
-    console.error("Failed to create lead:", error);
+    toastSuccess("Лід успішно створений");
   }
 };
 </script>
@@ -232,7 +226,7 @@ const handleNewLeadSubmit = async (leadData: CreateLeadRequest) => {
       </template>
 
       <!--side actions-->
-      <template #actions v-if="!store.isWidget">
+      <template v-if="!store.isWidget" #actions>
         <div class="flex items-center gap-3">
           <Select
             v-if="authStore.currentUser?.roleId === 1"
@@ -331,7 +325,7 @@ const handleNewLeadSubmit = async (leadData: CreateLeadRequest) => {
     <NewLeadModal
       :open="newLeadModalOpen"
       :close-modal="closeNewLeadModal"
-      @submit="handleNewLeadSubmit"
+      @success="handleNewLeadSuccess"
     />
   </div>
 </template>
