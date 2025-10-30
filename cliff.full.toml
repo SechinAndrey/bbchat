@@ -60,6 +60,7 @@ commit_parsers = [
     { message = "^test", group = "Tests" },
     { message = "^chore", group = "Project Maintenance" },
     { message = "^build", group = "Build" },
+    { message = "^style", group = "Styles" },
     { message = "^wip", skip = true },
     { message = "^WIP", skip = true },
 ]

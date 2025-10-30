@@ -111,7 +111,7 @@ async function handleSendMessage() {
         :options="messengerOptions"
         display-mode="icon-only"
         size="sm"
-        class="mr-5"
+        class="mr-5 -mb-[0.125rem]"
         selected-icon-class="w-8 h-8 rounded-full"
         option-icon-class="w-5 h-5 rounded-full"
       >
