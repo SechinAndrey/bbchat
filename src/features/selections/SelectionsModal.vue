@@ -136,7 +136,7 @@ const deleteBoards = async () => {
   <Modal :open="props.open" :close-modal="close" no-padding fullscreen>
     <template #content>
       <div
-        class="h-full w-full relative overflow-hidden bg-app-bg transition-all z-21"
+        class="h-full w-full relative overflow-hidden bg-app-bg transition-all"
       >
         <!-- Modal header -->
         <div

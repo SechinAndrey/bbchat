@@ -225,7 +225,7 @@ watch(
 <template>
   <div
     role="dialog"
-    class="relative z-99"
+    class="relative z-[99]"
     :aria-hidden="!props.open"
     aria-labelledby="modal-title"
     aria-modal="true"
@@ -237,7 +237,7 @@ watch(
         id="close-modal"
         ref="modal"
         :class="[
-          'fixed inset-0 z-10 h-full flex text-center modal-backdrop',
+          'fixed inset-0 z-[99] h-full flex text-center modal-backdrop',
           props.fullscreen
             ? 'bg-black bg-opacity-20'
             : 'bg-black bg-opacity-60',
@@ -258,7 +258,7 @@ watch(
             v-show="isContentVisible"
             ref="contentContainer"
             :class="[
-              'relative bg-app-bg',
+              'relative bg-app-bg z-[99]',
               props.fullscreen
                 ? 'w-full h-full'
                 : isMobile

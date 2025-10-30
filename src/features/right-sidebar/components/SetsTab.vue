@@ -159,7 +159,9 @@ watch([entity, id], ([newEntity, newId]) => {
         Цю дію неможливо скасувати.
       </template>
     </ConfirmModal>
+  </div>
 
+  <Teleport to="body">
     <SelectionsModal
       :open="isSelectionsModalOpen"
       :show-icon="false"
@@ -168,5 +170,5 @@ watch([entity, id], ([newEntity, newId]) => {
       :entity-type="entity"
       @close="closeSelectionModal"
     />
-  </div>
+  </Teleport>
 </template>
