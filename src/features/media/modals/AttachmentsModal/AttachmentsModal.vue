@@ -6,8 +6,18 @@ import Attachment from "@src/features/media/modals/AttachmentsModal/Attachment.v
 import Button from "@src/ui/inputs/Button.vue";
 import TextInput from "@src/ui/inputs/TextInput.vue";
 import Modal from "@src/ui/modals/Modal.vue";
-import ScrollBox from "@src/ui/utils/ScrollBox.vue";
 import { useMessageSending } from "@src/features/chat/composables/useMessageSending";
+import { useToast } from "@src/shared/composables/useToast";
+import {
+  formatFileSize,
+  getFileType,
+  validateFile,
+  revokeBlobURL,
+} from "@src/shared/utils";
+
+const MAX_ATTACHMENTS = 1;
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+const ACCEPTED_FILE_TYPES = "image/*,video/*,audio/*,.pdf,.doc,.docx,.txt";
 
 const props = defineProps<{
   messengerId: number;
@@ -16,53 +26,57 @@ const props = defineProps<{
 }>();
 
 const { sendMessageWithFile } = useMessageSending();
-
-const emit = defineEmits<{
-  send: [attachments: IAttachment[], caption: string];
-}>();
+const { error: showError } = useToast();
 
 const attachments = ref<IAttachment[]>([]);
 const caption = ref("");
 const fileInputRef = ref<HTMLInputElement>();
+const isDragging = ref(false);
 
-const formatFileSize = (bytes: number): string => {
-  if (bytes === 0) return "0 Bytes";
-  const k = 1024;
-  const sizes = ["Bytes", "KB", "MB", "GB"];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+const createAttachmentFromFile = (file: File): IAttachment => {
+  return {
+    id: Date.now() + Math.random(),
+    type: getFileType(file),
+    name: file.name,
+    size: formatFileSize(file.size),
+    url: URL.createObjectURL(file),
+    thumbnail: file.type.startsWith("image/")
+      ? URL.createObjectURL(file)
+      : undefined,
+    file: file,
+  };
 };
 
-const getFileType = (file: File): string => {
-  const type = file.type.toLowerCase();
-
-  if (type.startsWith("image/")) return "image";
-  if (type.startsWith("video/")) return "video";
-  if (type.startsWith("audio/")) return "audio";
-
-  return "file";
+const revokeAttachmentURLs = (attachment: IAttachment): void => {
+  revokeBlobURL(attachment.url);
+  revokeBlobURL(attachment.thumbnail);
 };
 
 const handleFileSelect = (event: Event) => {
   const target = event.target as HTMLInputElement;
   const files = target.files;
 
-  if (files) {
-    Array.from(files).forEach((file, index) => {
-      const attachment: IAttachment = {
-        id: Date.now() + index,
-        type: getFileType(file),
-        name: file.name,
-        size: formatFileSize(file.size),
-        url: URL.createObjectURL(file),
-        thumbnail: file.type.startsWith("image/")
-          ? URL.createObjectURL(file)
-          : undefined,
-        file: file,
-      };
+  if (files && files.length > 0) {
+    if (attachments.value.length >= MAX_ATTACHMENTS) {
+      if (target) {
+        target.value = "";
+      }
+      return;
+    }
 
-      attachments.value.push(attachment);
-    });
+    const file = files[0];
+    const validation = validateFile(file, MAX_FILE_SIZE);
+
+    if (!validation.valid) {
+      showError(validation.error || "Помилка валідації файлу");
+      if (target) {
+        target.value = "";
+      }
+      return;
+    }
+
+    const attachment = createAttachmentFromFile(file);
+    attachments.value.push(attachment);
   }
 
   // Reset input
@@ -75,13 +89,7 @@ const removeAttachment = (id: number) => {
   const index = attachments.value.findIndex((att) => att.id === id);
   if (index !== -1) {
     const attachment = attachments.value[index];
-    // Clean up object URLs
-    if (attachment.url.startsWith("blob:")) {
-      URL.revokeObjectURL(attachment.url);
-    }
-    if (attachment.thumbnail && attachment.thumbnail.startsWith("blob:")) {
-      URL.revokeObjectURL(attachment.thumbnail);
-    }
+    revokeAttachmentURLs(attachment);
     attachments.value.splice(index, 1);
   }
 };
@@ -91,15 +99,7 @@ const openFileDialog = () => {
 };
 
 const clean = () => {
-  attachments.value.forEach((attachment) => {
-    if (attachment.url.startsWith("blob:")) {
-      URL.revokeObjectURL(attachment.url);
-    }
-    if (attachment.thumbnail && attachment.thumbnail.startsWith("blob:")) {
-      URL.revokeObjectURL(attachment.thumbnail);
-    }
-  });
-
+  attachments.value.forEach(revokeAttachmentURLs);
   attachments.value = [];
   caption.value = "";
   props.closeModal();
@@ -123,24 +123,67 @@ async function sendMessage() {
   }
 }
 
+const replaceAttachment = (id: number) => {
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = ACCEPTED_FILE_TYPES;
+
+  input.onchange = (event: Event) => {
+    const target = event.target as HTMLInputElement;
+    const files = target.files;
+
+    if (files && files.length > 0) {
+      const file = files[0];
+      const validation = validateFile(file, MAX_FILE_SIZE);
+
+      if (!validation.valid) {
+        showError(validation.error || "Помилка валідації файлу");
+        return;
+      }
+
+      const index = attachments.value.findIndex((att) => att.id === id);
+
+      if (index !== -1) {
+        const oldAttachment = attachments.value[index];
+        revokeAttachmentURLs(oldAttachment);
+
+        const newAttachment = createAttachmentFromFile(file);
+        attachments.value[index] = newAttachment;
+      }
+    }
+  };
+
+  input.click();
+};
+
+const handleDragOver = (event: DragEvent) => {
+  event.preventDefault();
+  isDragging.value = true;
+};
+
+const handleDragLeave = () => {
+  isDragging.value = false;
+};
+
 const handleDrop = (event: DragEvent) => {
   event.preventDefault();
-  if (event.dataTransfer && event.dataTransfer.files) {
-    Array.from(event.dataTransfer.files).forEach((file, index) => {
-      const attachment: IAttachment = {
-        id: Date.now() + index,
-        type: getFileType(file),
-        name: file.name,
-        size: formatFileSize(file.size),
-        url: URL.createObjectURL(file),
-        thumbnail: file.type.startsWith("image/")
-          ? URL.createObjectURL(file)
-          : undefined,
-        file: file,
-      };
+  isDragging.value = false;
 
-      attachments.value.push(attachment);
-    });
+  if (event.dataTransfer && event.dataTransfer.files) {
+    if (attachments.value.length >= MAX_ATTACHMENTS) {
+      return;
+    }
+
+    const file = event.dataTransfer.files[0];
+    const validation = validateFile(file, MAX_FILE_SIZE);
+
+    if (!validation.valid) {
+      showError(validation.error || "Помилка валідації файлу");
+      return;
+    }
+
+    const attachment = createAttachmentFromFile(file);
+    attachments.value.push(attachment);
   }
 };
 </script>
@@ -156,33 +199,39 @@ const handleDrop = (event: DragEvent) => {
         <input
           ref="fileInputRef"
           type="file"
-          accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.txt"
+          :accept="ACCEPTED_FILE_TYPES"
           class="hidden"
           @change="handleFileSelect"
         />
 
-        <!--attachments list-->
-        <ScrollBox
+        <!-- attachments list -->
+        <div
           v-if="hasAttachments"
-          class="max-h-[8.75rem] overflow-y-scroll"
+          class="max-h-[8.75rem] overflow-y-auto overflow-x-hidden px-5"
         >
           <Attachment
             v-for="(attachment, index) in attachments"
             :key="index"
+            class="mt-5"
             :attachment="attachment"
             @remove="removeAttachment"
+            @replace="replaceAttachment"
           />
-        </ScrollBox>
+        </div>
 
         <!-- Drag and drop area -->
         <div
           v-else
-          class="px-5 py-8 border-2 mx-5 border-dashed border-app-border rounded-md cursor-pointer"
+          :class="[
+            'px-5 py-8 border-2 mx-5 border-dashed rounded-md cursor-pointer transition-all duration-200',
+            isDragging ? 'border-primary bg-primary/10' : 'border-app-border',
+          ]"
           @click="openFileDialog"
-          @dragover.prevent
+          @dragover.prevent="handleDragOver"
+          @dragleave="handleDragLeave"
           @drop.prevent="handleDrop"
         >
-          <p class="text-center text-app-text-secondary">
+          <p class="text-app-text-secondary text-center">
             Перетягніть файли сюди або
             <span class="font-semibold text-primary"> оберіть файл </span>
             с комп'ютера
@@ -190,7 +239,6 @@ const handleDrop = (event: DragEvent) => {
         </div>
 
         <!--Caption input-->
-        <!-- <div class="px-5 py-6"> -->
         <TextInput
           v-model="caption"
           placeholder="Підпис"
@@ -198,12 +246,15 @@ const handleDrop = (event: DragEvent) => {
           variant="bordered"
           class="mx-5 my-6"
         />
-        <!-- </div> -->
 
         <!--Action buttons-->
         <div class="flex w-full px-5">
           <div class="grow flex justify-start">
-            <Button variant="outline" @click="openFileDialog">
+            <Button
+              v-if="!hasAttachments"
+              variant="outline"
+              @click="openFileDialog"
+            >
               Обрати файл
             </Button>
           </div>
@@ -215,6 +266,9 @@ const handleDrop = (event: DragEvent) => {
           <Button :disabled="!hasAttachments" @click="sendMessage">
             Відправити
           </Button>
+        </div>
+        <div class="text-app-text-secondary text-xs text-left px-5 mt-6">
+          *1 файл на одне повідомлення
         </div>
       </div>
     </template>

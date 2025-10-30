@@ -59,3 +59,62 @@ export const getMediaType = (
   if (isAudio(url)) return "audio";
   return "file";
 };
+
+/**
+ * Format file size in human-readable format
+ * @param bytes - File size in bytes
+ * @returns Formatted file size string (e.g., "1.5 MB")
+ */
+export const formatFileSize = (bytes: number): string => {
+  if (bytes === 0) return "0 Bytes";
+  const k = 1024;
+  const sizes = ["Bytes", "KB", "MB", "GB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+};
+
+/**
+ * Get file type from File object based on MIME type
+ * @param file - File object
+ * @returns File type: "image" | "video" | "audio" | "file"
+ */
+export const getFileType = (
+  file: File,
+): "image" | "video" | "audio" | "file" => {
+  const type = file.type.toLowerCase();
+
+  if (type.startsWith("image/")) return "image";
+  if (type.startsWith("video/")) return "video";
+  if (type.startsWith("audio/")) return "audio";
+
+  return "file";
+};
+
+/**
+ * Validate file size
+ * @param file - File object to validate
+ * @param maxSize - Maximum file size in bytes (default: 10MB)
+ * @returns Validation result with error message if invalid
+ */
+export const validateFile = (
+  file: File,
+  maxSize: number = 10 * 1024 * 1024,
+): { valid: boolean; error?: string } => {
+  if (file.size > maxSize) {
+    return {
+      valid: false,
+      error: `Файл занадто великий. Максимальний розмір: ${formatFileSize(maxSize)}`,
+    };
+  }
+  return { valid: true };
+};
+
+/**
+ * Revoke blob URLs to free up memory
+ * @param url - Blob URL to revoke
+ */
+export const revokeBlobURL = (url: string | undefined): void => {
+  if (url && url.startsWith("blob:")) {
+    URL.revokeObjectURL(url);
+  }
+};

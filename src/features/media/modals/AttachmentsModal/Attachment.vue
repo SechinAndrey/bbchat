@@ -16,14 +16,15 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: "remove", id: number): void;
+  (e: "replace", id: number): void;
 }>();
 </script>
 
 <template>
-  <div href="#" class="flex px-5 py-4 transition-all duration-300 text-sm">
+  <div href="#" class="flex transition-all duration-300 text-sm">
     <!--icon-->
     <div
-      class="w-8 h-8 mr-4 rounded-full flex justify-center items-center bg-app-bg-secondary"
+      class="w-8 h-8 mr-4 rounded-full flex justify-center items-center bg-app-bg-secondary flex-shrink-0"
     >
       <PhotoIcon
         v-if="attachment.type === 'image'"
@@ -40,22 +41,22 @@ const emit = defineEmits<{
     </div>
 
     <!--name, date and size-->
-    <div class="grow">
+    <div class="grow min-w-0 mr-2">
       <div class="flex items-center justify-between mb-2">
-        <p class="" tabindex="0">
+        <p class="truncate" tabindex="0">
           {{ attachment.name }}
         </p>
       </div>
 
       <div class="flex justify-start">
-        <p class="" tabindex="0">
+        <p class="text-app-text-secondary" tabindex="0">
           {{ attachment.size }}
         </p>
       </div>
     </div>
 
     <!--action buttons-->
-    <div class="flex items-center">
+    <div class="flex items-center flex-shrink-0">
       <Button
         class="mr-2"
         :ring="false"
@@ -63,6 +64,7 @@ const emit = defineEmits<{
         variant="ghost"
         size="xs"
         title="Замінити"
+        @click="emit('replace', attachment.id)"
       >
         <template #icon>
           <ArrowPathRoundedSquareIcon />
