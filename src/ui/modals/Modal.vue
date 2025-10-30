@@ -182,7 +182,7 @@ const closeWithAnimation = async () => {
   }, 250);
 };
 
-const handleBackdropClick = (event: MouseEvent) => {
+const handleBackdropInteraction = (event: MouseEvent | TouchEvent) => {
   if (props.closeOnClickOutside && event.target === event.currentTarget) {
     closeWithAnimation();
   }
@@ -246,7 +246,8 @@ watch(
             : 'items-center justify-center sm:items-center overflow-hidden',
           { 'p-4 sm:p-0': !props.noPadding && !isMobile && !props.fullscreen },
         ]"
-        @click="handleBackdropClick"
+        @mousedown="handleBackdropInteraction"
+        @touch="handleBackdropInteraction"
         @keydown.esc.stop.prevent="handleEscKey"
       >
         <!--content container-->
