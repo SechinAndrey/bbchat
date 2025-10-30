@@ -173,7 +173,7 @@ const copyLink = async () => {
         variant="text"
       >
         <template #icon>
-          <ArrowPathIcon />
+          <ArrowPathIcon class="w-6 h-6" />
         </template>
       </Button>
 
@@ -186,7 +186,7 @@ const copyLink = async () => {
         @click="copyLink"
       >
         <template #icon>
-          <LinkIcon />
+          <LinkIcon class="w-6 h-6" />
         </template>
       </Button>
 
@@ -200,14 +200,14 @@ const copyLink = async () => {
         @click="endConversation"
       >
         <template #icon>
-          <StopCircleIcon />
+          <StopCircleIcon class="w-6 h-6" />
         </template>
       </Button>
 
       <VuePopper placement="bottom-end" :show-arrow="false">
         <Button variant="text" icon-only class="flex-shrink-0 xl:!hidden">
           <template #icon>
-            <EllipsisVerticalIcon />
+            <EllipsisVerticalIcon class="w-6 h-6" />
           </template>
         </Button>
 
@@ -253,7 +253,7 @@ const copyLink = async () => {
         class="md:!hidden"
         @click="store.rightSidebarOpen = !store.rightSidebarOpen"
       >
-        <template #icon> <InformationCircleIcon /> </template>
+        <template #icon> <InformationCircleIcon class="w-6 h-6" /> </template>
       </Button>
 
       <Button
@@ -263,8 +263,8 @@ const copyLink = async () => {
         @click="store.rightSidebarOpen = !store.rightSidebarOpen"
       >
         <template #icon>
-          <ChevronRightIcon v-if="store.rightSidebarOpen" />
-          <ChevronLeftIcon v-else />
+          <ChevronRightIcon v-if="store.rightSidebarOpen" class="w-6 h-6" />
+          <ChevronLeftIcon v-else class="w-6 h-6" />
         </template>
       </Button>
     </div>
@@ -288,7 +288,7 @@ const copyLink = async () => {
         variant="text"
       >
         <template #icon>
-          <ArrowPathIcon />
+          <ArrowPathIcon class="w-6 h-6" />
         </template>
       </Button>
 
@@ -301,7 +301,7 @@ const copyLink = async () => {
         @click="copyLink"
       >
         <template #icon>
-          <LinkIcon />
+          <LinkIcon class="w-6 h-6" />
         </template>
       </Button>
 
@@ -315,14 +315,14 @@ const copyLink = async () => {
         @click="endConversation"
       >
         <template #icon>
-          <StopCircleIcon />
+          <StopCircleIcon class="w-6 h-6" />
         </template>
       </Button>
 
       <VuePopper placement="bottom-end" :show-arrow="false">
         <Button variant="text" icon-only class="flex-shrink-0">
           <template #icon>
-            <EllipsisVerticalIcon />
+            <EllipsisVerticalIcon class="w-6 h-6" />
           </template>
         </Button>
 
@@ -369,8 +369,8 @@ const copyLink = async () => {
         @click="store.rightSidebarOpen = !store.rightSidebarOpen"
       >
         <template #icon>
-          <ChevronRightIcon v-if="store.rightSidebarOpen" />
-          <ChevronLeftIcon v-else />
+          <ChevronRightIcon v-if="store.rightSidebarOpen" class="w-6 h-6" />
+          <ChevronLeftIcon v-else class="w-6 h-6" />
         </template>
       </Button>
     </div>

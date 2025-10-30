@@ -214,7 +214,7 @@ const sourceInfo = computed(() => {
         :ring="false"
         icon-only
         :title="`Редагувати контакт`"
-        class="common-info-tab__contact-edit-btn absolute bottom-[0.6rem] right-0"
+        class="absolute bottom-[0.6rem] right-0"
         @click="openEditContactModal(contact)"
       >
         <template #icon>
@@ -463,16 +463,6 @@ const sourceInfo = computed(() => {
   &__contact-item {
     > div:last-child {
       padding-right: 1.5rem;
-    }
-
-    .common-info-tab__contact-edit-btn {
-      display: none;
-    }
-
-    &:hover {
-      .common-info-tab__contact-edit-btn {
-        display: block;
-      }
     }
 
     &--current {

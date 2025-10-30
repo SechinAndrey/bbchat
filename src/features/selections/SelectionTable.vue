@@ -229,7 +229,7 @@ const changePrice = async (
                   @click="openImagesModal(item)"
                 >
                   <template #icon>
-                    <PhotoIcon />
+                    <PhotoIcon class="w-6 h-6" />
                   </template>
                 </Button>
                 <span v-else class="text-text-secondary">—</span>

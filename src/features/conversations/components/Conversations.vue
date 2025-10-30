@@ -249,7 +249,7 @@ const handleNewLeadSuccess = async (newLead: ApiCommunicationLead) => {
               @click="newLeadModalOpen = true"
             >
               <template #icon>
-                <PencilSquareIcon />
+                <PencilSquareIcon class="w-6 h-6" />
               </template>
             </Button>
           </div>

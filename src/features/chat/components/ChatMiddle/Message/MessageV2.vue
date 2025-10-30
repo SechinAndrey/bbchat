@@ -205,6 +205,7 @@ const formatMessageText = (text: string) => {
               <template #icon>
                 <component
                   :is="isCallDetailsExpanded ? ChevronUpIcon : ChevronDownIcon"
+                  class="w-5 h-5"
                 />
               </template>
             </Button>

@@ -73,7 +73,7 @@ watch(searchText, () => {
           @click="openModal = true"
         >
           <template #icon>
-            <UserPlusIcon />
+            <UserPlusIcon class="w-6 h-6" />
           </template>
         </Button>
       </template>

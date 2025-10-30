@@ -67,7 +67,7 @@ const emit = defineEmits<{
         @click="emit('replace', attachment.id)"
       >
         <template #icon>
-          <ArrowPathRoundedSquareIcon />
+          <ArrowPathRoundedSquareIcon class="w-6 h-6" />
         </template>
       </Button>
       <Button
@@ -79,7 +79,7 @@ const emit = defineEmits<{
         @click="emit('remove', attachment.id)"
       >
         <template #icon>
-          <TrashIcon />
+          <TrashIcon class="w-6 h-6" />
         </template>
       </Button>
     </div>

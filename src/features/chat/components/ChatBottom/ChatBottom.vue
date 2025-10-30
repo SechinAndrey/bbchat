@@ -147,8 +147,8 @@ async function handleSendMessage() {
             @click="showPicker = !showPicker"
           >
             <template #icon>
-              <XCircleIcon v-if="showPicker" />
-              <FaceSmileIcon v-else />
+              <XCircleIcon v-if="showPicker" class="w-5 h-5" />
+              <FaceSmileIcon v-else class="w-5 h-5" />
             </template>
           </Button>
 
@@ -188,7 +188,7 @@ async function handleSendMessage() {
           @click="openAttachmentsModal = true"
         >
           <template #icon>
-            <PaperClipIcon />
+            <PaperClipIcon class="w-6 h-6" />
           </template>
         </Button>
 
@@ -203,7 +203,7 @@ async function handleSendMessage() {
           @click="handleSendMessage"
         >
           <template #icon>
-            <PaperAirplaneIcon />
+            <PaperAirplaneIcon class="w-6 h-6" />
           </template>
         </Button>
       </div>

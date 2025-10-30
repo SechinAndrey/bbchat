@@ -225,7 +225,7 @@ watch(
 <template>
   <div
     role="dialog"
-    class="relative z-20"
+    class="relative z-99"
     :aria-hidden="!props.open"
     aria-labelledby="modal-title"
     aria-modal="true"
