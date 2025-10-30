@@ -32,7 +32,7 @@ const store = useStore();
 const authStore = useAuthStore();
 const conversationsStore = useConversationsStore();
 const { toastSuccess, toastError } = useToast();
-const { currentMessenger, messengerOptions } = useMessenger();
+const { isOneEnabledMessenger } = useMessenger();
 
 const isMobile = useMediaQuery("(max-width: 968px)");
 watch(isMobile, (newValue) => {
@@ -138,10 +138,10 @@ const copyLink = async () => {
         </button>
 
         <div
-          class="flex flex-col min-w-[10rem]"
+          class="flex flex-col min-w-[6rem]"
           :class="
             store.rightSidebarOpen
-              ? 'max-w-[calc(100vw-26rem-42.563rem)]'
+              ? 'max-w-[calc(100vw-31rem-42.563rem)]'
               : 'max-w-[calc(100vw-26rem-23.81rem)]'
           "
         >
@@ -165,9 +165,7 @@ const copyLink = async () => {
       </div>
 
       <Button
-        v-if="
-          messengerOptions.length === 1 && currentMessenger?.label === 'Chaport'
-        "
+        v-if="isOneEnabledMessenger('Chaport')"
         class="whitespace-nowrap flex-shrink-0 color-white xl:!hidden"
         size="sm"
         icon-only
@@ -282,9 +280,7 @@ const copyLink = async () => {
       />
 
       <Button
-        v-if="
-          messengerOptions.length === 1 && currentMessenger?.label === 'Chaport'
-        "
+        v-if="isOneEnabledMessenger('Chaport')"
         class="whitespace-nowrap flex-shrink-0 color-white"
         size="sm"
         icon-only

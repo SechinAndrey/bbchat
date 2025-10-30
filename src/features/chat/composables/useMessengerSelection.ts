@@ -108,6 +108,16 @@ export function useMessenger() {
     }
   };
 
+  const isOneEnabledMessenger = (messengerLabel: string): boolean => {
+    const enabledMessengers = messengerOptions.value.filter(
+      (option) => !option.disabled,
+    );
+    return (
+      enabledMessengers.length === 1 &&
+      enabledMessengers[0].label === messengerLabel
+    );
+  };
+
   watch(
     lastMessage,
     () => {
@@ -123,6 +133,8 @@ export function useMessenger() {
     lastMessage,
     activeConversation,
     activeContact,
+
     setMessengerId,
+    isOneEnabledMessenger,
   };
 }
