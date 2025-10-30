@@ -12,7 +12,10 @@ import type {
 export type MessengerOption = {
   value: number;
   label: string;
+  description?: string;
   image: string;
+  disabled?: boolean;
+  title?: string;
 };
 
 export function useMessenger() {
@@ -55,29 +58,31 @@ export function useMessenger() {
       });
     }
 
-    if (activeContact.value?.tg_name) {
-      options.push({
-        value: 1,
-        label: "Telegram",
-        image: "/imgs/telegram.png",
-      });
-    }
+    options.push({
+      value: 1,
+      label: "Telegram",
+      description:
+        !activeContact.value?.tg_name && !activeContact.value?.phone
+          ? "Додайте номер телефону або нік Telegram"
+          : undefined,
+      image: "/imgs/telegram.png",
+      disabled: !activeContact.value?.tg_name && !activeContact.value?.phone,
+      title:
+        !activeContact.value?.tg_name && !activeContact.value?.phone
+          ? "Додайте номер телефону або нік Telegram"
+          : undefined,
+    });
 
-    if (activeContact.value?.phone) {
-      options.push({
-        value: 2,
-        label: "Viber",
-        image: "/imgs/viber.png",
-      });
-
-      if (!activeContact.value?.tg_name) {
-        options.push({
-          value: 1,
-          label: "Telegram",
-          image: "/imgs/telegram.png",
-        });
-      }
-    }
+    options.push({
+      value: 2,
+      label: "Viber",
+      description: !activeContact.value?.phone
+        ? "Додайте номер телефону"
+        : undefined,
+      image: "/imgs/viber.png",
+      disabled: !activeContact.value?.phone,
+      title: !activeContact.value?.phone ? "Додайте номер телефону" : undefined,
+    });
 
     return options;
   });

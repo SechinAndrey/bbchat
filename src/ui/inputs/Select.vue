@@ -16,7 +16,10 @@ import Button from "./Button.vue";
 type Option = {
   value: string | number;
   label: string;
+  description?: string;
   image?: string;
+  disabled?: boolean;
+  title?: string;
 };
 
 const props = withDefaults(
@@ -222,6 +225,7 @@ const toggleOption = (option: Option) => {
 };
 
 const handleOptionClick = (option: Option) => {
+  if (option.disabled) return;
   toggleOption(option);
 };
 </script>
@@ -293,9 +297,12 @@ const handleOptionClick = (option: Option) => {
             <li
               v-for="option in options"
               :key="option.value"
+              :title="option.title || ''"
               class="flex items-center w-full px-4 py-3 text-sm text-app-text cursor-pointer select-none transition-all duration-200 hover:bg-app-bg-secondary"
               :class="{
                 'bg-app-bg-secondary font-medium': isSelected(option.value),
+                'opacity-50 cursor-not-allowed hover:bg-app-bg':
+                  option.disabled,
               }"
               @click="handleOptionClick(option)"
             >
@@ -315,7 +322,16 @@ const handleOptionClick = (option: Option) => {
                   class="block max-w-full max-h-full object-contain"
                 />
               </span>
-              <span class="truncate">{{ option.label }}</span>
+              <span class="truncate">
+                {{ option.label }}
+                <br v-if="option.description" />
+                <span
+                  v-if="option.description"
+                  class="text-app-text-secondary text-xs"
+                >
+                  {{ option.description }}
+                </span>
+              </span>
             </li>
           </ul>
         </div>
