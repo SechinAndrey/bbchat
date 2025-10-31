@@ -2,6 +2,36 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.2.0 - 2025-10-31
+
+### Bug Fixes
+
+- Сообщение Имя. [WS-18700430-20970111](https://trp4438.worksection.com/project/257910/18700430/20970111/)
+- Отправка файла. - icon for audio [WS-18700430-20293958](https://trp4438.worksection.com/project/257910/18700430/20293958/)
+- Объединения лида. [WS-18700430-20969946](https://trp4438.worksection.com/project/257910/18700430/20969946/)
+- ToastError AttachmentsModal.vue
+- Autoselect z-index
+- Resolve modal z-index stacking and teleport SelectionsModal to body
+- Icons size for mobile
+- Mousedown and touch event for closing modal on backdrop interaction
+- Дублирование лида. [WS-18700430-20327696](https://trp4438.worksection.com/project/257910/18700430/20327696/)
+- Вертикальная картинка. [WS-18700430-20401811](https://trp4438.worksection.com/project/257910/18700430/20401811/)
+- Double telegram. [WS-18700430-20923623](https://trp4438.worksection.com/project/257910/18700430/20923623/)
+
+### Features
+
+- Add audio support for MediaPreview.vue
+- Отправка файла [WS-18700430-20293958](https://trp4438.worksection.com/project/257910/18700430/20293958/)
+- Add isOneEnabledMessenger helper; improve chat layout
+- Add disabled states and descriptions to messenger selection options; improve communication channel select UI
+- Контакты. Клиент. Посада. [WS-18700430-20953032](https://trp4438.worksection.com/project/257910/18700430/20953032/)
+- Контакты. Редактирование. [WS-18700430-20951907](https://trp4438.worksection.com/project/257910/18700430/20951907/)
+- Header. Функционал. [WS-18700430-20283467](https://trp4438.worksection.com/project/257910/18700430/20283467/)
+
+### Styles
+
+- Improve channel select
+
 ## 0.1.2 - 2025-10-28
 
 ### Features
