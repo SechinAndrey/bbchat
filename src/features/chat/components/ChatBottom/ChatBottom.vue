@@ -21,7 +21,7 @@ import { useMediaQuery } from "@vueuse/core";
 
 const store = useStore();
 const { sendMessage } = useMessageSending();
-const { messengerId, messengerOptions, currentMessenger, activeConversation } =
+const { messengerId, messengerOptions, currentMessenger, activeContact } =
   useMessenger();
 
 const isMobile = computed(() => useMediaQuery("(max-width: 767px)").value);
@@ -58,7 +58,7 @@ const handleEmojiSelect = (emoji: string) => {
 };
 
 const contactName = computed(() => {
-  return activeConversation.value?.fio || "";
+  return activeContact.value?.fio || "";
 });
 
 const placeholderText = computed(() => {
