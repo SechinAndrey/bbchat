@@ -26,7 +26,7 @@ const props = defineProps<{
 }>();
 
 const { sendMessageWithFile } = useMessageSending();
-const { error: showError } = useToast();
+const { toastError: showError } = useToast();
 
 const attachments = ref<IAttachment[]>([]);
 const caption = ref("");
