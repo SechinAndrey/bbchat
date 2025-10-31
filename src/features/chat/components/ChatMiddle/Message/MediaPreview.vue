@@ -1,7 +1,12 @@
 <script setup lang="ts">
 import { ArrowDownTrayIcon } from "@heroicons/vue/24/outline";
 import VideoPlayer from "@src/ui/data-display/VideoPlayer.vue";
-import { isImage, isVideo, getFileName } from "@src/shared/utils/media";
+import {
+  isImage,
+  isVideo,
+  isAudio,
+  getFileName,
+} from "@src/shared/utils/media";
 
 const props = defineProps<{
   media: string;
@@ -40,17 +45,21 @@ const openCarousel = () => {
       />
     </div>
 
+    <div v-else-if="isAudio(props.media)" class="flex items-center gap-4">
+      <audio :src="props.media" controls class="w-[14rem]">
+        Your browser does not support the audio element.
+      </audio>
+    </div>
+
     <a v-else :href="props.media" target="_blank" download class="block">
       <div class="flex gap-4">
         <div
-          class="min-w-8 max-w-8 max-h-8 min-h-8 flex justify-center rounded-full outline-none items-center dark:bg-gray-800"
+          class="min-w-8 max-w-8 max-h-8 min-h-8 flex justify-center rounded-full outline-none items-center bg-app-bg"
         >
-          <ArrowDownTrayIcon class="h-5 w-5 text-secondary" />
+          <ArrowDownTrayIcon class="h-5 w-5 text-primary" />
         </div>
 
-        <div
-          class="break-words text-black opacity-50 dark:text-white dark:opacity-70 w-[calc(100%-40px)]"
-        >
+        <div class="break-words text-app-text w-[calc(100%-40px)]">
           {{ getFileName(props.media) }}
         </div>
       </div>
