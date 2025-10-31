@@ -512,7 +512,7 @@ watch(modelValue, () => {
           v-if="isOpen"
           ref="dropdownMenu"
           :style="dropdownStyle"
-          class="z-50 bg-theme-surface rounded-md shadow-lg border max-h-60 max-w-xs overflow-y-auto scrollbar-thin fixed"
+          class="z-[100] bg-theme-surface rounded-md shadow-lg border max-h-60 max-w-xs overflow-y-auto scrollbar-thin fixed"
         >
           <div
             v-if="filteredOptions.length === 0"
