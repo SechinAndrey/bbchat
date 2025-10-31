@@ -7,6 +7,7 @@ import {
   PhotoIcon,
   TrashIcon,
   VideoCameraIcon,
+  MusicalNoteIcon,
 } from "@heroicons/vue/24/outline";
 import Button from "@src/ui/inputs/Button.vue";
 
@@ -38,6 +39,7 @@ const emit = defineEmits<{
         v-else-if="attachment.type === 'file'"
         class="stroke-1 h-5 w-5 text-app-text"
       />
+      <MusicalNoteIcon v-else class="stroke-1 h-5 w-5 text-app-text" />
     </div>
 
     <!--name, date and size-->
