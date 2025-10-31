@@ -3,6 +3,17 @@ import type { AxiosResponse } from "axios";
 
 export type LeadActionType = "client" | "supplier" | "manager" | "lead";
 
+export interface ContactIdMapping {
+  old_contact_id: number;
+  new_contact_id: number;
+}
+
+export interface MergeResponse {
+  entity: "lead" | "client" | "supplier";
+  id: number;
+  contacts_ids: ContactIdMapping[];
+}
+
 export interface MergeWithLeadRequest {
   new_lead_id: number | string;
 }

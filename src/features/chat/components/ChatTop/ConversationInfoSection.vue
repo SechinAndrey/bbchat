@@ -391,5 +391,6 @@ const copyLink = async () => {
     :action-type="currentActionType"
     :lead-name="title"
     :lead-id="id as number"
+    :current-contact-id="contactId"
   />
 </template>

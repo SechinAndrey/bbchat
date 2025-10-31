@@ -6,8 +6,16 @@ import AutocompleteSelect from "@src/ui/inputs/AutocompleteSelect.vue";
 import useGlobalDataStore from "@src/shared/store/global-data-store";
 import leadActionsService, {
   type LeadActionType,
+  type MergeResponse,
 } from "@src/shared/services/lead-actions-service";
 import { useToast } from "@src/shared/composables/useToast";
+import { useRouter, useRoute } from "vue-router";
+import {
+  CONTRAGENT_TO_ENTITY_MAP,
+  type EntityType,
+} from "@src/shared/types/common";
+import { useConversationsStore } from "@src/features/conversations/conversations-store";
+// import useStore from "@src/shared/store/store";
 
 const props = defineProps<{
   open: boolean;
@@ -15,13 +23,19 @@ const props = defineProps<{
   actionType: LeadActionType;
   leadName?: string;
   leadId: number | string;
+  currentContactId?: number | string;
 }>();
+
+const conversationsStore = useConversationsStore();
+// const store = useStore();
 
 const selectedItemId = ref<string | number>("");
 const isLoading = ref(false);
 
 const globalDataStore = useGlobalDataStore();
 const { toastSuccess, toastError } = useToast();
+const router = useRouter();
+const route = useRoute();
 
 const actionConfig = computed(() => {
   switch (props.actionType) {
@@ -133,19 +147,59 @@ const handleSubmit = async () => {
       props.leadId,
       selectedItemId.value,
     );
-
-    console.log("Lead action response:", response);
+    const entity = route.params.entity as EntityType;
 
     if (response.status === 200) {
-      // TODO: update url after ufter successful action
       toastSuccess(actionConfig.value.successMessage);
-      close();
+
+      // merge lead
+      if (props.actionType === "lead" && response.data) {
+        const mergeData = response.data as MergeResponse;
+        const entityTypeForRoute = CONTRAGENT_TO_ENTITY_MAP[mergeData.entity];
+        let newContactId: number | undefined;
+        await conversationsStore.fetch(entity, { page: 1 });
+
+        if (props.currentContactId && mergeData.contacts_ids.length > 0) {
+          const mapping = mergeData.contacts_ids.find(
+            (m) => m.old_contact_id === Number(props.currentContactId),
+          );
+          newContactId = mapping?.new_contact_id;
+        }
+
+        if (!newContactId && mergeData.contacts_ids.length > 0) {
+          newContactId = mergeData.contacts_ids[0].new_contact_id;
+        }
+
+        if (newContactId) {
+          // TODO : check widget
+          await router.push({
+            name: "Chat",
+            params: {
+              entity: entityTypeForRoute,
+              id: mergeData.id.toString(),
+              contactId: newContactId.toString(),
+            },
+          });
+        }
+      } else {
+        // other actions
+        await conversationsStore.fetch(entity, { page: 1 });
+
+        // TODO: check widget
+        await router.push({
+          name: "EntityChat",
+          params: {
+            entity,
+          },
+        });
+      }
     }
   } catch (error) {
     toastError("Помилка, щось пішло не так");
     console.error("Lead action error:", error);
   } finally {
     isLoading.value = false;
+    close();
   }
 };
 
