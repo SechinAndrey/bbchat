@@ -3,6 +3,7 @@ import { computed } from "vue";
 import { CheckIcon, XMarkIcon } from "@heroicons/vue/24/outline";
 import type { TempMessage } from "@src/features/conversations/conversations-store";
 import { formatDate } from "@src/shared/utils/utils";
+import ReplyQuote from "@src/features/chat/components/ChatMiddle/Message/ReplyQuote.vue";
 
 const props = defineProps<{
   tempMessage: TempMessage;
@@ -73,6 +74,13 @@ const messengerName = computed(() => {
       <div
         class="bg-app-bg-secondary rounded-2xl rounded-tr-sm px-4 py-3 max-w-md relative"
       >
+        <!-- Reply Quote -->
+        <ReplyQuote
+          v-if="tempMessage.replyMessage"
+          :message="tempMessage.replyMessage"
+          @click="() => {}"
+        />
+
         <!-- Message text -->
         <div class="text-[0.8125rem] leading-relaxed relative pr-6">
           <div class="whitespace-pre-line">{{ tempMessage.message }}</div>

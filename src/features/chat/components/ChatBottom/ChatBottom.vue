@@ -2,6 +2,8 @@
 import type { Ref } from "vue";
 import useStore from "@src/shared/store/store";
 import { ref, computed, nextTick } from "vue";
+import { useEventBus } from "@vueuse/core";
+import type { ApiMessageItem } from "@src/api/types";
 
 import {
   FaceSmileIcon,
@@ -15,9 +17,11 @@ import ScaleTransition from "@src/ui/transitions/ScaleTransition.vue";
 import EmojiPicker from "@src/ui/inputs/EmojiPicker/EmojiPicker.vue";
 import Textarea from "@src/ui/inputs/Textarea.vue";
 import Select from "@src/ui/inputs/Select.vue";
+import ReplyPreview from "@src/features/chat/components/ChatBottom/ReplyPreview.vue";
 import { useMessageSending } from "@src/features/chat/composables/useMessageSending";
 import { useMessenger } from "@src/features/chat/composables/useMessengerSelection";
 import { useMediaQuery } from "@vueuse/core";
+import SlideTransition from "@src/ui/transitions/SlideTransition.vue";
 
 const store = useStore();
 const { sendMessage } = useMessageSending();
@@ -25,6 +29,13 @@ const { messengerId, messengerOptions, currentMessenger, activeContact } =
   useMessenger();
 
 const isMobile = computed(() => useMediaQuery("(max-width: 767px)").value);
+
+const replyMessageBus = useEventBus<ApiMessageItem>("reply-message");
+const replyingToMessage = ref<ApiMessageItem | null>(null);
+
+replyMessageBus.on((message) => {
+  replyingToMessage.value = message;
+});
 
 // the content of the message.
 const value: Ref<string> = ref("");
@@ -61,6 +72,10 @@ const contactName = computed(() => {
   return activeContact.value?.fio || "";
 });
 
+const clearReply = () => {
+  replyingToMessage.value = null;
+};
+
 const placeholderText = computed(() => {
   if (isMobile.value) {
     return contactName.value;
@@ -89,10 +104,17 @@ async function handleSendMessage() {
   }
 
   const messageText = value.value;
+  const replyId = replyingToMessage.value?.id || null;
+
   value.value = "";
+  clearReply();
 
   try {
-    await sendMessage(messageText, messengerId.value);
+    await sendMessage({
+      message: messageText,
+      messengerId: messengerId.value,
+      replyMessageId: replyId,
+    });
   } catch (error) {
     console.error("Error sending message:", error);
   }
@@ -100,10 +122,19 @@ async function handleSendMessage() {
 </script>
 
 <template>
-  <div class="w-full">
+  <div class="w-full relative">
+    <SlideTransition animation="slide-down">
+      <ReplyPreview
+        v-if="replyingToMessage"
+        :message="replyingToMessage"
+        class="absolute bottom-[100%] z-[1]"
+        @close="clearReply"
+      />
+    </SlideTransition>
+
     <div
       v-if="store.status !== 'loading'"
-      class="h-auto p-5 pb-[1.125rem] flex items-end border-t border-app-border"
+      class="h-auto p-5 pb-[1.125rem] flex items-end border-t border-app-border z-[2] relative bg-app-bg"
       :class="recording ? ['justify-between'] : []"
     >
       <Select

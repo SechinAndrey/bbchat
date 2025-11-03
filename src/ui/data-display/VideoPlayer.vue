@@ -80,12 +80,11 @@ const handleToggleVideo = (state: any, player: any) => {
   <VideoPlayer
     class="video-player"
     :src="props.url"
-    :poster="props.thumbnail"
     @timeupdate="handleTimeChange"
     @volumechange="handleVolumeChange"
     @loadstart="(event) => $emit('videoLoad', event)"
   >
-    <template v-slot="{ player, state }">
+    <template #default="{ player, state }">
       <div class="overlay-container">
         <!--video title-->
         <div v-if="props.name" class="video-title">
@@ -97,17 +96,17 @@ const handleToggleVideo = (state: any, player: any) => {
           <!--play button-->
           <button
             v-if="!state.playing"
-            @click="() => handleToggleVideo(state, player)"
             class="control-button play-button"
+            @click="() => handleToggleVideo(state, player)"
           >
             <PlayIcon class="icon large" />
           </button>
           <!--pause button-->
           <button
             v-if="state.playing"
-            @click="() => handleToggleVideo(state, player)"
             class="control-button pause-button"
             :class="{ 'opacity-0': state.playing }"
+            @click="() => handleToggleVideo(state, player)"
           >
             <PauseIcon class="icon large" />
           </button>
@@ -145,12 +144,12 @@ const handleToggleVideo = (state: any, player: any) => {
               :style="{ opacity: volumeSliderInvisible ? 0 : 1 }"
             >
               <RangeSlider
-                @value-changed="
-                  ($event) => handleVolumeSliderChange($event, player)
-                "
                 :percentage="volume"
                 class="volume-slider"
                 aria-label="volume change slider"
+                @value-changed="
+                  ($event) => handleVolumeSliderChange($event, player)
+                "
               />
             </div>
           </div>

@@ -27,13 +27,15 @@ export function useMessageSending() {
 
   /**
    * Send text message with optimistic updates
-   * @example await sendMessage('Hello!', 1, 'https://file.url')
+   * @example await sendMessage({ message: 'Hello!', messengerId: 1, fileUrl: 'https://file.url' })
    */
-  const sendMessage = async (
-    message: string,
-    messengerId: number,
-    fileUrl = "",
-  ): Promise<void> => {
+  const sendMessage = async (params: {
+    message: string;
+    messengerId: number;
+    fileUrl?: string;
+    replyMessageId?: number | null;
+  }): Promise<void> => {
+    const { message, messengerId, fileUrl = "", replyMessageId } = params;
     if (!message.trim() && !fileUrl) {
       console.warn("⚠️ Attempted to send empty message");
       return;
@@ -61,6 +63,14 @@ export function useMessageSending() {
 
     // 1. Create temporary message for optimistic update
     const clientMessageUid = `msg_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
+
+    // Получаем полное сообщение для ответа из активного чата
+    const replyMessage = replyMessageId
+      ? activeConversation.value?.messages.find(
+          (msg) => msg.id === replyMessageId,
+        ) || null
+      : null;
+
     const tempMessage: TempMessage = {
       clientMessageUid,
       message,
@@ -71,6 +81,7 @@ export function useMessageSending() {
       contragentType: contragentType.value,
       contragentId: id.value,
       phone: phoneValue,
+      replyMessage,
     };
     // 2. Immediately add temporary message to chat
     store.addTempMessage(tempMessage);
@@ -91,6 +102,7 @@ export function useMessageSending() {
         contragent_type: contragentType.value,
         contragent_id: id.value,
         client_message_uid: clientMessageUid,
+        reply_message_id: replyMessageId,
       });
 
       if (isApiSendMessageError(response)) {
@@ -135,7 +147,7 @@ export function useMessageSending() {
   ): Promise<void> => {
     try {
       const fileUrl = await conversationsService.uploadFile(file);
-      await sendMessage(caption, messengerId, fileUrl);
+      await sendMessage({ message: caption, messengerId, fileUrl });
     } catch (error) {
       console.error("❌ Failed to send message with file:", error);
     }

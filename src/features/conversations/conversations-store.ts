@@ -30,6 +30,7 @@ export interface TempMessage {
   contragentType: ContragentType;
   contragentId: number;
   phone: string;
+  replyMessage?: ApiMessageItem | null;
   error?: string;
 }
 

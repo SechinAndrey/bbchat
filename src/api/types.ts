@@ -257,6 +257,30 @@ export interface ApiMessageItemUser {
   lastSeen: string;
 }
 
+export interface ApiReplyMessageItem {
+  id: number;
+  type_id: number;
+  user_id: number;
+  lead_id: number | null;
+  lead_contact_id: number | null;
+  client_id: number | null;
+  client_contact_id: number | null;
+  supplier_id: number | null;
+  supplier_contact_id: number | null;
+  echat_message_id: number | null;
+  client_message_uid: string | null;
+  created_at: string;
+  lead: ApiCommunicationLead | null;
+  client: ApiCommunicationClient | null;
+  supplier: ApiCommunicationSupplier | null;
+  type: ApiMessageType;
+  user: ApiMessageItemUser;
+  echat_messages: ApiEChatMessage | null;
+  lead_contact: ApiContact | null;
+  client_contact: ApiContact | null;
+  supplier_contact: ApiContact | null;
+}
+
 export interface ApiMessageItem {
   id: number;
   type_id: number;
@@ -271,6 +295,7 @@ export interface ApiMessageItem {
   call_id: number | null;
   echat_message_id: number | null;
   client_message_uid: string | null;
+  reply_message_id: number | null;
   created_at: string;
   lead: ApiCommunicationLead | null;
   client: ApiCommunicationClient | null;
@@ -280,6 +305,10 @@ export interface ApiMessageItem {
   call: ApiCommunicationCallInfo | null;
   chaport_messages: ApiChaportMessage | null;
   echat_messages: ApiEChatMessage | null;
+  reply_message: ApiReplyMessageItem | null;
+  lead_contact: ApiContact | null;
+  client_contact: ApiContact | null;
+  supplier_contact: ApiContact | null;
 }
 
 // Communication lead and client types

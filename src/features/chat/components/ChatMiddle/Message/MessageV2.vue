@@ -18,6 +18,8 @@ import CallPlayer from "@src/features/chat/components/ChatMiddle/Message/CallPla
 import Button from "@src/ui/inputs/Button.vue";
 import Robo1Icon from "@src/shared/icons/Robo1Icon.vue";
 import { useLongPress } from "@src/shared/composables/useLongPress";
+import ReplyQuote from "@src/features/chat/components/ChatMiddle/Message/ReplyQuote.vue";
+import { useMessageData } from "@src/features/chat/composables/useMessageData";
 
 const props = defineProps<{
   message: ApiMessageItem;
@@ -30,6 +32,9 @@ const emit = defineEmits<{
 }>();
 
 const conversationsStore = useConversationsStore();
+
+// Используем композабл для получения данных сообщения
+const { echat, echatMessage } = useMessageData(computed(() => props.message));
 
 const isCallDetailsExpanded = ref(true);
 
@@ -59,17 +64,6 @@ const toggleCallDetails = () => {
 
 const chaport = computed(() => {
   return props.message.chaport_messages;
-});
-
-const echat = computed(() => {
-  return props.message.echat_messages;
-});
-
-const echatMessage = computed(() => {
-  if (typeof echat.value?.message_json === "string") {
-    return JSON.parse(echat.value.message_json);
-  }
-  return echat.value?.message_json || {};
 });
 
 const call = computed(() => {
@@ -168,6 +162,13 @@ const formatMessageText = (text: string) => {
           v-if="echat"
           class="text-[0.8125rem] leading-relaxed relative pr-6"
         >
+          <!-- Reply Quote -->
+          <ReplyQuote
+            v-if="props.message.reply_message"
+            :message="props.message.reply_message"
+            @click="() => {}"
+          />
+
           <div
             v-if="echat.message"
             class="whitespace-pre-line"

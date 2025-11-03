@@ -2,7 +2,11 @@
 import type { Ref } from "vue";
 
 import { onMounted, ref, watch, nextTick, computed } from "vue";
-import { useInfiniteScroll, useResizeObserver } from "@vueuse/core";
+import {
+  useInfiniteScroll,
+  useResizeObserver,
+  useEventBus,
+} from "@vueuse/core";
 import { useRoute } from "vue-router";
 
 import MessageV2 from "@src/features/chat/components/ChatMiddle/Message/MessageV2.vue";
@@ -31,7 +35,9 @@ import { useToast } from "@src/shared/composables/useToast";
 
 const conversationsStore = useConversationsStore();
 const route = useRoute();
-const { toastError, toastInfo } = useToast();
+const { toastError } = useToast();
+
+const replyMessageBus = useEventBus<ApiMessageItem>("reply-message");
 
 const container: Ref<HTMLElement | null> = ref(null);
 
@@ -253,11 +259,7 @@ const handleCopyMessage = async () => {
 
 const handleReplyMessage = () => {
   if (!selectedMessage.value) return;
-
-  // TODO: Add
-
-  console.log("Reply to message:", selectedMessage.value);
-  toastInfo("Функція відповіді в розробці");
+  replyMessageBus.emit(selectedMessage.value);
 
   closeContextMenu();
 };
