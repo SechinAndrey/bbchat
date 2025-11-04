@@ -305,7 +305,7 @@ export interface ApiMessageItem {
   call: ApiCommunicationCallInfo | null;
   chaport_messages: ApiChaportMessage | null;
   echat_messages: ApiEChatMessage | null;
-  reply_message: ApiReplyMessageItem | null;
+  reply_to: ApiReplyMessageItem | null; // reply message
   lead_contact: ApiContact | null;
   client_contact: ApiContact | null;
   supplier_contact: ApiContact | null;

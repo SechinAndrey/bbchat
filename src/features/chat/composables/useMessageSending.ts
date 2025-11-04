@@ -64,7 +64,7 @@ export function useMessageSending() {
     // 1. Create temporary message for optimistic update
     const clientMessageUid = `msg_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
 
-    // Получаем полное сообщение для ответа из активного чата
+    // get the full message for reply from the active chat
     const replyMessage = replyMessageId
       ? activeConversation.value?.messages.find(
           (msg) => msg.id === replyMessageId,

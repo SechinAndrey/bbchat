@@ -272,6 +272,25 @@ const scrollToBottom = () => {
   });
 };
 
+const scrollToMessage = (messageId: number) => {
+  nextTick(() => {
+    const messageElement = document.querySelector(
+      `[data-message-id="${messageId}"]`,
+    );
+    if (messageElement && container.value) {
+      messageElement.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+
+      messageElement.classList.add("highlight-message");
+      setTimeout(() => {
+        messageElement.classList.remove("highlight-message");
+      }, 2000);
+    }
+  });
+};
+
 const checkIfShouldAutoScroll = () => {
   if (!container.value) return;
 
@@ -334,8 +353,9 @@ watch(
     >
       <div
         v-for="(message, index) in conversationsStore.activeConversation
-          ?.messages || []"
+          ?.messages"
         :key="message.id"
+        :data-message-id="message.id"
       >
         <TimelineDivider
           v-if="shouldShowFirstMessageDivider(index)"
@@ -356,6 +376,7 @@ watch(
           :message="message"
           @open-image-gallery="openImageGallery"
           @open-context-menu="handleOpenContextMenu"
+          @scroll-to-message="scrollToMessage"
         />
 
         <NewMessagesDivider v-if="shouldShowDividerAfterMessage(index)" />
@@ -425,3 +446,21 @@ watch(
     </ContextMenu>
   </div>
 </template>
+
+<style scoped>
+.highlight-message {
+  animation: highlight 2s ease-in-out;
+}
+
+@keyframes highlight {
+  0% {
+    background-color: transparent;
+  }
+  10% {
+    background-color: color-mix(in srgb, var(--color-primary) 20%, transparent);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+</style>

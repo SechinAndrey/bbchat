@@ -29,6 +29,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   openImageGallery: [imageUrl: string];
   openContextMenu: [message: ApiMessageItem, event: MouseEvent | TouchEvent];
+  scrollToMessage: [messageId: number];
 }>();
 
 const conversationsStore = useConversationsStore();
@@ -162,11 +163,11 @@ const formatMessageText = (text: string) => {
           v-if="echat"
           class="text-[0.8125rem] leading-relaxed relative pr-6"
         >
-          <!-- Reply Quote -->
+          <!-- Reply Message -->
           <ReplyQuote
-            v-if="props.message.reply_message"
-            :message="props.message.reply_message"
-            @click="() => {}"
+            v-if="props.message.reply_to"
+            :message="props.message.reply_to"
+            @click="emit('scrollToMessage', props.message.reply_to.id)"
           />
 
           <div
