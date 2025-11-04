@@ -58,7 +58,7 @@ const handleShowContextMenu = (event: MouseEvent) => {
 };
 
 const contact = computed(() => {
-  return props.conversation.contacts?.at(0);
+  return props.conversation.contact;
 });
 
 // (event) closes the context menu
@@ -165,11 +165,11 @@ const lastMessageDirection = computed(() => {
 
 const displayName = computed(() => {
   if (lastMessageDirection.value === "in") {
-    return props.conversation.contacts?.at(0)?.firstName + ":";
+    return props.conversation.contact?.firstName + ":";
   } else if (lastMessageDirection.value === "out") {
     return "Ви: ";
   } else {
-    return props.conversation.contacts?.at(0)?.firstName;
+    return props.conversation.contact?.firstName;
   }
 });
 </script>

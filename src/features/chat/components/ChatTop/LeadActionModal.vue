@@ -15,7 +15,7 @@ import {
   type EntityType,
 } from "@src/shared/types/common";
 import { useConversationsStore } from "@src/features/conversations/conversations-store";
-// import useStore from "@src/shared/store/store";
+import useStore from "@src/shared/store/store";
 
 const props = defineProps<{
   open: boolean;
@@ -27,7 +27,7 @@ const props = defineProps<{
 }>();
 
 const conversationsStore = useConversationsStore();
-// const store = useStore();
+const store = useStore();
 
 const selectedItemId = ref<string | number>("");
 const isLoading = ref(false);
@@ -126,16 +126,67 @@ const clean = () => {
   isLoading.value = false;
 };
 
-const handleSubmit = async () => {
-  if (!isFormValid.value) {
+const getMappedContactId = (mergeData: MergeResponse): number | undefined => {
+  if (!props.currentContactId || mergeData.contacts_ids.length === 0) {
+    return undefined;
+  }
+
+  return mergeData.contacts_ids.find(
+    (mapping) => mapping.old_contact_id === Number(props.currentContactId),
+  )?.new_contact_id;
+};
+
+const navigateAfterMerge = async (mergeData: MergeResponse) => {
+  const entityTypeForRoute = CONTRAGENT_TO_ENTITY_MAP[mergeData.entity];
+  const conversationId = mergeData.id.toString();
+  const mappedContactId = getMappedContactId(mergeData);
+
+  if (!store.isWidget && mappedContactId) {
+    await router.push({
+      name: "Chat",
+      params: {
+        entity: entityTypeForRoute,
+        id: conversationId,
+        contactId: mappedContactId.toString(),
+      },
+    });
     return;
   }
 
-  const selectedOption = options.value.find(
-    (opt) => opt.value === selectedItemId.value,
-  );
+  if (store.isWidget) {
+    await router.push({
+      name: "EntityChat",
+      params: {
+        entity: entityTypeForRoute,
+        id: conversationId,
+      },
+    });
+  }
+};
 
-  if (!selectedOption) {
+const navigateAfterManagerAction = async () => {
+  const entityFromRoute = route.params.entity as EntityType | undefined;
+
+  if (!entityFromRoute) {
+    return;
+  }
+
+  await router.push({
+    name: "EntityChat",
+    params: {
+      entity: entityFromRoute,
+      id: props.leadId.toString(),
+    },
+  });
+};
+
+const shouldRefreshConversations = () =>
+  props.actionType === "lead" ||
+  props.actionType === "manager" ||
+  store.isWidget;
+
+const handleSubmit = async () => {
+  if (!isFormValid.value) {
     return;
   }
 
@@ -150,49 +201,17 @@ const handleSubmit = async () => {
     const entity = route.params.entity as EntityType;
 
     if (response.status === 200) {
-      toastSuccess(actionConfig.value.successMessage);
-
-      // merge lead
-      if (props.actionType === "lead" && response.data) {
-        const mergeData = response.data as MergeResponse;
-        const entityTypeForRoute = CONTRAGENT_TO_ENTITY_MAP[mergeData.entity];
-        let newContactId: number | undefined;
-        await conversationsStore.fetch(entity, { page: 1 });
-
-        if (props.currentContactId && mergeData.contacts_ids.length > 0) {
-          const mapping = mergeData.contacts_ids.find(
-            (m) => m.old_contact_id === Number(props.currentContactId),
-          );
-          newContactId = mapping?.new_contact_id;
-        }
-
-        if (!newContactId && mergeData.contacts_ids.length > 0) {
-          newContactId = mergeData.contacts_ids[0].new_contact_id;
-        }
-
-        if (newContactId) {
-          // TODO : check widget
-          await router.push({
-            name: "Chat",
-            params: {
-              entity: entityTypeForRoute,
-              id: mergeData.id.toString(),
-              contactId: newContactId.toString(),
-            },
-          });
-        }
-      } else {
-        // other actions
-        await conversationsStore.fetch(entity, { page: 1 });
-
-        // TODO: check widget
-        await router.push({
-          name: "EntityChat",
-          params: {
-            entity,
-          },
-        });
+      if (response.data) {
+        await navigateAfterMerge(response.data as MergeResponse);
+      } else if (props.actionType === "manager") {
+        await navigateAfterManagerAction();
       }
+
+      if (shouldRefreshConversations()) {
+        await conversationsStore.fetch(entity, { page: 1 });
+      }
+
+      toastSuccess(actionConfig.value.successMessage);
     }
   } catch (error) {
     toastError("Помилка, щось пішло не так");

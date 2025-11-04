@@ -80,12 +80,12 @@ export class LeadActionsService {
    */
   async mergeWithSupplier(
     leadId: number | string,
-    client_id: number | string,
+    supplier_id: number | string,
   ): Promise<AxiosResponse> {
     const response = await apiClient.post(
       this.getActionUrl("supplier", leadId),
       {
-        client_id,
+        supplier_id,
       },
     );
     return response;

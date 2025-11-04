@@ -80,12 +80,16 @@ const shouldShowFirstMessageDivider = (messageIndex: number): boolean => {
 };
 
 const currentConversation = computed((): IConversation | null => {
-  if (!currentEntity.value || !currentId.value) return null;
+  if (!currentEntity.value || !currentId.value || !currentContactId.value)
+    return null;
 
   const conversations = conversationsStore.conversations[currentEntity.value];
   return (
-    conversations?.find((conv: IConversation) => conv.id === currentId.value) ||
-    null
+    conversations?.find(
+      (conv: IConversation) =>
+        conv.id === currentId.value &&
+        conv.contact.id === currentContactId.value,
+    ) || null
   );
 });
 

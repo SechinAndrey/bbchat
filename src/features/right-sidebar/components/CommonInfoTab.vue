@@ -145,7 +145,9 @@ const openChatWithContact = async (contactIdToOpen: number) => {
   try {
     const existingConversation = conversationsStore.conversations[
       entityType
-    ]?.find((conv) => conv.id === entityId);
+    ]?.find(
+      (conv) => conv.id === entityId && conv.contact.id === contactIdToOpen,
+    );
 
     if (existingConversation) {
       await router.push({

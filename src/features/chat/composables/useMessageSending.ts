@@ -90,7 +90,7 @@ export function useMessageSending() {
     store.playNotificationSound(true);
 
     // 4. Reset unread counter
-    store.resetUnreadCount(entity.value, id.value);
+    store.resetUnreadCount(entity.value, id.value, Number(currentContactId));
 
     try {
       // 5. Send API request in background

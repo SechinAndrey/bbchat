@@ -72,7 +72,8 @@ export interface IConversation {
   entity: EntityType;
   avatar?: string;
   admins?: number[];
-  contacts: IContact[];
+  contact: IContact; // Текущий активный контакт для этого чата
+  contacts: IContact[]; // Все контакты сущности (для обратной совместимости)
   messages: ApiMessageItem[];
   pinnedMessage?: IMessage;
   pinnedMessageHidden?: boolean;

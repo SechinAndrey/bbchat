@@ -375,18 +375,25 @@ export const useConversationsStore = defineStore("conversations", () => {
     await conversationsService.changeLeadStatus(id, status);
   };
 
-  const findConversation = (entityType: EntityType, entityId: number) => {
+  const findConversation = (
+    entityType: EntityType,
+    entityId: number,
+    contactId: number,
+  ) => {
     return conversations.value[entityType]?.find(
-      (item) => item.id === entityId,
+      (item) => item.id === entityId && item.contact.id === contactId,
     );
   };
 
   const moveConversationToTop = (
     entityType: EntityType,
     conversationId: number,
+    contactId: number,
   ) => {
     const list = conversations.value[entityType];
-    const index = list.findIndex((item) => item.id === conversationId);
+    const index = list.findIndex(
+      (item) => item.id === conversationId && item.contact.id === contactId,
+    );
     if (index > 0) {
       const conversation = list.splice(index, 1)[0];
       list.unshift(conversation);
@@ -397,8 +404,12 @@ export const useConversationsStore = defineStore("conversations", () => {
     conversation.unread = (conversation.unread || 0) + increment;
   };
 
-  const resetUnreadCount = (entityType: EntityType, entityId: number) => {
-    const conversation = findConversation(entityType, entityId);
+  const resetUnreadCount = (
+    entityType: EntityType,
+    entityId: number,
+    contactId: number,
+  ) => {
+    const conversation = findConversation(entityType, entityId, contactId);
     if (conversation) {
       conversation.unread = 0;
     }
@@ -475,13 +486,18 @@ export const useConversationsStore = defineStore("conversations", () => {
     const isOutgoing = isOutgoingMessage(message);
 
     // 1. If current chat is open
-    if (activeConversation.value && activeConversation.value.id === entityId) {
+    const isActiveChat =
+      activeConversation.value &&
+      activeConversation.value.id === entityId &&
+      activeConversation.value.contacts?.some((c) => c.id === contactId);
+
+    if (isActiveChat && activeConversation.value) {
       if (!activeConversation.value.messages) {
         activeConversation.value.messages = [];
       }
       activeConversation.value.messages.push(message);
 
-      const conversation = findConversation(entityType, entityId);
+      const conversation = findConversation(entityType, entityId, contactId);
       if (conversation) {
         if (!conversation.messages) {
           conversation.messages = [];
@@ -491,13 +507,13 @@ export const useConversationsStore = defineStore("conversations", () => {
         if (!isOutgoing) {
           updateUnreadCount(conversation);
         }
-        moveConversationToTop(entityType, entityId);
+        moveConversationToTop(entityType, entityId, contactId);
       }
       return;
     }
 
     // 2. If chat is in the list
-    const conversation = findConversation(entityType, entityId);
+    const conversation = findConversation(entityType, entityId, contactId);
     if (conversation) {
       if (!conversation.messages) {
         conversation.messages = [];
@@ -509,7 +525,7 @@ export const useConversationsStore = defineStore("conversations", () => {
       } else {
         conversation.unread = 0;
       }
-      moveConversationToTop(entityType, entityId);
+      moveConversationToTop(entityType, entityId, contactId);
       return;
     }
 
@@ -685,6 +701,7 @@ export const useConversationsStore = defineStore("conversations", () => {
     hasMoreMessages,
     allConversations,
     currentConversationItem,
+    findConversation,
 
     // Actions - Conversations
     fetch,
