@@ -37,7 +37,8 @@ export const isAudio = (url: string): boolean => {
  */
 export const getFileName = (url: string): string => {
   if (!url) return "";
-  return url.split("/").pop() || "";
+  const decodedUrl = decodeURI(url);
+  return decodedUrl.split("/").pop() || "";
 };
 
 /**
