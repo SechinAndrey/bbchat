@@ -243,6 +243,7 @@ export interface ApiEChatMessage {
   sender_number: string;
   client_message_uid?: string | null;
   updated_at: string;
+  reply_to_text?: string;
 }
 
 export interface ApiMessageItemUser {

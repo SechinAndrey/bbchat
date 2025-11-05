@@ -125,6 +125,10 @@ const formatMessageText = (text: string) => {
     target: "_blank",
   });
 };
+
+const replyToText = computed(() => {
+  return props.message.echat_messages?.reply_to_text || "";
+});
 </script>
 
 <template>
@@ -172,6 +176,7 @@ const formatMessageText = (text: string) => {
           <!-- Reply Message -->
           <ReplyQuote
             v-if="props.message.reply_to"
+            :reply-to-text="replyToText"
             :message="props.message.reply_to"
             @click="emit('scrollToMessage', props.message.reply_to.id)"
           />
