@@ -16,7 +16,7 @@ const { media, senderName, getMessageText } = useMessageData(
   computed(() => props.message),
 );
 
-const messageText = getMessageText(100);
+const messageText = getMessageText(200);
 const isSelf = computed(() => {
   return props.message.user_id;
 });

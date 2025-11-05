@@ -40,7 +40,7 @@ export function useMessageData(
     return contact.value?.fio || "Відправник";
   });
 
-  const getMessageText = (maxLength: number = 200) => {
+  const getMessageText = (maxLength: number) => {
     return computed(() => {
       let text = "";
 

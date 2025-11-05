@@ -28,6 +28,7 @@ import {
 } from "@heroicons/vue/24/solid";
 import Dropdown from "@src/ui/navigation/Dropdown/Dropdown.vue";
 import ConversationAvatar from "@src/shared/components/ConversationAvatar.vue";
+import { parseReplyQuoteText } from "@src/features/chat/utils/replyQuoteParser";
 
 type MessageDirection = "in" | "out";
 
@@ -145,6 +146,10 @@ const lastMessageText = computed(() => {
   return "";
 });
 
+const parsedReplyQuote = computed(() => {
+  return parseReplyQuoteText(lastMessageText.value);
+});
+
 const callTypeIcon = computed(() => {
   if (!call.value) return PhoneIcon;
   // call_type: 0 - incoming, 1 - outgoing
@@ -255,7 +260,9 @@ const displayName = computed(() => {
               />
 
               <span :class="{ 'text-primary': props.conversation.unread }">
-                {{ shorten(lastMessageText) }}
+                {{
+                  shorten(parsedReplyQuote?.replyMessageText || lastMessageText)
+                }}
               </span>
             </p>
 

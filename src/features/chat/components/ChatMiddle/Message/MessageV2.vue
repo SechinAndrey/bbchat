@@ -20,6 +20,7 @@ import Robo1Icon from "@src/shared/icons/Robo1Icon.vue";
 import { useLongPress } from "@src/shared/composables/useLongPress";
 import ReplyQuote from "@src/features/chat/components/ChatMiddle/Message/ReplyQuote.vue";
 import { useMessageData } from "@src/features/chat/composables/useMessageData";
+import { parseReplyQuoteText } from "@src/features/chat/utils/replyQuoteParser";
 
 const props = defineProps<{
   message: ApiMessageItem;
@@ -34,8 +35,13 @@ const emit = defineEmits<{
 
 const conversationsStore = useConversationsStore();
 
-// Используем композабл для получения данных сообщения
-const { echat, echatMessage } = useMessageData(computed(() => props.message));
+const { echat, echatMessage, getMessageText } = useMessageData(
+  computed(() => props.message),
+);
+
+const parsedReplyQuote = computed(() => {
+  return parseReplyQuoteText(getMessageText(200).value);
+});
 
 const isCallDetailsExpanded = ref(true);
 
@@ -171,10 +177,31 @@ const formatMessageText = (text: string) => {
           />
 
           <div
-            v-if="echat.message"
-            class="whitespace-pre-line"
-            v-html="formatMessageText(echat.message)"
-          ></div>
+            v-if="
+              parsedReplyQuote?.originalMessageText &&
+              parsedReplyQuote?.replyMessageText
+            "
+            class="mb-2 p-2 bg-app-bg/50 border-l-2 border-primary"
+          >
+            <div class="flex items-start gap-2">
+              <div class="flex-1 min-w-0">
+                <div class="text-xs text-app-text-secondary truncate">
+                  {{ parsedReplyQuote?.originalMessageText }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div v-if="echat.message">
+            <div
+              class="whitespace-pre-line"
+              v-html="
+                formatMessageText(
+                  parsedReplyQuote?.replyMessageText || echat.message || '',
+                )
+              "
+            ></div>
+          </div>
           <!--media preview-->
           <MediaPreview
             v-if="echatMessage.media || echatMessage.file"
