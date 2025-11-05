@@ -36,6 +36,7 @@ export interface SendMessageParams {
   messenger_id: number;
   contragent_type: "lead" | "client" | "supplier";
   contragent_id: number;
+  contragent_contact_id?: number;
   client_message_uid: string;
   reply_message_id?: number | null;
 }

@@ -101,6 +101,7 @@ export function useMessageSending() {
         messenger_id: messengerId,
         contragent_type: contragentType.value,
         contragent_id: id.value,
+        contragent_contact_id: Number(currentContactId),
         client_message_uid: clientMessageUid,
         reply_message_id: replyMessageId,
       });
