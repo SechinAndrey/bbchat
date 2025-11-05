@@ -13,11 +13,12 @@
     "lint": "eslint . --ext .vue,.js,.ts,.jsx,.tsx",
     "lint:fix": "eslint . --ext .vue,.js,.ts,.jsx,.tsx --fix",
     "changelog": "git-cliff --latest --prepend CHANGELOG.md",
-    "changelog:full": "git-cliff --config cliff.full.toml --latest --prepend CHANGELOG.full.md"
+    "changelog:full": "git-cliff --config cliff.full.toml --latest --prepend CHANGELOG.full.md",
+    "android:build": "yarn build && npx cap sync android"
   },
   "dependencies": {
     "@capacitor/android": "^7.2.0",
-    "@capacitor/core": "^7.2.0",
+    "@capacitor/core": "^npx 7.2.0",
     "@capacitor/ios": "^7.2.0",
     "@heroicons/vue": "^2.0.18",
     "@kalimahapps/vue-popper": "^1.2.2",
