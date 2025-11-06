@@ -8,6 +8,8 @@ import ThemeProvider from "@src/shared/theme-system/ThemeProvider.vue";
 
 import FadeTransition from "@src/ui/transitions/FadeTransition.vue";
 import { useFCM } from "@src/shared/composables/useFCM";
+import { useAndroidPush } from "@src/shared/composables/useAndroidPush";
+import { Capacitor } from "@capacitor/core";
 import { useEventBus } from "@vueuse/core";
 
 const loginEvent = useEventBus("auth:login");
@@ -72,7 +74,12 @@ onMounted(async () => {
         initError.value = "Не удалось загрузить данные";
       }
       if (!store.isWidget) {
-        useFCM();
+        const platform = Capacitor.getPlatform();
+        if (platform === "android") {
+          useAndroidPush();
+        } else {
+          useFCM();
+        }
       }
     }
   } catch (error) {
@@ -92,7 +99,12 @@ const resizeWindow = () => {
 };
 
 loginEvent.on(() => {
-  useFCM();
+  const platform = Capacitor.getPlatform();
+  if (platform === "android") {
+    useAndroidPush();
+  } else {
+    useFCM();
+  }
 });
 
 // and add the resize event when the component mounts.

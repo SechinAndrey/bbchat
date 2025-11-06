@@ -1,10 +1,10 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace "com.bbchat.app"
+    namespace "ua.com.billboards.chat"
     compileSdk rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "com.bbchat.app"
+        applicationId "ua.com.billboards.chat"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

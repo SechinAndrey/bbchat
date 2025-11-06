@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "943488006003",
+    "project_id": "billboards-chat-notification",
+    "storage_bucket": "billboards-chat-notification.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:943488006003:android:9e96835602e3fc351bf706",
+        "android_client_info": {
+          "package_name": "ua.com.billboards.chat"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyANjclo9ONFAzeyrMA0U4XlDc82vjTrRBU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -18,8 +18,11 @@
   },
   "dependencies": {
     "@capacitor/android": "^7.2.0",
+    "@capacitor/app": "^7.1.0",
     "@capacitor/core": "^npx 7.2.0",
     "@capacitor/ios": "^7.2.0",
+    "@capacitor/local-notifications": "^7.0.3",
+    "@capacitor/push-notifications": "^7.0.3",
     "@heroicons/vue": "^2.0.18",
     "@kalimahapps/vue-popper": "^1.2.2",
     "@videojs-player/vue": "^1.0.0",
