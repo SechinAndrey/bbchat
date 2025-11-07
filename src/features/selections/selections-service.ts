@@ -90,6 +90,24 @@ export class SelectionsService {
     }
   }
 
+  async downloadSelection(
+    selectionId: number,
+    props: object,
+  ): Promise<{ link: string }> {
+    try {
+      const response = await apiClient.post(
+        `/selections/${selectionId}/export`,
+        {
+          props,
+        },
+      );
+      return response.data;
+    } catch (error) {
+      console.error(`Error downloading selection ${selectionId}:`, error);
+      throw new Error(`Failed to download selection ${selectionId}`);
+    }
+  }
+
   async deleteBoardsFromSelection(
     selection_id: number,
     params: {
@@ -106,6 +124,38 @@ export class SelectionsService {
         error,
       );
       throw new Error(`Failed to delete boards from selection ${selection_id}`);
+    }
+  }
+
+  async getLink(
+    selectionId: number,
+    boardsIds: number[],
+  ): Promise<{ link: string }> {
+    try {
+      const response = await apiClient.post(`/selections/${selectionId}/link`, {
+        boards: boardsIds,
+      });
+      return response.data;
+    } catch (error) {
+      console.error(`Error getting link for selection ${selectionId}:`, error);
+      throw new Error(`Failed to get link for selection ${selectionId}`);
+    }
+  }
+
+  async addFromCart(selectionId: number): Promise<ApiSelection> {
+    try {
+      const response = await apiClient.post(
+        `/selections/${selectionId}/add-from-basket`,
+      );
+      return response.data;
+    } catch (error) {
+      console.error(
+        `Error adding boards from cart to selection ${selectionId}:`,
+        error,
+      );
+      throw new Error(
+        `Failed to add boards from cart to selection ${selectionId}`,
+      );
     }
   }
 }

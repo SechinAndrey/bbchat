@@ -1,17 +1,19 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import Modal from "@src/ui/modals/Modal.vue";
+import { useToast } from "@src/shared/composables/useToast";
 import {
   XMarkIcon,
   ArrowDownTrayIcon,
   EyeIcon,
   EyeSlashIcon,
   TrashIcon,
+  ShoppingCartIcon,
+  LinkIcon,
 } from "@heroicons/vue/24/outline";
 import type { ApiSelection } from "@src/api/types";
 import SelectionTable from "@src/features/selections/SelectionTable.vue";
 import Button from "@src/ui/inputs/Button.vue";
-import apiClient from "@src/api/axios-instance";
 import SlideTransition from "@src/ui/transitions/SlideTransition.vue";
 import Checkbox from "@src/ui/inputs/Checkbox.vue";
 import { Dropdown } from "@src/ui/navigation/DropdownV3";
@@ -42,6 +44,14 @@ const close = () => {
 const globalStore = useGlobalDataStore();
 const selectionsStore = useSelectionsStore();
 
+const currentSelection = computed(() => {
+  if (!props.selection?.id) return props.selection;
+  return (
+    selectionsStore.selections.find((s) => s.id === props.selection!.id) ||
+    props.selection
+  );
+});
+
 const selectedColumns = ref<string[]>([]);
 
 const isLoading = ref(false);
@@ -52,11 +62,12 @@ const download = async () => {
   if (!props.selection?.id) return;
   isLoading.value = true;
   try {
-    const response = await apiClient.post(
-      `/selections/${props.selection.id}/export`,
+    const response = await selectionsService.downloadSelection(
+      props.selection.id,
       { columns: selectedColumns.value, boards: selectedBoardIds.value },
     );
-    const fileUrl = response.data?.link;
+
+    const fileUrl = response?.link;
 
     if (fileUrl) {
       window.open(fileUrl, "_blank");
@@ -74,6 +85,10 @@ const selectionTableRef = ref<InstanceType<typeof SelectionTable> | null>(null);
 const isFollowBoardsModalOpen = ref(false);
 const isUnfollowLoading = ref(false);
 const isDeleteLoading = ref(false);
+const isAddFromCartLoading = ref(false);
+const isGetLinkLoading = ref(false);
+
+const { toastSuccess, toastError } = useToast();
 
 const unfollowBoards = async () => {
   if (!props.selection?.id || isUnfollowLoading.value) return;
@@ -99,6 +114,45 @@ const unfollowBoards = async () => {
     console.error("Error unfollowing boards:", error);
   } finally {
     isUnfollowLoading.value = false;
+  }
+};
+
+const addFromCart = async () => {
+  if (!props.selection?.id || isAddFromCartLoading.value) return;
+
+  try {
+    isAddFromCartLoading.value = true;
+    await selectionsStore.addFromCart(props.selection.id);
+    toastSuccess("Площини з корзини успішно додано до підбірки");
+  } catch (err) {
+    console.error("Error adding boards from cart:", err);
+    toastError("Не вдалося додати площини з корзини");
+  } finally {
+    isAddFromCartLoading.value = false;
+  }
+};
+
+const getLink = async () => {
+  if (!props.selection?.id || isGetLinkLoading.value) return;
+
+  try {
+    isGetLinkLoading.value = true;
+    const response = await selectionsService.getLink(
+      props.selection.id,
+      selectedBoardIds.value.length > 0
+        ? selectedBoardIds.value
+        : props.selection.boards_list?.map((b) => b.id) || [],
+    );
+
+    if (response?.link) {
+      await navigator.clipboard.writeText(response.link);
+      toastSuccess("Посилання скопійовано в буфер обміну");
+    }
+  } catch (err) {
+    console.error("Error getting link:", err);
+    toastError("Не вдалося отримати посилання");
+  } finally {
+    isGetLinkLoading.value = false;
   }
 };
 
@@ -142,7 +196,7 @@ const deleteBoards = async () => {
         <div
           class="flex items-center justify-between p-[1.25rem] border-b border-app-border"
         >
-          <h2 class="text-2xl">ID {{ props.selection?.id }}</h2>
+          <h2 class="text-2xl">ID {{ currentSelection?.id }}</h2>
           <Button variant="ghost" icon-only @click="close">
             <template #icon>
               <XMarkIcon class="h-6 w-6" />
@@ -151,17 +205,17 @@ const deleteBoards = async () => {
         </div>
 
         <SelectionTable
-          v-if="props.selection?.boards_list"
+          v-if="currentSelection?.boards_list"
           ref="selectionTableRef"
           v-model="selectedBoardIds"
-          :selection-id="props.selection.id"
-          :selection-items="props.selection?.boards_list"
+          :selection-id="currentSelection.id"
+          :selection-items="currentSelection?.boards_list"
         />
 
         <!-- controls -->
         <div class="fixed bottom-0 left-0 right-0 z-2 bg-app-bg shadow-up">
           <!-- Mobile Layout -->
-          <div class="md:hidden">
+          <div class="selection-modal_mobile-actions">
             <div class="px-4 py-3 border-b border-app-border">
               <Dropdown ref="dropdownMobileRef" position="top" trigger="click">
                 <template #activator>
@@ -193,14 +247,35 @@ const deleteBoards = async () => {
                   </Button>
                 </div>
               </Dropdown>
+
+              <Button
+                variant="text"
+                block
+                :loading="isAddFromCartLoading"
+                :disabled="isAddFromCartLoading"
+                @click="addFromCart"
+              >
+                <ShoppingCartIcon class="w-5 inline-block mr-1" />Додати із
+                корзини
+              </Button>
             </div>
 
             <!-- Selection Actions - Only when boards selected -->
             <SlideTransition animation="slide-down">
               <div v-if="selectedBoardIds.length" class="px-4 py-3 space-y-2">
                 <div class="text-sm text-app-text-secondary mb-3">
-                  Вибрано: {{ selectedBoardIds.length }} дошок
+                  Обрано: {{ selectedBoardIds.length }} дошок
                 </div>
+
+                <Button
+                  variant="text"
+                  block
+                  :loading="isGetLinkLoading"
+                  :disabled="isGetLinkLoading"
+                  @click="getLink"
+                >
+                  <LinkIcon class="w-5 inline-block mr-1" />Отримати посилання
+                </Button>
 
                 <div class="grid grid-cols-1 gap-2">
                   <Button
@@ -239,51 +314,75 @@ const deleteBoards = async () => {
 
           <!-- Desktop Layout -->
           <div
-            class="hidden md:flex items-center justify-between py-4 px-[1.25rem]"
+            class="items-center justify-between py-4 px-[1.25rem] selection-modal_desktop-actions"
           >
-            <div class="flex items-center space-x-4">
-              <Dropdown ref="dropdownRef" position="top" trigger="click">
-                <template #activator>
-                  <Button variant="text">
-                    <ArrowDownTrayIcon class="w-5 inline-block mr-1" />
-                    Завантажити в .xls
-                  </Button>
-                </template>
+            <div class="flex flex-wrap items-center gap-4">
+              <div class="flex items-center gap-4">
+                <Dropdown ref="dropdownRef" position="top" trigger="click">
+                  <template #activator>
+                    <Button variant="text">
+                      <ArrowDownTrayIcon class="w-5 inline-block mr-1" />
+                      <span class="whitespace-nowrap">Завантажити в .xls</span>
+                    </Button>
+                  </template>
 
-                <div
-                  class="flex flex-col max-h-[18.75rem] overflow-auto scrollbar-thin"
-                >
-                  <Checkbox
-                    v-for="col in globalStore.exportCols"
-                    :key="col.alias"
-                    v-model="selectedColumns"
-                    :value="col.alias"
-                    :label="col.name"
-                    class="py-4 px-4 hover:bg-app-bg-secondary-lighter"
-                  />
-
-                  <Button
-                    class="mx-4 mb-4"
-                    :loading="isLoading"
-                    @click="download"
+                  <div
+                    class="flex flex-col max-h-[18.75rem] overflow-auto scrollbar-thin"
                   >
-                    <ArrowDownTrayIcon class="w-5 inline-block mr-1" />
-                    Завантажити в .xls
-                  </Button>
-                </div>
-              </Dropdown>
+                    <Checkbox
+                      v-for="col in globalStore.exportCols"
+                      :key="col.alias"
+                      v-model="selectedColumns"
+                      :value="col.alias"
+                      :label="col.name"
+                      class="py-4 px-4 hover:bg-app-bg-secondary-lighter"
+                    />
+
+                    <Button
+                      class="mx-4 mb-4"
+                      :loading="isLoading"
+                      @click="download"
+                    >
+                      <ArrowDownTrayIcon class="w-5 inline-block mr-1" />
+                      Завантажити в .xls
+                    </Button>
+                  </div>
+                </Dropdown>
+
+                <Button
+                  variant="text"
+                  :loading="isAddFromCartLoading"
+                  :disabled="isAddFromCartLoading"
+                  @click="addFromCart"
+                >
+                  <ShoppingCartIcon class="w-5 inline-block mr-1" />
+                  <span class="whitespace-nowrap">Додати із корзини</span>
+                </Button>
+              </div>
 
               <SlideTransition animation="slide-down">
                 <div
                   v-if="selectedBoardIds.length"
-                  class="flex items-center space-x-4"
+                  class="flex items-center gap-4"
                 >
+                  <Button
+                    variant="text"
+                    :loading="isGetLinkLoading"
+                    :disabled="isGetLinkLoading"
+                    @click="getLink"
+                  >
+                    <LinkIcon class="w-5 inline-block mr-1" />
+                    <span class="whitespace-nowrap">Отримати посилання</span>
+                  </Button>
+
                   <Button
                     variant="text"
                     @click="isFollowBoardsModalOpen = true"
                   >
-                    <EyeIcon class="w-5 inline-block mr-1" />Додати до
-                    спостереження
+                    <EyeIcon class="w-5 inline-block mr-1" />
+                    <span class="whitespace-nowrap">
+                      Додати доспостереження
+                    </span>
                   </Button>
 
                   <Button
@@ -292,8 +391,10 @@ const deleteBoards = async () => {
                     :disabled="isUnfollowLoading"
                     @click="unfollowBoards"
                   >
-                    <EyeSlashIcon class="w-5 inline-block mr-1" />Прибрати із
-                    спостереження
+                    <EyeSlashIcon class="w-5 inline-block mr-1" />
+                    <span class="whitespace-nowrap">
+                      Прибрати із спостереження
+                    </span>
                   </Button>
 
                   <Button
@@ -302,7 +403,8 @@ const deleteBoards = async () => {
                     :disabled="isDeleteLoading"
                     @click="deleteBoards"
                   >
-                    <TrashIcon class="w-5 inline-block mr-1" />Видалити
+                    <TrashIcon class="w-5 inline-block mr-1" />
+                    <span class="whitespace-nowrap">Видалити</span>
                   </Button>
                 </div>
               </SlideTransition>
@@ -312,9 +414,9 @@ const deleteBoards = async () => {
             <SlideTransition animation="slide-left">
               <div
                 v-if="selectedBoardIds.length"
-                class="text-sm text-app-text-secondary"
+                class="text-sm text-app-text-secondary whitespace-nowrap ml-6"
               >
-                Вибрано:
+                Обрано:
                 <span class="font-medium text-app-text">{{
                   selectedBoardIds.length
                 }}</span>
@@ -326,7 +428,7 @@ const deleteBoards = async () => {
           <FollowBoardsModal
             v-model="isFollowBoardsModalOpen"
             :selected-board-ids="selectedBoardIds"
-            :selection-id="props.selection?.id || 0"
+            :selection-id="currentSelection?.id || 0"
             :entity-id="props.entityId"
             :entity-type="props.entityType"
             @followed="selectedBoardIds = []"
@@ -336,3 +438,18 @@ const deleteBoards = async () => {
     </template>
   </Modal>
 </template>
+
+<style lang="scss" scoped>
+.selection-modal_mobile-actions {
+  @media (min-width: 1244px) {
+    display: none;
+  }
+}
+
+.selection-modal_desktop-actions {
+  display: flex;
+  @media (max-width: 1243px) {
+    display: none;
+  }
+}
+</style>

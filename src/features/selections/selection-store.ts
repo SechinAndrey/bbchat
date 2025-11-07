@@ -2,7 +2,10 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 import { useAxios } from "@vueuse/integrations/useAxios";
 import apiClient from "@src/api/axios-instance";
-import type { GetSelectionsParams } from "./selections-service";
+import {
+  selectionsService,
+  type GetSelectionsParams,
+} from "./selections-service";
 import type { ApiSelection } from "@src/api/types";
 import type { EntityType } from "@src/shared/types/common";
 
@@ -84,6 +87,21 @@ export const useSelectionsStore = defineStore("selections", () => {
     selection.boards_count = selection.boards_list.length;
   };
 
+  const addFromCart = async (selectionId: number) => {
+    const updatedSelection = await selectionsService.addFromCart(selectionId);
+
+    // Merge updated data with existing selection to preserve fields like type and manager
+    const index = selections.value.findIndex((s) => s.id === selectionId);
+    if (index !== -1 && updatedSelection) {
+      selections.value[index] = {
+        ...selections.value[index],
+        ...updatedSelection,
+      };
+    }
+
+    return updatedSelection;
+  };
+
   const resetState = () => {
     selections.value = [];
     currentEntity.value = null;
@@ -100,6 +118,7 @@ export const useSelectionsStore = defineStore("selections", () => {
     deleteSelection,
     updateBoardsWatchStatus,
     removeBoardsFromSelection,
+    addFromCart,
     resetState,
   };
 });

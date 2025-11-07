@@ -105,7 +105,9 @@ watch([entity, id], ([newEntity, newId]) => {
             <div class="text-app-text-secondary text-[0.813rem] min-w-[49%]">
               Тип
             </div>
-            <div class="text-[0.813rem]">{{ selection.type.name }}</div>
+            <div class="text-[0.813rem]">
+              {{ selection.type?.name || "<Невідомо>" }}
+            </div>
           </div>
           <div class="flex">
             <div class="text-app-text-secondary text-[0.813rem] min-w-[49%]">
