@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.3.0 - 2025-11-07
+
+### Bug Fixes
+
+- Добірки. Формат. [WS-18700430-21014934](https://trp4438.worksection.com/project/257910/18700430/21014934/)
+- Названия файла. Кирилица. [WS-18700430-21020298](https://trp4438.worksection.com/project/257910/18700430/21020298/)
+
+### Features
+
+- Названия разделов. [WS-18700430-21020250](https://trp4438.worksection.com/project/257910/18700430/21020250/)
+- Добірки. Кнопки. [WS-18700430-20951808](https://trp4438.worksection.com/project/257910/18700430/20951808/)
+- [andoid] Уведомления firebase [WS-18700430-21020313](https://trp4438.worksection.com/project/257910/18700430/21020313/)
+- TG. Цитата. [WS-18700430-21017568](https://trp4438.worksection.com/project/257910/18700430/21017568/)
+- VB. Чат ответы. [WS-18700430-20310338](https://trp4438.worksection.com/project/257910/18700430/20310338/)
+- Add contragent_contact_id for SendMessageParams
+- Update the chat structure to support active contact and improve navigation. Improve Lead actions
+- TG. Чат ответы. [WS-18700430-20302694](https://trp4438.worksection.com/project/257910/18700430/20302694/)
+- Add reply functionality to chat messages
+
+### Project Maintenance
+
+- Update Android SDK and add build script
+- Release 0.3.0
+
 ## 0.2.0 - 2025-10-31
 
 ### Bug Fixes
