@@ -81,6 +81,7 @@ const openClients = () => {
           <li v-if="!store.isWidget" class="md:mb-4">
             <NavItem
               :active="route.currentRoute.value.path.includes('/chat/leads')"
+              title="Ліди"
               @click="openLeads"
             >
               <FireIcon class="w-[22px] h-[22px]" />
@@ -92,6 +93,7 @@ const openClients = () => {
           >
             <NavItem
               :active="route.currentRoute.value.path.includes('/chat/clients')"
+              title="Клієнти"
               @click="openClients"
             >
               <ChatBubbleLeftRightIcon class="w-[20px] h-[20px]" />
@@ -105,6 +107,7 @@ const openClients = () => {
               :active="
                 route.currentRoute.value.path.includes('/chat/suppliers')
               "
+              title="Постачальники"
               @click="openSuppliers"
             >
               <UsersIcon class="w-[20px] h-[20px]" />
