@@ -136,20 +136,18 @@ const deleteBoards = async () => {
   <Modal :open="props.open" :close-modal="close" no-padding fullscreen>
     <template #content>
       <div
-        class="h-full w-full relative overflow-hidden bg-app-bg transition-all"
+        class="h-full w-full relative overflow-hidden bg-app-bg transition-all text-app-text"
       >
         <!-- Modal header -->
         <div
           class="flex items-center justify-between p-[1.25rem] border-b border-app-border"
         >
           <h2 class="text-2xl">ID {{ props.selection?.id }}</h2>
-          <button
-            class="text-app-text hover:text-app-text-hover"
-            @click="close"
-          >
-            <span class="sr-only">Закрити</span>
-            <XMarkIcon class="h-6 w-6" />
-          </button>
+          <Button variant="ghost" icon-only @click="close">
+            <template #icon>
+              <XMarkIcon class="h-6 w-6" />
+            </template>
+          </Button>
         </div>
 
         <SelectionTable

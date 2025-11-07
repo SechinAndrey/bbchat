@@ -190,7 +190,9 @@ const changePrice = async (
               </td>
               <td class="py-[0.625rem] px-3">
                 <div>{{ item.firm_name }}</div>
-                <div class="text-xs text-text-secondary">{{ item.code }}</div>
+                <div class="text-xs text-app-text-secondary">
+                  {{ item.code }}
+                </div>
               </td>
               <td class="py-[0.625rem] px-3">
                 {{ item.title }}
@@ -211,9 +213,7 @@ const changePrice = async (
                 >
                   <LightBulbIcon
                     :class="
-                      item.light
-                        ? 'text-green-500'
-                        : 'text-gray-300 dark:text-gray-700'
+                      item.light ? 'text-success' : 'text-app-text-secondary'
                     "
                   />
                 </span>
@@ -232,7 +232,7 @@ const changePrice = async (
                     <PhotoIcon class="w-6 h-6" />
                   </template>
                 </Button>
-                <span v-else class="text-text-secondary">—</span>
+                <span v-else class="text-app-text-secondary">—</span>
               </td>
               <td class="py-[0.625rem] px-3">
                 <VuePopper hover placement="top" class="w-full">
@@ -254,6 +254,7 @@ const changePrice = async (
               <td class="py-[0.625rem] px-3">
                 <CurrencyInput
                   v-model="item.buying_price"
+                  class="mt-4"
                   @change="
                     changePrice(item.id, item.buying_price, 'buying_price')
                   "
@@ -262,6 +263,7 @@ const changePrice = async (
               <td class="py-[0.625rem] px-2">
                 <CurrencyInput
                   v-model="item.selling_price"
+                  class="mt-4"
                   @change="
                     changePrice(item.id, item.selling_price, 'selling_price')
                   "
@@ -270,6 +272,7 @@ const changePrice = async (
               <td class="py-[0.625rem] px-2">
                 <CurrencyInput
                   v-model="item.printing_price"
+                  class="mt-4"
                   @change="
                     changePrice(item.id, item.printing_price, 'printing_price')
                   "
@@ -433,6 +436,7 @@ const changePrice = async (
               v-model="item.buying_price"
               size="sm"
               block
+              class="mt-4"
               @change="changePrice(item.id, item.buying_price, 'buying_price')"
             />
           </div>
@@ -447,6 +451,7 @@ const changePrice = async (
               v-model="item.selling_price"
               size="sm"
               block
+              class="mt-4"
               @change="
                 changePrice(item.id, item.selling_price, 'selling_price')
               "
@@ -461,6 +466,7 @@ const changePrice = async (
               v-model="item.printing_price"
               size="sm"
               block
+              class="mt-4"
               @change="
                 changePrice(item.id, item.printing_price, 'printing_price')
               "
