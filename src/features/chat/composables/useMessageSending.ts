@@ -9,6 +9,12 @@ import { isApiSendMessageError, type ApiContact } from "@src/api/types";
 import { useRoute } from "vue-router";
 import { useToast } from "@src/shared/composables/useToast";
 
+/**
+ * Delay before sending message to API
+ * Try to fix message order
+ */
+const MESSAGE_SEND_DELAY_MS = 100;
+
 export function useMessageSending() {
   const entity = inject<Ref<EntityType>>("entity");
   const id = inject<Ref<number>>("id");
@@ -92,8 +98,11 @@ export function useMessageSending() {
     // 4. Reset unread counter
     store.resetUnreadCount(entity.value, id.value, Number(currentContactId));
 
+    // 5. Wait before sending to show temporary message first
+    await new Promise((resolve) => setTimeout(resolve, MESSAGE_SEND_DELAY_MS));
+
     try {
-      // 5. Send API request in background
+      // 6. Send API request in background
       const response = await conversationsService.sendMessage({
         phone: phoneValue,
         message,
@@ -117,14 +126,14 @@ export function useMessageSending() {
         return;
       }
 
-      // 6. Update status to "sent"
+      // 7. Update status to "sent"
       store.updateTempMessageStatus(tempMessage.clientMessageUid, "sent");
 
       console.log(
         "✅ Message sent successfully, waiting for Pusher confirmation",
       );
     } catch (error) {
-      // 7. Update status to error in case of failure
+      // 8. Update status to error in case of failure
       const errorMessage =
         error instanceof Error ? error.message : "Message sending error";
       store.updateTempMessageStatus(
