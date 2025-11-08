@@ -695,8 +695,8 @@ export interface ApiSelectionItem {
   printing_price: number | null;
   selectionTypeId: number;
   isWatched: boolean;
-  watchedFrom?: string;
-  watchedTo?: string;
+  watchedFrom?: string | null;
+  watchedTo?: string | null;
   reserve_data: Record<string, string>;
 }
 

@@ -13,8 +13,8 @@ export interface FollowParams {
   type: EntityType;
   selection_id: number;
   boards_ids: number[];
-  month_from?: string;
-  month_to?: string;
+  month_from?: string | null;
+  month_to?: string | null;
 }
 
 export interface UnfollowParams {

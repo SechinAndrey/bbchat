@@ -155,13 +155,13 @@ const closeDropdown = (event: MouseEvent) => {
 };
 
 onMounted(() => {
-  document.addEventListener("click", closeDropdown);
+  document.addEventListener("mousedown", closeDropdown);
   window.addEventListener("scroll", updateDropdownPosition, true);
   window.addEventListener("resize", updateDropdownPosition);
 });
 
 onUnmounted(() => {
-  document.removeEventListener("click", closeDropdown);
+  document.removeEventListener("mousedown", closeDropdown);
   window.removeEventListener("scroll", updateDropdownPosition, true);
   window.removeEventListener("resize", updateDropdownPosition);
 });
@@ -285,7 +285,7 @@ const handleOptionClick = (option: Option) => {
           v-if="isOpen"
           ref="dropdownMenu"
           :style="dropdownStyle"
-          class="z-50 bg-app-bg rounded-md shadow-lg border border-app-border"
+          class="z-[100] bg-app-bg rounded-md shadow-lg border border-app-border"
         >
           <div
             v-if="$slots.header"

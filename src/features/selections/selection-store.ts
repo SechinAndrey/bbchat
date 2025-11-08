@@ -56,8 +56,8 @@ export const useSelectionsStore = defineStore("selections", () => {
   const updateBoardsWatchStatus = (
     selectionId: number,
     boardIds: number[],
-    watchedFrom?: string,
-    watchedTo?: string,
+    watchedFrom?: string | null,
+    watchedTo?: string | null,
   ) => {
     const selection = selections.value.find((s) => s.id === selectionId);
     if (!selection?.boards_list) return;
