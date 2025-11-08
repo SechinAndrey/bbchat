@@ -165,6 +165,17 @@ const replyToText = computed(() => {
             class="whitespace-pre-line"
             v-html="formatMessageText(chaport.message)"
           ></div>
+
+          <MediaPreview
+            v-if="chaport?.file"
+            :media="chaport?.file"
+            :attachment-id="props.message.id"
+            @open-image-gallery="
+              (imageUrl) => {
+                emit('openImageGallery', imageUrl);
+              }
+            "
+          />
         </div>
 
         <!-- 2 - мессенджер -->
@@ -209,8 +220,8 @@ const replyToText = computed(() => {
           </div>
           <!--media preview-->
           <MediaPreview
-            v-if="echatMessage.media || echatMessage.file"
-            :media="echatMessage.media || echatMessage.file"
+            v-if="echatMessage.media || echatMessage.file || chaport?.file"
+            :media="echatMessage.media || echatMessage.file || chaport?.file"
             :attachment-id="props.message.id"
             @open-image-gallery="
               (imageUrl) => {

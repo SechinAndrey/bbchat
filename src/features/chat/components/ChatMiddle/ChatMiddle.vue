@@ -202,6 +202,13 @@ const collectConversationImages = () => {
           images.push(img);
         }
       }
+      if (message.chaport_messages) {
+        const img = message.chaport_messages.file;
+
+        if (img && isImage(img)) {
+          images.push(img);
+        }
+      }
     }
   }
 

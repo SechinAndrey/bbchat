@@ -205,12 +205,6 @@ async function handleSendMessage() {
         <!--select attachments button-->
         <Button
           v-if="!recording"
-          :disabled="messengerId === 3"
-          :title="
-            messengerId === 3
-              ? 'Вкладення недоступні для Chaport'
-              : 'Додати вкладення'
-          "
           variant="ghost"
           size="sm"
           icon-only
