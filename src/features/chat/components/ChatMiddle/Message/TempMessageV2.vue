@@ -26,6 +26,7 @@ const statusIcon = computed(() => {
   }
 });
 
+// For temp messages: sending = 1 gray check, sent = 2 gray checks
 const showDoubleCheck = computed(() => {
   return props.tempMessage.status === "sent";
 });
@@ -33,13 +34,13 @@ const showDoubleCheck = computed(() => {
 const statusColor = computed(() => {
   switch (props.tempMessage.status) {
     case "sending":
-      return "text-app-text-secondary";
+      return "text-app-text-secondary"; // gray - sending
     case "sent":
-      return "text-success";
+      return "text-app-text-secondary"; // gray - sent (not yet read)
     case "error":
-      return "text-danger";
+      return "text-danger"; // red - error
     default:
-      return "text-app-text";
+      return "text-app-text-secondary";
   }
 });
 

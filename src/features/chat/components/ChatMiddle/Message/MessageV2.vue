@@ -65,6 +65,19 @@ const isSelf = computed(() => {
   );
 });
 
+const isReadByContact = computed(() => {
+  return props.message.viewed_by_contact === 1;
+});
+
+const statusColor = computed(() => {
+  if (!isSelf.value) return "";
+  return isReadByContact.value ? "text-success" : "text-app-text-secondary";
+});
+
+const showDoubleCheck = computed(() => {
+  return isSelf.value;
+});
+
 const toggleCallDetails = () => {
   isCallDetailsExpanded.value = !isCallDetailsExpanded.value;
 };
@@ -303,12 +316,17 @@ const replyToText = computed(() => {
           class="absolute bottom-3 right-3 w-4 h-4 rounded-full bg-cover bg-center"
         />
 
+        <!-- Status indicator for self messages -->
         <div
           v-if="isSelf"
-          class="absolute text-xs bottom-0 -right-[0.2rem] text-success"
+          class="absolute text-xs bottom-0 -right-[0.2rem]"
+          :class="statusColor"
         >
           <CheckIcon class="w-4 h-4" />
-          <CheckIcon class="w-4 h-4 absolute top-0 left-[0.188rem]" />
+          <CheckIcon
+            v-if="showDoubleCheck"
+            class="w-4 h-4 absolute top-0 left-[0.188rem]"
+          />
         </div>
       </div>
       <!-- Time -->

@@ -17,6 +17,10 @@ export interface PusherEventMap {
       /** entity type: leads, clients, suppliers */
       contragent_type: EntityType | null;
     };
+    "message-read-by-contact": {
+      /** message ID (can be array from backend) */
+      id: number | number[];
+    };
   };
 
   // "another-channel": {

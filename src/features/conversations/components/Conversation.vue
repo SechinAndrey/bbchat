@@ -20,6 +20,7 @@ import {
   ArchiveBoxArrowDownIcon,
   InformationCircleIcon,
   TrashIcon,
+  CheckIcon,
 } from "@heroicons/vue/24/outline";
 import {
   PhoneIcon,
@@ -177,6 +178,30 @@ const displayName = computed(() => {
     return props.conversation.contact?.firstName;
   }
 });
+
+// Message status logic (same as MessageV2.vue)
+const isSelfMessage = computed(() => {
+  if (!lastMessage.value) return false;
+  return (
+    lastMessage.value.user_id ||
+    lastMessage.value.chaport_messages?.type_id === 2 ||
+    lastMessage.value.chaport_messages?.type_id === 3
+  );
+});
+
+const isReadByContact = computed(() => {
+  if (!lastMessage.value) return false;
+  return lastMessage.value.viewed_by_contact === 1;
+});
+
+const statusColor = computed(() => {
+  if (!isSelfMessage.value) return "";
+  return isReadByContact.value ? "text-success" : "text-app-text-secondary";
+});
+
+const showDoubleCheck = computed(() => {
+  return isSelfMessage.value;
+});
 </script>
 
 <template>
@@ -263,6 +288,16 @@ const displayName = computed(() => {
                 {{
                   shorten(parsedReplyQuote?.replyMessageText || lastMessageText)
                 }}
+              </span>
+
+              <!-- Status indicator for outgoing messages -->
+              <span
+                v-if="isSelfMessage"
+                class="ml-1 flex items-center gap-0"
+                :class="statusColor"
+              >
+                <CheckIcon class="w-3 h-3" />
+                <CheckIcon v-if="showDoubleCheck" class="w-3 h-3 -ml-1.5" />
               </span>
             </p>
 

@@ -462,6 +462,43 @@ export const useConversationsStore = defineStore("conversations", () => {
     return !!message.user_id;
   };
 
+  /**
+   * Mark message as read by contact
+   * @param messageId - ID of the message that was read
+   */
+  const markMessageAsReadByContact = (messageId: number) => {
+    // Update in active conversation messages
+    if (activeConversation.value?.messages) {
+      const message = activeConversation.value.messages.find(
+        (msg) => msg.id === messageId,
+      );
+      if (message) {
+        message.viewed_by_contact = 1;
+        console.log(
+          `✅ Updated message ${messageId} as read by contact in active conversation`,
+        );
+      }
+    }
+
+    // Update in conversations list
+    Object.keys(conversations.value).forEach((entityType) => {
+      const entity = entityType as EntityType;
+      conversations.value[entity].forEach((conversation) => {
+        if (conversation.messages) {
+          const message = conversation.messages.find(
+            (msg) => msg.id === messageId,
+          );
+          if (message) {
+            message.viewed_by_contact = 1;
+            console.log(
+              `✅ Updated message ${messageId} as read by contact in ${entity} conversation`,
+            );
+          }
+        }
+      });
+    });
+  };
+
   const addMessageToConversation = async (message: ApiMessageItem) => {
     const entityId =
       message.client_id || message.lead_id || message.supplier_id;
@@ -646,6 +683,22 @@ export const useConversationsStore = defineStore("conversations", () => {
     },
   );
 
+  // Subscribe to message-read-by-contact event
+  bindEvent(
+    "e-chat-notification",
+    "message-read-by-contact",
+    async (data: { id: number | number[] }) => {
+      console.log("👁️ Received Pusher message-read-by-contact event:", data);
+      // Backend sends id as array (can contain multiple message IDs)
+      const messageIds = Array.isArray(data.id) ? data.id : [data.id];
+      messageIds.forEach((messageId) => {
+        if (messageId) {
+          markMessageAsReadByContact(messageId);
+        }
+      });
+    },
+  );
+
   const initializeRouteWatchers = () => {
     watch(
       () => route.params,
@@ -732,6 +785,9 @@ export const useConversationsStore = defineStore("conversations", () => {
 
     // Actions - Notifications
     playNotificationSound,
+
+    // Actions - Message Status
+    markMessageAsReadByContact,
 
     // Actions - Temporary Messages (Optimistic Updates)
     tempMessages,
