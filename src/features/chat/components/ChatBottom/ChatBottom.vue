@@ -30,11 +30,28 @@ const { messengerId, messengerOptions, currentMessenger, activeContact } =
 
 const isMobile = computed(() => useMediaQuery("(max-width: 767px)").value);
 
-const replyMessageBus = useEventBus<ApiMessageItem>("reply-message");
-const replyingToMessage = ref<ApiMessageItem | null>(null);
+const telegramReplyBus = useEventBus<ApiMessageItem>("reply-message");
+const viberReplyBus = useEventBus<string>("viber-reply-message");
+const telegramReplyingToMessage = ref<ApiMessageItem | null>(null);
 
-replyMessageBus.on((message) => {
-  replyingToMessage.value = message;
+telegramReplyBus.on((message) => {
+  value.value = "";
+  telegramReplyingToMessage.value = message;
+  messengerId.value = 1;
+});
+
+viberReplyBus.on((messageText) => {
+  telegramReplyingToMessage.value = null;
+  value.value = `"${messageText}"\n\n`;
+  nextTick(() => {
+    if (textareaRef.value && textareaRef.value.$el) {
+      const textarea = textareaRef.value.$el as HTMLTextAreaElement;
+      textarea.focus();
+      const cursorPosition = value.value.length;
+      textarea.setSelectionRange(cursorPosition, cursorPosition);
+      messengerId.value = 2;
+    }
+  });
 });
 
 // the content of the message.
@@ -72,8 +89,8 @@ const contactName = computed(() => {
   return activeContact.value?.fio || "";
 });
 
-const clearReply = () => {
-  replyingToMessage.value = null;
+const clearTelegramReply = () => {
+  telegramReplyingToMessage.value = null;
 };
 
 const placeholderText = computed(() => {
@@ -104,10 +121,10 @@ async function handleSendMessage() {
   }
 
   const messageText = value.value;
-  const replyId = replyingToMessage.value?.id || null;
+  const replyId = telegramReplyingToMessage.value?.id || null;
 
   value.value = "";
-  clearReply();
+  clearTelegramReply();
 
   try {
     await sendMessage({
@@ -125,10 +142,10 @@ async function handleSendMessage() {
   <div class="w-full relative">
     <SlideTransition animation="slide-down">
       <ReplyPreview
-        v-if="replyingToMessage"
-        :message="replyingToMessage"
+        v-if="telegramReplyingToMessage"
+        :message="telegramReplyingToMessage"
         class="absolute bottom-[100%] z-[1]"
-        @close="clearReply"
+        @close="clearTelegramReply"
       />
     </SlideTransition>
 

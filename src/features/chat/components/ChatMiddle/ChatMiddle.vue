@@ -37,7 +37,8 @@ const conversationsStore = useConversationsStore();
 const route = useRoute();
 const { toastError } = useToast();
 
-const replyMessageBus = useEventBus<ApiMessageItem>("reply-message");
+const telegramReplyBus = useEventBus<ApiMessageItem>("reply-message");
+const viberReplyBus = useEventBus<string>("viber-reply-message");
 
 const container: Ref<HTMLElement | null> = ref(null);
 
@@ -270,8 +271,22 @@ const handleCopyMessage = async () => {
 
 const handleReplyMessage = () => {
   if (!selectedMessage.value) return;
-  replyMessageBus.emit(selectedMessage.value);
+  telegramReplyBus.emit(selectedMessage.value);
 
+  closeContextMenu();
+};
+
+const handleReplyMessageViber = () => {
+  if (!selectedMessage.value) return;
+
+  const text = getMessageText(selectedMessage.value);
+  if (!text) {
+    toastError("Немає тексту для відповіді");
+    closeContextMenu();
+    return;
+  }
+
+  viberReplyBus.emit(text);
   closeContextMenu();
 };
 
@@ -450,6 +465,15 @@ watch(
         v-if="selectedMessage?.echat_messages?.dialog?.messenger_id === 1"
         label="Відповісти"
         @click="handleReplyMessage"
+      >
+        <ArrowUturnLeftIcon class="w-5 h-5 mr-3" />
+        Відповісти
+      </DropdownItem>
+
+      <DropdownItem
+        v-if="selectedMessage?.echat_messages?.dialog?.messenger_id === 2"
+        label="Відповісти"
+        @click="handleReplyMessageViber"
       >
         <ArrowUturnLeftIcon class="w-5 h-5 mr-3" />
         Відповісти
