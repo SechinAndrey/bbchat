@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import { CheckIcon, XMarkIcon } from "@heroicons/vue/24/outline";
+import {
+  CheckIcon,
+  XMarkIcon,
+  ArrowUpTrayIcon,
+} from "@heroicons/vue/24/outline";
 import type { TempMessage } from "@src/features/conversations/conversations-store";
 import { formatDate } from "@src/shared/utils/utils";
 import ReplyQuote from "@src/features/chat/components/ChatMiddle/Message/ReplyQuote.vue";
@@ -64,6 +68,10 @@ const messengerName = computed(() => {
       return "Unknown Messenger";
   }
 });
+
+const hasFile = computed(() => {
+  return !!props.tempMessage.fileUrl;
+});
 </script>
 
 <template>
@@ -72,7 +80,7 @@ const messengerName = computed(() => {
     <div class="flex gap-3 items-end">
       <!-- Message content -->
       <div
-        class="bg-app-bg-secondary rounded-2xl rounded-tr-sm px-4 py-3 max-w-md relative"
+        class="relative bg-app-bg-secondary rounded-2xl rounded-tl-sm min-h-[2.313rem] min-w-10 px-4 py-3 max-w-md"
       >
         <!-- Reply Quote -->
         <ReplyQuote
@@ -81,8 +89,29 @@ const messengerName = computed(() => {
           @click="() => {}"
         />
 
+        <!-- File attachment (if exists) -->
+        <div v-if="hasFile" class="mb-2">
+          <!-- Loading state for file upload -->
+          <div
+            class="flex items-center gap-3 p-3 bg-app-bg/50 rounded-lg border border-app-border"
+          >
+            <ArrowUpTrayIcon class="w-5 h-5 text-app-text-secondary" />
+            <div class="flex-1 min-w-0">
+              <div class="text-xs text-app-text-secondary truncate">
+                Завантаження файлу...
+              </div>
+            </div>
+            <div
+              class="w-4 h-4 border-2 border-app-text-secondary border-t-transparent rounded-full animate-spin"
+            ></div>
+          </div>
+        </div>
+
         <!-- Message text -->
-        <div class="text-[0.8125rem] leading-relaxed relative pr-6">
+        <div
+          v-if="tempMessage.message"
+          class="text-[0.8125rem] leading-relaxed relative pr-6"
+        >
           <div class="whitespace-pre-line">{{ tempMessage.message }}</div>
 
           <!-- Messenger icon -->
@@ -90,6 +119,15 @@ const messengerName = computed(() => {
             :src="messengerIcon"
             :alt="messengerName"
             class="absolute bottom-0 right-0 w-4 h-4 rounded-full bg-cover bg-center"
+          />
+        </div>
+
+        <!-- Messenger icon (when only file, no text) -->
+        <div v-else-if="hasFile" class="flex justify-end">
+          <img
+            :src="messengerIcon"
+            :alt="messengerName"
+            class="w-4 h-4 rounded-full bg-cover bg-center"
           />
         </div>
 

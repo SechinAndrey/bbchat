@@ -30,6 +30,7 @@ export interface TempMessage {
   contragentType: ContragentType;
   contragentId: number;
   phone: string;
+  contactId: number;
   replyMessage?: ApiMessageItem | null;
   error?: string;
 }
@@ -608,13 +609,15 @@ export const useConversationsStore = defineStore("conversations", () => {
       if (isOutgoing && clientMessageUid) {
         const removedTempMessage = findAndRemoveTempMessage(clientMessageUid);
         if (removedTempMessage) {
+          console.log("✅ Found and removed temp message, adding real message");
           await addMessageToConversation(messageItem);
         } else {
           console.warn(
-            "Could not find temp message with client_message_uid:",
+            "⚠️ Could not find temp message with client_message_uid:",
             clientMessageUid,
-            "- message might already be processed or temp message expired",
+            "- adding message anyway",
           );
+          await addMessageToConversation(messageItem);
         }
       } else {
         await addMessageToConversation(messageItem);

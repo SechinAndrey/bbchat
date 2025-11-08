@@ -103,26 +103,25 @@ const currentContragentType = computed(() =>
   currentEntity.value ? ENTITY_TO_CONTRAGENT_MAP[currentEntity.value] : null,
 );
 
-const currentPhone = computed(
-  () => conversationsStore.activeConversation?.phone,
-);
-
 const currentTempMessages = computed(() => {
   if (
     !currentEntity.value ||
     !currentId.value ||
-    !currentPhone.value ||
-    !currentContragentType.value
+    !currentContragentType.value ||
+    !currentContactId.value
   ) {
     return [];
   }
 
-  return conversationsStore.tempMessages.filter(
-    (msg) =>
+  return conversationsStore.tempMessages.filter((msg) => {
+    const matchesEntity =
       msg.contragentType === currentContragentType.value &&
-      msg.contragentId === currentId.value &&
-      msg.phone === currentPhone.value,
-  );
+      msg.contragentId === currentId.value;
+
+    const matchesContact = msg.contactId === currentContactId.value;
+
+    return matchesEntity && matchesContact;
+  });
 });
 
 const shouldShowDividerAfterMessage = (messageIndex: number) => {

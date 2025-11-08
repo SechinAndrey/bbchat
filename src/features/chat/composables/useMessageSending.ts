@@ -47,6 +47,25 @@ export function useMessageSending() {
       return;
     }
 
+    // Special handling for Chaport with both text and file
+    // Chaport splits message+file into 2 separate messages on backend
+    // So we send them as 2 separate requests with 2 temp messages
+    if (messengerId === 3 && message.trim() && fileUrl) {
+      await sendMessage({
+        message: message.trim(),
+        messengerId,
+        replyMessageId,
+      });
+
+      await sendMessage({
+        message: "",
+        messengerId,
+        fileUrl,
+      });
+
+      return;
+    }
+
     const currentContactId = route.params.contactId;
 
     const currentContact: ApiContact | undefined =
@@ -87,8 +106,10 @@ export function useMessageSending() {
       contragentType: contragentType.value,
       contragentId: id.value,
       phone: phoneValue,
+      contactId: Number(currentContactId),
       replyMessage,
     };
+
     // 2. Immediately add temporary message to chat
     store.addTempMessage(tempMessage);
 
@@ -119,7 +140,7 @@ export function useMessageSending() {
         console.log("❌ Error detected:", response.description);
         toastError("Щось пішло не так. Зверніться до технічного відділу.");
         store.updateTempMessageStatus(
-          tempMessage.clientMessageUid,
+          clientMessageUid,
           "error",
           response.description,
         );
@@ -127,7 +148,7 @@ export function useMessageSending() {
       }
 
       // 7. Update status to "sent"
-      store.updateTempMessageStatus(tempMessage.clientMessageUid, "sent");
+      store.updateTempMessageStatus(clientMessageUid, "sent");
 
       console.log(
         "✅ Message sent successfully, waiting for Pusher confirmation",
@@ -136,11 +157,7 @@ export function useMessageSending() {
       // 8. Update status to error in case of failure
       const errorMessage =
         error instanceof Error ? error.message : "Message sending error";
-      store.updateTempMessageStatus(
-        tempMessage.clientMessageUid,
-        "error",
-        errorMessage,
-      );
+      store.updateTempMessageStatus(clientMessageUid, "error", errorMessage);
 
       console.error("❌ Failed to send message:", error);
     }
