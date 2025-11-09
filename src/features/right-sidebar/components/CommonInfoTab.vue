@@ -151,7 +151,7 @@ const openChatWithContact = async (contactIdToOpen: number) => {
 
     if (existingConversation) {
       await router.push({
-        name: store.isWidget ? "Widget" : "Chat",
+        name: store.isWidget ? "Widget-Chat" : "Chat",
         params: {
           entity: entityType,
           id: entityId.toString(),
@@ -168,7 +168,7 @@ const openChatWithContact = async (contactIdToOpen: number) => {
 
       if (loadedConversation) {
         await router.push({
-          name: "Chat",
+          name: store.isWidget ? "Widget-Chat" : "Chat",
           params: {
             entity: entityType,
             id: entityId.toString(),

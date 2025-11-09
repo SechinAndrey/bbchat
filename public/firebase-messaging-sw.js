@@ -18,38 +18,5 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging();
 
-messaging.onBackgroundMessage((payload) => {
-  console.log(
-    "[firebase-messaging-sw.js] Received background message ",
-    payload,
-  );
-
-  if (
-    !payload?.data ||
-    !payload?.data?.event ||
-    payload?.data?.from_manager === "true"
-  )
-    return;
-
-  const entety2Text = {
-    lead: "Лід -",
-    client: "Клієнт -",
-    supplier: "Постачальник -",
-  };
-
-  let entetyText;
-  entetyText = entety2Text[payload.data?.contragent_type] || "";
-
-  const notificationTitle = entetyText + " " + payload.data?.entity_title;
-  const notificationBody = payload.data?.entity_name || "Нове повідомлення";
-
-  const notificationOptions = {
-    icon: "/vectors/logo.svg",
-    body: notificationBody,
-  };
-
-  return self.registration.showNotification(
-    notificationTitle,
-    notificationOptions,
-  );
-});
+// That's it! FCM handles everything when notification + webpush.fcm_options.link is set
+// No need for custom notification show or click handlers
