@@ -156,6 +156,7 @@ const replyToText = computed(() => {
     <ConversationAvatar
       v-if="!isSelf && conversationsStore.activeConversation"
       :conversation="conversationsStore.activeConversation"
+      :avatar-url="echat?.avatar"
       is-active
     />
 

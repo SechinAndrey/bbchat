@@ -245,6 +245,7 @@ export interface ApiEChatMessage {
   client_message_uid?: string | null;
   updated_at: string;
   reply_to_text?: string;
+  avatar?: string;
 }
 
 export interface ApiMessageItemUser {

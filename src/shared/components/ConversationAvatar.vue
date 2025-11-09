@@ -16,10 +16,12 @@ interface Props {
     | ApiCommunicationClientFull;
   size?: "sm" | "md" | "lg";
   isActive?: boolean;
+  avatarUrl?: string | null;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   size: "md",
+  avatarUrl: null,
 });
 
 const name = getName(props.conversation) || "";
@@ -31,7 +33,7 @@ const { avatarInitials, avatarColor } = useAvatarInitials(
 );
 
 const avatar = computed(() => {
-  return getAvatar(props.conversation);
+  return props.avatarUrl || getAvatar(props.conversation);
 });
 
 const sizeClasses = computed(() => {
