@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.4.0 - 2025-11-09
+
+### Bug Fixes
+
+- Порядок сообщений. [WS-18700430-20969634](https://trp4438.worksection.com/project/257910/18700430/20969634/)
+
+### Features
+
+- Контакты. Редактирование. [WS-18700430-20951907](https://trp4438.worksection.com/project/257910/18700430/20951907/)
+- Удаление сообщения. [WS-18700430-20303663](https://trp4438.worksection.com/project/257910/18700430/20303663/)
+- Add file formats to upload .xlsx,.xls,.zip,.rar - Формат файла. [WS-18700430-21020310](https://trp4438.worksection.com/project/257910/18700430/21020310/)
+- Добавить аватары. [WS-18700430-21049968](https://trp4438.worksection.com/project/257910/18700430/21049968/)
+- Iframe фиксы [WS-18700430-21051357](https://trp4438.worksection.com/project/257910/18700430/21051357/)
+- Feat: Клиенты. Доп меню. [WS-18700430-21046470](https://trp4438.worksection.com/project/257910/18700430/21046470/)
+  Поставщики. Доп меню. [WS-18700430-21046479](https://trp4438.worksection.com/project/257910/18700430/21046479/)
+- Статус сообщения. [WS-18700430-20302985](https://trp4438.worksection.com/project/257910/18700430/20302985/)
+- Chaport. Файлы. [WS-18700430-20929353](https://trp4438.worksection.com/project/257910/18700430/20929353/)
+- Ответы для вайбера. [WS-18700430-21049197](https://trp4438.worksection.com/project/257910/18700430/21049197/)
+- Слідкувати за дошками. Периоды. [WS-18700430-21049086](https://trp4438.worksection.com/project/257910/18700430/21049086/)
+- Process incoming failes
+
+### Project Maintenance
+
+- Release version 0.4.0
+
 ## 0.3.0 - 2025-11-07
 
 ### Bug Fixes
