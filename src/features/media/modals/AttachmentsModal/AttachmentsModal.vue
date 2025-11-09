@@ -17,7 +17,8 @@ import {
 
 const MAX_ATTACHMENTS = 1;
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
-const ACCEPTED_FILE_TYPES = "image/*,video/*,audio/*,.pdf,.doc,.docx,.txt";
+const ACCEPTED_FILE_TYPES =
+  "image/*,video/*,audio/*,.pdf,.doc,.docx,.txt,.xlsx,.xls,.zip,.rar";
 
 const props = defineProps<{
   messengerId: number;
