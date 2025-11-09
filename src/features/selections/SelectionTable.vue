@@ -52,7 +52,7 @@ const dateWithTime = (date?: string): string => {
   });
 };
 
-const watchedDate = (date?: string): string => {
+const watchedDate = (date?: string | null): string => {
   if (!date) return "";
   const [year, month] = date.split("-");
   return `${month}.${year}`;
