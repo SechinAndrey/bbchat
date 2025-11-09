@@ -282,6 +282,7 @@ export interface ApiReplyMessageItem {
   lead_contact: ApiContact | null;
   client_contact: ApiContact | null;
   supplier_contact: ApiContact | null;
+  deleted_at: string | null; // ? is it needed
 }
 
 export interface ApiMessageItem {
@@ -314,6 +315,7 @@ export interface ApiMessageItem {
   supplier_contact: ApiContact | null;
   viewed: number; // 0 - not viewed, 1 - viewed by user US (current user)
   viewed_by_contact: number; // 0 - not viewed, 1 - viewed by contact(lead/client/supplier)
+  deleted_at: string | null;
 }
 
 // Communication lead and client types

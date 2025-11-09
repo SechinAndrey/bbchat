@@ -461,7 +461,10 @@ watch(
       </DropdownItem>
 
       <DropdownItem
-        v-if="selectedMessage?.echat_messages?.dialog?.messenger_id === 1"
+        v-if="
+          selectedMessage?.echat_messages?.dialog?.messenger_id === 1 &&
+          !selectedMessage?.deleted_at
+        "
         label="Відповісти"
         @click="handleReplyMessage"
       >
@@ -470,7 +473,10 @@ watch(
       </DropdownItem>
 
       <DropdownItem
-        v-if="selectedMessage?.echat_messages?.dialog?.messenger_id === 2"
+        v-if="
+          selectedMessage?.echat_messages?.dialog?.messenger_id === 2 &&
+          !selectedMessage?.deleted_at
+        "
         label="Відповісти"
         @click="handleReplyMessageViber"
       >

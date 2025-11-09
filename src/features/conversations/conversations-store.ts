@@ -499,6 +499,18 @@ export const useConversationsStore = defineStore("conversations", () => {
     });
   };
 
+  const markMessageAsDeleted = (messageId: number) => {
+    if (activeConversation.value?.messages) {
+      const message = activeConversation.value.messages.find(
+        (msg) => msg.id === messageId,
+      );
+      if (message) {
+        message.deleted_at = new Date().toISOString();
+        console.log(`🗑️ Marked message ${messageId} as deleted`);
+      }
+    }
+  };
+
   const addMessageToConversation = async (message: ApiMessageItem) => {
     const entityId =
       message.client_id || message.lead_id || message.supplier_id;
@@ -699,6 +711,18 @@ export const useConversationsStore = defineStore("conversations", () => {
     },
   );
 
+  // Subscribe to message-deleted event
+  bindEvent(
+    "e-chat-notification",
+    "message-deleted",
+    async (data: { id: number }) => {
+      console.log("🗑️ Received Pusher message-deleted event:", data);
+      if (data.id) {
+        markMessageAsDeleted(data.id);
+      }
+    },
+  );
+
   const initializeRouteWatchers = () => {
     watch(
       () => route.params,
@@ -788,6 +812,7 @@ export const useConversationsStore = defineStore("conversations", () => {
 
     // Actions - Message Status
     markMessageAsReadByContact,
+    markMessageAsDeleted,
 
     // Actions - Temporary Messages (Optimistic Updates)
     tempMessages,

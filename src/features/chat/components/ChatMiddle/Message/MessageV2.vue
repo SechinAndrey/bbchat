@@ -7,6 +7,7 @@ import {
   PhoneIcon,
   ChevronDownIcon,
   ChevronUpIcon,
+  TrashIcon,
 } from "@heroicons/vue/24/solid";
 import { CheckIcon } from "@heroicons/vue/24/outline";
 import linkifyStr from "linkify-string";
@@ -142,6 +143,10 @@ const formatMessageText = (text: string) => {
 const replyToText = computed(() => {
   return props.message.echat_messages?.reply_to_text || "";
 });
+
+const isDeleted = computed(() => {
+  return !!props.message.deleted_at;
+});
 </script>
 
 <template>
@@ -168,8 +173,18 @@ const replyToText = computed(() => {
         :class="{
           'w-[225px]': call && !isCallDetailsExpanded,
           'w-[260px]': call && isCallDetailsExpanded,
+          'opacity-60': isDeleted,
         }"
       >
+        <!-- Deleted message indicator -->
+        <div
+          v-if="isDeleted"
+          class="flex items-center gap-1.5 text-app-text-secondary text-xs italic mb-2 pb-2 border-b border-app-border/30"
+        >
+          <TrashIcon class="w-3.5 h-3.5" />
+          <span>Видалено</span>
+        </div>
+
         <!-- 1 - чапорт -->
         <div
           v-if="chaport"

@@ -21,6 +21,10 @@ export interface PusherEventMap {
       /** message ID (can be array from backend) */
       id: number | number[];
     };
+    "message-deleted": {
+      /** message ID */
+      id: number;
+    };
   };
 
   // "another-channel": {
