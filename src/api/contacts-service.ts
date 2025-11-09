@@ -43,6 +43,14 @@ export class ContactsService {
     );
     return response.data;
   }
+
+  async deleteContact(
+    entity: EntityType,
+    entityId: number,
+    contactId: number,
+  ): Promise<void> {
+    await apiClient.delete(`/${entity}/${entityId}/contacts/${contactId}`);
+  }
 }
 
 export const contactsService = new ContactsService();

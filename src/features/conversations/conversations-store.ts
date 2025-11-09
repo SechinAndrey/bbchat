@@ -19,6 +19,7 @@ import { adaptApiCommunicationToIConversation } from "@src/api/communication-ada
 import useStore from "@src/shared/store/store";
 import { useEventBus } from "@vueuse/core";
 import { usePusher } from "@src/shared/composables/usePusher";
+import contactsService from "@src/api/contacts-service";
 
 export interface TempMessage {
   clientMessageUid: string;
@@ -499,6 +500,21 @@ export const useConversationsStore = defineStore("conversations", () => {
     });
   };
 
+  /**
+   * Delete contact from entity
+   * @example await deleteContact('leads', 123, 456)
+   */
+  const deleteContact = async (
+    entity: EntityType,
+    entityId: number,
+    contactId: number,
+  ) => {
+    await contactsService.deleteContact(entity, entityId, contactId);
+
+    // Reload conversation to update contacts list
+    await fetchConversation(entity, entityId);
+  };
+
   const markMessageAsDeleted = (messageId: number) => {
     if (activeConversation.value?.messages) {
       const message = activeConversation.value.messages.find(
@@ -803,6 +819,7 @@ export const useConversationsStore = defineStore("conversations", () => {
     changeLeadStatus,
     addNewConversation,
     loadMissingConversation,
+    deleteContact,
 
     // Actions - Unread Management
     resetUnreadCount,

@@ -18,14 +18,18 @@ import {
   PlusIcon,
   ChatBubbleLeftIcon,
   BriefcaseIcon,
+  EllipsisVerticalIcon,
+  TrashIcon,
 } from "@heroicons/vue/24/outline";
 import KanbanSelect from "@src/shared/components/KanbanSelect.vue";
 import ContactModal from "@src/features/contacts/ContactModal.vue";
+import DeleteContactModal from "@src/features/contacts/modals/DeleteContactModal.vue";
 import { useAuthStore } from "@src/features/auth/store/auth-store";
 import useStore from "@src/shared/store/store";
 import { useToast } from "@src/shared/composables/useToast";
 import TgLineIcon from "@src/shared/icons/TgLineIcon.vue";
 import type { ApiContact } from "@src/api/types";
+import VuePopper from "@kalimahapps/vue-popper";
 
 const contactId = inject<Ref<number> | undefined>("contactId");
 const entity = inject<Ref<"leads" | "clients" | "suppliers">>("entity");
@@ -42,6 +46,9 @@ const editingContact = ref<ApiContact | null>(null);
 const isEditingComment = ref(false);
 const editCommentValue = ref("");
 const isSavingComment = ref(false);
+const isDeleteModalOpen = ref(false);
+const contactToDelete = ref<ApiContact | null>(null);
+const isDeletingContact = ref(false);
 
 const activeConversation = computed<
   | ApiCommunicationLeadFull
@@ -65,6 +72,10 @@ const entityId = computed(() => {
 const isCurrentContact = (contact: { id: number }) => {
   return contactId?.value && contact.id === contactId.value;
 };
+
+const isLastContact = computed(() => {
+  return (activeConversation.value?.contacts?.length || 0) <= 1;
+});
 
 const openAddContactModal = () => {
   contactModalMode.value = "create";
@@ -185,6 +196,69 @@ const openChatWithContact = async (contactIdToOpen: number) => {
   }
 };
 
+const openDeleteContactModal = (contact: ApiContact) => {
+  contactToDelete.value = contact;
+  isDeleteModalOpen.value = true;
+};
+
+const closeDeleteContactModal = () => {
+  isDeleteModalOpen.value = false;
+  contactToDelete.value = null;
+};
+
+const handleDeleteContact = async () => {
+  if (!contactToDelete.value || !entity?.value || !activeConversation.value) {
+    return;
+  }
+
+  const contactIdToDelete = contactToDelete.value.id;
+  const isCurrentContact = contactId?.value === contactIdToDelete;
+
+  try {
+    isDeletingContact.value = true;
+
+    await conversationsStore.deleteContact(
+      entity.value,
+      activeConversation.value.id,
+      contactIdToDelete,
+    );
+
+    closeDeleteContactModal();
+
+    // If deleted current contact - redirect to next available contact
+    if (isCurrentContact) {
+      // Find next contact after deletion
+      const remainingContacts = activeConversation.value.contacts.filter(
+        (c) => c.id !== contactIdToDelete,
+      );
+
+      if (remainingContacts.length > 0) {
+        // Redirect to first remaining contact
+        await router.push({
+          name: store.isWidget ? "Widget-Chat" : "Chat",
+          params: {
+            entity: entity.value,
+            id: activeConversation.value.id.toString(),
+            contactId:
+              remainingContacts[remainingContacts.length - 1].id.toString(),
+          },
+        });
+      } else {
+        // No contacts left - redirect to chat list
+        const url = store.isWidget
+          ? `/widget/${entity.value}/${activeConversation.value.id}`
+          : `/chat/${entity.value}`;
+        await router.push({ path: url });
+      }
+    }
+  } catch (error) {
+    console.error("Error deleting contact:", error);
+    toastError("Не вдалося видалити контакт");
+  } finally {
+    isDeletingContact.value = false;
+  }
+};
+
 const sourceInfo = computed(() => {
   try {
     return JSON.parse(activeConversation.value?.info || "{}");
@@ -210,19 +284,53 @@ const sourceInfo = computed(() => {
           isCurrentContact(contact),
       }"
     >
-      <Button
-        variant="ghost"
-        size="xs"
-        :ring="false"
-        icon-only
-        :title="`Редагувати контакт`"
-        class="absolute bottom-[0.6rem] right-0"
-        @click="openEditContactModal(contact)"
-      >
-        <template #icon>
-          <PencilIcon class="w-4 h-4 text-primary" />
-        </template>
-      </Button>
+      <div class="absolute bottom-[0.6rem] right-0">
+        <VuePopper placement="bottom-end" :show-arrow="false">
+          <Button
+            variant="ghost"
+            size="xs"
+            :ring="false"
+            icon-only
+            :title="`Дії з контактом`"
+          >
+            <template #icon>
+              <EllipsisVerticalIcon class="w-4 h-4 text-primary" />
+            </template>
+          </Button>
+
+          <template #content>
+            <ul>
+              <li>
+                <Button
+                  block
+                  variant="text"
+                  @click="openEditContactModal(contact)"
+                >
+                  <PencilIcon class="h-5 w-5 mr-3" />
+                  Редагувати
+                </Button>
+              </li>
+              <li>
+                <Button
+                  block
+                  variant="text"
+                  class="!text-danger"
+                  :disabled="isLastContact"
+                  :title="
+                    isLastContact
+                      ? 'Неможливо видалити останній контакт'
+                      : 'Видалити контакт'
+                  "
+                  @click="openDeleteContactModal(contact)"
+                >
+                  <TrashIcon class="h-5 w-5 mr-3" />
+                  Видалити
+                </Button>
+              </li>
+            </ul>
+          </template>
+        </VuePopper>
+      </div>
 
       <Button
         v-if="!isCurrentContact(contact)"
@@ -456,6 +564,14 @@ const sourceInfo = computed(() => {
       :contact="editingContact"
       @contact-added="handleContactAdded"
       @contact-updated="handleContactUpdated"
+    />
+
+    <DeleteContactModal
+      :open="isDeleteModalOpen"
+      :contact="contactToDelete"
+      :is-loading="isDeletingContact"
+      @confirm="handleDeleteContact"
+      @cancel="closeDeleteContactModal"
     />
   </div>
 </template>
