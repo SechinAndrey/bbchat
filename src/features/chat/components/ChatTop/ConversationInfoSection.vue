@@ -23,6 +23,7 @@ import type { EntityType } from "@src/shared/types/common";
 import VuePopper from "@kalimahapps/vue-popper";
 import LeadActionModal from "./LeadActionModal.vue";
 import { useMessenger } from "@src/features/chat/composables/useMessengerSelection";
+import { is } from "zod/v4/locales";
 
 const entity = inject<Ref<EntityType>>("entity");
 const id = inject<Ref<number>>("id");
@@ -91,8 +92,24 @@ const isLead = computed(() => {
   return currentEntity.value === "leads";
 });
 
+const isClient = computed(() => {
+  return currentEntity.value === "clients";
+});
+
 const isSupplier = computed(() => {
   return currentEntity.value === "suppliers";
+});
+
+const showActionsBtn = computed(() => {
+  if (isLead.value) {
+    return true;
+  } else if (isClient.value) {
+    return authStore.currentUser?.roleId === 1;
+  } else if (isSupplier.value) {
+    return false;
+  } else {
+    return authStore.currentUser?.roleId === 1;
+  }
 });
 
 const isActionModalOpen = ref(false);
@@ -211,12 +228,14 @@ const copyLink = async () => {
         variant="text"
         @click="endConversation"
       >
-        <template #icon>
-          <StopCircleIcon class="w-6 h-6" />
-        </template>
+        <template #icon> <StopCircleIcon class="w-6 h-6" /> </template>1
       </Button>
 
-      <VuePopper v-if="!isSupplier" placement="bottom-end" :show-arrow="false">
+      <VuePopper
+        v-if="showActionsBtn"
+        placement="bottom-end"
+        :show-arrow="false"
+      >
         <Button variant="text" icon-only class="flex-shrink-0 xl:!hidden">
           <template #icon>
             <EllipsisVerticalIcon class="w-6 h-6" />
@@ -321,7 +340,11 @@ const copyLink = async () => {
         </template>
       </Button>
 
-      <VuePopper v-if="!isSupplier" placement="bottom-end" :show-arrow="false">
+      <VuePopper
+        v-if="showActionsBtn"
+        placement="bottom-end"
+        :show-arrow="false"
+      >
         <Button variant="text" icon-only class="flex-shrink-0">
           <template #icon>
             <EllipsisVerticalIcon class="w-6 h-6" />
