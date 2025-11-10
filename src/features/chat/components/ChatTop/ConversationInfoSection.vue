@@ -321,7 +321,7 @@ const copyLink = async () => {
         </template>
       </Button>
 
-      <VuePopper placement="bottom-end" :show-arrow="false">
+      <VuePopper v-if="!isSupplier" placement="bottom-end" :show-arrow="false">
         <Button variant="text" icon-only class="flex-shrink-0">
           <template #icon>
             <EllipsisVerticalIcon class="w-6 h-6" />
@@ -330,32 +330,22 @@ const copyLink = async () => {
 
         <template #content>
           <ul>
-            <li>
+            <li v-if="isLead">
               <Button block variant="text" @click="openActionModal('lead')">
                 Додати в існуючого ліда
               </Button>
             </li>
-            <li>
-              <Button
-                v-if="authStore.currentUser?.roleId !== 7"
-                block
-                variant="text"
-                @click="openActionModal('client')"
-              >
+            <li v-if="authStore.currentUser?.roleId !== 7 && isLead">
+              <Button block variant="text" @click="openActionModal('client')">
                 Додати в існуючого клієнта
               </Button>
             </li>
-            <li>
-              <Button
-                v-if="authStore.currentUser?.roleId !== 7"
-                block
-                variant="text"
-                @click="openActionModal('supplier')"
-              >
+            <li v-if="authStore.currentUser?.roleId !== 7 && isLead">
+              <Button block variant="text" @click="openActionModal('supplier')">
                 Додати в існуючого постачальника
               </Button>
             </li>
-            <li>
+            <li v-if="authStore.currentUser?.roleId === 1">
               <Button block variant="text" @click="openActionModal('manager')">
                 Змінити менеджера
               </Button>
