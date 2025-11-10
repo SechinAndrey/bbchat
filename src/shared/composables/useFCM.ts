@@ -9,9 +9,9 @@ import { ref, computed, onScopeDispose } from "vue";
 import type { FCMEventMap } from "@src/shared/types/fcm-events";
 import { useAuthStore } from "@src/features/auth/store/auth-store";
 import { useDocumentVisibility, useWindowFocus } from "@vueuse/core";
-
 import { useEventBus } from "@vueuse/core";
-// const loginEvent = useEventBus("auth:login");
+import router from "@src/router";
+
 const logoutEvent = useEventBus("auth:logout");
 
 const firebaseConfig = {
@@ -70,67 +70,123 @@ export function useFCM() {
       await deleteToken(messaging);
       token.value = null;
       authStore.fcmToken = "";
+      console.log("✅ [FCM] Token cleared");
     } catch (err) {
-      console.error("FCM delete token error:", err);
+      console.error("❌ [FCM] Delete token error:", err);
     }
   };
 
   const initMessageListener = () => {
     if (messageUnsubscribe) return;
 
-    navigator.serviceWorker.addEventListener("message", (event) => {
-      if (event.data?.type === "NEW_MESSAGE") {
-        console.log(event);
-      }
-    });
+    // Listen for navigation messages from Service Worker
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.addEventListener("message", (event) => {
+        console.log("📨 [FCM] Service Worker message:", event.data);
+
+        if (event.data?.type === "NOTIFICATION_CLICK" && event.data?.url) {
+          const url = new URL(event.data.url);
+          const path = url.pathname + url.search + url.hash;
+
+          console.log("🔔 [FCM] Navigating to:", path);
+
+          router.push(path).catch((err) => {
+            console.error("❌ [FCM] Navigation error:", err);
+          });
+        }
+      });
+    }
 
     messageUnsubscribe = onMessage(messaging, (payload) => {
+      console.log("📩 [FCM] Foreground message received:", payload);
+
       const event = payload.data?.event as keyof FCMEventMap;
-      if (!event || !payload.data || payload.data?.from_manager === "true")
+      if (!event || !payload.data) {
+        console.warn("⚠️ [FCM] No event or data in payload");
         return;
+      }
 
-      console.log("isPageTrulyVisible - onMessage");
+      if (payload.data?.from_manager === "true") {
+        console.log("🔕 [FCM] Message from manager, skipping");
+        return;
+      }
 
+      console.log("🔔 [FCM] Processing event:", event);
+
+      // Fire event handlers for data processing
       eventHandlers.get(event)?.forEach((handler) => {
         try {
           handler(payload.data as FCMEventMap[typeof event]);
         } catch (err) {
-          console.error(`FCM event "${event}" error:`, err);
+          console.error(`❌ [FCM] Event "${event}" error:`, err);
         }
       });
 
-      if (!isPageTrulyVisible.value) {
-        console.log("push - onMessage");
-        const entety2Text = {
-          lead: "Лід -",
-          client: "Клієнт -",
-          supplier: "Постачальник -",
+      // Show notification only if page is not truly visible (tab open but window inactive)
+      if (!isPageTrulyVisible.value && documentVisibility.value === "visible") {
+        console.log("🔔 [FCM] Showing notification (window inactive)");
+
+        const entityTypeMap = {
+          lead: "Лід: ",
+          client: "Клієнт: ",
+          supplier: "Постачальник: ",
         };
 
-        let entetyText;
+        const entityType =
+          entityTypeMap[
+            payload.data.contragent_type as keyof typeof entityTypeMap
+          ] || "";
+        const notificationTitle = entityType
+          ? `${entityType}: #${payload.data?.entity_title || "Невідомий"}`
+          : `#${payload.data?.entity_title || "Невідомий"}`;
 
-        if (payload.data.contragent_type in entety2Text) {
-          entetyText =
-            entety2Text[
-              payload.data.contragent_type as keyof typeof entety2Text
-            ];
-        } else {
-          entetyText = "";
-        }
-
-        const notificationTitle = `${entetyText} #${payload.data?.entity_title}`;
         const notificationOptions = {
-          icon: "/vectors/logo.svg",
           body: payload.data?.entity_name || "Нове повідомлення",
+          data: payload.data,
+          tag: payload.data?.contragent_contact_id || "default",
+          icon: "/vectors/logo.svg",
+          requireInteraction: false,
         };
 
         if ("Notification" in window && Notification.permission === "granted") {
-          const n = new Notification(notificationTitle, notificationOptions);
+          const notification = new Notification(
+            notificationTitle,
+            notificationOptions,
+          );
 
-          setTimeout(() => n.close(), 5000);
-        } else {
-          Notification.requestPermission();
+          notification.onclick = () => {
+            window.focus();
+            notification.close();
+
+            if (!payload.data) return;
+
+            const contragentTypeMap = {
+              supplier: "suppliers",
+              client: "clients",
+              lead: "leads",
+            };
+
+            const entityPath =
+              contragentTypeMap[
+                payload.data.contragent_type as keyof typeof contragentTypeMap
+              ] || payload.data.contragent_type;
+            const path = `/chat/${entityPath}/${payload.data.contragent_id}/contact/${payload.data.contragent_contact_id}/`;
+
+            console.log("🔔 [FCM] Notification clicked, navigating to:", path);
+
+            router.push(path).catch((err) => {
+              console.error("❌ [FCM] Navigation error:", err);
+            });
+          };
+
+          setTimeout(() => notification.close(), 5000);
         }
+      } else if (isPageTrulyVisible.value) {
+        console.log("🔕 [FCM] Page is visible and focused, no notification");
+      } else {
+        console.log(
+          "🔕 [FCM] Page not visible, Service Worker should handle notification",
+        );
       }
     });
   };
@@ -166,11 +222,6 @@ export function useFCM() {
 
   ensureToken();
   initMessageListener();
-
-  // loginEvent.on(() => {
-  //   ensureToken();
-  //   initMessageListener();
-  // });
 
   logoutEvent.on(() => {
     clearToken();

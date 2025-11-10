@@ -18,5 +18,100 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging();
 
-// That's it! FCM handles everything when notification + webpush.fcm_options.link is set
-// No need for custom notification show or click handlers
+// Handle background messages
+messaging.onBackgroundMessage((payload) => {
+  console.log("[SW] Background message received:", payload);
+  const entityTypeMap = {
+    lead: "Лід: ",
+    client: "Клієнт: ",
+    supplier: "Постачальник: ",
+  };
+
+  const notificationTitle =
+    entityTypeMap[payload.data?.contragent_type] + payload.data?.entity_title ||
+    "Невідомий";
+  const notificationOptions = {
+    body: payload.data?.entity_name || "Нове повідомлення",
+    data: payload.data,
+    tag: payload.data?.contragent_contact_id || "default",
+    icon: "/vectors/logo.svg",
+    requireInteraction: false,
+  };
+
+  return self.registration.showNotification(
+    notificationTitle,
+    notificationOptions,
+  );
+});
+
+// Handle notification click
+self.addEventListener("notificationclick", (event) => {
+  console.log("[SW] Notification clicked:", event);
+  console.log("[SW] Notification data:", event.notification.data);
+
+  event.notification.close();
+
+  const data = event.notification.data;
+
+  let targetUrl = null;
+
+  if (
+    data?.contragent_type &&
+    data?.contragent_id &&
+    data?.contragent_contact_id
+  ) {
+    const contragentTypeMap = {
+      supplier: "suppliers",
+      client: "clients",
+      lead: "leads",
+    };
+
+    const entityType =
+      contragentTypeMap[data.contragent_type] || data.contragent_type;
+    targetUrl = `${self.location.origin}/chat/${entityType}/${data.contragent_id}/contact/${data.contragent_contact_id}/`;
+
+    console.log("[SW] Built URL from data:", targetUrl);
+  }
+
+  if (!targetUrl) {
+    console.warn("[SW] No valid URL found in notification data");
+    targetUrl = self.location.origin;
+  }
+
+  // Open or focus window with the target URL
+  event.waitUntil(
+    self.clients
+      .matchAll({ type: "window", includeUncontrolled: true })
+      .then((clientList) => {
+        console.log("[SW] Found clients:", clientList.length);
+
+        // Try to find existing window with same origin
+        for (const client of clientList) {
+          console.log("[SW] Checking client:", client.url);
+          if (
+            client.url.startsWith(self.location.origin) &&
+            "focus" in client
+          ) {
+            console.log(
+              "[SW] Focusing existing client and navigating to:",
+              targetUrl,
+            );
+            return client.focus().then(() => {
+              // Post message to client to navigate
+              client.postMessage({
+                type: "NOTIFICATION_CLICK",
+                url: targetUrl,
+              });
+              return client;
+            });
+          }
+        }
+
+        // No existing window found, open new one
+        console.log("[SW] Opening new window:", targetUrl);
+        if (self.clients.openWindow) {
+          return self.clients.openWindow(targetUrl);
+        }
+      }),
+  );
+});
