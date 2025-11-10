@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.4.1 - 2025-11-10
+
+### Bug Fixes
+
+- По клику на пуш уведомление браузера открывать нужный чат [WS-18700430-21020295](https://trp4438.worksection.com/project/257910/18700430/21020295/)
+- Mob. Safari. WS-project/257910/calendar
+- ConversationInfoSection actions dropdown
+- ConversationInfoSection actions dropdown - for admin\manager
+
+### Features
+
+- Improve attachment display in conversatons - Последнее сообщения, когда файл. [WS-18700430-20931927](https://trp4438.worksection.com/project/257910/18700430/20931927/)
+- Отправка файлов. Энтер [WS-18700430-21023733](https://trp4438.worksection.com/project/257910/18700430/21023733/)
+- Reply. Поле для сообщения. [WS-18700430-21042933](https://trp4438.worksection.com/project/257910/18700430/21042933/)
+
+### Project Maintenance
+
+- Update watchedDate
+- Release version 0.4.1
+
 ## 0.4.0 - 2025-11-09
 
 ### Bug Fixes
