@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, onMounted, onUnmounted } from "vue";
 import type { IAttachment } from "@src/shared/types/types";
 
 import Attachment from "@src/features/media/modals/AttachmentsModal/Attachment.vue";
@@ -187,6 +187,26 @@ const handleDrop = (event: DragEvent) => {
     attachments.value.push(attachment);
   }
 };
+
+const handleKeyDown = (event: KeyboardEvent) => {
+  if (
+    event.key === "Enter" &&
+    !event.shiftKey &&
+    hasAttachments.value &&
+    props.open
+  ) {
+    event.preventDefault();
+    sendMessage();
+  }
+};
+
+onMounted(() => {
+  window.addEventListener("keydown", handleKeyDown);
+});
+
+onUnmounted(() => {
+  window.removeEventListener("keydown", handleKeyDown);
+});
 </script>
 
 <template>
