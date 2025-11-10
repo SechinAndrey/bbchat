@@ -3,3 +3,18 @@
   cursor: not-allowed;
   pointer-events: none;
 }
+
+input,
+select,
+textarea {
+  font-size: 16px !important;
+  touch-action: manipulation;
+}
+
+@media (min-width: 768px) {
+  input,
+  select,
+  textarea {
+    font-size: 14px !important;
+  }
+}

@@ -21,7 +21,7 @@ const handleTabChange = (tabKey: string) => {
 
 <template>
   <div
-    class="bg-app-bg-secondary h-full xs:w-full md:min-w-[18.75rem] md:w-[18.75rem] flex flex-col scrollbar-hidden overflow-hidden px-5 py-3 md:py-6"
+    class="bg-app-bg-secondary h-full xs:w-full md:min-w-[18.75rem] md:w-[18.75rem] flex flex-col scrollbar-hidden overflow-hidden px-5 py-3 md:py-6 z-[3]"
   >
     <div class="mb-4 md:hidden">
       <Button variant="text" size="sm" @click="$emit('close')">
