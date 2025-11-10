@@ -21,6 +21,10 @@ import {
   InformationCircleIcon,
   TrashIcon,
   CheckIcon,
+  PhotoIcon,
+  VideoCameraIcon,
+  MusicalNoteIcon,
+  DocumentIcon,
 } from "@heroicons/vue/24/outline";
 import {
   PhoneIcon,
@@ -30,8 +34,7 @@ import {
 import Dropdown from "@src/ui/navigation/Dropdown/Dropdown.vue";
 import ConversationAvatar from "@src/shared/components/ConversationAvatar.vue";
 import { parseReplyQuoteText } from "@src/features/chat/utils/replyQuoteParser";
-
-type MessageDirection = "in" | "out";
+import { getMediaType } from "@src/shared/utils/media";
 
 const props = defineProps<{
   conversation: IConversation;
@@ -97,7 +100,7 @@ const echatMessage = computed(() => {
     try {
       const parsed = JSON.parse(echat.value.message_json);
       return parsed;
-    } catch (error) {
+    } catch {
       return {};
     }
   }
@@ -132,6 +135,54 @@ const lastMessageDate = computed(() => {
   return "";
 });
 
+const getMediaIcon = (url: string) => {
+  const type = getMediaType(url);
+  switch (type) {
+    case "image":
+      return PhotoIcon;
+    case "video":
+      return VideoCameraIcon;
+    case "audio":
+      return MusicalNoteIcon;
+    case "file":
+      return DocumentIcon;
+    default:
+      return DocumentIcon;
+  }
+};
+
+const getMediaLabel = (url: string): string => {
+  const type = getMediaType(url);
+  switch (type) {
+    case "image":
+      return "Зображення";
+    case "video":
+      return "Відео";
+    case "audio":
+      return "Аудіо";
+    case "file":
+      return "Файл";
+    default:
+      return "Медіа";
+  }
+};
+
+const mediaUrl = computed(() => {
+  return (
+    echatMessage.value?.media ||
+    echatMessage.value?.file ||
+    chaport.value?.file ||
+    null
+  );
+});
+
+const mediaIcon = computed(() => {
+  if (mediaUrl.value) {
+    return getMediaIcon(mediaUrl.value);
+  }
+  return null;
+});
+
 const lastMessageText = computed(() => {
   if (call.value?.billsec) {
     return `Дзвінок ${call.value.billsec}c`;
@@ -141,8 +192,8 @@ const lastMessageText = computed(() => {
     return echat.value.message;
   } else if (echatMessage.value?.message) {
     return echatMessage.value.message;
-  } else if (echatMessage.value?.media) {
-    return "Медіа повідомлення";
+  } else if (mediaUrl.value) {
+    return getMediaLabel(mediaUrl.value);
   }
   return "";
 });
@@ -167,6 +218,7 @@ const lastMessageDirection = computed(() => {
   } else if (echat.value) {
     return echat.value?.direction === 0 ? "in" : "out";
   }
+  return undefined;
 });
 
 const displayName = computed(() => {
@@ -266,6 +318,11 @@ const showDoubleCheck = computed(() => {
                 :is="callTypeIcon"
                 v-if="call"
                 class="w-4 h-4 text-blue-500 mr-2"
+              />
+              <component
+                :is="mediaIcon"
+                v-else-if="mediaIcon"
+                class="w-4 h-4 text-app-text-secondary mr-2"
               />
               <img
                 v-else-if="echat?.dialog?.messenger_id"
