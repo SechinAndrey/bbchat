@@ -38,6 +38,12 @@ telegramReplyBus.on((message) => {
   value.value = "";
   telegramReplyingToMessage.value = message;
   messengerId.value = 1;
+  nextTick(() => {
+    if (textareaRef.value && textareaRef.value.$el) {
+      const textarea = textareaRef.value.$el as HTMLTextAreaElement;
+      textarea.focus();
+    }
+  });
 });
 
 viberReplyBus.on((messageText) => {
