@@ -14,6 +14,20 @@ export interface MergeResponse {
   contacts_ids: ContactIdMapping[];
 }
 
+export interface SynchronizeResponse {
+  contact_updated: {
+    entity: "lead" | "client" | "supplier";
+    id: number;
+    contact_id: number;
+  };
+  merge_info: {
+    entity: "lead" | "client" | "supplier";
+    id: number;
+    from_lead_id: number;
+    contacts_ids: number[];
+  };
+}
+
 export interface MergeWithLeadRequest {
   new_lead_id: number | string;
 }
@@ -103,6 +117,19 @@ export class LeadActionsService {
       {
         user_id,
       },
+    );
+    return response;
+  }
+
+  /**
+   * Synchronize lead contact with Chaport
+   */
+  async synchronize(
+    leadId: number | string,
+    contactId: number | string,
+  ): Promise<AxiosResponse<SynchronizeResponse>> {
+    const response = await apiClient.get<SynchronizeResponse>(
+      `/communications/leads/${leadId}/contacts/${contactId}/synchronize`,
     );
     return response;
   }

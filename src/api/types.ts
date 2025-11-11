@@ -321,6 +321,7 @@ export interface ApiMessageItem {
 // Communication lead and client types
 export interface ApiContact {
   id: number;
+  chaport_id: string | null;
   name: string;
   fio: string;
   firstName: string;

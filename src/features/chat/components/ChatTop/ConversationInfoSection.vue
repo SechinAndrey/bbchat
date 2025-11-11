@@ -20,10 +20,11 @@ import { useDebounceFn, useMediaQuery } from "@vueuse/core";
 import { computed, inject, ref, watch, type Ref } from "vue";
 import { useToast } from "@src/shared/composables/useToast";
 import type { EntityType } from "@src/shared/types/common";
+import { CONTRAGENT_TO_ENTITY_MAP } from "@src/shared/types/common";
 import VuePopper from "@kalimahapps/vue-popper";
 import LeadActionModal from "./LeadActionModal.vue";
 import { useMessenger } from "@src/features/chat/composables/useMessengerSelection";
-import { is } from "zod/v4/locales";
+import leadActionsService from "@src/shared/services/lead-actions-service";
 
 const entity = inject<Ref<EntityType>>("entity");
 const id = inject<Ref<number>>("id");
@@ -33,7 +34,7 @@ const store = useStore();
 const authStore = useAuthStore();
 const conversationsStore = useConversationsStore();
 const { toastSuccess, toastError } = useToast();
-const { isOneEnabledMessenger } = useMessenger();
+const { activeContact } = useMessenger();
 
 const isMobile = useMediaQuery("(max-width: 968px)");
 watch(isMobile, (newValue) => {
@@ -72,6 +73,79 @@ const endConversation = async () => {
     toastError("Не вдалося завершити діалог");
   } finally {
     isEndLoading.value = false;
+  }
+};
+
+const isSyncLoading = ref(false);
+
+const synchronizeConversation = async () => {
+  if (!id?.value || !contactId?.value || !entity?.value) return;
+  try {
+    isSyncLoading.value = true;
+    const response = await leadActionsService.synchronize(
+      id.value,
+      contactId.value,
+    );
+
+    if (response.status === 200 && response.data) {
+      const { merge_info } = response.data;
+      const isMerged = merge_info && merge_info.from_lead_id === id.value;
+
+      if (isMerged) {
+        const targetEntity = CONTRAGENT_TO_ENTITY_MAP[merge_info.entity];
+        const targetEntityId = merge_info.id;
+        const targetContactId = merge_info.contacts_ids[0];
+
+        await conversationsStore.handleChaportSync(response.data);
+
+        if (!store.isWidget) {
+          await router.push({
+            name: "Chat",
+            params: {
+              entity: targetEntity,
+              id: targetEntityId.toString(),
+              contactId: targetContactId.toString(),
+            },
+          });
+        } else {
+          await router.push({
+            name: "EntityChat",
+            params: {
+              entity: targetEntity,
+              id: targetEntityId.toString(),
+            },
+          });
+        }
+
+        const messageEntityText = {
+          leads: "ліда",
+          clients: "клієнта",
+          suppliers: "постачальника",
+        };
+
+        toastSuccess(
+          `Синхронізацію виконано. Контакт об'єднано з існуючим контактом ${messageEntityText[targetEntity] || ""}`,
+        );
+      } else {
+        const currentMessages =
+          conversationsStore.activeConversation?.messages || [];
+
+        await conversationsStore.fetchConversation(entity.value, id.value);
+
+        if (conversationsStore.activeConversation) {
+          conversationsStore.activeConversation.messages = currentMessages;
+        }
+
+        await conversationsStore.fetch(entity.value, { page: 1 });
+
+        toastSuccess("Синхронізацію успішно виконано");
+      }
+    }
+  } catch (error) {
+    console.error("Error synchronizing conversation:", error);
+    toastError("Не вдалося синхронізувати діалог");
+  } finally {
+    isSyncLoading.value = false;
   }
 };
 
@@ -194,15 +268,20 @@ const copyLink = async () => {
       </div>
 
       <Button
-        v-if="isOneEnabledMessenger('Chaport')"
+        v-if="isLead && activeContact?.chaport_id"
         class="whitespace-nowrap flex-shrink-0 color-white xl:!hidden"
         size="sm"
         icon-only
-        title="Синхронізцувати"
+        :disabled="isSyncLoading"
+        title="Синхронізувати"
         variant="text"
+        @click="synchronizeConversation"
       >
         <template #icon>
-          <ArrowPathIcon class="w-6 h-6" />
+          <ArrowPathIcon
+            class="w-6 h-6"
+            :class="{ 'animate-spin': isSyncLoading }"
+          />
         </template>
       </Button>
 
@@ -301,15 +380,20 @@ const copyLink = async () => {
       />
 
       <Button
-        v-if="isOneEnabledMessenger('Chaport')"
+        v-if="isLead && activeContact?.chaport_id"
         class="whitespace-nowrap flex-shrink-0 color-white"
         size="sm"
         icon-only
-        title="Синхронізцувати"
+        :disabled="isSyncLoading"
+        title="Синхронізувати"
         variant="text"
+        @click="synchronizeConversation"
       >
         <template #icon>
-          <ArrowPathIcon class="w-6 h-6" />
+          <ArrowPathIcon
+            class="w-6 h-6"
+            :class="{ 'animate-spin': isSyncLoading }"
+          />
         </template>
       </Button>
 

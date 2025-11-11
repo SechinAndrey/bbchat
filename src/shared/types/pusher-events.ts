@@ -25,6 +25,19 @@ export interface PusherEventMap {
       /** message ID */
       id: number;
     };
+    "lead-merged-by-chaport-messages": {
+      contact_updated: {
+        entity: "lead" | "client" | "supplier";
+        id: number;
+        contact_id: number;
+      };
+      merge_info: {
+        entity: "lead" | "client" | "supplier";
+        id: number;
+        from_lead_id: number;
+        contacts_ids: number[];
+      };
+    };
   };
 
   // "another-channel": {

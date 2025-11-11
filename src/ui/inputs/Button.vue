@@ -76,9 +76,18 @@ const props = withDefaults(
   },
 );
 
-defineEmits<{
+const emit = defineEmits<{
   click: [event: MouseEvent];
 }>();
+
+const handleClick = (event: MouseEvent) => {
+  if (props.disabled || props.loading) {
+    event.preventDefault();
+    event.stopPropagation();
+    return;
+  }
+  emit("click", event);
+};
 
 // Computed classes
 const buttonClasses = computed(() => {
@@ -134,7 +143,7 @@ const componentProps = computed(() => {
     :is="componentType"
     v-bind="componentProps"
     :class="buttonClasses"
-    @click="$emit('click', $event)"
+    @click="handleClick"
   >
     <!-- Loading icon -->
     <svg

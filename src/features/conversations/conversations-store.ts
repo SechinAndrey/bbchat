@@ -7,6 +7,7 @@ import type {
   MessageParams,
 } from "./conversations-service";
 import type { EntityType, ContragentType } from "@src/shared/types/common";
+import { CONTRAGENT_TO_ENTITY_MAP } from "@src/shared/types/common";
 import type {
   ApiResponseMeta,
   ApiCommunicationEntityFull,
@@ -14,6 +15,7 @@ import type {
   ApiMessageItem,
   UpdateLeadRequest,
 } from "@src/api/types";
+import type { SynchronizeResponse } from "@src/shared/services/lead-actions-service";
 import type { IConversation } from "@src/shared/types/types";
 import { adaptApiCommunicationToIConversation } from "@src/api/communication-adapters";
 import useStore from "@src/shared/store/store";
@@ -696,6 +698,38 @@ export const useConversationsStore = defineStore("conversations", () => {
     }
   };
 
+  /**
+   * Handle Chaport synchronization event (from API response or Pusher)
+   * Can result in lead merge if phone already exists
+   * @param data - Synchronize response data
+   */
+  const handleChaportSync = async (data: SynchronizeResponse) => {
+    try {
+      const { merge_info } = data;
+
+      if (!merge_info || !activeConversation.value) {
+        return;
+      }
+
+      const currentId = activeConversation.value.id;
+      const currentEntity = activeConversation.value.entity;
+      const isMerged = merge_info.from_lead_id === currentId;
+
+      if (isMerged) {
+        console.log("🔄 Chaport sync: Lead merged - refreshing conversations");
+
+        await fetch(currentEntity, { page: 1 });
+
+        const targetEntity = CONTRAGENT_TO_ENTITY_MAP[merge_info.entity];
+        if (targetEntity !== currentEntity) {
+          await fetch(targetEntity, { page: 1 });
+        }
+      }
+    } catch (error) {
+      console.error("Error handling Chaport sync:", error);
+    }
+  };
+
   const { bindEvent } = usePusher();
   bindEvent(
     "e-chat-notification",
@@ -736,6 +770,18 @@ export const useConversationsStore = defineStore("conversations", () => {
       if (data.id) {
         markMessageAsDeleted(data.id);
       }
+    },
+  );
+
+  bindEvent(
+    "e-chat-notification",
+    "lead-merged-by-chaport-messages",
+    async (data: SynchronizeResponse) => {
+      console.log(
+        "🔀 Received Pusher lead-merged-by-chaport-messages event:",
+        data,
+      );
+      await handleChaportSync(data);
     },
   );
 
@@ -830,6 +876,9 @@ export const useConversationsStore = defineStore("conversations", () => {
     // Actions - Message Status
     markMessageAsReadByContact,
     markMessageAsDeleted,
+
+    // Actions - Chaport Synchronization
+    handleChaportSync,
 
     // Actions - Temporary Messages (Optimistic Updates)
     tempMessages,
