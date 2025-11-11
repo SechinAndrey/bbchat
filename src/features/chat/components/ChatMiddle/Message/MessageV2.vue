@@ -22,6 +22,8 @@ import { useLongPress } from "@src/shared/composables/useLongPress";
 import ReplyQuote from "@src/features/chat/components/ChatMiddle/Message/ReplyQuote.vue";
 import { useMessageData } from "@src/features/chat/composables/useMessageData";
 import { parseReplyQuoteText } from "@src/features/chat/utils/replyQuoteParser";
+import { useAuthStore } from "@src/features/auth/store/auth-store";
+import useTheme from "@src/shared/theme-system/useTheme";
 
 const props = defineProps<{
   message: ApiMessageItem;
@@ -35,6 +37,8 @@ const emit = defineEmits<{
 }>();
 
 const conversationsStore = useConversationsStore();
+const authStore = useAuthStore();
+const { isDarkMode } = useTheme();
 
 const { echat, echatMessage, getMessageText } = useMessageData(
   computed(() => props.message),
@@ -147,6 +151,61 @@ const replyToText = computed(() => {
 const isDeleted = computed(() => {
   return !!props.message.deleted_at;
 });
+
+const isAuthorCurrentUser = computed(() => {
+  return props.message.user_id === authStore.currentUser?.id;
+});
+
+const authorName = computed(() => {
+  if (!props.message.user) return "";
+  return props.message.user.name || "";
+});
+
+const authorTextColor = computed(() => {
+  if (!props.message.user_id) return "text-gray-400";
+
+  const colorsLight = [
+    "text-blue-600",
+    "text-green-600",
+    "text-purple-600",
+    "text-pink-600",
+    "text-indigo-600",
+    "text-teal-600",
+    "text-orange-600",
+    "text-cyan-600",
+    "text-red-600",
+    "text-amber-600",
+    "text-lime-600",
+    "text-emerald-600",
+    "text-sky-600",
+    "text-violet-600",
+    "text-fuchsia-600",
+    "text-rose-600",
+  ];
+
+  const colorsDark = [
+    "text-blue-400",
+    "text-green-400",
+    "text-purple-400",
+    "text-pink-400",
+    "text-indigo-400",
+    "text-teal-400",
+    "text-orange-400",
+    "text-cyan-400",
+    "text-red-400",
+    "text-amber-400",
+    "text-lime-400",
+    "text-emerald-400",
+    "text-sky-400",
+    "text-violet-400",
+    "text-fuchsia-400",
+    "text-rose-400",
+  ];
+
+  const colors = isDarkMode.value ? colorsDark : colorsLight;
+
+  return colors[props.message.user_id % colors.length];
+});
 </script>
 
 <template>
@@ -166,198 +225,210 @@ const isDeleted = computed(() => {
     />
 
     <!-- Message body -->
-    <div class="flex gap-3 items-end">
-      <!-- Message content -->
-      <div
-        class="relative bg-app-bg-secondary rounded-2xl rounded-tl-sm min-h-[2.313rem] min-w-10 px-4 py-3 max-w-md transition-all duration-300"
-        :class="{
-          'w-[225px]': call && !isCallDetailsExpanded,
-          'w-[260px]': call && isCallDetailsExpanded,
-          'opacity-60': isDeleted,
-        }"
-      >
-        <!-- Deleted message indicator -->
+    <div class="flex flex-col gap-1 items-end">
+      <div class="flex gap-3 items-end">
+        <!-- Message content -->
         <div
-          v-if="isDeleted"
-          class="flex items-center gap-1.5 text-app-text-secondary text-xs italic mb-2 pb-2 border-b border-app-border/30"
-        >
-          <TrashIcon class="w-3.5 h-3.5" />
-          <span>Видалено</span>
-        </div>
-
-        <!-- 1 - чапорт -->
-        <div
-          v-if="chaport"
-          class="text-[0.8125rem] leading-relaxed relative pr-6"
+          class="relative bg-app-bg-secondary rounded-2xl rounded-tl-sm min-h-[2.313rem] min-w-10 px-4 py-3 max-w-md transition-all duration-300"
+          :class="{
+            'w-[225px]': call && !isCallDetailsExpanded,
+            'w-[260px]': call && isCallDetailsExpanded,
+            'opacity-60': isDeleted,
+          }"
         >
           <div
-            class="whitespace-pre-line"
-            v-html="formatMessageText(chaport.message)"
-          ></div>
-
-          <MediaPreview
-            v-if="chaport?.file"
-            :media="chaport?.file"
-            :attachment-id="props.message.id"
-            @open-image-gallery="
-              (imageUrl) => {
-                emit('openImageGallery', imageUrl);
-              }
-            "
-          />
-        </div>
-
-        <!-- 2 - мессенджер -->
-        <!-- message_telegram_id - telegram | viber -->
-        <div
-          v-if="echat"
-          class="text-[0.8125rem] leading-relaxed relative pr-6"
-        >
-          <!-- Reply Message -->
-          <ReplyQuote
-            v-if="props.message.reply_to"
-            :reply-to-text="replyToText"
-            :message="props.message.reply_to"
-            @click="emit('scrollToMessage', props.message.reply_to.id)"
-          />
-
-          <div
-            v-if="
-              parsedReplyQuote?.originalMessageText &&
-              parsedReplyQuote?.replyMessageText
-            "
-            class="mb-2 p-2 bg-app-bg/50 border-l-2 border-primary"
+            v-if="isSelf && !isAuthorCurrentUser && authorName"
+            :class="authorTextColor"
+            class="text-[0.688rem] font-semibold mb-1 pb-1"
           >
-            <div class="flex items-start gap-2">
-              <div class="flex-1 min-w-0">
-                <div class="text-xs text-app-text-secondary truncate">
-                  {{ parsedReplyQuote?.originalMessageText }}
+            {{ authorName }}
+          </div>
+
+          <!-- Deleted message indicator -->
+          <div
+            v-if="isDeleted"
+            class="flex items-center gap-1.5 text-app-text-secondary text-xs italic mb-2 pb-2 border-b border-app-border"
+          >
+            <TrashIcon class="w-3.5 h-3.5" />
+            <span>Видалено</span>
+          </div>
+
+          <!-- 1 - чапорт -->
+          <div
+            v-if="chaport"
+            class="text-[0.8125rem] leading-relaxed relative pr-6"
+          >
+            <div
+              class="whitespace-pre-line"
+              v-html="formatMessageText(chaport.message)"
+            ></div>
+
+            <MediaPreview
+              v-if="chaport?.file"
+              :media="chaport?.file"
+              :attachment-id="props.message.id"
+              @open-image-gallery="
+                (imageUrl) => {
+                  emit('openImageGallery', imageUrl);
+                }
+              "
+            />
+          </div>
+
+          <!-- 2 - мессенджер -->
+          <!-- message_telegram_id - telegram | viber -->
+          <div
+            v-if="echat"
+            class="text-[0.8125rem] leading-relaxed relative pr-6"
+          >
+            <!-- Reply Message -->
+            <ReplyQuote
+              v-if="props.message.reply_to"
+              :reply-to-text="replyToText"
+              :message="props.message.reply_to"
+              @click="emit('scrollToMessage', props.message.reply_to.id)"
+            />
+
+            <div
+              v-if="
+                parsedReplyQuote?.originalMessageText &&
+                parsedReplyQuote?.replyMessageText
+              "
+              class="mb-2 p-2 bg-app-bg/50 border-l-2 border-primary"
+            >
+              <div class="flex items-start gap-2">
+                <div class="flex-1 min-w-0">
+                  <div class="text-xs text-app-text-secondary truncate">
+                    {{ parsedReplyQuote?.originalMessageText }}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <div v-if="echat.message">
-            <div
-              class="whitespace-pre-line"
-              v-html="
-                formatMessageText(
-                  parsedReplyQuote?.replyMessageText || echat.message || '',
-                )
-              "
-            ></div>
-          </div>
-          <!--media preview-->
-          <MediaPreview
-            v-if="echatMessage.media || echatMessage.file || chaport?.file"
-            :media="echatMessage.media || echatMessage.file || chaport?.file"
-            :attachment-id="props.message.id"
-            @open-image-gallery="
-              (imageUrl) => {
-                emit('openImageGallery', imageUrl);
-              }
-            "
-          />
-        </div>
-
-        <!-- 3 - звонок -->
-        <div v-if="call" class="text-[0.8125rem] leading-relaxed">
-          <div class="flex items-center gap-2 mb-2">
-            <component :is="callTypeIcon" class="w-4 h-4 text-blue-500" />
-            <span class="font-medium">
-              {{
-                call.call_type === 0 ? "Вхідний дзвінок" : "Вихідний дзвінок"
-              }}
-            </span>
-            <Button
-              class="ml-auto"
-              variant="ghost"
-              size="xs"
-              icon-only
-              @click="toggleCallDetails"
-            >
-              <template #icon>
-                <component
-                  :is="isCallDetailsExpanded ? ChevronUpIcon : ChevronDownIcon"
-                  class="w-5 h-5"
-                />
-              </template>
-            </Button>
-          </div>
-          <Transition name="call-details-fade">
-            <div
-              v-show="isCallDetailsExpanded"
-              class="text-text-secondary overflow-hidden"
-            >
-              <div class="flex justify-between gap-10">
-                <span>Номер:</span>
-                <span>{{ call.phone }}</span>
-              </div>
-              <div class="flex justify-between gap-10">
-                <span>Статус:</span>
-                <span>{{ callStatusText }}</span>
-              </div>
-              <div class="flex justify-between gap-10">
-                <span>Тривалість:</span>
-                <span>{{ formatDuration(call.billsec) }}</span>
-              </div>
-              <div class="flex justify-between gap-10">
-                <span>Час очікування:</span>
-                <span>{{ formatDuration(call.waitsec) }}</span>
-              </div>
-              <CallPlayer
-                v-if="call.binotel_id"
-                :binotel-id="call.binotel_id"
-                class="m-2 mt-3"
-              />
+            <div v-if="echat.message">
+              <div
+                class="whitespace-pre-line"
+                v-html="
+                  formatMessageText(
+                    parsedReplyQuote?.replyMessageText || echat.message || '',
+                  )
+                "
+              ></div>
             </div>
-          </Transition>
-        </div>
+            <!--media preview-->
+            <MediaPreview
+              v-if="echatMessage.media || echatMessage.file || chaport?.file"
+              :media="echatMessage.media || echatMessage.file || chaport?.file"
+              :attachment-id="props.message.id"
+              @open-image-gallery="
+                (imageUrl) => {
+                  emit('openImageGallery', imageUrl);
+                }
+              "
+            />
+          </div>
 
-        <img
-          v-if="chaport"
-          src="/imgs/chaport.png"
-          alt="Chaport"
-          class="absolute bottom-3 right-3 w-4 h-4"
-        />
+          <!-- 3 - звонок -->
+          <div v-if="call" class="text-[0.8125rem] leading-relaxed">
+            <div class="flex items-center gap-2 mb-2">
+              <component :is="callTypeIcon" class="w-4 h-4 text-blue-500" />
+              <span class="font-medium">
+                {{
+                  call.call_type === 0 ? "Вхідний дзвінок" : "Вихідний дзвінок"
+                }}
+              </span>
+              <Button
+                class="ml-auto"
+                variant="ghost"
+                size="xs"
+                icon-only
+                @click="toggleCallDetails"
+              >
+                <template #icon>
+                  <component
+                    :is="
+                      isCallDetailsExpanded ? ChevronUpIcon : ChevronDownIcon
+                    "
+                    class="w-5 h-5"
+                  />
+                </template>
+              </Button>
+            </div>
+            <Transition name="call-details-fade">
+              <div
+                v-show="isCallDetailsExpanded"
+                class="text-text-secondary overflow-hidden"
+              >
+                <div class="flex justify-between gap-10">
+                  <span>Номер:</span>
+                  <span>{{ call.phone }}</span>
+                </div>
+                <div class="flex justify-between gap-10">
+                  <span>Статус:</span>
+                  <span>{{ callStatusText }}</span>
+                </div>
+                <div class="flex justify-between gap-10">
+                  <span>Тривалість:</span>
+                  <span>{{ formatDuration(call.billsec) }}</span>
+                </div>
+                <div class="flex justify-between gap-10">
+                  <span>Час очікування:</span>
+                  <span>{{ formatDuration(call.waitsec) }}</span>
+                </div>
+                <CallPlayer
+                  v-if="call.binotel_id"
+                  :binotel-id="call.binotel_id"
+                  class="m-2 mt-3"
+                />
+              </div>
+            </Transition>
+          </div>
 
-        <img
-          v-if="echat"
-          :src="
-            echat.dialog.messenger_id == 1
-              ? '/imgs/telegram.png'
-              : '/imgs/viber.png'
-          "
-          :alt="echat.dialog.messenger_id == 1 ? 'Telegram' : 'Viber'"
-          class="absolute bottom-3 right-3 w-4 h-4 rounded-full bg-cover bg-center"
-        />
-
-        <!-- Status indicator for self messages -->
-        <div
-          v-if="isSelf"
-          class="absolute text-xs bottom-0 -right-[0.2rem]"
-          :class="statusColor"
-        >
-          <CheckIcon class="w-4 h-4" />
-          <CheckIcon
-            v-if="showDoubleCheck"
-            class="w-4 h-4 absolute top-0 left-[0.188rem]"
+          <img
+            v-if="chaport"
+            src="/imgs/chaport.png"
+            alt="Chaport"
+            class="absolute bottom-3 right-3 w-4 h-4"
           />
-        </div>
-      </div>
-      <!-- Time -->
 
-      <div class="text-[0.625rem] font-light text-text-secondary flex-col">
-        <Robo1Icon
-          v-if="chaport?.type_id === 3"
-          class="text-app-text opacity-70 w-5 h-5 mb-1"
-        />
-        {{
-          formatDate(message.created_at, {
-            hour: "numeric",
-            minute: "numeric",
-          })
-        }}
+          <img
+            v-if="echat"
+            :src="
+              echat.dialog.messenger_id == 1
+                ? '/imgs/telegram.png'
+                : '/imgs/viber.png'
+            "
+            :alt="echat.dialog.messenger_id == 1 ? 'Telegram' : 'Viber'"
+            class="absolute bottom-3 right-3 w-4 h-4 rounded-full bg-cover bg-center"
+          />
+
+          <!-- Status indicator for self messages -->
+          <div
+            v-if="isSelf"
+            class="absolute text-xs bottom-0 -right-[0.2rem]"
+            :class="statusColor"
+          >
+            <CheckIcon class="w-4 h-4" />
+            <CheckIcon
+              v-if="showDoubleCheck"
+              class="w-4 h-4 absolute top-0 left-[0.188rem]"
+            />
+          </div>
+        </div>
+        <!-- Time -->
+
+        <div class="text-[0.625rem] font-light text-text-secondary flex-col">
+          <Robo1Icon
+            v-if="chaport?.type_id === 3"
+            class="text-app-text opacity-70 w-5 h-5 mb-1"
+          />
+          {{
+            formatDate(message.created_at, {
+              hour: "numeric",
+              minute: "numeric",
+            })
+          }}
+        </div>
       </div>
     </div>
   </div>
