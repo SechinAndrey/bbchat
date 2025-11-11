@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.5.0 - 2025-11-11
+
+### Bug Fixes
+
+- APK. Додати вкладення. [WS-18700430-21062136](https://trp4438.worksection.com/project/257910/18700430/21062136/)
+- Слідкувати за дошками. Периоды. [WS-18700430-21049086](https://trp4438.worksection.com/project/257910/18700430/21049086/)
+
+### Features
+
+- Cusomize android app
+- Config android StatusBar
+- Add android app name
+- Вывод имени. [WS-18700430-21068979](https://trp4438.worksection.com/project/257910/18700430/21068979/)
+- Закрытие чата. [WS-18700430-21068988](https://trp4438.worksection.com/project/257910/18700430/21068988/)
+- Синхронизация контакта для чапорта [WS-18700430-21059505](https://trp4438.worksection.com/project/257910/18700430/21059505/)
+
+### Project Maintenance
+
+- Yarn.lock
+- Release version 0.5.0
+
 ## 0.4.1 - 2025-11-10
 
 ### Bug Fixes
