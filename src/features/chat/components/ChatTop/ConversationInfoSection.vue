@@ -10,6 +10,7 @@ import {
   EllipsisVerticalIcon,
   ArrowPathIcon,
   StopCircleIcon,
+  PlayCircleIcon,
   LinkIcon,
 } from "@heroicons/vue/24/outline";
 import SearchInput from "@src/ui/inputs/SearchInput.vue";
@@ -58,21 +59,30 @@ const debouncedFn = useDebounceFn(() => {
   });
 }, 500);
 
-const isEndLoading = ref(false);
+const isSwitchStatusLoading = ref(false);
 
-const endConversation = async () => {
+const switchConversationStatus = async () => {
   if (!entity?.value || !id?.value) return;
   try {
-    isEndLoading.value = true;
+    isSwitchStatusLoading.value = true;
+    const currentStatus =
+      conversationsStore.activeConversation?.communication_status_id;
+    const newStatus = currentStatus === 1 ? 2 : 1; // 1 - active, 2 - stopped
+
     await conversationsStore.updateConversation(entity.value, id.value, {
-      communication_status_id: 2, // 2 - completed
+      communication_status_id: newStatus,
     });
-    toastSuccess("Діалог завершено");
+
+    if (conversationsStore.activeConversation) {
+      conversationsStore.activeConversation.communication_status_id = newStatus;
+    }
+
+    toastSuccess(newStatus === 2 ? "Діалог завершено" : "Діалог відновлено");
   } catch (error) {
-    console.error("Error ending conversation:", error);
-    toastError("Не вдалося завершити діалог");
+    console.error("Error switching conversation status:", error);
+    toastError("Не вдалося змінити статус діалогу");
   } finally {
-    isEndLoading.value = false;
+    isSwitchStatusLoading.value = false;
   }
 };
 
@@ -207,6 +217,10 @@ const copyLink = async () => {
     toastError("Не вдалося скопіювати посилання");
   }
 };
+
+const isConversationActive = computed(() => {
+  return conversationsStore.activeConversation?.communication_status_id === 1;
+});
 </script>
 
 <template>
@@ -302,12 +316,15 @@ const copyLink = async () => {
         class="whitespace-nowrap flex-shrink-0 color-white xl:!hidden"
         size="sm"
         icon-only
-        :loading="isEndLoading"
-        title="Завершити діалог"
+        :loading="isSwitchStatusLoading"
+        :title="isConversationActive ? 'Завершити діалог' : 'Відновити діалог'"
         variant="text"
-        @click="endConversation"
+        @click="switchConversationStatus"
       >
-        <template #icon> <StopCircleIcon class="w-6 h-6" /> </template>1
+        <template #icon>
+          <StopCircleIcon v-if="isConversationActive" class="w-6 h-6" />
+          <PlayCircleIcon v-else class="w-6 h-6" />
+        </template>
       </Button>
 
       <VuePopper
@@ -414,13 +431,14 @@ const copyLink = async () => {
         class="whitespace-nowrap flex-shrink-0 color-white"
         size="sm"
         icon-only
-        :loading="isEndLoading"
-        title="Завершити діалог"
+        :loading="isSwitchStatusLoading"
+        :title="isConversationActive ? 'Завершити діалог' : 'Відновити діалог'"
         variant="text"
-        @click="endConversation"
+        @click="switchConversationStatus"
       >
         <template #icon>
-          <StopCircleIcon class="w-6 h-6" />
+          <StopCircleIcon v-if="isConversationActive" class="w-6 h-6" />
+          <PlayCircleIcon v-else class="w-6 h-6" />
         </template>
       </Button>
 
