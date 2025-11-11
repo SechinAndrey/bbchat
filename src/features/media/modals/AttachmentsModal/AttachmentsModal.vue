@@ -8,6 +8,7 @@ import TextInput from "@src/ui/inputs/TextInput.vue";
 import Modal from "@src/ui/modals/Modal.vue";
 import { useMessageSending } from "@src/features/chat/composables/useMessageSending";
 import { useToast } from "@src/shared/composables/useToast";
+import { useMediaQuery } from "@vueuse/core";
 import {
   formatFileSize,
   getFileType,
@@ -28,6 +29,8 @@ const props = defineProps<{
 
 const { sendMessageWithFile } = useMessageSending();
 const { toastError: showError } = useToast();
+
+const isMobile = computed(() => useMediaQuery("(max-width: 767px)").value);
 
 const attachments = ref<IAttachment[]>([]);
 const caption = ref("");
@@ -212,9 +215,21 @@ onUnmounted(() => {
 <template>
   <Modal :open="props.open" :close-modal="props.closeModal">
     <template #content>
-      <div class="w-[25rem] bg-app-bg rounded py-6">
+      <div
+        :class="[
+          'bg-app-bg rounded',
+          isMobile ? 'w-full py-4' : 'w-[25rem] py-6',
+        ]"
+      >
         <!-- modal title -->
-        <h3 class="text-lg font-semibold px-5 mb-5">Додати вкладення</h3>
+        <h3
+          :class="[
+            'text-lg font-semibold mb-4',
+            isMobile ? 'px-4' : 'px-5 mb-5',
+          ]"
+        >
+          Додати вкладення
+        </h3>
 
         <!-- Hidden file input -->
         <input
@@ -228,12 +243,15 @@ onUnmounted(() => {
         <!-- attachments list -->
         <div
           v-if="hasAttachments"
-          class="max-h-[8.75rem] overflow-y-auto overflow-x-hidden px-5"
+          :class="[
+            'max-h-[8.75rem] overflow-y-auto overflow-x-hidden',
+            isMobile ? 'px-4' : 'px-5',
+          ]"
         >
           <Attachment
             v-for="(attachment, index) in attachments"
             :key="index"
-            class="mt-5"
+            :class="isMobile ? 'mt-4' : 'mt-5'"
             :attachment="attachment"
             @remove="removeAttachment"
             @replace="replaceAttachment"
@@ -244,7 +262,8 @@ onUnmounted(() => {
         <div
           v-else
           :class="[
-            'px-5 py-8 border-2 mx-5 border-dashed rounded-md cursor-pointer transition-all duration-200',
+            'border-2 border-dashed rounded-md cursor-pointer transition-all duration-200',
+            isMobile ? 'px-4 py-6 mx-4' : 'px-5 py-8 mx-5',
             isDragging ? 'border-primary bg-primary/10' : 'border-app-border',
           ]"
           @click="openFileDialog"
@@ -252,10 +271,14 @@ onUnmounted(() => {
           @dragleave="handleDragLeave"
           @drop.prevent="handleDrop"
         >
-          <p class="text-app-text-secondary text-center">
+          <p v-if="!isMobile" class="text-app-text-secondary text-center">
             Перетягніть файли сюди або
             <span class="font-semibold text-primary"> оберіть файл </span>
             с комп'ютера
+          </p>
+          <p v-else class="text-app-text-secondary text-center">
+            <span class="font-semibold text-primary">Оберіть файл</span>
+            з пристрою
           </p>
         </div>
 
@@ -265,11 +288,11 @@ onUnmounted(() => {
           placeholder="Підпис"
           type="text"
           variant="bordered"
-          class="mx-5 my-6"
+          :class="isMobile ? 'mx-4 my-4' : 'mx-5 my-6'"
         />
 
         <!--Action buttons-->
-        <div class="flex w-full px-5">
+        <div :class="['flex w-full', isMobile ? 'px-4' : 'px-5']">
           <div class="grow flex justify-start">
             <Button
               v-if="!hasAttachments"
@@ -280,7 +303,11 @@ onUnmounted(() => {
             </Button>
           </div>
 
-          <Button variant="text" class="mr-4" @click="props.closeModal">
+          <Button
+            variant="text"
+            :class="isMobile ? 'mr-2' : 'mr-4'"
+            @click="props.closeModal"
+          >
             Скасувати
           </Button>
 
@@ -288,7 +315,12 @@ onUnmounted(() => {
             Відправити
           </Button>
         </div>
-        <div class="text-app-text-secondary text-xs text-left px-5 mt-6">
+        <div
+          :class="[
+            'text-app-text-secondary text-xs text-left',
+            isMobile ? 'px-4 mt-4' : 'px-5 mt-6',
+          ]"
+        >
           *1 файл на одне повідомлення
         </div>
       </div>
