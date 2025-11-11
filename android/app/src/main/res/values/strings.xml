@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">BbChat</string>
-    <string name="title_activity_main">BbChat</string>
+    <string name="app_name">Billboards Комунікації</string>
+    <string name="title_activity_main">Billboards Комунікації</string>
     <string name="package_name">ua.com.billboards.chat</string>
     <string name="custom_url_scheme">ua.com.billboards.chat</string>
 </resources>

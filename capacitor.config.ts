@@ -2,7 +2,7 @@ import type { CapacitorConfig } from "@capacitor/cli";
 
 const config: CapacitorConfig = {
   appId: "ua.com.billboards.chat",
-  appName: "BbChat",
+  appName: "Billboards Комунікації",
   webDir: "dist",
   plugins: {
     PushNotifications: {
