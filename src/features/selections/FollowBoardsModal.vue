@@ -129,11 +129,25 @@ const followBoards = async () => {
 
     await selectionsService.followBoards(params);
 
+    // For asap mode, set period to one year from current month for UI display
+    let displayMonthFrom = month_from;
+    let displayMonthTo = month_to;
+
+    if (activeTab.value === "asap") {
+      const today = new Date();
+      const currentYear = today.getFullYear();
+      const currentMonth = String(today.getMonth() + 1).padStart(2, "0");
+      displayMonthFrom = `${currentYear}-${currentMonth}`;
+
+      const nextYear = currentYear + 1;
+      displayMonthTo = `${nextYear}-${currentMonth}`;
+    }
+
     selectionsStore.updateBoardsWatchStatus(
       props.selectionId,
       props.selectedBoardIds,
-      params.month_from,
-      params.month_to,
+      displayMonthFrom,
+      displayMonthTo,
     );
 
     // Reset form after successful submission

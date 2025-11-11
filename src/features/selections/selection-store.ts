@@ -62,7 +62,7 @@ export const useSelectionsStore = defineStore("selections", () => {
     const selection = selections.value.find((s) => s.id === selectionId);
     if (!selection?.boards_list) return;
 
-    const isWatched = !!(watchedFrom || watchedTo);
+    const isWatched = watchedFrom !== undefined || watchedTo !== undefined;
 
     selection.boards_list.forEach((board) => {
       if (boardIds.includes(board.id)) {
