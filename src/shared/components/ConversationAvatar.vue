@@ -39,11 +39,11 @@ const avatar = computed(() => {
 const sizeClasses = computed(() => {
   switch (props.size) {
     case "sm":
-      return "w-5 h-5 text-xs";
+      return "min-w-5 min-h-5 max-w-5 max-h-5 text-xs";
     case "lg":
-      return "w-10 h-10 text-lg";
+      return "min-w-10 min-h-10 max-w-10 max-h-10 text-lg";
     default:
-      return "w-7 h-7 text-sm";
+      return "min-w-7 min-h-7 max-w-7 max-h-7 text-sm";
   }
 });
 </script>
