@@ -11,11 +11,12 @@ export interface CreateContactRequest {
 }
 
 export interface UpdateContactRequest {
-  fio: string;
+  fio?: string;
   phone?: string;
   email?: string;
   tg_name?: string;
   post_id?: number | string;
+  communication_status_id?: number;
 }
 
 export class ContactsService {

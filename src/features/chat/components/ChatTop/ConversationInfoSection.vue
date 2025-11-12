@@ -26,6 +26,7 @@ import VuePopper from "@kalimahapps/vue-popper";
 import LeadActionModal from "./LeadActionModal.vue";
 import { useMessenger } from "@src/features/chat/composables/useMessengerSelection";
 import leadActionsService from "@src/shared/services/lead-actions-service";
+import contactsService from "@src/api/contacts-service";
 
 const entity = inject<Ref<EntityType>>("entity");
 const id = inject<Ref<number>>("id");
@@ -62,20 +63,24 @@ const debouncedFn = useDebounceFn(() => {
 const isSwitchStatusLoading = ref(false);
 
 const switchConversationStatus = async () => {
-  if (!entity?.value || !id?.value) return;
+  if (!entity?.value || !id?.value || !contactId?.value || !activeContact.value)
+    return;
   try {
     isSwitchStatusLoading.value = true;
-    const currentStatus =
-      conversationsStore.activeConversation?.communication_status_id;
+    const currentStatus = activeContact.value.communication_status_id;
     const newStatus = currentStatus === 1 ? 2 : 1; // 1 - active, 2 - stopped
 
-    await conversationsStore.updateConversation(entity.value, id.value, {
-      communication_status_id: newStatus,
-    });
-
-    if (conversationsStore.activeConversation) {
-      conversationsStore.activeConversation.communication_status_id = newStatus;
-    }
+    // Update contact status
+    await contactsService.updateContact(
+      entity.value,
+      id.value,
+      contactId.value,
+      {
+        fio: activeContact.value.fio,
+        communication_status_id: newStatus,
+      },
+    );
+    activeContact.value.communication_status_id = newStatus;
 
     toastSuccess(newStatus === 2 ? "Діалог завершено" : "Діалог відновлено");
   } catch (error) {
@@ -219,7 +224,7 @@ const copyLink = async () => {
 };
 
 const isConversationActive = computed(() => {
-  return conversationsStore.activeConversation?.communication_status_id === 1;
+  return activeContact.value?.communication_status_id === 1;
 });
 </script>
 

@@ -333,6 +333,7 @@ export interface ApiContact {
   post_id: number | null;
   post_name: string | null;
   lastSeen: string | null;
+  communication_status_id: number | null;
 }
 
 export interface ApiCommunicationLead {
