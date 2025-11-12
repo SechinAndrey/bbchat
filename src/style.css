@@ -16,6 +16,50 @@
     scrollbar-width: thin;
     scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
   }
+
+  /* WebKit scrollbar styles for Android WebView and Chrome */
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 3px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb);
+    opacity: 0.8;
+  }
+
+  .scrollbar-thin--bg-app-bg {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb) var(--color-bg-primary);
+  }
+
+  .scrollbar-thin--bg-app-bg::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar-thin--bg-app-bg::-webkit-scrollbar-track {
+    background: var(--color-bg-primary);
+  }
+
+  .scrollbar-thin--bg-app-bg::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 3px;
+  }
+
+  .scrollbar-thin--bg-app-bg::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb);
+    opacity: 0.8;
+  }
 }
 
 .Toastify__toast {

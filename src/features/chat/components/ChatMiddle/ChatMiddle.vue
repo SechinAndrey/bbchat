@@ -359,7 +359,7 @@ watch(
 <template>
   <div
     ref="container"
-    class="grow px-5 py-5 flex flex-col overflow-y-scroll scrollbar-hidden"
+    class="grow px-5 py-5 flex flex-col scrollbar-thin--bg-app-bg overflow-auto md:h-[calc(100vh-180px)]"
   >
     <Spinner
       v-if="conversationsStore.isLoadingMoreMessages"
