@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.5.1 - 2025-11-12
+
+### Bug Fixes
+
+- Закрыть открыть контакт(чат). Для отображения во вкладках "всі" "відкриті"
+
+### Features
+
+- Чат. Scrollbar. [WS-18700430-20294123](https://trp4438.worksection.com/project/257910/18700430/20294123/)
+- Improve message responsive(time, avatar) - тут были визуальные дефекты сообщения при длинных имененах файлов, также перенёс отображения времени вутырь сообщения(как в тг), потому как вне блока справа время крало место на телефонах и для аватара и и полезного контента сообщения было меньше места
+- Чат. Scrollbar. [WS-18700430-20294123](https://trp4438.worksection.com/project/257910/18700430/20294123/)
+
+### Project Maintenance
+
+- Release version 0.5.1
+
 ## 0.5.0 - 2025-11-11
 
 ### Bug Fixes
