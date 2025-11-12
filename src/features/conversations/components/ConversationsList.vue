@@ -8,7 +8,9 @@ const props = defineProps<{
 </script>
 
 <template>
-  <div class="pr-[0.125rem]">
+  <div
+    class="pr-[0.125rem] scrollbar-thin overflow-auto max-h-[calc(100vh-13.75rem)] md:max-h-[calc(100vh-11.75rem)]"
+  >
     <Conversation
       v-for="conversation in props.filteredConversations"
       :key="conversation.id"
