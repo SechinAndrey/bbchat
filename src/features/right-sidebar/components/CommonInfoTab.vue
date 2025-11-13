@@ -20,6 +20,7 @@ import {
   BriefcaseIcon,
   EllipsisVerticalIcon,
   TrashIcon,
+  ArrowTopRightOnSquareIcon,
 } from "@heroicons/vue/24/outline";
 import KanbanSelect from "@src/shared/components/KanbanSelect.vue";
 import ContactModal from "@src/features/contacts/ContactModal.vue";
@@ -65,8 +66,22 @@ const entityType = computed(() => {
   return "lead";
 });
 
+const isClient = computed(() => {
+  return entity?.value === "clients";
+});
+
+const clientCrnLink = computed(() => {
+  if (!activeConversation.value) return "#";
+
+  return `${import.meta.env.VITE_CRM_BASE}/manager/clients/${activeConversation.value.id}/view`;
+});
+
 const entityId = computed(() => {
   return activeConversation.value?.id || 0;
+});
+
+const entityName = computed(() => {
+  return activeConversation.value?.name || "";
 });
 
 const isCurrentContact = (contact: { id: number }) => {
@@ -271,6 +286,16 @@ const sourceInfo = computed(() => {
 
 <template>
   <div class="py-4 pb-6">
+    <a
+      v-if="isClient"
+      :href="clientCrnLink"
+      target="_blank"
+      class="text-[0.813rem] text-primary my-4 flex items-start hover:underline underline-offset-[0.4rem]"
+    >
+      <ArrowTopRightOnSquareIcon class="min-w-5 min-h-5 max-w-5 max-h-5 mr-2" />
+      <div class="-mt-[0.07rem]">{{ entityName }} в CRM</div>
+    </a>
+
     <div class="common-info-tab mb-4 text-app-text-secondary text-[0.813rem]">
       Контакти
     </div>
