@@ -599,13 +599,17 @@ export const useConversationsStore = defineStore("conversations", () => {
 
     // 3. Load missing conversation (only for incoming messages)
     if (!isOutgoing) {
-      const loadedConversation = await loadMissingConversation(
-        entityType,
-        entityId,
-        contactId,
-      );
-      if (loadedConversation) {
-        updateUnreadCount(loadedConversation);
+      // Only load conversation if we're on the matching entity tab
+      const currentEntity = route.params.entity as EntityType;
+      if (currentEntity === entityType) {
+        const loadedConversation = await loadMissingConversation(
+          entityType,
+          entityId,
+          contactId,
+        );
+        if (loadedConversation) {
+          updateUnreadCount(loadedConversation);
+        }
       }
     }
   };
