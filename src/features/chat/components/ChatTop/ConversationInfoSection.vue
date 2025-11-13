@@ -71,14 +71,11 @@ const switchConversationStatus = async () => {
     const newStatus = currentStatus === 1 ? 2 : 1; // 1 - active, 2 - stopped
 
     // Update contact status
-    await contactsService.updateContact(
+    await contactsService.updateCommunicationStatus(
       entity.value,
       id.value,
       contactId.value,
-      {
-        fio: activeContact.value.fio,
-        communication_status_id: newStatus,
-      },
+      newStatus,
     );
     activeContact.value.communication_status_id = newStatus;
 

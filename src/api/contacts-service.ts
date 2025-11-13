@@ -52,6 +52,18 @@ export class ContactsService {
   ): Promise<void> {
     await apiClient.delete(`/${entity}/${entityId}/contacts/${contactId}`);
   }
+
+  async updateCommunicationStatus(
+    entity: EntityType,
+    entityId: number,
+    contactId: number,
+    communicationStatusId: number,
+  ): Promise<void> {
+    await apiClient.patch(
+      `/communications/${entity}/${entityId}/contacts/${contactId}`,
+      { communication_status_id: communicationStatusId },
+    );
+  }
 }
 
 export const contactsService = new ContactsService();
