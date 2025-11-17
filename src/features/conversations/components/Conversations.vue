@@ -234,7 +234,7 @@ const handleNewLeadSuccess = async (newLead: ApiCommunicationLead) => {
             :options="userOptions"
             placeholder="Список менеджерiв"
             :icon="UserIcon"
-            class="w-12"
+            class="max-w-[11rem]"
             size="sm"
           />
 
