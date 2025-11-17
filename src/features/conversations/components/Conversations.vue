@@ -282,7 +282,7 @@ const handleNewLeadSuccess = async (newLead: ApiCommunicationLead) => {
         :key="activeTab"
         role="list"
         aria-label="conversations"
-        class="w-full h-full scroll-smooth scrollbar-hidden"
+        class="w-full scroll-smooth scrollbar-thin pr-[0.125rem] max-h-[calc(100vh-13.75rem)] md:max-h-[calc(100vh-11.75rem)]"
         style="overflow-x: visible; overflow-y: scroll"
       >
         <div v-if="isLoading && conversationsList.length === 0">
