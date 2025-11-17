@@ -70,7 +70,7 @@ const isClient = computed(() => {
   return entity?.value === "clients";
 });
 
-const clientCrnLink = computed(() => {
+const clientCrmLink = computed(() => {
   if (!activeConversation.value) return "#";
 
   return `${import.meta.env.VITE_CRM_BASE}/manager/clients/${activeConversation.value.id}/view`;
@@ -288,7 +288,7 @@ const sourceInfo = computed(() => {
   <div class="py-4 pb-6">
     <a
       v-if="isClient"
-      :href="clientCrnLink"
+      :href="clientCrmLink"
       target="_blank"
       class="text-[0.813rem] text-primary my-4 flex items-start hover:underline underline-offset-[0.4rem]"
     >

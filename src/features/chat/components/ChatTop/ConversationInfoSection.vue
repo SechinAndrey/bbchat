@@ -11,7 +11,7 @@ import {
   ArrowPathIcon,
   StopCircleIcon,
   PlayCircleIcon,
-  LinkIcon,
+  ArrowTopRightOnSquareIcon,
 } from "@heroicons/vue/24/outline";
 import SearchInput from "@src/ui/inputs/SearchInput.vue";
 import Button from "@src/ui/inputs/Button.vue";
@@ -223,6 +223,12 @@ const copyLink = async () => {
 const isConversationActive = computed(() => {
   return activeContact.value?.communication_status_id === 1;
 });
+
+const clientCrmLink = computed(() => {
+  if (!conversationsStore.activeConversation) return "#";
+
+  return `${import.meta.env.VITE_CRM_BASE}/manager/leads/lead2client/${conversationsStore.activeConversation.id}`;
+});
 </script>
 
 <template>
@@ -351,6 +357,20 @@ const isConversationActive = computed(() => {
               <Button block variant="text" @click="openActionModal('client')">
                 Додати в існуючого клієнта
               </Button>
+            </li>
+            <li v-if="authStore.currentUser?.roleId !== 7 && isLead">
+              <a target="_blank" :href="clientCrmLink">
+                <Button
+                  block
+                  variant="text"
+                  class="hover:underline underline-offset-[0.4rem]"
+                >
+                  <ArrowTopRightOnSquareIcon
+                    class="min-w-5 min-h-5 max-w-5 max-h-5 mr-2"
+                  />
+                  Перевести в клієнти
+                </Button>
+              </a>
             </li>
             <li v-if="authStore.currentUser?.roleId !== 7 && isLead">
               <Button block variant="text" @click="openActionModal('supplier')">
