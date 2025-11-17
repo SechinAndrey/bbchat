@@ -51,6 +51,13 @@ export function useFCM() {
     if (token.value) return token.value;
 
     try {
+      const permission = await Notification.requestPermission();
+
+      if (permission !== "granted") {
+        console.log("FCM: Notification permission not granted");
+        return null;
+      }
+
       const newToken = await getToken(messaging, { vapidKey: VAPID_KEY });
       if (newToken) {
         token.value = newToken;
@@ -58,7 +65,10 @@ export function useFCM() {
       }
       return newToken;
     } catch (err) {
-      console.error("FCM token error:", err);
+      const error = err as { code?: string };
+      if (error.code !== "messaging/permission-blocked") {
+        console.error("FCM token error:", err);
+      }
       return null;
     }
   };
