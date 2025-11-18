@@ -253,7 +253,7 @@ const clientCrmLink = computed(() => {
       <div class="flex grow min-w-0">
         <!--avatar-->
         <button
-          class="mr-5 outline-none flex-shrink-0"
+          class="mr-2 outline-none flex-shrink-0"
           aria-label="profile avatar"
           @click="store.rightSidebarOpen = !store.rightSidebarOpen"
         >

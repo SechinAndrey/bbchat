@@ -278,6 +278,7 @@ const showDoubleCheck = computed(() => {
         <ConversationAvatar
           :conversation="props.conversation"
           :is-active="isActive"
+          :avatar-url="props.conversation?.contact?.avatar"
         />
       </div>
 
