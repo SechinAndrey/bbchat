@@ -11,6 +11,7 @@ import {
   ArrowPathIcon,
   StopCircleIcon,
   PlayCircleIcon,
+  LinkIcon,
   ArrowTopRightOnSquareIcon,
 } from "@heroicons/vue/24/outline";
 import SearchInput from "@src/ui/inputs/SearchInput.vue";
@@ -214,6 +215,7 @@ const copyLink = async () => {
   try {
     const url = window.location.href;
     await navigator.clipboard.writeText(url);
+    toastSuccess("Посилання скопійовано");
   } catch (error) {
     console.error("Error copying link:", error);
     toastError("Не вдалося скопіювати посилання");
