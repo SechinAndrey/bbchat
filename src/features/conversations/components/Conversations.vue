@@ -112,8 +112,26 @@ const debouncedFetch = useDebounceFn(async () => {
   await fetchConversations(entity.value, params);
 }, 500);
 
-watch([selectedUser, entity, activeTab], debouncedFetch, {
-  immediate: true,
+const switching = ref(false);
+
+watch(
+  [selectedUser, entity, activeTab],
+  async () => {
+    switching.value = true;
+    await debouncedFetch();
+    switching.value = false;
+  },
+  {
+    immediate: true,
+  },
+);
+
+watch(selectedUser, () => {
+  router.push({
+    name: "EntityChat",
+    params: { entity: entity.value },
+  });
+  scrollContainer.value?.scrollTo({ top: 0 });
 });
 
 watch(keyword, debouncedFetch);
@@ -282,11 +300,10 @@ const handleNewLeadSuccess = async (newLead: ApiCommunicationLead) => {
         :key="activeTab"
         role="list"
         aria-label="conversations"
-        class="w-full scroll-smooth scrollbar-thin pr-[0.125rem] max-h-[calc(100vh-13.75rem)] md:max-h-[calc(100vh-11.75rem)]"
-        style="overflow-x: visible; overflow-y: scroll"
+        class="w-full scroll-smooth scrollbar-thin pr-[0.125rem] max-h-[calc(100vh-13.75rem)] md:max-h-[calc(100vh-11.75rem)] overflow-y-auto"
       >
-        <div v-if="isLoading && conversationsList.length === 0">
-          <Circle2Lines v-for="item in 8" :key="item" />
+        <div v-if="(isLoading && conversationsList.length === 0) || switching">
+          <Circle2Lines v-for="item in 12" :key="item" />
         </div>
 
         <div v-else>
