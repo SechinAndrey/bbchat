@@ -1,4 +1,4 @@
-import { computed, inject, type Ref } from "vue";
+import { computed, inject, ref, type Ref } from "vue";
 import type { EntityType } from "@src/shared/types/common";
 import { ENTITY_TO_CONTRAGENT_MAP } from "@src/shared/types/common";
 import conversationsService from "@src/features/conversations/conversations-service";
@@ -8,6 +8,15 @@ import useConversationsStore, {
 import { isApiSendMessageError, type ApiContact } from "@src/api/types";
 import { useRoute } from "vue-router";
 import { useToast } from "@src/shared/composables/useToast";
+import type { IAttachment } from "@src/shared/types/types";
+
+export type FileUploadStatus = "pending" | "uploading" | "sent" | "error";
+
+export interface QueuedFile extends IAttachment {
+  status: FileUploadStatus;
+  error?: string;
+  caption?: string;
+}
 
 /**
  * Delay before sending message to API
@@ -21,6 +30,9 @@ export function useMessageSending() {
   const store = useConversationsStore();
   const route = useRoute();
   const { toastError } = useToast();
+
+  const queue = ref<QueuedFile[]>([]);
+  const isProcessing = ref(false);
 
   const contragentType = computed(() => {
     if (!entity?.value) return "lead";
@@ -180,6 +192,127 @@ export function useMessageSending() {
     }
   };
 
+  const addToQueue = (attachment: IAttachment, caption?: string) => {
+    const queuedFile: QueuedFile = {
+      ...attachment,
+      status: "pending",
+      caption,
+    };
+    queue.value.push(queuedFile);
+  };
+
+  const removeFromQueue = (id: number) => {
+    const index = queue.value.findIndex((file) => file.id === id);
+    if (index !== -1) {
+      queue.value.splice(index, 1);
+    }
+  };
+
+  const updateFileStatus = (
+    id: number,
+    status: FileUploadStatus,
+    error?: string,
+  ) => {
+    const file = queue.value.find((f) => f.id === id);
+    if (file) {
+      file.status = status;
+      if (error) {
+        file.error = error;
+      }
+    }
+  };
+
+  const processQueue = async (messengerId: number) => {
+    if (isProcessing.value || queue.value.length === 0) {
+      return;
+    }
+
+    isProcessing.value = true;
+
+    const pendingFilesInQueue = queue.value.filter(
+      (f) => f.status === "pending",
+    );
+    let isFirstFile = true;
+
+    for (const file of queue.value) {
+      if (file.status !== "pending") {
+        continue;
+      }
+
+      try {
+        updateFileStatus(file.id, "uploading");
+        const fileUrl = await conversationsService.uploadFile(file);
+        await sendMessage({
+          message: isFirstFile ? file.caption || "" : "",
+          messengerId,
+          fileUrl,
+        });
+        updateFileStatus(file.id, "sent");
+        isFirstFile = false;
+        await new Promise((resolve) => setTimeout(resolve, 300));
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : "Error sending file";
+        updateFileStatus(file.id, "error", errorMessage);
+        console.error(`❌ Error sending file ${file.name}:`, error);
+      }
+    }
+
+    isProcessing.value = false;
+  };
+
+  const clearQueue = () => {
+    queue.value = [];
+  };
+
+  const retryFile = async (id: number, messengerId: number) => {
+    const file = queue.value.find((f) => f.id === id);
+    if (!file || file.status !== "error") {
+      return;
+    }
+
+    try {
+      updateFileStatus(file.id, "uploading");
+      const fileUrl = await conversationsService.uploadFile(file);
+      await sendMessage({
+        message: file.caption || "",
+        messengerId,
+        fileUrl,
+      });
+      updateFileStatus(file.id, "sent");
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Error resending file";
+      updateFileStatus(file.id, "error", errorMessage);
+      console.error(`❌ Error resending file ${file.name}:`, error);
+    }
+  };
+
+  const pendingFiles = computed(() =>
+    queue.value.filter((f) => f.status === "pending"),
+  );
+
+  const uploadingFiles = computed(() =>
+    queue.value.filter((f) => f.status === "uploading"),
+  );
+
+  const sentFiles = computed(() =>
+    queue.value.filter((f) => f.status === "sent"),
+  );
+
+  const errorFiles = computed(() =>
+    queue.value.filter((f) => f.status === "error"),
+  );
+
+  const hasFiles = computed(() => queue.value.length > 0);
+
+  const hasPendingFiles = computed(() => pendingFiles.value.length > 0);
+
+  const allFilesSent = computed(
+    () =>
+      queue.value.length > 0 && queue.value.every((f) => f.status === "sent"),
+  );
+
   return {
     entity,
     id,
@@ -188,5 +321,21 @@ export function useMessageSending() {
 
     sendMessage,
     sendMessageWithFile,
+
+    queue,
+    isProcessing,
+    pendingFiles,
+    uploadingFiles,
+    sentFiles,
+    errorFiles,
+    hasFiles,
+    hasPendingFiles,
+    allFilesSent,
+    addToQueue,
+    removeFromQueue,
+    updateFileStatus,
+    processQueue,
+    clearQueue,
+    retryFile,
   };
 }

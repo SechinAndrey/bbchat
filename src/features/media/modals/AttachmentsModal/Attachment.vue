@@ -50,10 +50,11 @@ const emit = defineEmits<{
         </p>
       </div>
 
-      <div class="flex justify-start">
+      <div class="flex justify-start items-center gap-2">
         <p class="text-app-text-secondary" tabindex="0">
           {{ attachment.size }}
         </p>
+        <slot name="status" />
       </div>
     </div>
 

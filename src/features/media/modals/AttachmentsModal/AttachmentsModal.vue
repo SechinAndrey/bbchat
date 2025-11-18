@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from "vue";
+import { ref, computed, onMounted, onUnmounted, watch } from "vue";
 import type { IAttachment } from "@src/shared/types/types";
 
 import Attachment from "@src/features/media/modals/AttachmentsModal/Attachment.vue";
@@ -15,8 +15,14 @@ import {
   validateFile,
   revokeBlobURL,
 } from "@src/shared/utils";
+import {
+  CheckCircleIcon,
+  ClockIcon,
+  ArrowPathIcon,
+  XCircleIcon as ErrorIcon,
+} from "@heroicons/vue/24/outline";
 
-const MAX_ATTACHMENTS = 1;
+const MAX_ATTACHMENTS = 10;
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const ACCEPTED_FILE_TYPES =
   "image/*,video/*,audio/*,.pdf,.doc,.docx,.txt,.xlsx,.xls,.zip,.rar";
@@ -27,15 +33,26 @@ const props = defineProps<{
   closeModal: () => void;
 }>();
 
-const { sendMessageWithFile } = useMessageSending();
-const { toastError: showError } = useToast();
+const {
+  queue,
+  isProcessing,
+  hasFiles,
+  hasPendingFiles,
+  allFilesSent,
+  addToQueue,
+  removeFromQueue,
+  processQueue,
+  clearQueue,
+  retryFile,
+} = useMessageSending();
+const { toastError, toastSuccess } = useToast();
 
 const isMobile = computed(() => useMediaQuery("(max-width: 767px)").value);
 
-const attachments = ref<IAttachment[]>([]);
 const caption = ref("");
 const fileInputRef = ref<HTMLInputElement>();
 const isDragging = ref(false);
+const isSending = ref(false);
 
 const createAttachmentFromFile = (file: File): IAttachment => {
   return {
@@ -61,40 +78,34 @@ const handleFileSelect = (event: Event) => {
   const files = target.files;
 
   if (files && files.length > 0) {
-    if (attachments.value.length >= MAX_ATTACHMENTS) {
-      if (target) {
-        target.value = "";
+    Array.from(files).forEach((file) => {
+      if (queue.value.length >= MAX_ATTACHMENTS) {
+        toastError(`Максимум ${MAX_ATTACHMENTS} файлів за раз`);
+        return;
       }
-      return;
-    }
 
-    const file = files[0];
-    const validation = validateFile(file, MAX_FILE_SIZE);
+      const validation = validateFile(file, MAX_FILE_SIZE);
 
-    if (!validation.valid) {
-      showError(validation.error || "Помилка валідації файлу");
-      if (target) {
-        target.value = "";
+      if (!validation.valid) {
+        toastError(validation.error || "Помилка валідації файлу");
+        return;
       }
-      return;
-    }
 
-    const attachment = createAttachmentFromFile(file);
-    attachments.value.push(attachment);
+      const attachment = createAttachmentFromFile(file);
+      addToQueue(attachment, caption.value);
+    });
   }
 
-  // Reset input
   if (target) {
     target.value = "";
   }
 };
 
 const removeAttachment = (id: number) => {
-  const index = attachments.value.findIndex((att) => att.id === id);
-  if (index !== -1) {
-    const attachment = attachments.value[index];
-    revokeAttachmentURLs(attachment);
-    attachments.value.splice(index, 1);
+  const file = queue.value.find((f) => f.id === id);
+  if (file) {
+    revokeAttachmentURLs(file);
+    removeFromQueue(id);
   }
 };
 
@@ -103,27 +114,44 @@ const openFileDialog = () => {
 };
 
 const clean = () => {
-  attachments.value.forEach(revokeAttachmentURLs);
-  attachments.value = [];
+  queue.value.forEach(revokeAttachmentURLs);
+  clearQueue();
   caption.value = "";
+  isSending.value = false;
   props.closeModal();
 };
 
-const hasAttachments = computed(() => attachments.value.length > 0);
-
 async function sendMessage() {
-  if (!attachments.value.length) {
-    console.warn("⚠️ Attempted to send message without attachments");
+  if (!queue.value.length || isSending.value) {
+    console.warn(
+      "⚠️ Attempted to send message without attachments or already sending",
+    );
     return;
   }
 
-  const attachment = attachments.value[0];
-  const captionText = caption.value;
-  clean();
+  isSending.value = true;
+
   try {
-    await sendMessageWithFile(attachment, captionText, props.messengerId);
+    queue.value.forEach((file) => {
+      file.caption = caption.value;
+    });
+
+    await processQueue(props.messengerId);
+
+    if (allFilesSent.value) {
+      toastSuccess(
+        queue.value.length === 1
+          ? "Файл успішно відправлено"
+          : `${queue.value.length} файлів успішно відправлено`,
+      );
+      setTimeout(() => {
+        clean();
+      }, 1000);
+    }
   } catch (error) {
-    console.error("Error sending message with attachment:", error);
+    console.error("Error sending messages with attachments:", error);
+  } finally {
+    isSending.value = false;
   }
 }
 
@@ -141,18 +169,18 @@ const replaceAttachment = (id: number) => {
       const validation = validateFile(file, MAX_FILE_SIZE);
 
       if (!validation.valid) {
-        showError(validation.error || "Помилка валідації файлу");
+        toastError(validation.error || "Помилка валідації файлу");
         return;
       }
 
-      const index = attachments.value.findIndex((att) => att.id === id);
+      const index = queue.value.findIndex((att) => att.id === id);
 
       if (index !== -1) {
-        const oldAttachment = attachments.value[index];
+        const oldAttachment = queue.value[index];
         revokeAttachmentURLs(oldAttachment);
 
         const newAttachment = createAttachmentFromFile(file);
-        attachments.value[index] = newAttachment;
+        queue.value[index] = { ...newAttachment, status: "pending" };
       }
     }
   };
@@ -174,20 +202,22 @@ const handleDrop = (event: DragEvent) => {
   isDragging.value = false;
 
   if (event.dataTransfer && event.dataTransfer.files) {
-    if (attachments.value.length >= MAX_ATTACHMENTS) {
-      return;
-    }
+    Array.from(event.dataTransfer.files).forEach((file) => {
+      if (queue.value.length >= MAX_ATTACHMENTS) {
+        toastError(`Максимум ${MAX_ATTACHMENTS} файлів за раз`);
+        return;
+      }
 
-    const file = event.dataTransfer.files[0];
-    const validation = validateFile(file, MAX_FILE_SIZE);
+      const validation = validateFile(file, MAX_FILE_SIZE);
 
-    if (!validation.valid) {
-      showError(validation.error || "Помилка валідації файлу");
-      return;
-    }
+      if (!validation.valid) {
+        toastError(validation.error || "Помилка валідації файлу");
+        return;
+      }
 
-    const attachment = createAttachmentFromFile(file);
-    attachments.value.push(attachment);
+      const attachment = createAttachmentFromFile(file);
+      addToQueue(attachment, caption.value);
+    });
   }
 };
 
@@ -195,13 +225,68 @@ const handleKeyDown = (event: KeyboardEvent) => {
   if (
     event.key === "Enter" &&
     !event.shiftKey &&
-    hasAttachments.value &&
+    hasFiles.value &&
+    !isSending.value &&
     props.open
   ) {
     event.preventDefault();
     sendMessage();
   }
 };
+
+const getStatusIcon = (status: string) => {
+  switch (status) {
+    case "pending":
+      return ClockIcon;
+    case "uploading":
+      return ArrowPathIcon;
+    case "sent":
+      return CheckCircleIcon;
+    case "error":
+      return ErrorIcon;
+    default:
+      return ClockIcon;
+  }
+};
+
+const getStatusColor = (status: string) => {
+  switch (status) {
+    case "pending":
+      return "text-app-text-secondary";
+    case "uploading":
+      return "text-primary";
+    case "sent":
+      return "text-success";
+    case "error":
+      return "text-danger";
+    default:
+      return "text-app-text-secondary";
+  }
+};
+
+const getStatusText = (status: string) => {
+  switch (status) {
+    case "pending":
+      return "Очікує";
+    case "uploading":
+      return "Відправляється...";
+    case "sent":
+      return "Відправлено";
+    case "error":
+      return "Помилка";
+    default:
+      return "";
+  }
+};
+
+watch(
+  () => props.open,
+  (isOpen) => {
+    if (isOpen && fileInputRef.value) {
+      fileInputRef.value.setAttribute("multiple", "true");
+    }
+  },
+);
 
 onMounted(() => {
   window.addEventListener("keydown", handleKeyDown);
@@ -236,26 +321,50 @@ onUnmounted(() => {
           ref="fileInputRef"
           type="file"
           :accept="ACCEPTED_FILE_TYPES"
+          multiple
           class="hidden"
           @change="handleFileSelect"
         />
 
         <!-- attachments list -->
         <div
-          v-if="hasAttachments"
+          v-if="hasFiles"
           :class="[
-            'max-h-[8.75rem] overflow-y-auto overflow-x-hidden',
+            'max-h-[55vh] overflow-y-auto overflow-x-hidden scrollbar-thin--bg-app-bg',
             isMobile ? 'px-4' : 'px-5',
           ]"
         >
           <Attachment
-            v-for="(attachment, index) in attachments"
-            :key="index"
+            v-for="file in queue"
+            :key="file.id"
             :class="isMobile ? 'mt-4' : 'mt-5'"
-            :attachment="attachment"
+            :attachment="file"
             @remove="removeAttachment"
             @replace="replaceAttachment"
-          />
+          >
+            <template #status>
+              <div class="flex items-center gap-1">
+                <component
+                  :is="getStatusIcon(file.status)"
+                  :class="[
+                    'w-3.5 h-3.5',
+                    getStatusColor(file.status),
+                    file.status === 'uploading' ? 'animate-spin' : '',
+                  ]"
+                />
+                <span :class="['text-xs', getStatusColor(file.status)]">
+                  {{ getStatusText(file.status) }}
+                </span>
+                <button
+                  v-if="file.status === 'error'"
+                  class="text-xs text-primary hover:underline"
+                  @click="retryFile(file.id, props.messengerId)"
+                >
+                  Повторити
+                </button>
+              </div>
+            </template>
+          </Attachment>
         </div>
 
         <!-- Drag and drop area -->
@@ -273,11 +382,11 @@ onUnmounted(() => {
         >
           <p v-if="!isMobile" class="text-app-text-secondary text-center">
             Перетягніть файли сюди або
-            <span class="font-semibold text-primary"> оберіть файл </span>
+            <span class="font-semibold text-primary"> оберіть файли </span>
             с комп'ютера
           </p>
           <p v-else class="text-app-text-secondary text-center">
-            <span class="font-semibold text-primary">Оберіть файл</span>
+            <span class="font-semibold text-primary">Оберіть файли</span>
             з пристрою
           </p>
         </div>
@@ -294,25 +403,34 @@ onUnmounted(() => {
         <!--Action buttons-->
         <div :class="['flex w-full', isMobile ? 'px-4' : 'px-5']">
           <div class="grow flex justify-start">
+            <Button v-if="!hasFiles" variant="outline" @click="openFileDialog">
+              Обрати файли
+            </Button>
             <Button
-              v-if="!hasAttachments"
+              v-else
               variant="outline"
+              :disabled="isSending || isProcessing"
               @click="openFileDialog"
             >
-              Обрати файл
+              Додати ще
             </Button>
           </div>
 
           <Button
             variant="text"
             :class="isMobile ? 'mr-2' : 'mr-4'"
-            @click="props.closeModal"
+            :disabled="isSending || isProcessing"
+            @click="clean"
           >
             Скасувати
           </Button>
 
-          <Button :disabled="!hasAttachments" @click="sendMessage">
-            Відправити
+          <Button
+            :disabled="!hasPendingFiles || isSending || isProcessing"
+            :loading="isSending || isProcessing"
+            @click="sendMessage"
+          >
+            {{ isSending || isProcessing ? "Відправляється..." : "Відправити" }}
           </Button>
         </div>
         <div
@@ -321,7 +439,13 @@ onUnmounted(() => {
             isMobile ? 'px-4 mt-4' : 'px-5 mt-6',
           ]"
         >
-          *1 файл на одне повідомлення
+          <p>
+            *Файли відправляються по одному (до {{ MAX_ATTACHMENTS }} файлів)
+          </p>
+          <p v-if="hasFiles" class="mt-1">
+            Вибрано: {{ queue.length }}
+            {{ queue.length === 1 ? "файл" : "файлів" }}
+          </p>
         </div>
       </div>
     </template>
