@@ -42,7 +42,7 @@ const handleTabClick = (tabKey: string) => {
 </script>
 
 <template>
-  <div class="animated-tabs">
+  <div class="animated-tabs pb-7 md:pb-0">
     <Tabs>
       <Tab
         v-for="tab in tabs"
@@ -56,9 +56,9 @@ const handleTabClick = (tabKey: string) => {
 
     <SlideTransition :animation="animation">
       <div :key="activeTab" :class="contentClass">
-        <slot :name="activeTab" :activeTab="activeTab">
+        <slot :name="activeTab" :active-tab="activeTab">
           <!-- Default slot if named slot is not found -->
-          <slot :activeTab="activeTab" />
+          <slot :active-tab="activeTab" />
         </slot>
       </div>
     </SlideTransition>
