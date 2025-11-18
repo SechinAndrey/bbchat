@@ -90,6 +90,17 @@ const handleCloseOnClickOutside = (event: Event) => {
       :handle-click-outside="handleCloseOnClickOutside"
       :close-dropdown="props.handleCloseDropdown"
     >
+      <div>
+        <div class="px-4 py-3 border-b border-app-border">
+          <p class="text-sm font-medium text-app-text">
+            {{ authStore.currentUser?.firstName }}
+            {{ authStore.currentUser?.lastName }}
+          </p>
+          <p class="text-xs text-app-text-secondary">
+            {{ authStore.currentUser?.email }}
+          </p>
+        </div>
+      </div>
       <!-- <button
         class="flex items-center w-full px-4 py-3 text-sm text-app-text hover:bg-app-bg-secondary focus:bg-app-bg-secondary focus:outline-none transition-all duration-200"
         aria-label="Show profile information"
