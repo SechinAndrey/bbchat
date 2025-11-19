@@ -236,7 +236,7 @@ const handleNewLeadSuccess = async (newLead: ApiCommunicationLead) => {
 </script>
 
 <template>
-  <div class="bg-theme-conversations">
+  <div class="bg-theme-conversations overflow-y-hidden">
     <SidebarHeader>
       <!--title-->
       <template #title>
