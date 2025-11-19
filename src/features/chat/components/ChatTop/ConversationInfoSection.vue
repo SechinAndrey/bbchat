@@ -40,6 +40,8 @@ const { toastSuccess, toastError } = useToast();
 const { activeContact } = useMessenger();
 
 const isMobile = useMediaQuery("(max-width: 968px)");
+const isSmallMobile = useMediaQuery("(max-width: 620px)");
+
 watch(isMobile, (newValue) => {
   if (newValue) {
     store.rightSidebarOpen = false;
@@ -81,6 +83,7 @@ const switchConversationStatus = async () => {
     activeContact.value.communication_status_id = newStatus;
 
     toastSuccess(newStatus === 2 ? "Діалог завершено" : "Діалог відновлено");
+    closePopperMenu();
   } catch (error) {
     console.error("Error switching conversation status:", error);
     toastError("Не вдалося змінити статус діалогу");
@@ -153,6 +156,7 @@ const synchronizeConversation = async () => {
 
         toastSuccess("Синхронізацію успішно виконано");
       }
+      closePopperMenu();
     }
   } catch (error) {
     console.error("Error synchronizing conversation:", error);
@@ -216,6 +220,7 @@ const copyLink = async () => {
     const url = window.location.href;
     await navigator.clipboard.writeText(url);
     toastSuccess("Посилання скопійовано");
+    closePopperMenu();
   } catch (error) {
     console.error("Error copying link:", error);
     toastError("Не вдалося скопіювати посилання");
@@ -230,6 +235,27 @@ const clientCrmLink = computed(() => {
   if (!conversationsStore.activeConversation) return "#";
 
   return `${import.meta.env.VITE_CRM_BASE}/manager/leads/lead2client/${conversationsStore.activeConversation.id}`;
+});
+
+const mobileActionsPopperRef = ref<InstanceType<typeof VuePopper> | null>(null);
+
+const closePopperMenu = () => {
+  if (
+    mobileActionsPopperRef.value &&
+    mobileActionsPopperRef.value.toggleTooltip
+  ) {
+    mobileActionsPopperRef.value.toggleTooltip("close");
+  }
+};
+
+const titleContainerClasses = computed(() => {
+  if (isSmallMobile.value) {
+    return "max-w-[calc(100vw-12.5rem)]";
+  }
+
+  return store.rightSidebarOpen
+    ? "max-w-[calc(100vw-31rem-42.563rem)]"
+    : "max-w-[calc(100vw-26rem-23.81rem)]";
 });
 </script>
 
@@ -264,14 +290,7 @@ const clientCrmLink = computed(() => {
           />
         </button>
 
-        <div
-          class="flex flex-col min-w-[6rem]"
-          :class="
-            store.rightSidebarOpen
-              ? 'max-w-[calc(100vw-31rem-42.563rem)]'
-              : 'max-w-[calc(100vw-26rem-23.81rem)]'
-          "
-        >
+        <div class="flex flex-col min-w-[6rem]" :class="titleContainerClasses">
           <Button
             variant="ghost"
             size="xs"
@@ -292,7 +311,7 @@ const clientCrmLink = computed(() => {
       </div>
 
       <Button
-        v-if="isLead && activeContact?.chaport_id"
+        v-if="isLead && activeContact?.chaport_id && !isSmallMobile"
         class="whitespace-nowrap flex-shrink-0 color-white xl:!hidden"
         size="sm"
         icon-only
@@ -310,6 +329,7 @@ const clientCrmLink = computed(() => {
       </Button>
 
       <Button
+        v-if="!isSmallMobile"
         class="whitespace-nowrap flex-shrink-0 color-white xl:!hidden"
         size="sm"
         icon-only
@@ -323,6 +343,7 @@ const clientCrmLink = computed(() => {
       </Button>
 
       <Button
+        v-if="!isSmallMobile"
         class="whitespace-nowrap flex-shrink-0 color-white xl:!hidden"
         size="sm"
         icon-only
@@ -338,7 +359,8 @@ const clientCrmLink = computed(() => {
       </Button>
 
       <VuePopper
-        v-if="showActionsBtn"
+        v-if="showActionsBtn || isSmallMobile"
+        ref="mobileActionsPopperRef"
         placement="bottom-end"
         :show-arrow="false"
       >
@@ -350,40 +372,97 @@ const clientCrmLink = computed(() => {
 
         <template #content>
           <ul>
-            <li v-if="isLead">
-              <Button block variant="text" @click="openActionModal('lead')">
-                Додати в існуючого ліда
-              </Button>
-            </li>
-            <li v-if="authStore.currentUser?.roleId !== 7 && isLead">
-              <Button block variant="text" @click="openActionModal('client')">
-                Додати в існуючого клієнта
-              </Button>
-            </li>
-            <li v-if="authStore.currentUser?.roleId !== 7 && isLead">
-              <a target="_blank" :href="clientCrmLink">
+            <template v-if="isSmallMobile">
+              <li v-if="isLead && activeContact?.chaport_id">
                 <Button
                   block
                   variant="text"
-                  class="hover:underline underline-offset-[0.4rem]"
+                  :disabled="isSyncLoading"
+                  @click="synchronizeConversation"
                 >
-                  <ArrowTopRightOnSquareIcon
-                    class="min-w-5 min-h-5 max-w-5 max-h-5 mr-2"
+                  <ArrowPathIcon
+                    class="w-5 h-5 mr-2"
+                    :class="{ 'animate-spin': isSyncLoading }"
                   />
-                  Перевести в клієнти
+                  Синхронізувати
                 </Button>
-              </a>
-            </li>
-            <li v-if="authStore.currentUser?.roleId !== 7 && isLead">
-              <Button block variant="text" @click="openActionModal('supplier')">
-                Додати в існуючого постачальника
-              </Button>
-            </li>
-            <li v-if="authStore.currentUser?.roleId === 1">
-              <Button block variant="text" @click="openActionModal('manager')">
-                Змінити менеджера
-              </Button>
-            </li>
+              </li>
+              <li>
+                <Button block variant="text" @click="copyLink">
+                  <LinkIcon class="w-5 h-5 mr-2" />
+                  Скопіювати посилання
+                </Button>
+              </li>
+              <li>
+                <Button
+                  block
+                  variant="text"
+                  :disabled="isSwitchStatusLoading"
+                  @click="switchConversationStatus"
+                >
+                  <StopCircleIcon
+                    v-if="isConversationActive"
+                    class="w-5 h-5 mr-2"
+                  />
+                  <PlayCircleIcon v-else class="w-5 h-5 mr-2" />
+                  {{
+                    isConversationActive
+                      ? "Завершити діалог"
+                      : "Відновити діалог"
+                  }}
+                </Button>
+              </li>
+
+              <li
+                v-if="showActionsBtn"
+                class="border-t border-app-border my-1"
+              ></li>
+            </template>
+
+            <template v-if="showActionsBtn">
+              <li v-if="isLead">
+                <Button block variant="text" @click="openActionModal('lead')">
+                  Додати в існуючого ліда
+                </Button>
+              </li>
+              <li v-if="authStore.currentUser?.roleId !== 7 && isLead">
+                <Button block variant="text" @click="openActionModal('client')">
+                  Додати в існуючого клієнта
+                </Button>
+              </li>
+              <li v-if="authStore.currentUser?.roleId !== 7 && isLead">
+                <a target="_blank" :href="clientCrmLink">
+                  <Button
+                    block
+                    variant="text"
+                    class="hover:underline underline-offset-[0.4rem]"
+                  >
+                    <ArrowTopRightOnSquareIcon
+                      class="min-w-5 min-h-5 max-w-5 max-h-5 mr-2"
+                    />
+                    Перевести в клієнти
+                  </Button>
+                </a>
+              </li>
+              <li v-if="authStore.currentUser?.roleId !== 7 && isLead">
+                <Button
+                  block
+                  variant="text"
+                  @click="openActionModal('supplier')"
+                >
+                  Додати в існуючого постачальника
+                </Button>
+              </li>
+              <li v-if="authStore.currentUser?.roleId === 1">
+                <Button
+                  block
+                  variant="text"
+                  @click="openActionModal('manager')"
+                >
+                  Змінити менеджера
+                </Button>
+              </li>
+            </template>
           </ul>
         </template>
       </VuePopper>
