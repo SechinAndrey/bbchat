@@ -231,6 +231,10 @@ const displayName = computed(() => {
   }
 });
 
+const city = computed(() => {
+  return props.conversation.city;
+});
+
 // Message status logic (same as MessageV2.vue)
 const isSelfMessage = computed(() => {
   if (!lastMessage.value) return false;
@@ -262,7 +266,7 @@ const showDoubleCheck = computed(() => {
     <button
       :aria-label="'Комунікація з ' + getName(props.conversation)"
       tabindex="0"
-      class="w-full h-[5.75rem] px-6 py-4 mb-3 flex focus:outline-none transition duration-500 ease-out"
+      class="w-full h-[5.75rem] px-5 py-4 mb-3 flex focus:outline-none transition duration-500 ease-out"
       :class="{
         'bg-app-bg': isActive,
       }"
@@ -282,37 +286,40 @@ const showDoubleCheck = computed(() => {
         />
       </div>
 
-      <div class="w-full flex flex-col">
-        <div class="w-full">
+      <div class="w-full flex flex-col min-w-0">
+        <div class="w-full flex items-center gap-2 mb-2 min-w-0">
           <!--conversation name-->
-          <div class="flex items-start">
-            <div class="grow text-start">
-              <p
-                :title="getName(props.conversation)"
-                class="line-clamp-1 text-ellipsis overflow-hidden"
-              >
-                {{ getName(props.conversation) }}
-              </p>
-            </div>
-
-            <!--last message date-->
-            <p
-              class="whitespace-nowrap text-[0.5625rem] text-app-text-secondary"
-            >
-              {{ lastMessageDate }}
-            </p>
+          <div
+            :title="getName(props.conversation)"
+            class="line-clamp-1 text-ellipsis overflow-hidden min-w-0 flex-1 text-left"
+          >
+            {{ getName(props.conversation) }}
+          </div>
+          <!--conversation city-->
+          <div
+            v-if="city"
+            class="text-[0.5625rem] text-app-text-secondary whitespace-nowrap flex-shrink-0"
+          >
+            {{ city }}
           </div>
         </div>
 
-        <div class="text-[0.5625rem] text-left text-app-text-secondary">
+        <div
+          class="text-[0.5625rem] text-left text-app-text-secondary flex justify-between"
+        >
           {{ displayName }}
+          <span
+            class="whitespace-nowrap text-[0.5625rem] text-app-text-secondary"
+          >
+            {{ lastMessageDate }}
+          </span>
         </div>
 
         <div class="flex justify-between mt-2">
           <div>
             <p
               v-if="lastMessageText"
-              class="flex justify-start items-center text-[0.688rem] relative pr-6"
+              class="flex justify-start items-center text-[0.688rem] relative pr-2"
               :class="{ 'text-primary': props.conversation.unread }"
             >
               <component
@@ -366,7 +373,6 @@ const showDoubleCheck = computed(() => {
               Почніть розмову
             </p>
           </div>
-
           <div
             v-if="props.conversation.unread"
             class="text-white bg-primary flex items-center justify-center text-xs font-medium min-w-[1.25rem] h-5 px-1.5 rounded-full"

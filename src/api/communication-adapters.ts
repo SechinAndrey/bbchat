@@ -85,7 +85,7 @@ export function adaptApiCommunicationToIConversation(
 ): IConversation {
   const lastMessage = entity.messages?.at(-1);
   const adaptedContacts = adaptApiContactsToIContacts(entity.contacts || []);
-  
+
   // Используем первый контакт как активный для этого чата
   const activeContact = adaptedContacts[0] || {
     id: 0,
@@ -101,6 +101,12 @@ export function adaptApiCommunicationToIConversation(
     type: entity.type || "couple",
     entity: entity.entity,
     name: entity.name || `${entity.entity}${entity.id}`,
+    city:
+      entity?.city?.name_new_ua ||
+      entity?.city?.name_ua ||
+      entity?.city?.name_new ||
+      entity?.city?.name ||
+      "",
     avatar: entity.avatar || "",
     admins: [],
     contact: activeContact,

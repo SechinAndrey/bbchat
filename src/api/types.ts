@@ -340,6 +340,7 @@ export interface ApiCommunicationLead {
   id: number;
   user_id: number;
   name: string;
+  city: ApiCommunicationCity | null;
   entity: EntityType;
   fio: string | null;
   avatar: string | null;
@@ -364,6 +365,7 @@ export interface ApiCommunicationClient {
   user_id: number;
   entity: EntityType;
   name: string;
+  city: ApiCommunicationCity | null;
   fio: string | null;
   u0437: string | null;
   avatar: string | null;
@@ -389,6 +391,7 @@ export interface ApiCommunicationSupplier {
   user_id: number;
   entity: EntityType;
   name: string;
+  city: ApiCommunicationCity | null;
   fio: string | null;
   avatar: string | null;
   class_id: number | null;
@@ -489,10 +492,36 @@ export type ApiCommunicationEntityResponse =
 
 export interface ApiCommunicationCity {
   id: number;
+  type: string | null;
   name: string;
+  name_new: string | null;
+  alias: string;
+  prepositional: string;
   name_ua: string;
-  name_new: string;
-  name_new_ua: string;
+  name_new_ua: string | null;
+  prepositional_ua: string;
+  name_en: string;
+  name_new_en: string | null;
+  prepositional_en: string;
+  text: string | null;
+  region: number;
+  region_lat: string;
+  region_lng: string;
+  priority: number;
+  short: string | null;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
+  board: unknown | null;
+  citylight: unknown | null;
+  empty: number;
+  alt_name: string | null;
+  behind_lbs: number;
+  order_id: number;
+  pivot?: {
+    lead_id: number;
+    city_id: number;
+  };
 }
 
 export interface ApiCommunicationCallInfo {

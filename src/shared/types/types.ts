@@ -69,6 +69,7 @@ export interface IConversation {
   id: number;
   type: string;
   name: string;
+  city: string;
   entity: EntityType;
   avatar?: string;
   admins?: number[];
