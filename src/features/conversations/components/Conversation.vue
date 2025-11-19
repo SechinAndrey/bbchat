@@ -6,6 +6,7 @@ import type {
 } from "@src/api/types";
 import type { Ref } from "vue";
 import { computed, ref } from "vue";
+import { convertViberEmoticons } from "@src/shared/utils/viberEmoticons";
 
 import useStore from "@src/shared/store/store";
 import {
@@ -189,8 +190,16 @@ const lastMessageText = computed(() => {
   } else if (chaport.value?.message) {
     return chaport.value?.message;
   } else if (echat.value?.message) {
+    // Only convert for Viber messages
+    if (echat.value?.dialog?.messenger_id == 2) {
+      return convertViberEmoticons(echat.value.message);
+    }
     return echat.value.message;
   } else if (echatMessage.value?.message) {
+    // Only convert for Viber messages
+    if (echat.value?.dialog?.messenger_id == 2) {
+      return convertViberEmoticons(echatMessage.value.message);
+    }
     return echatMessage.value.message;
   } else if (mediaUrl.value) {
     return getMediaLabel(mediaUrl.value);
@@ -315,11 +324,11 @@ const showDoubleCheck = computed(() => {
           </span>
         </div>
 
-        <div class="flex justify-between mt-2">
-          <div>
+        <div class="flex justify-between mt-2 min-w-0">
+          <div class="min-w-0 flex-1">
             <p
               v-if="lastMessageText"
-              class="flex justify-start items-center text-[0.688rem] relative pr-2"
+              class="flex justify-start items-center text-[0.688rem] relative pr-2 min-w-0"
               :class="{ 'text-primary': props.conversation.unread }"
             >
               <component
@@ -349,7 +358,12 @@ const showDoubleCheck = computed(() => {
                 class="w-4 h-4 mr-2"
               />
 
-              <span :class="{ 'text-primary': props.conversation.unread }">
+              <span
+                :class="{
+                  'text-primary': props.conversation.unread,
+                  'truncate block max-w-full': true,
+                }"
+              >
                 {{
                   shorten(parsedReplyQuote?.replyMessageText || lastMessageText)
                 }}

@@ -150,14 +150,40 @@ export const shorten = (message: IMessage | string, maxLength: number = 23) => {
   }
 
   if (textToProcess) {
-    let trimmedString = textToProcess;
-    if (textToProcess.length > maxLength) {
-      // trim the string to the maximum length.
-      trimmedString = trimmedString.slice(0, maxLength);
-      // add three dots to indicate that there is more to the message.
-      trimmedString += "...";
+    let graphemes: string[];
+
+    if (typeof Intl !== "undefined" && "Segmenter" in Intl) {
+      // Modern browsers: use Intl.Segmenter for accurate grapheme segmentation
+      const segmenter = new Intl.Segmenter("uk", { granularity: "grapheme" });
+      graphemes = Array.from(
+        segmenter.segment(textToProcess),
+        (s) => s.segment,
+      );
+    } else {
+      // Fallback: use regex to match grapheme clusters
+      const graphemeRegex =
+        /[\p{Emoji_Presentation}\p{Emoji}\uFE0F][\u{E0020}-\u{E007F}]*[\u{FE00}-\u{FE0F}]?(?:\u{200D}[\p{Emoji_Presentation}\p{Emoji}\uFE0F][\u{E0020}-\u{E007F}]*[\u{FE00}-\u{FE0F}]?)*/gu;
+      const emojis = textToProcess.match(graphemeRegex) || [];
+      const textWithoutEmojis = textToProcess.replace(graphemeRegex, "\x00");
+
+      graphemes = [];
+      let emojiIndex = 0;
+      for (const char of textWithoutEmojis) {
+        if (char === "\x00") {
+          graphemes.push(emojis[emojiIndex++]);
+        } else {
+          graphemes.push(char);
+        }
+      }
     }
-    return trimmedString;
+
+    if (graphemes.length > maxLength) {
+      const trimmedString = graphemes.slice(0, maxLength).join("");
+
+      return trimmedString + "...";
+    }
+
+    return textToProcess;
   }
 
   return "";

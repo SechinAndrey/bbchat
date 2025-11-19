@@ -24,6 +24,7 @@ import { useMessageData } from "@src/features/chat/composables/useMessageData";
 import { parseReplyQuoteText } from "@src/features/chat/utils/replyQuoteParser";
 import { useAuthStore } from "@src/features/auth/store/auth-store";
 import useTheme from "@src/shared/theme-system/useTheme";
+import { convertViberEmoticons } from "@src/shared/utils/viberEmoticons";
 
 const props = defineProps<{
   message: ApiMessageItem;
@@ -130,10 +131,12 @@ const formatDuration = (seconds: number) => {
   return `${remainingSeconds} сек`;
 };
 
-const formatMessageText = (text: string) => {
+const formatMessageText = (text: string, convertEmoticons = false) => {
   if (!text) return "";
 
-  return linkifyStr(text, {
+  const processedText = convertEmoticons ? convertViberEmoticons(text) : text;
+
+  return linkifyStr(processedText, {
     className: isSelf.value
       ? "text-black opacity-50"
       : "text-primary dark:text-primary",
@@ -310,6 +313,7 @@ const authorTextColor = computed(() => {
               v-html="
                 formatMessageText(
                   parsedReplyQuote?.replyMessageText || echat.message || '',
+                  echat.dialog.messenger_id === 2,
                 )
               "
             ></div>
