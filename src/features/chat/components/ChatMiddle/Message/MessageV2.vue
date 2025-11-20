@@ -27,6 +27,7 @@ import {
 import { useAuthStore } from "@src/features/auth/store/auth-store";
 import useTheme from "@src/shared/theme-system/useTheme";
 import { convertViberEmoticons } from "@src/shared/utils/viberEmoticons";
+import CallTranscription from "@src/features/chat/components/ChatMiddle/Message/CallTranscription.vue";
 
 const props = defineProps<{
   message: ApiMessageItem;
@@ -364,6 +365,8 @@ const authorTextColor = computed(() => {
                 :binotel-id="call.binotel_id"
                 class="m-2 mt-3"
               />
+
+              <CallTranscription :call-id="call.id" class="m-2 mt-4" />
             </div>
           </Transition>
         </div>

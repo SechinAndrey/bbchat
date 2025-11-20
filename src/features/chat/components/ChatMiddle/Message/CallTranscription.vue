@@ -7,6 +7,10 @@ import { useMdFormatting } from "@src/shared/composables/useMdFormatting";
 import { ChevronDownIcon } from "@heroicons/vue/24/outline";
 import CollapseTransition from "@src/ui/transitions/CollapseTransition.vue";
 
+defineOptions({
+  inheritAttrs: false,
+});
+
 const props = defineProps<{
   callId: number;
 }>();
@@ -48,63 +52,67 @@ const getTranscription = async () => {
 </script>
 
 <template>
-  <!-- Summary Section -->
-  <CollapseTransition>
-    <div v-if="unfoldedSummary" class="w-full">
-      <hr class="w-full my-4 border-app-border" />
-      <div
-        class="markdown-content text-[0.813rem] leading-relaxed"
-        v-html="formattedSummary"
-      ></div>
+  <div v-bind="$attrs">
+    <!-- Summary Section -->
+    <CollapseTransition>
+      <div v-if="unfoldedSummary" class="w-full">
+        <hr class="w-full my-4 border-app-border" />
+        <div
+          class="markdown-content text-[0.813rem] leading-relaxed"
+          v-html="formattedSummary"
+        ></div>
 
-      <!-- Full Transcription Section -->
-      <CollapseTransition>
-        <div v-if="unfoldedTranscription" class="w-full mt-4">
-          <hr class="w-full my-4 border-app-border" />
-          <div class="text-app-text-secondary text-[0.813rem] mb-2">
-            Повна транскрипція:
+        <!-- Full Transcription Section -->
+        <CollapseTransition>
+          <div v-if="unfoldedTranscription" class="w-full mt-4">
+            <hr class="w-full my-4 border-app-border" />
+            <div class="text-app-text-secondary text-[0.813rem] mb-2">
+              Повна транскрипція:
+            </div>
+            <div class="text-[0.813rem]" v-html="formattedTranscription"></div>
           </div>
-          <div class="text-[0.813rem]" v-html="formattedTranscription"></div>
-        </div>
-      </CollapseTransition>
+        </CollapseTransition>
 
-      <!-- Button to expand full transcription -->
-      <Button
-        size="sm"
-        variant="text"
-        block
-        :ring="false"
-        class="mt-2"
-        @click="unfoldedTranscription = !unfoldedTranscription"
-      >
-        <ChevronDownIcon
-          :class="[
-            'w-5 h-5 inline-block mr-2 transition duration-150 ease-in-out',
-            { 'rotate-180': unfoldedTranscription },
-          ]"
-        />
-        {{ unfoldedTranscription ? "Сховати повну розмову" : "Повна розмова" }}
-      </Button>
+        <!-- Button to expand full transcription -->
+        <Button
+          size="sm"
+          variant="text"
+          block
+          :ring="false"
+          class="mt-2"
+          @click="unfoldedTranscription = !unfoldedTranscription"
+        >
+          <ChevronDownIcon
+            :class="[
+              'w-5 h-5 inline-block mr-2 transition duration-150 ease-in-out',
+              { 'rotate-180': unfoldedTranscription },
+            ]"
+          />
+          {{
+            unfoldedTranscription ? "Сховати повну розмову" : "Повна розмова"
+          }}
+        </Button>
 
-      <hr class="w-full my-4 border-app-border" />
-    </div>
-  </CollapseTransition>
+        <hr class="w-full my-4 border-app-border" />
+      </div>
+    </CollapseTransition>
 
-  <!-- Main button to show summary -->
-  <Button
-    size="sm"
-    variant="text"
-    block
-    :loading="isLoading"
-    :ring="false"
-    @click="getTranscription"
-  >
-    <ChevronDownIcon
-      :class="[
-        'w-5 h-5 inline-block mr-2 transition duration-150 ease-in-out',
-        { 'rotate-180': unfoldedSummary },
-      ]"
-    />
-    Транскрипція
-  </Button>
+    <!-- Main button to show summary -->
+    <Button
+      size="sm"
+      variant="text"
+      block
+      :loading="isLoading"
+      :ring="false"
+      @click="getTranscription"
+    >
+      <ChevronDownIcon
+        :class="[
+          'w-5 h-5 inline-block mr-2 transition duration-150 ease-in-out',
+          { 'rotate-180': unfoldedSummary },
+        ]"
+      />
+      Транскрипція
+    </Button>
+  </div>
 </template>

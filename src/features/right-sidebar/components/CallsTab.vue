@@ -109,11 +109,11 @@ const activeConversation = computed<
               <CallPlayer
                 v-if="call.binotel_id"
                 :binotel-id="call.binotel_id"
-                class="mx-1 mt-3 mb-4"
+                class="mx-1 mt-4"
               />
             </div>
 
-            <CallTranscription class="m-3" :call-id="call.id" />
+            <CallTranscription class="mx-1 my-4" :call-id="call.id" />
           </div>
         </div>
       </div>
