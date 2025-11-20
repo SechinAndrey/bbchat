@@ -4,14 +4,14 @@ import { computed } from "vue";
 import type {
   ApiCommunicationLeadFull,
   ApiCommunicationClientFull,
-  ApiCommunicationCallInfo,
 } from "@src/api/types";
+import { PhoneIcon } from "@heroicons/vue/24/solid";
+import { formatConversationDate } from "@src/shared/utils/utils";
 import {
-  PhoneIcon,
-  PhoneArrowUpRightIcon,
-  PhoneArrowDownLeftIcon,
-} from "@heroicons/vue/24/outline";
-import { formatConversationDate, formatSeconds } from "@src/shared/utils/utils";
+  getCallStatusText,
+  getCallStatusIcon,
+  formatCallDuration,
+} from "@src/shared/utils/callHelpers";
 import useConversationsStore from "@src/features/conversations/conversations-store";
 import CallTranscription from "@src/features/chat/components/ChatMiddle/Message/CallTranscription.vue";
 import CallPlayer from "@src/features/chat/components/ChatMiddle/Message/CallPlayer.vue";
@@ -24,12 +24,6 @@ const activeConversation = computed<
 >(() => {
   return conversationsStore.activeConversation;
 });
-
-function callTypeIcon(call: ApiCommunicationCallInfo) {
-  if (!call) return PhoneIcon;
-  // call_type: 0 - incoming, 1 - outgoing
-  return call.call_type === 0 ? PhoneArrowDownLeftIcon : PhoneArrowUpRightIcon;
-}
 </script>
 
 <template>
@@ -43,10 +37,6 @@ function callTypeIcon(call: ApiCommunicationCallInfo) {
     <div class="space-y-3">
       <div v-for="call in activeConversation?.calls || []" :key="call.id">
         <div class="flex gap-5">
-          <component
-            :is="callTypeIcon(call)"
-            class="w-[1.25rem] h-[1.25rem] text-blue-500 mt-2"
-          />
           <div class="flex-1">
             <div class="flex">
               <div class="text-app-text-secondary text-[0.813rem] min-w-[49%]">
@@ -56,6 +46,7 @@ function callTypeIcon(call: ApiCommunicationCallInfo) {
                 {{ formatConversationDate(call.created_at) }}
               </div>
             </div>
+
             <div class="flex">
               <div class="text-app-text-secondary text-[0.813rem] min-w-[49%]">
                 Номер
@@ -69,10 +60,33 @@ function callTypeIcon(call: ApiCommunicationCallInfo) {
             </div>
             <div class="flex">
               <div class="text-app-text-secondary text-[0.813rem] min-w-[49%]">
+                Тип
+              </div>
+              <div class="text-[0.813rem] flex items-center gap-3">
+                <div>
+                  {{ call.call_type === 0 ? "Вхідний" : "Вихідний" }}
+                </div>
+              </div>
+            </div>
+            <div class="flex">
+              <div class="text-app-text-secondary text-[0.813rem] min-w-[49%]">
+                Статус
+              </div>
+              <div class="text-[0.813rem] flex items-center gap-2">
+                <component
+                  :is="getCallStatusIcon(call).icon"
+                  :class="getCallStatusIcon(call).color"
+                  class="w-[0.9rem] h-[0.9rem]"
+                />
+                <span>{{ getCallStatusText(call.disposition) }}</span>
+              </div>
+            </div>
+            <div class="flex">
+              <div class="text-app-text-secondary text-[0.813rem] min-w-[49%]">
                 Очікування
               </div>
               <div class="text-[0.813rem]">
-                {{ formatSeconds(call.waitsec) }}
+                {{ formatCallDuration(call.waitsec) }}
               </div>
             </div>
             <div class="flex">
@@ -80,7 +94,7 @@ function callTypeIcon(call: ApiCommunicationCallInfo) {
                 Тривалість
               </div>
               <div class="text-[0.813rem]">
-                {{ formatSeconds(call.billsec) }}
+                {{ formatCallDuration(call.billsec) }}
               </div>
             </div>
             <div class="flex">

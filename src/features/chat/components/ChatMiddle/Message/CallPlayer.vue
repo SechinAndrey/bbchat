@@ -27,7 +27,14 @@ async function getAudio() {
   <div class="flex flex-col">
     <!-- <AudioPlayer v-if="callAudio" :src="callAudio" /> -->
     <audio v-if="callAudio" class="w-full" :src="callAudio" controls></audio>
-    <Button v-else size="sm" block :loading="isLoading" @click="getAudio">
+    <Button
+      v-else
+      size="sm"
+      block
+      :loading="isLoading"
+      :ring="false"
+      @click="getAudio"
+    >
       Отримати аудіо дзвінка
     </Button>
   </div>

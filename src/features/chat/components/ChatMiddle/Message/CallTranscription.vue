@@ -53,6 +53,7 @@ const getTranscription = async () => {
     variant="text"
     block
     :loading="isLoading"
+    :ring="false"
     @click="getTranscription"
   >
     <ChevronDownIcon

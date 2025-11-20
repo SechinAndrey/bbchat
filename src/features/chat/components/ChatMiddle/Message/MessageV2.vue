@@ -2,9 +2,6 @@
 import type { ApiMessageItem } from "@src/api/types";
 import { computed, ref } from "vue";
 import {
-  PhoneArrowUpRightIcon,
-  PhoneArrowDownLeftIcon,
-  PhoneIcon,
   ChevronDownIcon,
   ChevronUpIcon,
   TrashIcon,
@@ -22,6 +19,11 @@ import { useLongPress } from "@src/shared/composables/useLongPress";
 import ReplyQuote from "@src/features/chat/components/ChatMiddle/Message/ReplyQuote.vue";
 import { useMessageData } from "@src/features/chat/composables/useMessageData";
 import { parseReplyQuoteText } from "@src/features/chat/utils/replyQuoteParser";
+import {
+  getCallStatusText,
+  getCallStatusIcon,
+  formatCallDuration,
+} from "@src/shared/utils/callHelpers";
 import { useAuthStore } from "@src/features/auth/store/auth-store";
 import useTheme from "@src/shared/theme-system/useTheme";
 import { convertViberEmoticons } from "@src/shared/utils/viberEmoticons";
@@ -96,40 +98,10 @@ const call = computed(() => {
   return props.message.call;
 });
 
-const callTypeIcon = computed(() => {
-  if (!call.value) return PhoneIcon;
-  // call_type: 0 - incoming, 1 - outgoing
-  return call.value.call_type === 0
-    ? PhoneArrowDownLeftIcon
-    : PhoneArrowUpRightIcon;
-});
-
-const callStatusText = computed(() => {
-  if (!call.value) return "";
-  const disposition = call.value.disposition;
-  switch (disposition) {
-    case "ANSWERED":
-      return "Відповів";
-    case "CANCEL":
-      return "Скасовано";
-    case "NO ANSWER":
-      return "Не відповів";
-    case "BUSY":
-      return "Зайнято";
-    default:
-      return disposition;
-  }
-});
-
-const formatDuration = (seconds: number) => {
-  if (seconds === 0) return "0 сек";
-  const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = seconds % 60;
-  if (minutes > 0) {
-    return `${minutes} хв ${remainingSeconds} сек`;
-  }
-  return `${remainingSeconds} сек`;
-};
+const callStatusIcon = computed(() => getCallStatusIcon(call.value));
+const callStatusText = computed(() =>
+  getCallStatusText(call.value?.disposition),
+);
 
 const formatMessageText = (text: string, convertEmoticons = false) => {
   if (!text) return "";
@@ -341,7 +313,11 @@ const authorTextColor = computed(() => {
         <!-- 3 - звонок -->
         <div v-if="call" class="text-[0.8125rem] leading-relaxed">
           <div class="flex items-center gap-2 mb-2">
-            <component :is="callTypeIcon" class="w-4 h-4 text-blue-500" />
+            <component
+              :is="callStatusIcon.icon"
+              :class="callStatusIcon.color"
+              class="w-4 h-4"
+            />
             <span class="font-medium">
               {{
                 call.call_type === 0 ? "Вхідний дзвінок" : "Вихідний дзвінок"
@@ -377,11 +353,11 @@ const authorTextColor = computed(() => {
               </div>
               <div class="flex justify-between gap-10">
                 <span>Тривалість:</span>
-                <span>{{ formatDuration(call.billsec) }}</span>
+                <span>{{ formatCallDuration(call.billsec) }}</span>
               </div>
               <div class="flex justify-between gap-10">
                 <span>Час очікування:</span>
-                <span>{{ formatDuration(call.waitsec) }}</span>
+                <span>{{ formatCallDuration(call.waitsec) }}</span>
               </div>
               <CallPlayer
                 v-if="call.binotel_id"
