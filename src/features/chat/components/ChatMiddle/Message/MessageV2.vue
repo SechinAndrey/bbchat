@@ -228,14 +228,21 @@ const authorTextColor = computed(() => {
     />
 
     <!-- Message body -->
-    <div class="flex flex-col gap-1 items-end">
+    <div
+      class="flex flex-col gap-1"
+      :class="{ 'w-full': call, 'items-start': !isSelf, 'items-end': isSelf }"
+    >
       <!-- Message content -->
       <div
-        class="relative bg-app-bg-secondary rounded-2xl rounded-tl-sm min-h-[2.313rem] min-w-10 px-4 py-3 pb-6 max-w-md transition-all duration-300"
+        class="relative bg-app-bg-secondary rounded-2xl rounded-tl-sm min-h-[2.313rem] min-w-10 px-4 py-3 pb-6 transition-all duration-300"
         :class="{
-          'w-[225px]': call && !isCallDetailsExpanded,
-          'w-[260px]': call && isCallDetailsExpanded,
           'opacity-60': isDeleted,
+          'max-w-md': !call,
+          'w-[100%] sm:w-[80%] md:w-[60%] lg:w-[50%] min-w-52':
+            call && isCallDetailsExpanded && !isSelf,
+          'w-[100%] sm:w-[calc(80%-1.4rem)] md:w-[calc(60%-1.4rem)] lg:w-[calc(50%-1.4rem)] min-w-52':
+            call && isCallDetailsExpanded && isSelf,
+          'w-[30%]': call && !isCallDetailsExpanded,
         }"
       >
         <div
