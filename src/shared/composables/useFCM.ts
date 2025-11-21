@@ -123,10 +123,16 @@ export function useFCM() {
 
       console.log("🔔 [FCM] Processing event:", event);
 
+      // Parse FCM data payload (all values are strings from Firebase)
+      const parsedData = {
+        ...payload.data,
+        user_id: Number(payload.data.user_id),
+      } as unknown as FCMEventMap[typeof event];
+
       // Fire event handlers for data processing
       eventHandlers.get(event)?.forEach((handler) => {
         try {
-          handler(payload.data as FCMEventMap[typeof event]);
+          handler(parsedData);
         } catch (err) {
           console.error(`❌ [FCM] Event "${event}" error:`, err);
         }
