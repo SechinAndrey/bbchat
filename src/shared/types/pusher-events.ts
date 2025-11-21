@@ -1,4 +1,4 @@
-import type { EntityType } from "@src/shared/types/common";
+import type { ContragentType } from "@src/shared/types/common";
 
 /**
  * A map of all Pusher channels and the events they can receive.
@@ -14,8 +14,10 @@ export interface PusherEventMap {
       contragent_contact_id: number | null;
       /** entity ID */
       contragent_id: number | null;
-      /** entity type: leads, clients, suppliers */
-      contragent_type: EntityType | null;
+      /** contragent type: lead, client, supplier (singular form from backend) */
+      contragent_type: ContragentType | null;
+      /** target user ID */
+      user_id: number;
     };
     "message-read-by-contact": {
       /** message ID (can be array from backend) */

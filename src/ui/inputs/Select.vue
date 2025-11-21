@@ -20,6 +20,7 @@ type Option = {
   image?: string;
   disabled?: boolean;
   title?: string;
+  showIndicator?: boolean;
 };
 
 const props = withDefaults(
@@ -33,6 +34,7 @@ const props = withDefaults(
     displayMode?: "icon-label" | "icon-only";
     selectedIconClass?: string;
     optionIconClass?: string;
+    showIndicator?: boolean;
   }>(),
   {
     multiple: false,
@@ -42,6 +44,7 @@ const props = withDefaults(
     displayMode: "icon-label",
     selectedIconClass: "",
     optionIconClass: "",
+    showIndicator: false,
   },
 );
 
@@ -232,6 +235,11 @@ const handleOptionClick = (option: Option) => {
 
 <template>
   <div ref="selectElement" class="relative">
+    <!-- Indicator dot for unread messages -->
+    <span
+      v-if="showIndicator"
+      class="absolute top-1 right-1 w-2 h-2 bg-secondary rounded-full z-10"
+    ></span>
     <Button
       block
       variant="ghost"
@@ -298,7 +306,7 @@ const handleOptionClick = (option: Option) => {
               v-for="option in options"
               :key="option.value"
               :title="option.title || ''"
-              class="flex items-center w-full px-4 py-3 text-sm text-app-text cursor-pointer select-none transition-all duration-200 hover:bg-app-bg-secondary"
+              class="flex items-center w-full px-4 py-3 text-sm text-app-text cursor-pointer select-none transition-all duration-200 hover:bg-app-bg-secondary relative"
               :class="{
                 'bg-app-bg-secondary font-medium': isSelected(option.value),
                 'opacity-50 cursor-not-allowed hover:bg-app-bg':
@@ -322,7 +330,7 @@ const handleOptionClick = (option: Option) => {
                   class="block max-w-full max-h-full object-contain"
                 />
               </span>
-              <span class="truncate">
+              <span class="truncate flex-1">
                 {{ option.label }}
                 <br v-if="option.description" />
                 <span
@@ -332,6 +340,11 @@ const handleOptionClick = (option: Option) => {
                   {{ option.description }}
                 </span>
               </span>
+              <!-- Indicator dot for unread messages -->
+              <span
+                v-if="option.showIndicator"
+                class="flex-shrink-0 w-2 h-2 bg-secondary rounded-full ml-2"
+              ></span>
             </li>
           </ul>
         </div>

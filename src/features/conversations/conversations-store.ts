@@ -22,6 +22,7 @@ import useStore from "@src/shared/store/store";
 import { useEventBus } from "@vueuse/core";
 import { usePusher } from "@src/shared/composables/usePusher";
 import contactsService from "@src/api/contacts-service";
+import { useAuthStore } from "@src/features/auth/store/auth-store";
 
 export interface TempMessage {
   clientMessageUid: string;
@@ -41,6 +42,7 @@ export interface TempMessage {
 export const useConversationsStore = defineStore("conversations", () => {
   const route = useRoute();
   const store = useStore();
+  const authStore = useAuthStore();
   const eventBus = useEventBus("chat:messages-loaded");
 
   const conversations = ref<Record<EntityType, IConversation[]>>({
@@ -84,6 +86,19 @@ export const useConversationsStore = defineStore("conversations", () => {
     page: 1,
     search: "",
   });
+
+  // UI Indicators for unread messages in filtered views (runtime state, resets on page refresh)
+  const unreadByEntity = ref({
+    leads: false,
+    clients: false,
+    suppliers: false,
+  });
+
+  const unreadByManager = ref<Record<number, boolean>>({});
+
+  const hasAnyUnreadForManagers = computed(() =>
+    Object.values(unreadByManager.value).some((v) => v),
+  );
 
   // Temporary messages for optimistic updates
   const tempMessages = ref<TempMessage[]>([]);
@@ -529,7 +544,31 @@ export const useConversationsStore = defineStore("conversations", () => {
     }
   };
 
-  const addMessageToConversation = async (message: ApiMessageItem) => {
+  // Actions to manage UI indicators
+  const setEntityIndicator = (entity: EntityType, value: boolean) => {
+    unreadByEntity.value[entity] = value;
+  };
+
+  const setManagerIndicator = (userId: number, value: boolean) => {
+    unreadByManager.value[userId] = value;
+  };
+
+  const clearEntityIndicator = (entity: EntityType) => {
+    unreadByEntity.value[entity] = false;
+  };
+
+  const clearManagerIndicator = (userId: number) => {
+    delete unreadByManager.value[userId];
+  };
+
+  const clearAllManagerIndicators = () => {
+    unreadByManager.value = {};
+  };
+
+  const addMessageToConversation = async (
+    message: ApiMessageItem,
+    messageUserId?: number,
+  ) => {
     const entityId =
       message.client_id || message.lead_id || message.supplier_id;
     const contactId =
@@ -552,8 +591,30 @@ export const useConversationsStore = defineStore("conversations", () => {
     }
 
     const isOutgoing = isOutgoingMessage(message);
+    const actualUserId =
+      messageUserId !== undefined ? messageUserId : message.user_id;
 
-    // 1. If current chat is open
+    if (!isOutgoing) {
+      const currentUser = authStore.currentUser;
+      if (currentUser) {
+        let shouldPlaySound = false;
+
+        if (currentUser.roleId !== 1) {
+          shouldPlaySound = actualUserId === currentUser.id;
+        } else {
+          if (filters.value.user_id === undefined) {
+            shouldPlaySound = true;
+          } else {
+            shouldPlaySound = actualUserId === filters.value.user_id;
+          }
+        }
+
+        if (shouldPlaySound) {
+          playNotificationSound(false);
+        }
+      }
+    }
+
     const isActiveChat =
       activeConversation.value &&
       activeConversation.value.id === entityId &&
@@ -580,7 +641,6 @@ export const useConversationsStore = defineStore("conversations", () => {
       return;
     }
 
-    // 2. If chat is in the list
     const conversation = findConversation(entityType, entityId, contactId);
     if (conversation) {
       if (!conversation.messages) {
@@ -597,19 +657,40 @@ export const useConversationsStore = defineStore("conversations", () => {
       return;
     }
 
-    // 3. Load missing conversation (only for incoming messages)
     if (!isOutgoing) {
-      // Only load conversation if we're on the matching entity tab
       const currentEntity = route.params.entity as EntityType;
-      if (currentEntity === entityType) {
-        const loadedConversation = await loadMissingConversation(
-          entityType,
-          entityId,
-          contactId,
-        );
-        if (loadedConversation) {
-          updateUnreadCount(loadedConversation);
+
+      if (currentEntity !== entityType) {
+        console.log("⏭️ Not loading: different entity");
+        return;
+      }
+
+      if (
+        authStore.currentUser?.roleId === 1 &&
+        filters.value.user_id !== undefined
+      ) {
+        if (actualUserId !== filters.value.user_id) {
+          console.log(
+            `⏭️ Not loading: message for user ${actualUserId}, filter ${filters.value.user_id}`,
+          );
+          return;
         }
+      }
+
+      if (filters.value.search) {
+        console.log(
+          "⏭️ Not loading: search is active (TODO: implement matching)",
+        );
+        return;
+      }
+
+      const loadedConversation = await loadMissingConversation(
+        entityType,
+        entityId,
+        contactId,
+      );
+      if (loadedConversation) {
+        updateUnreadCount(loadedConversation);
       }
     }
   };
@@ -667,7 +748,7 @@ export const useConversationsStore = defineStore("conversations", () => {
     return null;
   };
 
-  const handleNewMessage = async (messageId: number) => {
+  const handleNewMessage = async (messageId: number, userId?: number) => {
     try {
       const messageItem = await conversationsService.getMessageById(messageId);
       const isOutgoing = isOutgoingMessage(messageItem);
@@ -681,21 +762,17 @@ export const useConversationsStore = defineStore("conversations", () => {
         const removedTempMessage = findAndRemoveTempMessage(clientMessageUid);
         if (removedTempMessage) {
           console.log("✅ Found and removed temp message, adding real message");
-          await addMessageToConversation(messageItem);
+          await addMessageToConversation(messageItem, userId);
         } else {
           console.warn(
             "⚠️ Could not find temp message with client_message_uid:",
             clientMessageUid,
             "- adding message anyway",
           );
-          await addMessageToConversation(messageItem);
+          await addMessageToConversation(messageItem, userId);
         }
       } else {
-        await addMessageToConversation(messageItem);
-      }
-
-      if (!isOutgoing) {
-        playNotificationSound(false);
+        await addMessageToConversation(messageItem, userId);
       }
     } catch (error) {
       console.error("Error handling new message:", error);
@@ -734,6 +811,65 @@ export const useConversationsStore = defineStore("conversations", () => {
     }
   };
 
+  const getEntityIndicatorToShow = (data: {
+    user_id: number;
+    contragent_type: ContragentType | null;
+  }): EntityType | null => {
+    const currentUser = authStore.currentUser;
+    if (!currentUser) return null;
+    if (!data.contragent_type) return null;
+
+    const currentEntity = route.params.entity as EntityType | undefined;
+    const messageEntity = CONTRAGENT_TO_ENTITY_MAP[data.contragent_type];
+
+    if (currentEntity === messageEntity) return null;
+
+    if (currentUser.roleId !== 1) {
+      if (data.user_id === currentUser.id) {
+        return messageEntity;
+      }
+      return null;
+    }
+
+    if (
+      filters.value.user_id === undefined ||
+      filters.value.user_id === data.user_id
+    ) {
+      return messageEntity;
+    }
+
+    return null;
+  };
+
+  const getManagerIndicatorToShow = (data: {
+    user_id: number;
+    contragent_type: ContragentType | null;
+  }): number | null => {
+    const currentUser = authStore.currentUser;
+    if (!currentUser) return null;
+    if (currentUser.roleId !== 1) return null;
+
+    const currentEntity = route.params.entity as EntityType | undefined;
+    const messageEntity = data.contragent_type
+      ? CONTRAGENT_TO_ENTITY_MAP[data.contragent_type]
+      : null;
+
+    if (
+      filters.value.user_id === undefined &&
+      currentEntity === messageEntity
+    ) {
+      return null;
+    }
+
+    if (filters.value.user_id !== undefined) {
+      if (data.user_id !== filters.value.user_id) {
+        return data.user_id;
+      }
+    }
+
+    return null;
+  };
+
   const { bindEvent } = usePusher();
   bindEvent(
     "e-chat-notification",
@@ -742,10 +878,35 @@ export const useConversationsStore = defineStore("conversations", () => {
       id: number;
       contragent_contact_id: number | null;
       contragent_id: number | null;
-      contragent_type: EntityType | null;
+      contragent_type: ContragentType | null;
+      user_id: number;
     }) => {
       console.log("📨 Received Pusher new-message event:", data);
-      await handleNewMessage(data.id);
+
+      const shouldProcess =
+        data.user_id === authStore.currentUser?.id ||
+        authStore.currentUser?.roleId === 1;
+
+      if (!shouldProcess) {
+        console.log("⏭️ Message not for current user");
+        return;
+      }
+
+      await handleNewMessage(data.id, data.user_id);
+
+      const entityIndicator = getEntityIndicatorToShow(data);
+      if (entityIndicator) {
+        console.log(`🔔 Setting entity indicator for ${entityIndicator}`);
+        setEntityIndicator(entityIndicator, true);
+      }
+
+      const managerIndicator = getManagerIndicatorToShow(data);
+      if (managerIndicator) {
+        console.log(
+          `🔔 Setting manager indicator for user ${managerIndicator}`,
+        );
+        setManagerIndicator(managerIndicator, true);
+      }
     },
   );
 
@@ -842,6 +1003,11 @@ export const useConversationsStore = defineStore("conversations", () => {
     messagesFilters,
     filters,
 
+    // UI Indicators
+    unreadByEntity,
+    unreadByManager,
+    hasAnyUnreadForManagers,
+
     // Getters
     hasMore,
     hasMoreMessages,
@@ -873,6 +1039,13 @@ export const useConversationsStore = defineStore("conversations", () => {
 
     // Actions - Unread Management
     resetUnreadCount,
+
+    // Actions - UI Indicators
+    setEntityIndicator,
+    setManagerIndicator,
+    clearEntityIndicator,
+    clearManagerIndicator,
+    clearAllManagerIndicators,
 
     // Actions - Notifications
     playNotificationSound,

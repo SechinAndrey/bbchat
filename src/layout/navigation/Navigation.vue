@@ -3,6 +3,7 @@ import { ref } from "vue";
 
 import useStore from "@src/shared/store/store";
 import { useAuthStore } from "@src/features/auth/store/auth-store";
+import { useConversationsStore } from "@src/features/conversations/conversations-store";
 import useTheme from "@src/shared/theme-system/useTheme";
 
 import {
@@ -21,6 +22,7 @@ import route from "@src/router";
 
 const store = useStore();
 const authStore = useAuthStore();
+const conversationsStore = useConversationsStore();
 const { toggleDarkMode, isDarkMode } = useTheme();
 
 const showDropdown = ref(false);
@@ -81,6 +83,7 @@ const openClients = () => {
           <li v-if="!store.isWidget" class="md:mb-4">
             <NavItem
               :active="route.currentRoute.value.path.includes('/chat/leads')"
+              :show-indicator="conversationsStore.unreadByEntity.leads"
               title="Ліди"
               @click="openLeads"
             >
@@ -93,6 +96,7 @@ const openClients = () => {
           >
             <NavItem
               :active="route.currentRoute.value.path.includes('/chat/clients')"
+              :show-indicator="conversationsStore.unreadByEntity.clients"
               title="Клієнти"
               @click="openClients"
             >
@@ -107,6 +111,7 @@ const openClients = () => {
               :active="
                 route.currentRoute.value.path.includes('/chat/suppliers')
               "
+              :show-indicator="conversationsStore.unreadByEntity.suppliers"
               title="Постачальники"
               @click="openSuppliers"
             >

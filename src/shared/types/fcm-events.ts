@@ -16,5 +16,6 @@ export interface FCMEventMap {
     entity_title: string;
     entity_name: string | undefined;
     from_manager: string;
+    user_id: number;
   };
 }

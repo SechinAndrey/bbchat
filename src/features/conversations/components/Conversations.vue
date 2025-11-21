@@ -57,9 +57,6 @@ const authStore = useAuthStore();
 const globalDataStore = useGlobalDataStore();
 const conversationsStore = useConversationsStore();
 
-// State refs
-const selectedUser = ref<number | "all">("all");
-const keyword: Ref<string> = ref("");
 const composeOpen = ref(false);
 const newLeadModalOpen = ref(false);
 const openArchive = ref(false);
@@ -69,6 +66,20 @@ const TAB = {
   open: "open",
 };
 const activeTab = ref(TAB.all);
+
+const selectedUserUI = computed({
+  get: () => conversationsStore.filters.user_id ?? "all",
+  set: (val) => {
+    conversationsStore.filters.user_id = val === "all" ? undefined : val;
+  },
+});
+
+const keywordUI = computed({
+  get: () => conversationsStore.filters.search || "",
+  set: (val) => {
+    conversationsStore.filters.search = val;
+  },
+});
 
 const fetchConversations = (
   entity: EntityType,
@@ -87,6 +98,7 @@ const userOptions = computed(() => [
   ...globalDataStore.allUsers.map((user) => ({
     value: user.id,
     label: user.name,
+    showIndicator: conversationsStore.unreadByManager[user.id] || false,
   })),
 ]);
 
@@ -105,8 +117,8 @@ const hasMore = computed(() => {
 const debouncedFetch = useDebounceFn(async () => {
   const params: ConversationParams = {
     page: 1,
-    search: keyword.value || undefined,
-    user_id: selectedUser.value === "all" ? undefined : selectedUser.value,
+    search: conversationsStore.filters.search || undefined,
+    user_id: conversationsStore.filters.user_id,
     communication_status_id: activeTab.value === TAB.open ? 1 : undefined,
   };
   await fetchConversations(entity.value, params);
@@ -115,7 +127,7 @@ const debouncedFetch = useDebounceFn(async () => {
 const switching = ref(false);
 
 watch(
-  [selectedUser, entity, activeTab],
+  [selectedUserUI, entity, activeTab],
   async () => {
     switching.value = true;
     await debouncedFetch();
@@ -126,7 +138,7 @@ watch(
   },
 );
 
-watch(selectedUser, () => {
+watch(selectedUserUI, () => {
   router.push({
     name: "EntityChat",
     params: { entity: entity.value },
@@ -134,7 +146,7 @@ watch(selectedUser, () => {
   scrollContainer.value?.scrollTo({ top: 0 });
 });
 
-watch(keyword, debouncedFetch);
+watch(keywordUI, debouncedFetch);
 
 watch(
   () => route.params.entity,
@@ -144,15 +156,30 @@ watch(
 
       const params: ConversationParams = {
         page: 1,
-        search: keyword.value || undefined,
-        user_id: selectedUser.value === "all" ? undefined : selectedUser.value,
+        search: conversationsStore.filters.search || undefined,
+        user_id: conversationsStore.filters.user_id,
         communication_status_id: activeTab.value === TAB.open ? 1 : undefined,
       };
 
       await fetchConversations(entity.value, params);
     }
+
+    if (newEntity) {
+      conversationsStore.clearEntityIndicator(newEntity as EntityType);
+    }
   },
   { immediate: true },
+);
+
+watch(
+  () => conversationsStore.filters.user_id,
+  (newUserId) => {
+    if (newUserId === undefined) {
+      conversationsStore.clearAllManagerIndicators();
+    } else {
+      conversationsStore.clearManagerIndicator(newUserId);
+    }
+  },
 );
 
 // Infinite scroll
@@ -248,8 +275,9 @@ const handleNewLeadSuccess = async (newLead: ApiCommunicationLead) => {
         <div class="flex items-center gap-3">
           <Select
             v-if="authStore.currentUser?.roleId === 1"
-            v-model="selectedUser"
+            v-model="selectedUserUI"
             :options="userOptions"
+            :show-indicator="conversationsStore.hasAnyUnreadForManagers"
             placeholder="Список менеджерiв"
             :icon="UserIcon"
             class="max-w-[11rem]"
@@ -277,7 +305,7 @@ const handleNewLeadSuccess = async (newLead: ApiCommunicationLead) => {
 
     <!--search bar-->
     <div class="px-5 pb-4">
-      <SearchInput v-model="keyword" />
+      <SearchInput v-model="keywordUI" />
     </div>
 
     <Tabs v-if="!store.isWidget" class="mx-5 mb-4">
