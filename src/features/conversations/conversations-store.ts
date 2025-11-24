@@ -10,6 +10,7 @@ import type { EntityType, ContragentType } from "@src/shared/types/common";
 import { CONTRAGENT_TO_ENTITY_MAP } from "@src/shared/types/common";
 import type {
   ApiResponseMeta,
+  ApiCommunicationEntity,
   ApiCommunicationEntityFull,
   ApiCommunicationLead,
   ApiMessageItem,
@@ -529,7 +530,35 @@ export const useConversationsStore = defineStore("conversations", () => {
     await contactsService.deleteContact(entity, entityId, contactId);
 
     // Reload conversation to update contacts list
-    await fetchConversation(entity, entityId);
+    const updatedConversation = await fetchConversation(entity, entityId);
+
+    if (updatedConversation && conversations.value[entity]) {
+      conversations.value[entity] = conversations.value[entity].filter(
+        (conv) => conv.contact.id !== contactId,
+      );
+
+      if (
+        updatedConversation.contacts &&
+        updatedConversation.contacts.length > 0
+      ) {
+        const existingContactIds = new Set(
+          conversations.value[entity].map((conv) => conv.contact.id),
+        );
+
+        updatedConversation.contacts.forEach((apiContact) => {
+          if (!existingContactIds.has(apiContact.id)) {
+            const tempEntity = {
+              ...updatedConversation,
+              contacts: [apiContact],
+            } as unknown as ApiCommunicationEntity;
+
+            const newConversation =
+              adaptApiCommunicationToIConversation(tempEntity);
+            conversations.value[entity].unshift(newConversation);
+          }
+        });
+      }
+    }
   };
 
   const markMessageAsDeleted = (messageId: number) => {
