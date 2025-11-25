@@ -22,7 +22,7 @@ const loginError = ref("");
 
 const handleLogin = async () => {
   if (!email.value || !password.value) {
-    loginError.value = "Please fill in all fields";
+    loginError.value = "Будь ласка, заповніть всі поля.";
     return;
   }
 
@@ -39,13 +39,14 @@ const handleLogin = async () => {
       router.push("/chat/");
     } else {
       loginError.value =
-        authStore.error || "Login failed. Please check your credentials.";
+        authStore.error ||
+        "Не вдалося увійти. Будь ласка, перевірте свої облікові дані.";
     }
   } catch (error) {
     if (error instanceof Error) {
       loginError.value = error.message;
     } else {
-      loginError.value = "Unknown error";
+      loginError.value = "Сталася помилка під час входу.";
     }
   } finally {
     isLoading.value = false;
@@ -93,7 +94,7 @@ const handleLogin = async () => {
         <!-- Error message -->
         <div
           v-if="loginError"
-          class="mb-6 p-4 bg-danger/10 border border-danger/20 rounded-xl text-danger text-sm flex items-start gap-3"
+          class="mb-6 p-4 border border-danger rounded-xl text-danger text-sm flex items-start gap-3"
         >
           <svg
             class="w-5 h-5 mt-0.5 flex-shrink-0"
@@ -144,7 +145,7 @@ const handleLogin = async () => {
         </form>
 
         <!-- Footer -->
-        <div class="mt-8 pt-6 border-t border-app-border/50">
+        <div class="mt-8 pt-6 border-t border-app-border">
           <p class="text-center text-xs text-app-text-secondary">
             *Використовуйте свій основний акаунт Billboards для входу
           </p>
