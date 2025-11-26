@@ -16,9 +16,9 @@ export default defineConfig(({ mode }) => {
       alias(),
       VitePWA({
         registerType: "autoUpdate",
-        devOptions: {
-          enabled: true,
-        },
+        // devOptions: {
+        //   enabled: true,
+        // },
         workbox: {
           globIgnores: ["**/firebase-messaging-sw.js"],
           runtimeCaching: [
