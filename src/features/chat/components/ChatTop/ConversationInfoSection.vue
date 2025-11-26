@@ -82,6 +82,41 @@ const switchConversationStatus = async () => {
     );
     activeContact.value.communication_status_id = newStatus;
 
+    const isOpenFilterActive =
+      conversationsStore.filters.communication_status_id === 1;
+    const wasConversationStopped = newStatus === 2;
+    const wasConversationResumed = newStatus === 1;
+
+    if (isOpenFilterActive && wasConversationStopped) {
+      const conversations = conversationsStore.conversations[entity.value];
+      const index = conversations.findIndex(
+        (conv) => conv.id === id.value && conv.contact.id === contactId.value,
+      );
+
+      if (index !== -1) {
+        conversations.splice(index, 1);
+        await router.push({
+          name: "EntityChat",
+          params: { entity: entity.value },
+        });
+      }
+    }
+
+    if (isOpenFilterActive && wasConversationResumed) {
+      const conversations = conversationsStore.conversations[entity.value];
+      const existsInList = conversations.some(
+        (conv) => conv.id === id.value && conv.contact.id === contactId.value,
+      );
+
+      if (!existsInList) {
+        await conversationsStore.loadMissingConversation(
+          entity.value,
+          id.value,
+          contactId.value,
+        );
+      }
+    }
+
     toastSuccess(newStatus === 2 ? "Діалог завершено" : "Діалог відновлено");
     closePopperMenu();
   } catch (error) {
