@@ -24,6 +24,7 @@ import { useEventBus } from "@vueuse/core";
 import { usePusher } from "@src/shared/composables/usePusher";
 import contactsService from "@src/api/contacts-service";
 import { useAuthStore } from "@src/features/auth/store/auth-store";
+import { useGlobalDataStore } from "@src/shared/store/global-data-store";
 
 export interface TempMessage {
   clientMessageUid: string;
@@ -44,6 +45,7 @@ export const useConversationsStore = defineStore("conversations", () => {
   const route = useRoute();
   const store = useStore();
   const authStore = useAuthStore();
+  const globalDataStore = useGlobalDataStore();
   const eventBus = useEventBus("chat:messages-loaded");
 
   const conversations = ref<Record<EntityType, IConversation[]>>({
@@ -391,8 +393,49 @@ export const useConversationsStore = defineStore("conversations", () => {
    * Change lead status
    * @example await changeLeadStatus(123, 2)
    */
-  const changeLeadStatus = async (id: number, status: number) => {
-    await conversationsService.changeLeadStatus(id, status);
+  const changeLeadStatus = async (id: number, newStatusId: number) => {
+    await conversationsService.changeLeadStatus(id, newStatusId);
+
+    if (activeConversation.value && activeConversation.value.id === id) {
+      const newStatus = globalDataStore.getKanbanStatusById(newStatusId);
+      const oldStatusId = activeConversation.value.status_id || 0;
+      const oldStatus = globalDataStore.getKanbanStatusById(oldStatusId);
+
+      if (newStatus && authStore.currentUser) {
+        const newStatusLogItem = {
+          id: Date.now(), // Temporary ID
+          lead_id: id,
+          user_id: authStore.currentUser.id,
+          old_status_id: oldStatusId,
+          new_status_id: newStatusId,
+          rejection_id: null,
+          rejection_reason_id: null,
+          comment: null,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          old_status: oldStatus || {
+            id: oldStatusId,
+            name: "",
+            for_hunters: false,
+            for_all: false,
+            avaliable_statuses: "",
+          },
+          new_status: newStatus,
+          user: {
+            id: authStore.currentUser.id,
+            role_id: authStore.currentUser.roleId,
+            name: `${authStore.currentUser.firstName} ${authStore.currentUser.lastName}`,
+            email: authStore.currentUser.email,
+          },
+        };
+
+        if (!activeConversation.value.status_log) {
+          activeConversation.value.status_log = [];
+        }
+        activeConversation.value.status_log.unshift(newStatusLogItem);
+        activeConversation.value.status_id = newStatusId;
+      }
+    }
   };
 
   const findConversation = (
