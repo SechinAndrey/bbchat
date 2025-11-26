@@ -569,6 +569,20 @@ const titleContainerClasses = computed(() => {
               </Button>
             </li>
             <li v-if="authStore.currentUser?.roleId !== 7 && isLead">
+              <a target="_blank" :href="clientCrmLink">
+                <Button
+                  block
+                  variant="text"
+                  class="hover:underline underline-offset-[0.4rem]"
+                >
+                  <ArrowTopRightOnSquareIcon
+                    class="min-w-5 min-h-5 max-w-5 max-h-5 mr-2"
+                  />
+                  Перевести в клієнти
+                </Button>
+              </a>
+            </li>
+            <li v-if="authStore.currentUser?.roleId !== 7 && isLead">
               <Button block variant="text" @click="openActionModal('supplier')">
                 Додати в існуючого постачальника
               </Button>
