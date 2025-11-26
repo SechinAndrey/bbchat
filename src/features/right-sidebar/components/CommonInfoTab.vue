@@ -567,15 +567,14 @@ const sourceInfo = computed(() => {
     <div
       v-for="status in activeConversation?.status_log || []"
       :key="status.id"
-      class="mb-4 text-[0.813rem]"
+      class="mb-4 text-[0.813rem] flex gap-3"
     >
-      <div class="flex gap-4 mb-4">
-        <div class="text-app-text-secondary">
+      <div class="w-2 h-2 rounded-full bg-primary mt-3"></div>
+      <div class="flex-1">
+        <div class="mb-1">{{ status.new_status.name }}</div>
+        <div class="text-app-text-secondary">{{ status.user?.name }}</div>
+        <div class="text-app-text-secondary mb-1">
           {{ formatConversationDate(status.created_at) }}
-        </div>
-        <div class="flex-1 min-w-full">
-          <div>{{ status.new_status.name }}</div>
-          <div class="text-app-text-secondary">{{ status.user?.name }}</div>
         </div>
       </div>
     </div>
