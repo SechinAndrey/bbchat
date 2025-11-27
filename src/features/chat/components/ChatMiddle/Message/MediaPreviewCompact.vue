@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import { MusicalNoteIcon, DocumentIcon } from "@heroicons/vue/24/outline";
-import { isImage, isVideo, isAudio } from "@src/shared/utils/media";
+import {
+  isImage,
+  isVideo,
+  isAudio,
+  isTgsSticker,
+} from "@src/shared/utils/media";
+import TgsSticker from "./TgsSticker.vue";
 
 const props = defineProps<{
   media: string;
@@ -8,9 +14,19 @@ const props = defineProps<{
 </script>
 
 <template>
-  <div class="w-9 h-10 flex-shrink-0 flex items-center justify-center">
+  <div
+    class="w-9 h-10 flex-shrink-0 flex items-center justify-center overflow-hidden"
+  >
+    <!-- Telegram Sticker -->
+    <TgsSticker
+      v-if="isTgsSticker(props.media)"
+      :sticker-url="props.media"
+      class="w-full h-full"
+    />
+
+    <!-- Image -->
     <img
-      v-if="isImage(props.media)"
+      v-else-if="isImage(props.media)"
       :src="props.media"
       class="w-full h-full rounded object-cover"
       alt="медіа"

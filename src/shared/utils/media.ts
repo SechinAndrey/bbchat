@@ -32,6 +32,12 @@ export const isAudio = (url: string): boolean => {
   return extension ? audioExtensions.includes(extension) : false;
 };
 
+export const isTgsSticker = (url: string): boolean => {
+  if (!url) return false;
+  const extension = url.split(".").pop()?.toLowerCase();
+  return extension === "tgs";
+};
+
 /**
  * Get file name from URL
  */

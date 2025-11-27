@@ -22,20 +22,21 @@ import {
   InformationCircleIcon,
   TrashIcon,
   CheckIcon,
+} from "@heroicons/vue/24/outline";
+import {
   PhotoIcon,
   VideoCameraIcon,
   MusicalNoteIcon,
   DocumentIcon,
-} from "@heroicons/vue/24/outline";
-import {
   PhoneIcon,
   PhoneArrowUpRightIcon,
   PhoneArrowDownLeftIcon,
+  FaceSmileIcon,
 } from "@heroicons/vue/24/solid";
 import Dropdown from "@src/ui/navigation/Dropdown/Dropdown.vue";
 import ConversationAvatar from "@src/shared/components/ConversationAvatar.vue";
 import { parseReplyQuoteText } from "@src/features/chat/utils/replyQuoteParser";
-import { getMediaType } from "@src/shared/utils/media";
+import { getMediaType, isTgsSticker } from "@src/shared/utils/media";
 
 const props = defineProps<{
   conversation: IConversation;
@@ -137,6 +138,10 @@ const lastMessageDate = computed(() => {
 });
 
 const getMediaIcon = (url: string) => {
+  if (isTgsSticker(url)) {
+    return FaceSmileIcon;
+  }
+
   const type = getMediaType(url);
   switch (type) {
     case "image":
@@ -153,6 +158,10 @@ const getMediaIcon = (url: string) => {
 };
 
 const getMediaLabel = (url: string): string => {
+  if (isTgsSticker(url)) {
+    return "Стікер";
+  }
+
   const type = getMediaType(url);
   switch (type) {
     case "image":
@@ -339,7 +348,7 @@ const showDoubleCheck = computed(() => {
               <component
                 :is="mediaIcon"
                 v-else-if="mediaIcon"
-                class="w-4 h-4 text-app-text-secondary mr-2"
+                class="w-5 h-5 text-app-text-secondary mr-2"
               />
               <img
                 v-else-if="echat?.dialog?.messenger_id"
