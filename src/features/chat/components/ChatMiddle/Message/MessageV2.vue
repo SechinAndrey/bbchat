@@ -18,6 +18,7 @@ import Robo1Icon from "@src/shared/icons/Robo1Icon.vue";
 import { useLongPress } from "@src/shared/composables/useLongPress";
 import ReplyQuote from "@src/features/chat/components/ChatMiddle/Message/ReplyQuote.vue";
 import { useMessageData } from "@src/features/chat/composables/useMessageData";
+import { isAudio } from "@src/shared/utils/media";
 import { parseReplyQuoteText } from "@src/features/chat/utils/replyQuoteParser";
 import {
   getCallStatusText,
@@ -182,6 +183,14 @@ const authorTextColor = computed(() => {
 
   return colors[props.message.user_id % colors.length];
 });
+
+const hasAudio = computed(() => {
+  const mediaUrl =
+    echatMessage.value?.media ||
+    echatMessage.value?.file ||
+    chaport.value?.file;
+  return mediaUrl ? isAudio(mediaUrl) : false;
+});
 </script>
 
 <template>
@@ -203,18 +212,22 @@ const authorTextColor = computed(() => {
     <!-- Message body -->
     <div
       class="flex flex-col gap-1"
-      :class="{ 'w-full': call, 'items-start': !isSelf, 'items-end': isSelf }"
+      :class="{
+        'w-full': call || hasAudio,
+        'items-start': !isSelf,
+        'items-end': isSelf,
+      }"
     >
       <!-- Message content -->
       <div
         class="relative bg-app-bg-secondary rounded-2xl rounded-tl-sm min-h-[2.313rem] min-w-10 px-4 py-3 pb-6 transition-all duration-300"
         :class="{
           'opacity-60': isDeleted,
-          'max-w-md': !call,
+          'max-w-md': !call && !hasAudio,
           'w-[100%] sm:w-[80%] md:w-[60%] lg:w-[50%] min-w-52':
-            call && isCallDetailsExpanded && !isSelf,
+            (call && isCallDetailsExpanded && !isSelf) || (hasAudio && !isSelf),
           'w-[100%] sm:w-[calc(80%-1.4rem)] md:w-[calc(60%-1.4rem)] lg:w-[calc(50%-1.4rem)] min-w-52':
-            call && isCallDetailsExpanded && isSelf,
+            (call && isCallDetailsExpanded && isSelf) || (hasAudio && isSelf),
           'w-[30%]': call && !isCallDetailsExpanded,
         }"
       >

@@ -46,7 +46,7 @@ const openCarousel = () => {
     </div>
 
     <div v-else-if="isAudio(props.media)" class="flex items-center gap-4">
-      <audio :src="props.media" controls class="w-[14rem]">
+      <audio :src="props.media" controls class="w-full">
         Your browser does not support the audio element.
       </audio>
     </div>
