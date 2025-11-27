@@ -98,6 +98,20 @@ const changePrice = async (
     console.error("Error changing price:", error);
   }
 };
+
+const toggleSelection = (itemId: number) => {
+  if (!model.value) {
+    model.value = [itemId];
+    return;
+  }
+
+  const index = model.value.indexOf(itemId);
+  if (index > -1) {
+    model.value = model.value.filter((id) => id !== itemId);
+  } else {
+    model.value = [...model.value, itemId];
+  }
+};
 </script>
 
 <template>
@@ -177,9 +191,10 @@ const changePrice = async (
             <tr
               v-for="item in props.selectionItems"
               :key="item.id"
-              class="border-b border-app-border hover:bg-app-bg-secondary-lighter transition-colors"
+              class="border-b border-app-border hover:bg-app-bg-secondary-lighter transition-colors cursor-pointer"
+              @click="toggleSelection(item.id)"
             >
-              <td class="pl-[1.25rem] py-[0.625rem] pr-3">
+              <td class="pl-[1.25rem] py-[0.625rem] pr-3" @click.stop>
                 <Checkbox v-model="model" :value="item.id" size="[1.25rem]" />
               </td>
               <td class="py-[0.625rem] px-3">
@@ -221,7 +236,7 @@ const changePrice = async (
               <td class="py-[0.625rem] px-3">
                 {{ dateWithTime(item.updated_at) }}
               </td>
-              <td class="py-[0.625rem] px-3">
+              <td class="py-[0.625rem] px-3" @click.stop>
                 <Button
                   v-if="item.image"
                   variant="ghost"
@@ -234,7 +249,7 @@ const changePrice = async (
                 </Button>
                 <span v-else class="text-app-text-secondary">—</span>
               </td>
-              <td class="py-[0.625rem] px-3">
+              <td class="py-[0.625rem] px-3" @click.stop>
                 <VuePopper hover placement="top" class="w-full">
                   <template #default>
                     <BoardAvailability :schedule="item.reserve_data" />
@@ -251,7 +266,7 @@ const changePrice = async (
                 </VuePopper>
               </td>
               <td class="py-[0.625rem] px-3">{{ item.price }} ₴</td>
-              <td class="py-[0.625rem] px-3">
+              <td class="py-[0.625rem] px-3" @click.stop>
                 <CurrencyInput
                   v-model="item.buying_price"
                   class="mt-4"
@@ -260,7 +275,7 @@ const changePrice = async (
                   "
                 />
               </td>
-              <td class="py-[0.625rem] px-2">
+              <td class="py-[0.625rem] px-2" @click.stop>
                 <CurrencyInput
                   v-model="item.selling_price"
                   class="mt-4"
@@ -269,7 +284,7 @@ const changePrice = async (
                   "
                 />
               </td>
-              <td class="py-[0.625rem] px-2">
+              <td class="py-[0.625rem] px-2" @click.stop>
                 <CurrencyInput
                   v-model="item.printing_price"
                   class="mt-4"
@@ -311,12 +326,19 @@ const changePrice = async (
       class="h-[calc(100%-113px)] overflow-auto scrollbar-thin md:hidden space-y-4 pb-3"
     >
       <!-- Mobile Select All -->
-      <div class="bg-app-bg border border-app-border p-4 mb-4">
+      <div
+        class="bg-app-bg border border-app-border p-4 mb-4 cursor-pointer active:bg-app-bg-secondary transition-colors"
+        @click="
+          allSelected = !allSelected;
+          allSelectedChanged();
+        "
+      >
         <div class="flex items-center justify-between">
           <span class="font-medium">Вибрати всі</span>
           <Checkbox
             v-model="allSelected"
             size="[1.25rem]"
+            @click.stop
             @update:model-value="allSelectedChanged"
           />
         </div>
@@ -329,10 +351,16 @@ const changePrice = async (
       >
         <!-- Selection Checkbox Header -->
         <div
-          class="p-4 border-b border-app-border bg-app-bg-secondary flex items-center justify-between"
+          class="p-4 border-b border-app-border bg-app-bg-secondary flex items-center justify-between cursor-pointer active:bg-app-bg-secondary-lighter transition-colors"
+          @click="toggleSelection(item.id)"
         >
           <span class="font-medium text-app-text">ID: {{ item.id }}</span>
-          <Checkbox v-model="model" :value="item.id" size="[1.25rem]" />
+          <Checkbox
+            v-model="model"
+            :value="item.id"
+            size="[1.25rem]"
+            @click.stop
+          />
         </div>
 
         <!-- Card Content -->
