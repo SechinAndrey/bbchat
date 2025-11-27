@@ -1,6 +1,6 @@
 <template>
   <div
-    class="w-full md:min-h-[5rem] max-h-fit px-5 py-3 md:py-6 flex justify-between items-center"
+    class="w-full max-h-fit px-5 py-3 md:pt-5 md:pb-3 flex justify-between items-center"
   >
     <p tabindex="0" class="outline-none">
       <slot name="title"></slot>

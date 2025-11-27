@@ -73,7 +73,7 @@ watch([entity, id], ([newEntity, newId]) => {
 </script>
 
 <template>
-  <div class="p-4 pb-6">
+  <div class="pb-6">
     <div v-if="selectionsStore.isLoading" class="flex justify-center pt-10">
       <Spinner />
     </div>

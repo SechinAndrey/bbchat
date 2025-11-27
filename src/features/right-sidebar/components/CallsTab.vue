@@ -27,7 +27,7 @@ const activeConversation = computed<
 </script>
 
 <template>
-  <div class="pt-5 pb-6">
+  <div class="pb-6">
     <EmptyState
       v-if="!activeConversation?.calls.length"
       :icon="PhoneIcon"

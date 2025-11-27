@@ -285,7 +285,7 @@ const sourceInfo = computed(() => {
 </script>
 
 <template>
-  <div class="py-4 pb-6">
+  <div class="pb-6">
     <a
       v-if="isClient"
       :href="clientCrmLink"

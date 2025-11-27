@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { Ref } from "vue";
 import type { ConversationParams } from "../conversations-service";
 import type { ApiCommunicationLead } from "@src/api/types";
 
@@ -304,7 +303,7 @@ const handleNewLeadSuccess = async (newLead: ApiCommunicationLead) => {
     </SidebarHeader>
 
     <!--search bar-->
-    <div class="px-5 pb-4">
+    <div class="px-5 pb-2">
       <SearchInput v-model="keywordUI" />
     </div>
 
@@ -328,7 +327,7 @@ const handleNewLeadSuccess = async (newLead: ApiCommunicationLead) => {
         :key="activeTab"
         role="list"
         aria-label="conversations"
-        class="w-full scroll-smooth scrollbar-thin pr-[0.125rem] max-h-[calc(100vh-13.75rem)] md:max-h-[calc(100vh-11.75rem)] overflow-y-auto"
+        class="w-full scroll-smooth scrollbar-thin pr-[0.125rem] max-h-[calc(100vh-13.75rem)] md:max-h-[calc(100vh-9.688rem)] overflow-y-auto"
       >
         <div v-if="(isLoading && conversationsList.length === 0) || switching">
           <Circle2Lines v-for="item in 12" :key="item" />
