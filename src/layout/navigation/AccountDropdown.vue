@@ -8,6 +8,7 @@ import {
   ArrowPathIcon,
   InformationCircleIcon,
   ArrowLeftStartOnRectangleIcon,
+  BookmarkIcon,
 } from "@heroicons/vue/24/outline";
 import Dropdown from "@src/ui/navigation/Dropdown/Dropdown.vue";
 import { RouterLink } from "vue-router";
@@ -125,6 +126,19 @@ const handleCloseOnClickOutside = (event: Event) => {
         />
         Password Change
       </RouterLink> -->
+
+      <RouterLink
+        :to="{ name: 'SettingsMessagesTemplates' }"
+        class="flex items-center w-full px-4 py-3 text-sm hover:bg-app-bg-secondary focus:bg-app-bg-secondary focus:outline-none transition-all duration-200"
+        aria-label="templates settings"
+        role="menuitem"
+        @click="props.handleCloseDropdown"
+      >
+        <BookmarkIcon
+          class="w-5 h-5 mr-3 opacity-70 hover:opacity-100 transition-opacity duration-200"
+        />
+        Шаблони повідомлень
+      </RouterLink>
 
       <button
         class="flex items-center w-full px-4 py-3 text-sm text-danger hover:bg-app-bg-secondary focus:bg-app-bg-secondary focus:outline-none transition-all duration-200"

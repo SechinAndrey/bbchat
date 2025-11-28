@@ -18,9 +18,16 @@ const isChatRoute = computed(() => {
   return route.path.startsWith("/chat") || route.path.startsWith("/widget");
 });
 
+const isSettingsRoute = computed(() => {
+  return route.path.startsWith("/settings");
+});
+
 const ActiveComponent = computed(() => {
   if (isChatRoute.value) {
     return Conversations;
+  }
+  if (isSettingsRoute.value) {
+    return Settings;
   }
   if (store.activeSidebarComponent === "messages") {
     return Conversations;

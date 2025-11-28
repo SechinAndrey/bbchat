@@ -4,11 +4,14 @@ import {
   RouteLocationNormalized,
 } from "vue-router";
 import { authService } from "@src/features/auth/services/auth-service";
+import AppLayout from "@src/layouts/AppLayout.vue";
 import AccessView from "@src/pages/access/AccessView.vue";
-import HomeView from "@src/pages/home/HomeView.vue";
 import PasswordResetView from "@src/pages/password-reset/PasswordResetView.vue";
 import UIKitView from "@src/pages/ui-kit/UIKitView.vue";
 import Chat from "@src/features/chat/components/Chat.vue";
+import ProfileSettings from "@src/pages/settings/Profile.vue";
+import MessagesTemplates from "@src/pages/settings/MessagesTemplates.vue";
+
 import Widget from "@src/pages/widget/index.vue";
 
 const routes = [
@@ -16,7 +19,7 @@ const routes = [
     path: "/chat/",
     name: "Home",
     alias: "/",
-    component: HomeView,
+    component: AppLayout,
     meta: { requiresAuth: true },
     children: [
       {
@@ -45,6 +48,26 @@ const routes = [
           id: Number(route.params.id),
           contactId: Number(route.params.contactId),
         }),
+      },
+    ],
+  },
+  {
+    path: "/settings",
+    name: "Settings",
+    component: AppLayout,
+    meta: { requiresAuth: true },
+    children: [
+      {
+        path: "profile",
+        name: "SettingsProfile",
+        component: ProfileSettings,
+        meta: { requiresAuth: true },
+      },
+      {
+        path: "messages-templates",
+        name: "SettingsMessagesTemplates",
+        component: MessagesTemplates,
+        meta: { requiresAuth: true },
       },
     ],
   },

@@ -14,13 +14,12 @@ const store = useStore();
       class="xs:relative md:static h-full flex xs:flex-col md:flex-row overflow-hidden"
     >
       <!--navigation-bar-->
-      <!-- <Navigation class="xs:order-1 md:-order-none" /> -->
       <Navigation />
       <!--sidebar-->
       <Sidebar
         class="xs:grow-1 md:grow-0 xs:overflow-y-scroll md:overflow-visible scrollbar-hidden"
       />
-      <!--chat-->
+      <!--main content-->
       <div
         id="mainContent"
         class="bg-app-bg grow md:h-full scrollbar-hidden transition-all duration-500 xs:w-full xs:absolute xs:z-10 md:static md:w-fit bottom-0 h-[calc(100%-3.875rem)]"
