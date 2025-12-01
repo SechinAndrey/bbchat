@@ -49,11 +49,15 @@ const isActiveRoute = (routeName: string) => {
 
 <template>
   <div class="flex flex-col h-full">
-    <SidebarHeader class="max-h-[60px] h-[60px]">
-      <template #title>Налаштування</template>
+    <SidebarHeader class="max-h-[60px] h-[60px] pt-5">
+      <template #title>
+        <div class="text-xl">Налаштування</div>
+      </template>
     </SidebarHeader>
 
-    <div class="w-full flex-1 scroll-smooth scrollbar-hidden overflow-y-auto">
+    <div
+      class="w-full flex-1 scroll-smooth scrollbar-hidden overflow-y-auto mt-2"
+    >
       <nav class="flex flex-col">
         <RouterLink
           v-for="link in settingsLinks"
@@ -83,6 +87,10 @@ const isActiveRoute = (routeName: string) => {
           </span>
         </RouterLink>
       </nav>
+    </div>
+
+    <div class="text-xs text-app-text-secondary p-5 text-center">
+      Version 0.6.1
     </div>
   </div>
 </template>
