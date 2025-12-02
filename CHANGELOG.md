@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.6.1 - 2025-12-01
+
+### Bug Fixes
+
+- Історія статусів. Выровнять. [WS-18700430-20943753](https://trp4438.worksection.com/project/257910/18700430/20943753/)
+- Закрытие чата. [WS-18700430-21068988](https://trp4438.worksection.com/project/257910/18700430/21068988/)
+- Перевод из лида в клиента(меню на ПК) [WS-18700430-21087066](https://trp4438.worksection.com/project/257910/18700430/21087066/)
+- Вход. Показать пароль. [WS-18700430-21088902](https://trp4438.worksection.com/project/257910/18700430/21088902/)
+- Чат при удаление контакта. [WS-18700430-21118842](https://trp4438.worksection.com/project/257910/18700430/21118842/)
+
+### Features
+
+- Чат стикеры. [WS-18700430-20302625](https://trp4438.worksection.com/project/257910/18700430/20302625/)
+- Звуковой файл. Ширина. [WS-18700430-21133791](https://trp4438.worksection.com/project/257910/18700430/21133791/)
+- Подборки. Выбор строки [WS-18700430-21087249](https://trp4438.worksection.com/project/57910/18700430/21087249/)
+- Улучшение layout панелей(левая, средняя, правая); Окно поиска. Изменения размера. [WS-18700430-21133818](https://trp4438.worksection.com/project/257910/18700430/21133818/)
+- Realtime обновление списка статусов после изменения статуса
+- Добавить PWA [WS-18700430-21099555](https://trp4438.worksection.com/project/257910/18700430/21099555/)
+
+### Project Maintenance
+
+- Оптимизация продакшн сборки; раздение на отдельные чанки
+- Disable dev mode for PWA
+- Update .gitignore
+- Release version 0.6.1
+
 ## 0.6.0 - 2025-11-21
 
 ### Bug Fixes

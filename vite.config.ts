@@ -101,6 +101,57 @@ export default defineConfig(({ mode }) => {
         "@custom_types": resolve(rootDir, "src/@custom_types"),
       },
     },
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: (id) => {
+            if (id.includes("node_modules")) {
+              if (id.includes("firebase")) {
+                return "firebase";
+              }
+
+              if (id.includes("video.js") || id.includes("wavesurfer")) {
+                return "video";
+              }
+
+              if (id.includes("@vueuse")) {
+                return "vueuse";
+              }
+
+              if (
+                id.includes("vue") ||
+                id.includes("pinia") ||
+                id.includes("vue-router")
+              ) {
+                return "vue-core";
+              }
+
+              if (
+                id.includes("@heroicons") ||
+                id.includes("popper") ||
+                id.includes("lottie") ||
+                id.includes("toastify")
+              ) {
+                return "ui-libs";
+              }
+
+              if (
+                id.includes("axios") ||
+                id.includes("pusher") ||
+                id.includes("marked") ||
+                id.includes("linkify") ||
+                id.includes("pako") ||
+                id.includes("zod")
+              ) {
+                return "utils";
+              }
+
+              return "vendor";
+            }
+          },
+        },
+      },
+    },
     server: {
       allowedHosts: [env.VITE_ALLOWED_HOSTS],
     },
