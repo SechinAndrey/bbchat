@@ -22,6 +22,78 @@ const MOCK_TEMPLATES: MessageTemplate[] = [
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   },
+  {
+    id: 4,
+    text: "444 Дякуємо за ваш відгук! Ми цінуємо кожного клієнта і завжди прагнемо покращувати наш сервіс.",
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+  {
+    id: 5,
+    text: "555 Дякуємо за ваш відгук! Ми цінуємо кожного клієнта і завжди прагнемо покращувати наш сервіс.",
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+  {
+    id: 6,
+    text: "666 Дякуємо за ваш відгук! Ми цінуємо кожного клієнта і завжди прагнемо покращувати наш сервіс.",
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+  {
+    id: 7,
+    text: "777 Дякуємо за ваш відгук! Ми цінуємо кожного клієнта і завжди прагнемо покращувати наш сервіс.",
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+  {
+    id: 8,
+    text: "888 Дякуємо за ваш відгук! Ми цінуємо кожного клієнта і завжди прагнемо покращувати наш сервіс.",
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+  {
+    id: 8,
+    text: "888 Дякуємо за ваш відгук! Ми цінуємо кожного клієнта і завжди прагнемо покращувати наш сервіс.",
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+  {
+    id: 8,
+    text: "888 Дякуємо за ваш відгук! Ми цінуємо кожного клієнта і завжди прагнемо покращувати наш сервіс.",
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+  {
+    id: 8,
+    text: "888 Дякуємо за ваш відгук! Ми цінуємо кожного клієнта і завжди прагнемо покращувати наш сервіс.",
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+  {
+    id: 8,
+    text: "888 Дякуємо за ваш відгук! Ми цінуємо кожного клієнта і завжди прагнемо покращувати наш сервіс.",
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+  {
+    id: 8,
+    text: "888 Дякуємо за ваш відгук! Ми цінуємо кожного клієнта і завжди прагнемо покращувати наш сервіс.",
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+  {
+    id: 8,
+    text: "888 Дякуємо за ваш відгук! Ми цінуємо кожного клієнта і завжди прагнемо покращувати наш сервіс.",
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+  {
+    id: 8,
+    text: "888 Дякуємо за ваш відгук! Ми цінуємо кожного клієнта і завжди прагнемо покращувати наш сервіс.",
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  },
 ];
 
 const USE_MOCK_DATA = true;

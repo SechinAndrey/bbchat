@@ -10,6 +10,7 @@ import {
   PaperAirplaneIcon,
   PaperClipIcon,
   XCircleIcon,
+  BookmarkIcon,
 } from "@heroicons/vue/24/outline";
 import AttachmentsModal from "@src/features/media/modals/AttachmentsModal/AttachmentsModal.vue";
 import Button from "@src/ui/inputs/Button.vue";
@@ -22,11 +23,16 @@ import { useMessageSending } from "@src/features/chat/composables/useMessageSend
 import { useMessenger } from "@src/features/chat/composables/useMessengerSelection";
 import { useMediaQuery } from "@vueuse/core";
 import SlideTransition from "@src/ui/transitions/SlideTransition.vue";
+import { TemplateSelectorModal } from "@src/features/chat/message-templates";
+import { useMessagesTemplatesStore } from "@src/features/chat/message-templates";
+import type { MessageTemplate } from "@src/features/chat/message-templates";
+import { onMounted } from "vue";
 
 const store = useStore();
 const { sendMessage } = useMessageSending();
 const { messengerId, messengerOptions, currentMessenger, activeContact } =
   useMessenger();
+const templatesStore = useMessagesTemplatesStore();
 
 const isMobile = computed(() => useMediaQuery("(max-width: 767px)").value);
 
@@ -72,7 +78,15 @@ const showPicker = ref(false);
 // open modal used to send multiple attachments attachments.
 const openAttachmentsModal = ref(false);
 
+const showTemplateSelector = ref(false);
+
 const textareaRef = ref();
+
+onMounted(() => {
+  if (templatesStore.templates.length === 0) {
+    templatesStore.fetchTemplates();
+  }
+});
 
 const handleEmojiSelect = (emoji: string) => {
   const textareaComponent = textareaRef.value;
@@ -142,6 +156,19 @@ async function handleSendMessage() {
     console.error("Error sending message:", error);
   }
 }
+
+const handleTemplateSelect = (template: MessageTemplate) => {
+  value.value = template.text;
+  showTemplateSelector.value = false;
+  nextTick(() => {
+    if (textareaRef.value && textareaRef.value.$el) {
+      const textarea = textareaRef.value.$el as HTMLTextAreaElement;
+      textarea.focus();
+      const cursorPosition = value.value.length;
+      textarea.setSelectionRange(cursorPosition, cursorPosition);
+    }
+  });
+};
 </script>
 
 <template>
@@ -181,7 +208,7 @@ async function handleSendMessage() {
         <Textarea
           ref="textareaRef"
           v-model="value"
-          class="placeholder-truncate pr-7"
+          class="placeholder-truncate pr-[4.5rem]"
           variant="filled"
           :rows="1"
           extendable
@@ -189,6 +216,21 @@ async function handleSendMessage() {
           :placeholder="placeholderText"
           @keydown.enter.exact.prevent="handleSendMessage"
         />
+
+        <div class="absolute bottom-0 right-7">
+          <Button
+            variant="ghost"
+            size="xs"
+            :ring="false"
+            icon-only
+            title="Вибрати шаблон"
+            @click="showTemplateSelector = true"
+          >
+            <template #icon>
+              <BookmarkIcon class="w-5 h-5" />
+            </template>
+          </Button>
+        </div>
 
         <!--emojis-->
         <div class="absolute bottom-0 right-3">
@@ -261,6 +303,13 @@ async function handleSendMessage() {
       :messenger-id="messengerId"
       :open="openAttachmentsModal"
       :close-modal="() => (openAttachmentsModal = false)"
+    />
+
+    <TemplateSelectorModal
+      :templates="templatesStore.templates"
+      :open="showTemplateSelector"
+      @select="handleTemplateSelect"
+      @close="showTemplateSelector = false"
     />
   </div>
 </template>

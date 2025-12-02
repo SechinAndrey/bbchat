@@ -16,3 +16,5 @@ export type {
 // Export components
 export { default as TemplateMessagesForm } from "./TemplateMessagesForm.vue";
 export { default as TemplateMessagesList } from "./TemplateMessagesList.vue";
+export { default as TemplatePickerList } from "./TemplatePickerList.vue";
+export { default as TemplateSelectorModal } from "./TemplateSelectorModal.vue";
