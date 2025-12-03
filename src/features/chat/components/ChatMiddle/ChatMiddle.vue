@@ -27,15 +27,18 @@ import {
   ChatBubbleLeftRightIcon,
   ClipboardDocumentIcon,
   ArrowUturnLeftIcon,
+  BookmarkIcon,
 } from "@heroicons/vue/24/outline";
 import { useContextMenu } from "@src/shared/composables/useContextMenu";
 import { ContextMenu } from "@src/ui/navigation/ContextMenu";
 import { DropdownItem } from "@src/ui/navigation/DropdownV3";
 import { useToast } from "@src/shared/composables/useToast";
+import { useMessagesTemplatesStore } from "@src/features/chat/message-templates";
 
 const conversationsStore = useConversationsStore();
+const messagesTemplatesStore = useMessagesTemplatesStore();
 const route = useRoute();
-const { toastError } = useToast();
+const { toastError, toastSuccess } = useToast();
 
 const telegramReplyBus = useEventBus<ApiMessageItem>("reply-message");
 const viberReplyBus = useEventBus<string>("viber-reply-message");
@@ -289,6 +292,28 @@ const handleReplyMessageViber = () => {
   closeContextMenu();
 };
 
+const handleSaveAsTemplate = async () => {
+  if (!selectedMessage.value) return;
+
+  const text = getMessageText(selectedMessage.value);
+
+  if (!text) {
+    toastError("Немає тексту для збереження");
+    closeContextMenu();
+    return;
+  }
+
+  try {
+    await messagesTemplatesStore.createTemplate(text);
+    toastSuccess("Шаблон успішно збережено");
+  } catch (error) {
+    console.error("Failed to save template:", error);
+    toastError("Помилка збереження шаблону");
+  }
+
+  closeContextMenu();
+};
+
 const scrollToBottom = () => {
   nextTick(() => {
     if (container.value) {
@@ -482,6 +507,11 @@ watch(
       >
         <ArrowUturnLeftIcon class="w-5 h-5 mr-3" />
         Відповісти
+      </DropdownItem>
+
+      <DropdownItem label="Зберегти шаблон" @click="handleSaveAsTemplate">
+        <BookmarkIcon class="w-5 h-5 mr-3" />
+        Зберегти шаблон
       </DropdownItem>
     </ContextMenu>
   </div>
