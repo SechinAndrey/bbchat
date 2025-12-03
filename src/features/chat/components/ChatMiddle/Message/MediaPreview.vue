@@ -22,7 +22,6 @@ const emit = defineEmits<{
 const openCarousel = () => {
   // Only emit for images, not for videos
   if (props.attachmentId && isImage(props.media)) {
-    console.log("MediaPreview: Emitting openImageGallery for:", props.media);
     emit("openImageGallery", props.media);
   }
 };

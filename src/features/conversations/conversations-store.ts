@@ -536,9 +536,6 @@ export const useConversationsStore = defineStore("conversations", () => {
       );
       if (message) {
         message.viewed_by_contact = 1;
-        console.log(
-          `✅ Updated message ${messageId} as read by contact in active conversation`,
-        );
       }
     }
 
@@ -552,9 +549,6 @@ export const useConversationsStore = defineStore("conversations", () => {
           );
           if (message) {
             message.viewed_by_contact = 1;
-            console.log(
-              `✅ Updated message ${messageId} as read by contact in ${entity} conversation`,
-            );
           }
         }
       });
@@ -611,7 +605,6 @@ export const useConversationsStore = defineStore("conversations", () => {
       );
       if (message) {
         message.deleted_at = new Date().toISOString();
-        console.log(`🗑️ Marked message ${messageId} as deleted`);
       }
     }
   };
@@ -733,7 +726,6 @@ export const useConversationsStore = defineStore("conversations", () => {
       const currentEntity = route.params.entity as EntityType;
 
       if (currentEntity !== entityType) {
-        console.log("⏭️ Not loading: different entity");
         return;
       }
 
@@ -742,17 +734,11 @@ export const useConversationsStore = defineStore("conversations", () => {
         filters.value.user_id !== undefined
       ) {
         if (actualUserId !== filters.value.user_id) {
-          console.log(
-            `⏭️ Not loading: message for user ${actualUserId}, filter ${filters.value.user_id}`,
-          );
           return;
         }
       }
 
       if (filters.value.search) {
-        console.log(
-          "⏭️ Not loading: search is active (TODO: implement matching)",
-        );
         return;
       }
 
@@ -810,10 +796,6 @@ export const useConversationsStore = defineStore("conversations", () => {
     if (index !== -1) {
       const tempMessage = tempMessages.value[index];
       tempMessages.value.splice(index, 1);
-      console.log(
-        "✅ Removed temp message with client_message_uid:",
-        clientMessageUid,
-      );
       return tempMessage;
     }
 
@@ -833,7 +815,6 @@ export const useConversationsStore = defineStore("conversations", () => {
       if (isOutgoing && clientMessageUid) {
         const removedTempMessage = findAndRemoveTempMessage(clientMessageUid);
         if (removedTempMessage) {
-          console.log("✅ Found and removed temp message, adding real message");
           await addMessageToConversation(messageItem, userId);
         } else {
           console.warn(
@@ -869,8 +850,6 @@ export const useConversationsStore = defineStore("conversations", () => {
       const isMerged = merge_info.from_lead_id === currentId;
 
       if (isMerged) {
-        console.log("🔄 Chaport sync: Lead merged - refreshing conversations");
-
         await fetch(currentEntity, { page: 1 });
 
         const targetEntity = CONTRAGENT_TO_ENTITY_MAP[merge_info.entity];
@@ -960,7 +939,6 @@ export const useConversationsStore = defineStore("conversations", () => {
         authStore.currentUser?.roleId === 1;
 
       if (!shouldProcess) {
-        console.log("⏭️ Message not for current user");
         return;
       }
 
@@ -968,15 +946,11 @@ export const useConversationsStore = defineStore("conversations", () => {
 
       const entityIndicator = getEntityIndicatorToShow(data);
       if (entityIndicator) {
-        console.log(`🔔 Setting entity indicator for ${entityIndicator}`);
         setEntityIndicator(entityIndicator, true);
       }
 
       const managerIndicator = getManagerIndicatorToShow(data);
       if (managerIndicator) {
-        console.log(
-          `🔔 Setting manager indicator for user ${managerIndicator}`,
-        );
         setManagerIndicator(managerIndicator, true);
       }
     },

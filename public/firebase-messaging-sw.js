@@ -20,7 +20,6 @@ const messaging = firebase.messaging();
 
 // Handle background messages
 messaging.onBackgroundMessage((payload) => {
-  console.log("[SW] Background message received:", payload);
   const entityTypeMap = {
     lead: "Лід: ",
     client: "Клієнт: ",
@@ -46,9 +45,6 @@ messaging.onBackgroundMessage((payload) => {
 
 // Handle notification click
 self.addEventListener("notificationclick", (event) => {
-  console.log("[SW] Notification clicked:", event);
-  console.log("[SW] Notification data:", event.notification.data);
-
   event.notification.close();
 
   const data = event.notification.data;
@@ -69,8 +65,6 @@ self.addEventListener("notificationclick", (event) => {
     const entityType =
       contragentTypeMap[data.contragent_type] || data.contragent_type;
     targetUrl = `${self.location.origin}/chat/${entityType}/${data.contragent_id}/contact/${data.contragent_contact_id}/`;
-
-    console.log("[SW] Built URL from data:", targetUrl);
   }
 
   if (!targetUrl) {
@@ -83,19 +77,12 @@ self.addEventListener("notificationclick", (event) => {
     self.clients
       .matchAll({ type: "window", includeUncontrolled: true })
       .then((clientList) => {
-        console.log("[SW] Found clients:", clientList.length);
-
         // Try to find existing window with same origin
         for (const client of clientList) {
-          console.log("[SW] Checking client:", client.url);
           if (
             client.url.startsWith(self.location.origin) &&
             "focus" in client
           ) {
-            console.log(
-              "[SW] Focusing existing client and navigating to:",
-              targetUrl,
-            );
             return client.focus().then(() => {
               // Post message to client to navigate
               client.postMessage({
@@ -107,8 +94,6 @@ self.addEventListener("notificationclick", (event) => {
           }
         }
 
-        // No existing window found, open new one
-        console.log("[SW] Opening new window:", targetUrl);
         if (self.clients.openWindow) {
           return self.clients.openWindow(targetUrl);
         }

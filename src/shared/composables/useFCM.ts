@@ -54,7 +54,6 @@ export function useFCM() {
       const permission = await Notification.requestPermission();
 
       if (permission !== "granted") {
-        console.log("FCM: Notification permission not granted");
         return null;
       }
 
@@ -80,7 +79,6 @@ export function useFCM() {
       await deleteToken(messaging);
       token.value = null;
       authStore.fcmToken = "";
-      console.log("✅ [FCM] Token cleared");
     } catch (err) {
       console.error("❌ [FCM] Delete token error:", err);
     }
@@ -92,17 +90,11 @@ export function useFCM() {
     // Listen for navigation messages from Service Worker
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.addEventListener("message", (event) => {
-        console.log("📨 [FCM] Service Worker message:", event.data);
-
         if (event.data?.type === "NOTIFICATION_CLICK" && event.data?.url) {
           const url = new URL(event.data.url);
           const path = url.pathname + url.search + url.hash;
 
-          console.log("🔔 [FCM] Navigating to:", path);
-
-          router.push(path).catch((err) => {
-            console.error("❌ [FCM] Navigation error:", err);
-          });
+          router.push(path);
         }
       });
     }
@@ -112,16 +104,12 @@ export function useFCM() {
 
       const event = payload.data?.event as keyof FCMEventMap;
       if (!event || !payload.data) {
-        console.warn("⚠️ [FCM] No event or data in payload");
         return;
       }
 
       if (payload.data?.from_manager === "true") {
-        console.log("🔕 [FCM] Message from manager, skipping");
         return;
       }
-
-      console.log("🔔 [FCM] Processing event:", event);
 
       // Parse FCM data payload (all values are strings from Firebase)
       const parsedData = {
@@ -140,8 +128,6 @@ export function useFCM() {
 
       // Show notification only if page is not truly visible (tab open but window inactive)
       if (!isPageTrulyVisible.value && documentVisibility.value === "visible") {
-        console.log("🔔 [FCM] Showing notification (window inactive)");
-
         const entityTypeMap = {
           lead: "Лід: ",
           client: "Клієнт: ",
@@ -188,8 +174,6 @@ export function useFCM() {
               ] || payload.data.contragent_type;
             const path = `/chat/${entityPath}/${payload.data.contragent_id}/contact/${payload.data.contragent_contact_id}/`;
 
-            console.log("🔔 [FCM] Notification clicked, navigating to:", path);
-
             router.push(path).catch((err) => {
               console.error("❌ [FCM] Navigation error:", err);
             });
@@ -197,12 +181,6 @@ export function useFCM() {
 
           setTimeout(() => notification.close(), 5000);
         }
-      } else if (isPageTrulyVisible.value) {
-        console.log("🔕 [FCM] Page is visible and focused, no notification");
-      } else {
-        console.log(
-          "🔕 [FCM] Page not visible, Service Worker should handle notification",
-        );
       }
     });
   };

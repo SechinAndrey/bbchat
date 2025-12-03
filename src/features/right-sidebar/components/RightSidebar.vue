@@ -13,10 +13,6 @@ const tabsConfig = [
   { key: "calls", name: "Дзвінки", compact: true },
   { key: "sets", name: "Добірки", compact: true },
 ];
-
-const handleTabChange = (tabKey: string) => {
-  console.log(`Tab changed to: ${tabKey}`);
-};
 </script>
 
 <template>
@@ -36,7 +32,6 @@ const handleTabChange = (tabKey: string) => {
       :tabs="tabsConfig"
       default-tab="common"
       content-class="max-h-full h-full overflow-y-auto overflow-x-hidden scrollbar-thin pl-2 pr-2 mt-4"
-      @tab-change="handleTabChange"
     >
       <template #common>
         <CommonInfoTab />
