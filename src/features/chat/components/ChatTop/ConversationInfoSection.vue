@@ -82,6 +82,14 @@ const switchConversationStatus = async () => {
     );
     activeContact.value.communication_status_id = newStatus;
 
+    if (newStatus === 2) {
+      conversationsStore.resetUnreadCount(
+        entity.value,
+        id.value,
+        contactId.value,
+      );
+    }
+
     const isOpenFilterActive =
       conversationsStore.filters.communication_status_id === 1;
     const wasConversationStopped = newStatus === 2;
