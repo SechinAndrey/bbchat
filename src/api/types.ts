@@ -263,7 +263,7 @@ export interface ApiMessageItemUser {
 export interface ApiReplyMessageItem {
   id: number;
   type_id: number;
-  user_id: number;
+  user_id: number | string;
   lead_id: number | null;
   lead_contact_id: number | null;
   client_id: number | null;
@@ -288,7 +288,7 @@ export interface ApiReplyMessageItem {
 export interface ApiMessageItem {
   id: number;
   type_id: number;
-  user_id: number;
+  user_id: number | string;
   lead_id: number | null;
   lead_contact_id: number | null;
   client_id: number | null;

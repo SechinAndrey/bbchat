@@ -632,7 +632,7 @@ export const useConversationsStore = defineStore("conversations", () => {
 
   const addMessageToConversation = async (
     message: ApiMessageItem,
-    messageUserId?: number,
+    messageUserId?: number | string,
   ) => {
     const entityId =
       message.client_id || message.lead_id || message.supplier_id;
@@ -665,12 +665,16 @@ export const useConversationsStore = defineStore("conversations", () => {
         let shouldPlaySound = false;
 
         if (currentUser.roleId !== 1) {
-          shouldPlaySound = actualUserId === currentUser.id;
+          shouldPlaySound =
+            actualUserId === currentUser.id ||
+            actualUserId === "user-not-selected";
         } else {
           if (filters.value.user_id === undefined) {
             shouldPlaySound = true;
           } else {
-            shouldPlaySound = actualUserId === filters.value.user_id;
+            shouldPlaySound =
+              actualUserId === filters.value.user_id ||
+              actualUserId === "user-not-selected";
           }
         }
 
@@ -802,7 +806,10 @@ export const useConversationsStore = defineStore("conversations", () => {
     return null;
   };
 
-  const handleNewMessage = async (messageId: number, userId?: number) => {
+  const handleNewMessage = async (
+    messageId: number,
+    userId?: number | string,
+  ) => {
     try {
       const messageItem = await conversationsService.getMessageById(messageId);
       const isOutgoing = isOutgoingMessage(messageItem);
@@ -863,7 +870,7 @@ export const useConversationsStore = defineStore("conversations", () => {
   };
 
   const getEntityIndicatorToShow = (data: {
-    user_id: number;
+    user_id: number | string;
     contragent_type: ContragentType | null;
   }): EntityType | null => {
     const currentUser = authStore.currentUser;
@@ -893,9 +900,9 @@ export const useConversationsStore = defineStore("conversations", () => {
   };
 
   const getManagerIndicatorToShow = (data: {
-    user_id: number;
+    user_id: number | string;
     contragent_type: ContragentType | null;
-  }): number | null => {
+  }): number | string | null => {
     const currentUser = authStore.currentUser;
     if (!currentUser) return null;
     if (currentUser.roleId !== 1) return null;
@@ -930,12 +937,13 @@ export const useConversationsStore = defineStore("conversations", () => {
       contragent_contact_id: number | null;
       contragent_id: number | null;
       contragent_type: ContragentType | null;
-      user_id: number;
+      user_id: number | string;
     }) => {
       console.log("📨 Received Pusher new-message event:", data);
 
       const shouldProcess =
         data.user_id === authStore.currentUser?.id ||
+        data.user_id === "user-not-selected" ||
         authStore.currentUser?.roleId === 1;
 
       if (!shouldProcess) {
