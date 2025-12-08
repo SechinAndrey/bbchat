@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { ref, computed, watch } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import conversationsService from "./conversations-service";
 import type {
   ConversationParams,
@@ -43,6 +43,7 @@ export interface TempMessage {
 
 export const useConversationsStore = defineStore("conversations", () => {
   const route = useRoute();
+  const router = useRouter();
   const store = useStore();
   const authStore = useAuthStore();
   const globalDataStore = useGlobalDataStore();
@@ -614,8 +615,10 @@ export const useConversationsStore = defineStore("conversations", () => {
     unreadByEntity.value[entity] = value;
   };
 
-  const setManagerIndicator = (userId: number, value: boolean) => {
-    unreadByManager.value[userId] = value;
+  const setManagerIndicator = (userId: number | string, value: boolean) => {
+    if (typeof userId === "number") {
+      unreadByManager.value[userId] = value;
+    }
   };
 
   const clearEntityIndicator = (entity: EntityType) => {
@@ -928,6 +931,60 @@ export const useConversationsStore = defineStore("conversations", () => {
     return null;
   };
 
+  const handleLeadChangeUser = async (data: {
+    contragent_type: "lead" | "client" | "supplier";
+    contragent_id: number;
+    current_user: number;
+  }) => {
+    try {
+      console.log("👤 Received lead-change-user event:", data);
+
+      const entityType = CONTRAGENT_TO_ENTITY_MAP[data.contragent_type];
+      const entityId = data.contragent_id;
+      const isAdmin = authStore.currentUser?.roleId === 1;
+      const currentUserId = authStore.currentUser?.id;
+      const currentUserFilter = filters.value.user_id;
+
+      let shouldRemove = false;
+
+      if (isAdmin) {
+        if (currentUserFilter === undefined) {
+          shouldRemove = false;
+        } else {
+          shouldRemove = data.current_user !== currentUserFilter;
+        }
+      } else {
+        shouldRemove = data.current_user !== currentUserId;
+      }
+
+      if (!shouldRemove) {
+        return;
+      }
+
+      const conversationsList = conversations.value[entityType];
+      conversations.value[entityType] = conversationsList.filter(
+        (conv) => conv.id !== entityId,
+      );
+
+      const isActiveChat =
+        activeConversation.value &&
+        activeConversation.value.id === entityId &&
+        activeConversation.value.entity === entityType;
+
+      if (isActiveChat) {
+        activeConversation.value = null;
+        messagesMeta.value = null;
+
+        await router.push({
+          name: "EntityChat",
+          params: { entity: entityType },
+        });
+      }
+    } catch (error) {
+      console.error("Error handling lead-change-user:", error);
+    }
+  };
+
   const { bindEvent } = usePusher();
   bindEvent(
     "e-chat-notification",
@@ -1001,6 +1058,18 @@ export const useConversationsStore = defineStore("conversations", () => {
         data,
       );
       await handleChaportSync(data);
+    },
+  );
+
+  bindEvent(
+    "e-chat-notification",
+    "lead-change-user",
+    async (data: {
+      contragent_type: "lead" | "client" | "supplier";
+      contragent_id: number;
+      current_user: number;
+    }) => {
+      await handleLeadChangeUser(data);
     },
   );
 
@@ -1110,6 +1179,9 @@ export const useConversationsStore = defineStore("conversations", () => {
 
     // Actions - Chaport Synchronization
     handleChaportSync,
+
+    // Actions - Lead Reassignment
+    handleLeadChangeUser,
 
     // Actions - Temporary Messages (Optimistic Updates)
     tempMessages,

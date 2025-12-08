@@ -40,6 +40,11 @@ export interface PusherEventMap {
         contacts_ids: number[];
       };
     };
+    "lead-change-user": {
+      contragent_type: "lead" | "client" | "supplier";
+      contragent_id: number;
+      current_user: number;
+    };
   };
 
   // "another-channel": {
