@@ -147,7 +147,7 @@ export class SelectionsService {
       const response = await apiClient.post(
         `/selections/${selectionId}/add-from-basket`,
       );
-      return response.data;
+      return response.data.data;
     } catch (error) {
       console.error(
         `Error adding boards from cart to selection ${selectionId}:`,
