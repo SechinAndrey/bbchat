@@ -83,7 +83,11 @@ watch(
     v-else-if="hasError"
     class="flex items-center justify-center bg-app-bg-secondary rounded-lg aspect-square"
   >
-    <span class="text-app-text-secondary text-sm">Failed to load sticker</span>
+    <div
+      class="text-app-text-secondary whitespace-normal break-keep text-center text-sm"
+    >
+      Не вдалося завантажити стікер
+    </div>
   </div>
 
   <DotLottieVue
