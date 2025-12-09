@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.6.2 - 2025-12-09
+
+### Bug Fixes
+
+- AuthorTextColor for message
+- Kanban статус. Смена чата. [WS-18700430-21206280](https://trp4438.worksection.com/project/257910/18700430/21206280/)
+- Чат стикеры. [WS-18700430-20302625](https://trp4438.worksection.com/project/257910/18700430/20302625/)
+- Додати із корзини. Не работает. [WS-18700430-21214344](https://trp4438.worksection.com/project/257910/18700430/21214344/)
+- Исправлена обработка входящих сообщений от нового(неприсвоенного) чапорт лида
+
+### Features
+
+- Обработка пушер события lead-change-user
+- Закрытие диалога. Нотификация. [WS-18700430-21127611](https://trp4438.worksection.com/project/257910/18700430/21127611/)
+
+### Project Maintenance
+
+- Удаление логов
+- Release version 0.6.2
+
 ## 0.6.1 - 2025-12-01
 
 ### Bug Fixes
