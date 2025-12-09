@@ -181,7 +181,10 @@ const authorTextColor = computed(() => {
 
   const colors = isDarkMode.value ? colorsDark : colorsLight;
 
-  return colors[props.message.user_id % colors.length];
+  const userId = Number(props.message.user_id);
+  const colorIndex = Number.isNaN(userId) ? 0 : userId % colors.length;
+
+  return colors[colorIndex];
 });
 
 const hasAudio = computed(() => {
