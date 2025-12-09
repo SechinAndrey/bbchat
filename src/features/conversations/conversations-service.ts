@@ -307,9 +307,15 @@ export class ConversationsService {
       await apiClient.post(`/leads/${id}/change-status`, {
         new_status_id: status,
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("❌ Failed to change lead status:", error);
-      throw new Error("Failed to change lead status");
+
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Failed to change lead status";
+
+      throw new Error(errorMessage);
     }
   }
 }
