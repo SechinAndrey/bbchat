@@ -315,6 +315,7 @@ export interface ApiMessageItem {
   supplier_contact: ApiContact | null;
   viewed: number; // 0 - not viewed, 1 - viewed by user US (current user)
   viewed_by_contact: number; // 0 - not viewed, 1 - viewed by contact(lead/client/supplier)
+  liked: number; // 0 - not liked, 1 - liked
   deleted_at: string | null;
 }
 

@@ -435,6 +435,14 @@ const hasAudio = computed(() => {
             }}
           </span>
         </div>
+
+        <!-- Like reaction -->
+        <div
+          v-if="message.liked === 1"
+          class="flex items-center justify-center bg-app-bg-secondary rounded-full shadow-sm border border-app-border w-[1.25rem] h-[1.25rem] absolute -bottom-3 -left-3 select-none"
+        >
+          <span class="text-[0.625rem]">❤️</span>
+        </div>
       </div>
     </div>
   </div>
