@@ -20,6 +20,10 @@ const messaging = firebase.messaging();
 
 // Handle background messages
 messaging.onBackgroundMessage((payload) => {
+  console.log("----- FCM onBackgroundMessage ------");
+  console.log(payload);
+  console.log("------------------------------------");
+
   const entityTypeMap = {
     lead: "Лід: ",
     client: "Клієнт: ",
