@@ -610,6 +610,17 @@ export const useConversationsStore = defineStore("conversations", () => {
     }
   };
 
+  const markMessageAsLiked = (messageId: number) => {
+    if (activeConversation.value?.messages) {
+      const message = activeConversation.value.messages.find(
+        (msg) => msg.id === messageId,
+      );
+      if (message) {
+        message.liked = message.liked === 1 ? 0 : 1;
+      }
+    }
+  };
+
   // Actions to manage UI indicators
   const setEntityIndicator = (entity: EntityType, value: boolean) => {
     unreadByEntity.value[entity] = value;
@@ -1046,6 +1057,20 @@ export const useConversationsStore = defineStore("conversations", () => {
       if (data.id) {
         markMessageAsDeleted(data.id);
       }
+    },
+  );
+
+  // Subscribe to message-liked event
+  bindEvent(
+    "e-chat-notification",
+    "message-liked",
+    async (data: { id: [number] }) => {
+      const messageIds = Array.isArray(data.id) ? data.id : [data.id];
+      messageIds.forEach((messageId) => {
+        if (messageId) {
+          markMessageAsLiked(messageId);
+        }
+      });
     },
   );
 

@@ -45,6 +45,9 @@ export interface PusherEventMap {
       contragent_id: number;
       current_user: number;
     };
+    "message-liked": {
+      id: [number];
+    };
   };
 
   // "another-channel": {
