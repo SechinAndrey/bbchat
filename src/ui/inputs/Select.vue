@@ -122,18 +122,22 @@ const updateDropdownPosition = () => {
   if (!isOpen.value || !selectElement.value) return;
 
   const selectRect = selectElement.value.getBoundingClientRect();
-  const menuHeight = dropdownMenu.value?.offsetHeight || 0;
   const spaceBelow = window.innerHeight - selectRect.bottom;
+  const spaceAbove = selectRect.top;
 
-  openUpwards.value = spaceBelow < menuHeight && selectRect.top > menuHeight;
+  const maxHeightBelow = spaceBelow - 10;
+  const maxHeightAbove = spaceAbove - 10;
+
+  openUpwards.value = spaceBelow < 300 && spaceAbove > spaceBelow;
+  const maxHeight = openUpwards.value ? maxHeightAbove : maxHeightBelow;
 
   dropdownStyle.value = {
     position: "fixed",
-    top: openUpwards.value
-      ? `${selectRect.top - menuHeight}px`
-      : `${selectRect.bottom}px`,
+    top: openUpwards.value ? `${selectRect.top}px` : `${selectRect.bottom}px`,
     left: `${selectRect.left}px`,
     minWidth: `${selectRect.width}px`,
+    maxHeight: `${maxHeight}px`,
+    transform: openUpwards.value ? "translateY(-100%)" : "none",
   };
 };
 
@@ -293,15 +297,15 @@ const handleOptionClick = (option: Option) => {
           v-if="isOpen"
           ref="dropdownMenu"
           :style="dropdownStyle"
-          class="z-[100] bg-app-bg rounded-md shadow-lg border border-app-border"
+          class="z-[100] bg-app-bg rounded-md shadow-lg border border-app-border overflow-hidden flex flex-col"
         >
           <div
             v-if="$slots.header"
-            class="px-3 py-2 font-bold border-b border-app-border text-app-text"
+            class="px-3 py-2 font-bold border-b border-app-border text-app-text flex-shrink-0"
           >
             <slot name="header" />
           </div>
-          <ul>
+          <ul class="overflow-y-auto flex-1 min-h-0 scrollbar-thin">
             <li
               v-for="option in options"
               :key="option.value"
