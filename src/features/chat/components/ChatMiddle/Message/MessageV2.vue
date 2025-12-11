@@ -6,7 +6,7 @@ import {
   ChevronUpIcon,
   TrashIcon,
 } from "@heroicons/vue/24/solid";
-import { CheckIcon } from "@heroicons/vue/24/outline";
+import { CheckIcon, InformationCircleIcon } from "@heroicons/vue/24/outline";
 import linkifyStr from "linkify-string";
 import MediaPreview from "@src/features/chat/components/ChatMiddle/Message/MediaPreview.vue";
 import ConversationAvatar from "@src/shared/components/ConversationAvatar.vue";
@@ -194,10 +194,39 @@ const hasAudio = computed(() => {
     chaport.value?.file;
   return mediaUrl ? isAudio(mediaUrl) : false;
 });
+
+const isSystemMessage = computed(() => {
+  return props.message.system_message === 1;
+});
+
+const systemMessageText = computed(() => {
+  if (chaport.value?.message) {
+    return chaport.value.message;
+  }
+  if (echat.value?.message) {
+    return echat.value.message;
+  }
+  return "Системне повідомлення";
+});
 </script>
 
 <template>
+  <!-- System message -->
+  <div v-if="isSystemMessage" class="flex justify-center py-2 px-4">
+    <span class="text-app-text-secondary text-[0.813rem]">
+      {{
+        formatDate(message.created_at, {
+          hour: "numeric",
+          minute: "numeric",
+        })
+      }}
+      {{ systemMessageText }}
+    </span>
+  </div>
+
+  <!-- Regular message -->
   <div
+    v-else
     class="flex items-start gap-4 py-3 px-4"
     :class="{ 'justify-end': isSelf }"
     @contextmenu="handleContextMenu"
