@@ -91,11 +91,11 @@ export const useConversationsStore = defineStore("conversations", () => {
     search: "",
   });
 
-  // UI Indicators for unread messages in filtered views (runtime state, resets on page refresh)
+  // Unread chats count for each entity (number of chats with unread messages)
   const unreadByEntity = ref({
-    leads: false,
-    clients: false,
-    suppliers: false,
+    leads: 0,
+    clients: 0,
+    suppliers: 0,
   });
 
   const unreadByManager = ref<Record<number, boolean>>({});
@@ -475,7 +475,30 @@ export const useConversationsStore = defineStore("conversations", () => {
   ) => {
     const conversation = findConversation(entityType, entityId, contactId);
     if (conversation) {
+      const prevUnread = conversation.unread || 0;
       conversation.unread = 0;
+      if (prevUnread > 0) {
+        decrementUnreadChats(entityType);
+      }
+    }
+  };
+
+  const fetchUnreadCounts = async () => {
+    try {
+      const counts = await conversationsService.getUnreadCounts();
+      unreadByEntity.value = counts;
+    } catch (error) {
+      console.error("Error fetching unread counts:", error);
+    }
+  };
+
+  const incrementUnreadChats = (entity: EntityType) => {
+    unreadByEntity.value[entity]++;
+  };
+
+  const decrementUnreadChats = (entity: EntityType) => {
+    if (unreadByEntity.value[entity] > 0) {
+      unreadByEntity.value[entity]--;
     }
   };
 
@@ -622,18 +645,10 @@ export const useConversationsStore = defineStore("conversations", () => {
   };
 
   // Actions to manage UI indicators
-  const setEntityIndicator = (entity: EntityType, value: boolean) => {
-    unreadByEntity.value[entity] = value;
-  };
-
   const setManagerIndicator = (userId: number | string, value: boolean) => {
     if (typeof userId === "number") {
       unreadByManager.value[userId] = value;
     }
-  };
-
-  const clearEntityIndicator = (entity: EntityType) => {
-    unreadByEntity.value[entity] = false;
   };
 
   const clearManagerIndicator = (userId: number) => {
@@ -717,7 +732,11 @@ export const useConversationsStore = defineStore("conversations", () => {
         conversation.messages.push(message);
 
         if (!isOutgoing) {
+          const wasRead = (conversation.unread || 0) === 0;
           updateUnreadCount(conversation);
+          if (wasRead) {
+            incrementUnreadChats(entityType);
+          }
         }
         moveConversationToTop(entityType, entityId, contactId);
       }
@@ -732,9 +751,17 @@ export const useConversationsStore = defineStore("conversations", () => {
       conversation.messages.push(message);
 
       if (!isOutgoing) {
+        const wasRead = (conversation.unread || 0) === 0;
         updateUnreadCount(conversation);
+        if (wasRead) {
+          incrementUnreadChats(entityType);
+        }
       } else {
+        const prevUnread = conversation.unread || 0;
         conversation.unread = 0;
+        if (prevUnread > 0) {
+          decrementUnreadChats(entityType);
+        }
       }
       moveConversationToTop(entityType, entityId, contactId);
       return;
@@ -767,6 +794,7 @@ export const useConversationsStore = defineStore("conversations", () => {
       );
       if (loadedConversation) {
         updateUnreadCount(loadedConversation);
+        incrementUnreadChats(entityType);
       }
     }
   };
@@ -973,6 +1001,12 @@ export const useConversationsStore = defineStore("conversations", () => {
       }
 
       const conversationsList = conversations.value[entityType];
+      const removedConversation = conversationsList.find(
+        (conv) => conv.id === entityId,
+      );
+      if (removedConversation && (removedConversation.unread || 0) > 0) {
+        decrementUnreadChats(entityType);
+      }
       conversations.value[entityType] = conversationsList.filter(
         (conv) => conv.id !== entityId,
       );
@@ -1019,11 +1053,6 @@ export const useConversationsStore = defineStore("conversations", () => {
       }
 
       await handleNewMessage(data.id, data.user_id);
-
-      const entityIndicator = getEntityIndicatorToShow(data);
-      if (entityIndicator) {
-        setEntityIndicator(entityIndicator, true);
-      }
 
       const managerIndicator = getManagerIndicatorToShow(data);
       if (managerIndicator) {
@@ -1187,11 +1216,12 @@ export const useConversationsStore = defineStore("conversations", () => {
 
     // Actions - Unread Management
     resetUnreadCount,
+    fetchUnreadCounts,
+    incrementUnreadChats,
+    decrementUnreadChats,
 
     // Actions - UI Indicators
-    setEntityIndicator,
     setManagerIndicator,
-    clearEntityIndicator,
     clearManagerIndicator,
     clearAllManagerIndicators,
 

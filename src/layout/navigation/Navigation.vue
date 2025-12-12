@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 
 import useStore from "@src/shared/store/store";
 import { useAuthStore } from "@src/features/auth/store/auth-store";
@@ -26,6 +26,10 @@ const conversationsStore = useConversationsStore();
 const { toggleDarkMode, isDarkMode } = useTheme();
 
 const showDropdown = ref(false);
+
+onMounted(() => {
+  conversationsStore.fetchUnreadCounts();
+});
 
 // (event) change the active sidebar component when clicking on a NavLink
 // const handleActiveSidebarComponentChange = (value: string) => {
@@ -83,7 +87,7 @@ const openClients = () => {
           <li v-if="!store.isWidget" class="md:mb-4">
             <NavItem
               :active="route.currentRoute.value.path.includes('/chat/leads')"
-              :show-indicator="conversationsStore.unreadByEntity.leads"
+              :unread-count="conversationsStore.unreadByEntity.leads"
               title="Ліди"
               @click="openLeads"
             >
@@ -96,7 +100,7 @@ const openClients = () => {
           >
             <NavItem
               :active="route.currentRoute.value.path.includes('/chat/clients')"
-              :show-indicator="conversationsStore.unreadByEntity.clients"
+              :unread-count="conversationsStore.unreadByEntity.clients"
               title="Клієнти"
               @click="openClients"
             >
@@ -111,7 +115,7 @@ const openClients = () => {
               :active="
                 route.currentRoute.value.path.includes('/chat/suppliers')
               "
-              :show-indicator="conversationsStore.unreadByEntity.suppliers"
+              :unread-count="conversationsStore.unreadByEntity.suppliers"
               title="Постачальники"
               @click="openSuppliers"
             >

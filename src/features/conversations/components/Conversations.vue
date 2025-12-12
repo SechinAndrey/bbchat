@@ -162,10 +162,6 @@ watch(
 
       await fetchConversations(entity.value, params);
     }
-
-    if (newEntity) {
-      conversationsStore.clearEntityIndicator(newEntity as EntityType);
-    }
   },
   { immediate: true },
 );

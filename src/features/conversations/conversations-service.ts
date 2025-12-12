@@ -318,6 +318,29 @@ export class ConversationsService {
       throw new Error(errorMessage);
     }
   }
+
+  /**
+   * Get unread chats count for all entities
+   * @example await service.getUnreadCounts()
+   * @returns { leads: 12, clients: 5, suppliers: 3 }
+   */
+  async getUnreadCounts(): Promise<{
+    leads: number;
+    clients: number;
+    suppliers: number;
+  }> {
+    try {
+      const response = await apiClient.get<{
+        leads: number;
+        clients: number;
+        suppliers: number;
+      }>("/communications/unread");
+      return response.data;
+    } catch (error) {
+      console.error("❌ Failed to fetch unread counts:", error);
+      throw new Error("Failed to fetch unread counts");
+    }
+  }
 }
 export const conversationsService = new ConversationsService();
 export default conversationsService;
