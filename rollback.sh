@@ -3,8 +3,22 @@
 # rollback.sh - Скрипт для отката к предыдущей версии приложения
 # Обновляет символическую ссылку на предыдущую версию
 
-# Настройки
 APP_NAME="bb-chat"
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --app-name)
+            APP_NAME="$2"
+            shift 2
+            ;;
+        *)
+            VERSION_PARAM="$1"
+            shift
+            ;;
+    esac
+done
+
+# Настройки путей на основе APP_NAME
 DEPLOY_PATH="/var/www/$APP_NAME"
 RELEASES_PATH="$DEPLOY_PATH/releases"
 
@@ -33,17 +47,17 @@ fi
 # Определяем версию для отката
 TARGET_RELEASE=""
 
-# Если передан параметр, пытаемся использовать его как номер версии или имя релиза
-if [ -n "$1" ]; then
+# Если передан параметр версии, пытаемся использовать его как номер версии или имя релиза
+if [ -n "$VERSION_PARAM" ]; then
     # Проверяем, является ли параметр числом (номером версии)
-    if [[ "$1" =~ ^[0-9]+$ ]]; then
-        echo "Ищем релиз с номером $1..."
+    if [[ "$VERSION_PARAM" =~ ^[0-9]+$ ]]; then
+        echo "Ищем релиз с номером $VERSION_PARAM..."
         # Ищем релиз с указанным номером
         for release in "$RELEASES_PATH"/*; do
             if [ -d "$release" ]; then
                 RELEASE_NAME=$(basename "$release")
                 VERSION_NUM=$(echo "$RELEASE_NAME" | cut -d'-' -f1)
-                if [ "$VERSION_NUM" -eq "$1" ]; then
+                if [ "$VERSION_NUM" -eq "$VERSION_PARAM" ]; then
                     TARGET_RELEASE="$RELEASE_NAME"
                     break
                 fi
@@ -51,15 +65,15 @@ if [ -n "$1" ]; then
         done
         
         if [ -z "$TARGET_RELEASE" ]; then
-            echo "Ошибка: Релиз с номером $1 не найден!"
+            echo "Ошибка: Релиз с номером $VERSION_PARAM не найден!"
             exit 1
         fi
     else
         # Проверяем, существует ли релиз с указанным именем
-        if [ -d "$RELEASES_PATH/$1" ]; then
-            TARGET_RELEASE="$1"
+        if [ -d "$RELEASES_PATH/$VERSION_PARAM" ]; then
+            TARGET_RELEASE="$VERSION_PARAM"
         else
-            echo "Ошибка: Релиз с именем $1 не найден!"
+            echo "Ошибка: Релиз с именем $VERSION_PARAM не найден!"
             exit 1
         fi
     fi

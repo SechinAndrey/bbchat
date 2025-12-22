@@ -3,8 +3,24 @@
 # deploy.sh - Скрипт для деплоя новой версии приложения
 # Создает новую версию в директории releases и обновляет символическую ссылку
 
-# Настройки
+# Настройки по умолчанию
 APP_NAME="bb-chat"
+
+# Обработка аргументов
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --app-name)
+            APP_NAME="$2"
+            shift 2
+            ;;
+        *)
+            echo "Неизвестная опция: $1"
+            echo "Использование: $0 [--app-name NAME]"
+            exit 1
+            ;;
+    esac
+done
+
 DEPLOY_PATH="/var/www/$APP_NAME"
 RELEASES_PATH="$DEPLOY_PATH/releases"
 KEEP_RELEASES=5  # Количество сохраняемых последних релизов
