@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { ref, computed, watch } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import conversationsService from "./conversations-service";
 import type {
   ConversationParams,
@@ -43,6 +43,7 @@ export interface TempMessage {
 
 export const useConversationsStore = defineStore("conversations", () => {
   const route = useRoute();
+  const router = useRouter();
   const store = useStore();
   const authStore = useAuthStore();
   const globalDataStore = useGlobalDataStore();
@@ -90,11 +91,11 @@ export const useConversationsStore = defineStore("conversations", () => {
     search: "",
   });
 
-  // UI Indicators for unread messages in filtered views (runtime state, resets on page refresh)
+  // Unread chats count for each entity (number of chats with unread messages)
   const unreadByEntity = ref({
-    leads: false,
-    clients: false,
-    suppliers: false,
+    leads: 0,
+    clients: 0,
+    suppliers: 0,
   });
 
   const unreadByManager = ref<Record<number, boolean>>({});
@@ -474,7 +475,30 @@ export const useConversationsStore = defineStore("conversations", () => {
   ) => {
     const conversation = findConversation(entityType, entityId, contactId);
     if (conversation) {
+      const prevUnread = conversation.unread || 0;
       conversation.unread = 0;
+      if (prevUnread > 0) {
+        decrementUnreadChats(entityType);
+      }
+    }
+  };
+
+  const fetchUnreadCounts = async () => {
+    try {
+      const counts = await conversationsService.getUnreadCounts();
+      unreadByEntity.value = counts;
+    } catch (error) {
+      console.error("Error fetching unread counts:", error);
+    }
+  };
+
+  const incrementUnreadChats = (entity: EntityType) => {
+    unreadByEntity.value[entity]++;
+  };
+
+  const decrementUnreadChats = (entity: EntityType) => {
+    if (unreadByEntity.value[entity] > 0) {
+      unreadByEntity.value[entity]--;
     }
   };
 
@@ -536,9 +560,6 @@ export const useConversationsStore = defineStore("conversations", () => {
       );
       if (message) {
         message.viewed_by_contact = 1;
-        console.log(
-          `✅ Updated message ${messageId} as read by contact in active conversation`,
-        );
       }
     }
 
@@ -552,9 +573,6 @@ export const useConversationsStore = defineStore("conversations", () => {
           );
           if (message) {
             message.viewed_by_contact = 1;
-            console.log(
-              `✅ Updated message ${messageId} as read by contact in ${entity} conversation`,
-            );
           }
         }
       });
@@ -611,22 +629,26 @@ export const useConversationsStore = defineStore("conversations", () => {
       );
       if (message) {
         message.deleted_at = new Date().toISOString();
-        console.log(`🗑️ Marked message ${messageId} as deleted`);
+      }
+    }
+  };
+
+  const markMessageAsLiked = (messageId: number) => {
+    if (activeConversation.value?.messages) {
+      const message = activeConversation.value.messages.find(
+        (msg) => msg.id === messageId,
+      );
+      if (message) {
+        message.liked = message.liked === 1 ? 0 : 1;
       }
     }
   };
 
   // Actions to manage UI indicators
-  const setEntityIndicator = (entity: EntityType, value: boolean) => {
-    unreadByEntity.value[entity] = value;
-  };
-
-  const setManagerIndicator = (userId: number, value: boolean) => {
-    unreadByManager.value[userId] = value;
-  };
-
-  const clearEntityIndicator = (entity: EntityType) => {
-    unreadByEntity.value[entity] = false;
+  const setManagerIndicator = (userId: number | string, value: boolean) => {
+    if (typeof userId === "number") {
+      unreadByManager.value[userId] = value;
+    }
   };
 
   const clearManagerIndicator = (userId: number) => {
@@ -639,7 +661,7 @@ export const useConversationsStore = defineStore("conversations", () => {
 
   const addMessageToConversation = async (
     message: ApiMessageItem,
-    messageUserId?: number,
+    messageUserId?: number | string,
   ) => {
     const entityId =
       message.client_id || message.lead_id || message.supplier_id;
@@ -672,12 +694,16 @@ export const useConversationsStore = defineStore("conversations", () => {
         let shouldPlaySound = false;
 
         if (currentUser.roleId !== 1) {
-          shouldPlaySound = actualUserId === currentUser.id;
+          shouldPlaySound =
+            actualUserId === currentUser.id ||
+            actualUserId === "user-not-selected";
         } else {
           if (filters.value.user_id === undefined) {
             shouldPlaySound = true;
           } else {
-            shouldPlaySound = actualUserId === filters.value.user_id;
+            shouldPlaySound =
+              actualUserId === filters.value.user_id ||
+              actualUserId === "user-not-selected";
           }
         }
 
@@ -706,7 +732,11 @@ export const useConversationsStore = defineStore("conversations", () => {
         conversation.messages.push(message);
 
         if (!isOutgoing) {
+          const wasRead = (conversation.unread || 0) === 0;
           updateUnreadCount(conversation);
+          if (wasRead) {
+            incrementUnreadChats(entityType);
+          }
         }
         moveConversationToTop(entityType, entityId, contactId);
       }
@@ -721,9 +751,17 @@ export const useConversationsStore = defineStore("conversations", () => {
       conversation.messages.push(message);
 
       if (!isOutgoing) {
+        const wasRead = (conversation.unread || 0) === 0;
         updateUnreadCount(conversation);
+        if (wasRead) {
+          incrementUnreadChats(entityType);
+        }
       } else {
+        const prevUnread = conversation.unread || 0;
         conversation.unread = 0;
+        if (prevUnread > 0) {
+          decrementUnreadChats(entityType);
+        }
       }
       moveConversationToTop(entityType, entityId, contactId);
       return;
@@ -733,7 +771,6 @@ export const useConversationsStore = defineStore("conversations", () => {
       const currentEntity = route.params.entity as EntityType;
 
       if (currentEntity !== entityType) {
-        console.log("⏭️ Not loading: different entity");
         return;
       }
 
@@ -742,17 +779,11 @@ export const useConversationsStore = defineStore("conversations", () => {
         filters.value.user_id !== undefined
       ) {
         if (actualUserId !== filters.value.user_id) {
-          console.log(
-            `⏭️ Not loading: message for user ${actualUserId}, filter ${filters.value.user_id}`,
-          );
           return;
         }
       }
 
       if (filters.value.search) {
-        console.log(
-          "⏭️ Not loading: search is active (TODO: implement matching)",
-        );
         return;
       }
 
@@ -763,6 +794,7 @@ export const useConversationsStore = defineStore("conversations", () => {
       );
       if (loadedConversation) {
         updateUnreadCount(loadedConversation);
+        incrementUnreadChats(entityType);
       }
     }
   };
@@ -810,17 +842,16 @@ export const useConversationsStore = defineStore("conversations", () => {
     if (index !== -1) {
       const tempMessage = tempMessages.value[index];
       tempMessages.value.splice(index, 1);
-      console.log(
-        "✅ Removed temp message with client_message_uid:",
-        clientMessageUid,
-      );
       return tempMessage;
     }
 
     return null;
   };
 
-  const handleNewMessage = async (messageId: number, userId?: number) => {
+  const handleNewMessage = async (
+    messageId: number,
+    userId?: number | string,
+  ) => {
     try {
       const messageItem = await conversationsService.getMessageById(messageId);
       const isOutgoing = isOutgoingMessage(messageItem);
@@ -833,7 +864,6 @@ export const useConversationsStore = defineStore("conversations", () => {
       if (isOutgoing && clientMessageUid) {
         const removedTempMessage = findAndRemoveTempMessage(clientMessageUid);
         if (removedTempMessage) {
-          console.log("✅ Found and removed temp message, adding real message");
           await addMessageToConversation(messageItem, userId);
         } else {
           console.warn(
@@ -869,8 +899,6 @@ export const useConversationsStore = defineStore("conversations", () => {
       const isMerged = merge_info.from_lead_id === currentId;
 
       if (isMerged) {
-        console.log("🔄 Chaport sync: Lead merged - refreshing conversations");
-
         await fetch(currentEntity, { page: 1 });
 
         const targetEntity = CONTRAGENT_TO_ENTITY_MAP[merge_info.entity];
@@ -884,7 +912,7 @@ export const useConversationsStore = defineStore("conversations", () => {
   };
 
   const getEntityIndicatorToShow = (data: {
-    user_id: number;
+    user_id: number | string;
     contragent_type: ContragentType | null;
   }): EntityType | null => {
     const currentUser = authStore.currentUser;
@@ -914,9 +942,9 @@ export const useConversationsStore = defineStore("conversations", () => {
   };
 
   const getManagerIndicatorToShow = (data: {
-    user_id: number;
+    user_id: number | string;
     contragent_type: ContragentType | null;
-  }): number | null => {
+  }): number | string | null => {
     const currentUser = authStore.currentUser;
     if (!currentUser) return null;
     if (currentUser.roleId !== 1) return null;
@@ -942,6 +970,66 @@ export const useConversationsStore = defineStore("conversations", () => {
     return null;
   };
 
+  const handleLeadChangeUser = async (data: {
+    contragent_type: "lead" | "client" | "supplier";
+    contragent_id: number;
+    current_user: number;
+  }) => {
+    try {
+      console.log("👤 Received lead-change-user event:", data);
+
+      const entityType = CONTRAGENT_TO_ENTITY_MAP[data.contragent_type];
+      const entityId = data.contragent_id;
+      const isAdmin = authStore.currentUser?.roleId === 1;
+      const currentUserId = authStore.currentUser?.id;
+      const currentUserFilter = filters.value.user_id;
+
+      let shouldRemove = false;
+
+      if (isAdmin) {
+        if (currentUserFilter === undefined) {
+          shouldRemove = false;
+        } else {
+          shouldRemove = data.current_user !== currentUserFilter;
+        }
+      } else {
+        shouldRemove = data.current_user !== currentUserId;
+      }
+
+      if (!shouldRemove) {
+        return;
+      }
+
+      const conversationsList = conversations.value[entityType];
+      const removedConversation = conversationsList.find(
+        (conv) => conv.id === entityId,
+      );
+      if (removedConversation && (removedConversation.unread || 0) > 0) {
+        decrementUnreadChats(entityType);
+      }
+      conversations.value[entityType] = conversationsList.filter(
+        (conv) => conv.id !== entityId,
+      );
+
+      const isActiveChat =
+        activeConversation.value &&
+        activeConversation.value.id === entityId &&
+        activeConversation.value.entity === entityType;
+
+      if (isActiveChat) {
+        activeConversation.value = null;
+        messagesMeta.value = null;
+
+        await router.push({
+          name: "EntityChat",
+          params: { entity: entityType },
+        });
+      }
+    } catch (error) {
+      console.error("Error handling lead-change-user:", error);
+    }
+  };
+
   const { bindEvent } = usePusher();
   bindEvent(
     "e-chat-notification",
@@ -951,32 +1039,23 @@ export const useConversationsStore = defineStore("conversations", () => {
       contragent_contact_id: number | null;
       contragent_id: number | null;
       contragent_type: ContragentType | null;
-      user_id: number;
+      user_id: number | string;
     }) => {
       console.log("📨 Received Pusher new-message event:", data);
 
       const shouldProcess =
         data.user_id === authStore.currentUser?.id ||
+        data.user_id === "user-not-selected" ||
         authStore.currentUser?.roleId === 1;
 
       if (!shouldProcess) {
-        console.log("⏭️ Message not for current user");
         return;
       }
 
       await handleNewMessage(data.id, data.user_id);
 
-      const entityIndicator = getEntityIndicatorToShow(data);
-      if (entityIndicator) {
-        console.log(`🔔 Setting entity indicator for ${entityIndicator}`);
-        setEntityIndicator(entityIndicator, true);
-      }
-
       const managerIndicator = getManagerIndicatorToShow(data);
       if (managerIndicator) {
-        console.log(
-          `🔔 Setting manager indicator for user ${managerIndicator}`,
-        );
         setManagerIndicator(managerIndicator, true);
       }
     },
@@ -1010,6 +1089,20 @@ export const useConversationsStore = defineStore("conversations", () => {
     },
   );
 
+  // Subscribe to message-liked event
+  bindEvent(
+    "e-chat-notification",
+    "message-liked",
+    async (data: { id: [number] }) => {
+      const messageIds = Array.isArray(data.id) ? data.id : [data.id];
+      messageIds.forEach((messageId) => {
+        if (messageId) {
+          markMessageAsLiked(messageId);
+        }
+      });
+    },
+  );
+
   bindEvent(
     "e-chat-notification",
     "lead-merged-by-chaport-messages",
@@ -1019,6 +1112,18 @@ export const useConversationsStore = defineStore("conversations", () => {
         data,
       );
       await handleChaportSync(data);
+    },
+  );
+
+  bindEvent(
+    "e-chat-notification",
+    "lead-change-user",
+    async (data: {
+      contragent_type: "lead" | "client" | "supplier";
+      contragent_id: number;
+      current_user: number;
+    }) => {
+      await handleLeadChangeUser(data);
     },
   );
 
@@ -1111,11 +1216,12 @@ export const useConversationsStore = defineStore("conversations", () => {
 
     // Actions - Unread Management
     resetUnreadCount,
+    fetchUnreadCounts,
+    incrementUnreadChats,
+    decrementUnreadChats,
 
     // Actions - UI Indicators
-    setEntityIndicator,
     setManagerIndicator,
-    clearEntityIndicator,
     clearManagerIndicator,
     clearAllManagerIndicators,
 
@@ -1128,6 +1234,9 @@ export const useConversationsStore = defineStore("conversations", () => {
 
     // Actions - Chaport Synchronization
     handleChaportSync,
+
+    // Actions - Lead Reassignment
+    handleLeadChangeUser,
 
     // Actions - Temporary Messages (Optimistic Updates)
     tempMessages,

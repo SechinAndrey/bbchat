@@ -90,7 +90,6 @@ export const useSelectionsStore = defineStore("selections", () => {
   const addFromCart = async (selectionId: number) => {
     const updatedSelection = await selectionsService.addFromCart(selectionId);
 
-    // Merge updated data with existing selection to preserve fields like type and manager
     const index = selections.value.findIndex((s) => s.id === selectionId);
     if (index !== -1 && updatedSelection) {
       selections.value[index] = {

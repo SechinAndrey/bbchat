@@ -54,6 +54,7 @@ show_help() {
     echo "  -s, --https          Включить поддержку HTTPS (самоподписанный сертификат)"
     echo "  --cert PATH          Путь к SSL сертификату (для существующего сертификата)"
     echo "  --key PATH           Путь к SSL ключу (для существующего сертификата)"
+    echo "  --app-name NAME      Название приложения (по умолчанию: bb-chat)"
     echo ""
     echo "Примеры:"
     echo "  $0 --name example.com                                # Создать конфиг для example.com"
@@ -61,6 +62,7 @@ show_help() {
     echo "  $0 --origins 'https://example.com https://test.com'  # Разрешить только указанные домены"
     echo "  $0 --name example.com --https                        # Включить HTTPS с самоподписанным сертификатом"
     echo "  $0 --name example.com --cert /path/to/cert.pem --key /path/to/key.pem  # Использовать существующие сертификаты"
+    echo "  $0 --name stable.example.com --app-name bb-chat-stable  # Для stable версии"
 }
 
 # Обработка аргументов командной строки
@@ -108,6 +110,12 @@ while [[ $# -gt 0 ]]; do
         --key)
             SSL_KEY_PATH="$2"
             USE_HTTPS=true
+            shift
+            shift
+            ;;
+        --app-name)
+            APP_NAME="$2"
+            DEPLOY_PATH="/var/www/$APP_NAME"
             shift
             shift
             ;;

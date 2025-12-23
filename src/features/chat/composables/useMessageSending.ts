@@ -149,7 +149,6 @@ export function useMessageSending() {
       });
 
       if (isApiSendMessageError(response)) {
-        console.log("❌ Error detected:", response.description);
         toastError("Щось пішло не так. Зверніться до технічного відділу.");
         store.updateTempMessageStatus(
           clientMessageUid,
@@ -161,10 +160,6 @@ export function useMessageSending() {
 
       // 7. Update status to "sent"
       store.updateTempMessageStatus(clientMessageUid, "sent");
-
-      console.log(
-        "✅ Message sent successfully, waiting for Pusher confirmation",
-      );
     } catch (error) {
       // 8. Update status to error in case of failure
       const errorMessage =

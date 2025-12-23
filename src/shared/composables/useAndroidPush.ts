@@ -68,11 +68,6 @@ export function useAndroidPush() {
    * Shows local notification only when app is in background
    */
   const handlePushReceived = async (notification: any) => {
-    console.log(
-      "📩 [FCM] Push received data:",
-      JSON.stringify(notification.data, null, 2),
-    );
-
     const appState = await App.getState();
 
     if (!appState.isActive && notification.title && notification.body) {
@@ -120,26 +115,11 @@ export function useAndroidPush() {
   ) => {
     const route = `/chat/${entityType}/${entityId}/contact/${contactId}`;
 
-    console.log(`🔔 [${source}] Will navigate to:`, route);
-    console.log(
-      `🔔 [${source}] Current route:`,
-      router.currentRoute.value.fullPath,
-    );
-
     router
       .isReady()
       .then(() => {
-        console.log(`🔔 [${source}] Router is ready, navigating...`);
-
         setTimeout(() => {
-          router
-            .push(route)
-            .then(() => {
-              console.log(`✅ [${source}] Navigation successful to:`, route);
-            })
-            .catch((error) => {
-              console.error(`❌ [${source}] Navigation error:`, error);
-            });
+          router.push(route);
         }, 1000);
       })
       .catch((error) => {
@@ -151,29 +131,11 @@ export function useAndroidPush() {
    * Handle FCM notification click
    */
   const handleNotificationAction = (action: ActionPerformed) => {
-    console.log(
-      "🔔 [FCM] Push clicked data:",
-      JSON.stringify(action.notification.data, null, 2),
-    );
-
     const { entityType, entityId, contactId } = extractNavigationData(
       action.notification.data,
     );
-
-    console.log("🔔 [FCM] Parsed navigation data:", {
-      entityType,
-      entityId,
-      contactId,
-    });
-
     if (entityType && entityId && contactId) {
       navigateToChat(entityType, entityId, contactId, "FCM");
-    } else {
-      console.warn("⚠️ [FCM] Missing required navigation data:", {
-        entityType,
-        entityId,
-        contactId,
-      });
     }
   };
 
@@ -195,29 +157,12 @@ export function useAndroidPush() {
     LocalNotifications.addListener(
       "localNotificationActionPerformed",
       (action) => {
-        console.log(
-          "🔔 [LOCAL] Clicked data:",
-          JSON.stringify(action.notification.extra, null, 2),
-        );
-
         const { entityType, entityId, contactId } = extractNavigationData(
           action.notification.extra,
         );
 
-        console.log("🔔 [LOCAL] Parsed navigation data:", {
-          entityType,
-          entityId,
-          contactId,
-        });
-
         if (entityType && entityId && contactId) {
           navigateToChat(entityType, entityId, contactId, "LOCAL");
-        } else {
-          console.warn("⚠️ [LOCAL] Missing required navigation data:", {
-            entityType,
-            entityId,
-            contactId,
-          });
         }
       },
     );

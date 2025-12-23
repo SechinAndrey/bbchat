@@ -10,9 +10,18 @@
   >
     <slot></slot>
     <span
-      v-if="showIndicator"
-      class="absolute top-1 right-1 w-2 h-2 bg-secondary rounded-full"
-    ></span>
+      v-if="unreadCount && unreadCount > 0"
+      :class="[
+        'absolute -top-1 -right-1',
+        'min-w-[1.125rem] h-[1.125rem] px-1',
+        'bg-secondary text-white',
+        'rounded-full',
+        'flex items-center justify-center',
+        'text-[0.625rem] font-semibold leading-none',
+      ]"
+    >
+      {{ unreadCount > 99 ? "99+" : unreadCount }}
+    </span>
   </div>
 </template>
 
@@ -24,9 +33,9 @@ export default {
       type: Boolean,
       default: false,
     },
-    showIndicator: {
-      type: Boolean,
-      default: false,
+    unreadCount: {
+      type: Number,
+      default: 0,
     },
   },
 };

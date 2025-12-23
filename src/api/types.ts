@@ -222,6 +222,7 @@ export interface ApiChaportMessage {
   created_at: string;
   client_message_uid?: string;
   file: string;
+  system_message: number; // 0 - no, 1 - yes
 }
 
 export interface ApiEChatMessage {
@@ -263,7 +264,7 @@ export interface ApiMessageItemUser {
 export interface ApiReplyMessageItem {
   id: number;
   type_id: number;
-  user_id: number;
+  user_id: number | string;
   lead_id: number | null;
   lead_contact_id: number | null;
   client_id: number | null;
@@ -288,7 +289,7 @@ export interface ApiReplyMessageItem {
 export interface ApiMessageItem {
   id: number;
   type_id: number;
-  user_id: number;
+  user_id: number | string;
   lead_id: number | null;
   lead_contact_id: number | null;
   client_id: number | null;
@@ -315,6 +316,8 @@ export interface ApiMessageItem {
   supplier_contact: ApiContact | null;
   viewed: number; // 0 - not viewed, 1 - viewed by user US (current user)
   viewed_by_contact: number; // 0 - not viewed, 1 - viewed by contact(lead/client/supplier)
+  liked: number; // 0 - not liked, 1 - liked
+  system_message: number; // 0 - no, 1 - yes
   deleted_at: string | null;
 }
 

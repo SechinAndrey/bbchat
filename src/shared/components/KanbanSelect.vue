@@ -3,9 +3,11 @@ import { computed, ref, watch } from "vue";
 import Select from "@src/ui/inputs/Select.vue";
 import useConversationsStore from "@src/features/conversations/conversations-store";
 import useGlobalDataStore from "@src/shared/store/global-data-store";
+import { useToast } from "@src/shared/composables/useToast";
 
 const conversationsStore = useConversationsStore();
 const globalDataStore = useGlobalDataStore();
+const { toastSuccess, toastError } = useToast();
 
 const options = computed(() => {
   const currentStatus = globalDataStore.getKanbanStatusById(
@@ -36,15 +38,36 @@ const options = computed(() => {
 
 const selectedId = ref(conversationsStore.activeConversation?.status_id || "");
 
-selectedId.value = conversationsStore.activeConversation?.status_id || "";
+watch(
+  () => conversationsStore.activeConversation?.status_id,
+  (newStatusId) => {
+    selectedId.value = newStatusId ?? "";
+  },
+  { immediate: true },
+);
 
 watch(
   () => selectedId.value,
-  (newValue) => {
-    conversationsStore.changeLeadStatus(
-      conversationsStore?.activeConversation?.id as number,
-      newValue as number,
-    );
+  async (newValue) => {
+    if (
+      conversationsStore.activeConversation &&
+      conversationsStore.activeConversation.status_id !== newValue
+    ) {
+      try {
+        await conversationsStore.changeLeadStatus(
+          conversationsStore.activeConversation.id as number,
+          newValue as number,
+        );
+        toastSuccess("Статус успішно змінено");
+      } catch (err) {
+        selectedId.value =
+          conversationsStore.activeConversation.status_id ?? "";
+
+        const errorMessage =
+          err instanceof Error ? err.message : "Не вдалося змінити статус";
+        toastError(errorMessage);
+      }
+    }
   },
 );
 </script>

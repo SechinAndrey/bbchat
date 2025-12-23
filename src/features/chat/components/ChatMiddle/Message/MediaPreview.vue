@@ -22,7 +22,6 @@ const emit = defineEmits<{
 const openCarousel = () => {
   // Only emit for images, not for videos
   if (props.attachmentId && isImage(props.media)) {
-    console.log("MediaPreview: Emitting openImageGallery for:", props.media);
     emit("openImageGallery", props.media);
   }
 };
@@ -47,7 +46,7 @@ const openCarousel = () => {
     />
 
     <!-- Video -->
-    <div v-else-if="isVideo(props.media)" class="w-full">
+    <div v-else-if="isVideo(props.media)" class="w-[260px] max-w-full">
       <VideoPlayer
         :id="`video-${Date.now()}`"
         :url="props.media"

@@ -6,7 +6,7 @@ import {
   ChevronUpIcon,
   TrashIcon,
 } from "@heroicons/vue/24/solid";
-import { CheckIcon } from "@heroicons/vue/24/outline";
+import { CheckIcon, InformationCircleIcon } from "@heroicons/vue/24/outline";
 import linkifyStr from "linkify-string";
 import MediaPreview from "@src/features/chat/components/ChatMiddle/Message/MediaPreview.vue";
 import ConversationAvatar from "@src/shared/components/ConversationAvatar.vue";
@@ -181,7 +181,10 @@ const authorTextColor = computed(() => {
 
   const colors = isDarkMode.value ? colorsDark : colorsLight;
 
-  return colors[props.message.user_id % colors.length];
+  const userId = Number(props.message.user_id);
+  const colorIndex = Number.isNaN(userId) ? 0 : userId % colors.length;
+
+  return colors[colorIndex];
 });
 
 const hasAudio = computed(() => {
@@ -191,10 +194,39 @@ const hasAudio = computed(() => {
     chaport.value?.file;
   return mediaUrl ? isAudio(mediaUrl) : false;
 });
+
+const isSystemMessage = computed(() => {
+  return props.message.system_message === 1;
+});
+
+const systemMessageText = computed(() => {
+  if (chaport.value?.message) {
+    return chaport.value.message;
+  }
+  if (echat.value?.message) {
+    return echat.value.message;
+  }
+  return "Системне повідомлення";
+});
 </script>
 
 <template>
+  <!-- System message -->
+  <div v-if="isSystemMessage" class="flex justify-center py-2 px-4">
+    <span class="text-app-text-secondary text-[0.813rem]">
+      {{
+        formatDate(message.created_at, {
+          hour: "numeric",
+          minute: "numeric",
+        })
+      }}
+      {{ systemMessageText }}
+    </span>
+  </div>
+
+  <!-- Regular message -->
   <div
+    v-else
     class="flex items-start gap-4 py-3 px-4"
     :class="{ 'justify-end': isSelf }"
     @contextmenu="handleContextMenu"
@@ -431,6 +463,14 @@ const hasAudio = computed(() => {
               })
             }}
           </span>
+        </div>
+
+        <!-- Like reaction -->
+        <div
+          v-if="message.liked === 1"
+          class="flex items-center justify-center bg-app-bg-secondary rounded-full shadow-sm border border-app-border w-[1.25rem] h-[1.25rem] absolute -bottom-3 -left-3 select-none"
+        >
+          <span class="text-[0.625rem]">❤️</span>
         </div>
       </div>
     </div>

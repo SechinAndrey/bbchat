@@ -307,9 +307,38 @@ export class ConversationsService {
       await apiClient.post(`/leads/${id}/change-status`, {
         new_status_id: status,
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("❌ Failed to change lead status:", error);
-      throw new Error("Failed to change lead status");
+
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Failed to change lead status";
+
+      throw new Error(errorMessage);
+    }
+  }
+
+  /**
+   * Get unread chats count for all entities
+   * @example await service.getUnreadCounts()
+   * @returns { leads: 12, clients: 5, suppliers: 3 }
+   */
+  async getUnreadCounts(): Promise<{
+    leads: number;
+    clients: number;
+    suppliers: number;
+  }> {
+    try {
+      const response = await apiClient.get<{
+        leads: number;
+        clients: number;
+        suppliers: number;
+      }>("/communications/unread");
+      return response.data;
+    } catch (error) {
+      console.error("❌ Failed to fetch unread counts:", error);
+      throw new Error("Failed to fetch unread counts");
     }
   }
 }
