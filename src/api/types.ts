@@ -693,6 +693,23 @@ export interface ApiGlobalDataResponse {
   suppliers: { id: number; name: string }[];
   users: ApiManagerListItem[];
   usersForClients: ApiManagerListItem[];
+  defaultMessagesCategories: ApiDefaultMessageCategory[];
+}
+
+export interface ApiDefaultMessage {
+  id: number;
+  message: string;
+  category_id: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ApiDefaultMessageCategory {
+  id: number;
+  name: string;
+  created_at: string;
+  updated_at: string;
+  messages: ApiDefaultMessage[];
 }
 
 // --- selections ---

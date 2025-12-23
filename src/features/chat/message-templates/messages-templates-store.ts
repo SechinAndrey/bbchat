@@ -1,102 +1,12 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import { messagesTemplatesService } from "./messages-templates-service";
+import { globalDataService } from "@src/shared/services/global-data-service";
 import type { MessageTemplate } from "./types";
-
-const MOCK_TEMPLATES: MessageTemplate[] = [
-  {
-    id: 1,
-    text: "Доброго дня! Дякуємо за звернення. Ми обов'язково зв'яжемося з вами найближчим часом.",
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  {
-    id: 2,
-    text: "Вітаю! Ваше замовлення прийнято в обробку. Очікуйте на дзвінок менеджера протягом години.",
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  {
-    id: 3,
-    text: "Дякуємо за ваш відгук! Ми цінуємо кожного клієнта і завжди прагнемо покращувати наш сервіс.",
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  {
-    id: 4,
-    text: "444 Дякуємо за ваш відгук! Ми цінуємо кожного клієнта і завжди прагнемо покращувати наш сервіс.",
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  {
-    id: 5,
-    text: "555 Дякуємо за ваш відгук! Ми цінуємо кожного клієнта і завжди прагнемо покращувати наш сервіс.",
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  {
-    id: 6,
-    text: "666 Дякуємо за ваш відгук! Ми цінуємо кожного клієнта і завжди прагнемо покращувати наш сервіс.",
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  {
-    id: 7,
-    text: "777 Дякуємо за ваш відгук! Ми цінуємо кожного клієнта і завжди прагнемо покращувати наш сервіс.",
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  {
-    id: 8,
-    text: "888 Дякуємо за ваш відгук! Ми цінуємо кожного клієнта і завжди прагнемо покращувати наш сервіс.",
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  {
-    id: 8,
-    text: "888 Дякуємо за ваш відгук! Ми цінуємо кожного клієнта і завжди прагнемо покращувати наш сервіс.",
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  {
-    id: 8,
-    text: "888 Дякуємо за ваш відгук! Ми цінуємо кожного клієнта і завжди прагнемо покращувати наш сервіс.",
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  {
-    id: 8,
-    text: "888 Дякуємо за ваш відгук! Ми цінуємо кожного клієнта і завжди прагнемо покращувати наш сервіс.",
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  {
-    id: 8,
-    text: "888 Дякуємо за ваш відгук! Ми цінуємо кожного клієнта і завжди прагнемо покращувати наш сервіс.",
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  {
-    id: 8,
-    text: "888 Дякуємо за ваш відгук! Ми цінуємо кожного клієнта і завжди прагнемо покращувати наш сервіс.",
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  {
-    id: 8,
-    text: "888 Дякуємо за ваш відгук! Ми цінуємо кожного клієнта і завжди прагнемо покращувати наш сервіс.",
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  {
-    id: 8,
-    text: "888 Дякуємо за ваш відгук! Ми цінуємо кожного клієнта і завжди прагнемо покращувати наш сервіс.",
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-];
-
-const USE_MOCK_DATA = true;
+import type {
+  ApiDefaultMessageCategory,
+  ApiDefaultMessage,
+} from "@src/api/types";
 
 /**
  * Store for managing message templates
@@ -105,23 +15,38 @@ export const useMessagesTemplatesStore = defineStore(
   "messagesTemplates",
   () => {
     const templates = ref<MessageTemplate[]>([]);
+    const categories = ref<ApiDefaultMessageCategory[]>([]);
     const isLoading = ref(false);
     const error = ref<string | null>(null);
 
+    const mapApiMessageToTemplate = (
+      msg: ApiDefaultMessage,
+    ): MessageTemplate => ({
+      id: msg.id,
+      text: msg.message,
+      created_at: msg.created_at,
+      updated_at: msg.updated_at,
+      category_id: msg.category_id,
+    });
+
     /**
-     * Fetch all message templates from API
+     * Fetch all message templates from API (via GlobalDataService)
      */
     const fetchTemplates = async () => {
       isLoading.value = true;
       error.value = null;
 
       try {
-        if (USE_MOCK_DATA) {
-          await new Promise((resolve) => setTimeout(resolve, 300));
-          templates.value = [...MOCK_TEMPLATES];
-        } else {
-          templates.value = await messagesTemplatesService.getTemplates();
-        }
+        const data = await globalDataService.getGlobalData();
+        categories.value = data.defaultMessagesCategories || [];
+
+        // Flatten messages from all categories
+        const allMessages = categories.value.flatMap(
+          (cat) => cat.messages || [],
+        );
+        templates.value = allMessages
+          .map(mapApiMessageToTemplate)
+          .sort((a, b) => b.id - a.id);
       } catch (err) {
         error.value =
           err instanceof Error ? err.message : "Failed to fetch templates";
@@ -140,23 +65,39 @@ export const useMessagesTemplatesStore = defineStore(
       error.value = null;
 
       try {
-        if (USE_MOCK_DATA) {
-          await new Promise((resolve) => setTimeout(resolve, 300));
-          const newTemplate: MessageTemplate = {
-            id: Date.now(),
-            text,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          };
-          templates.value.push(newTemplate);
-          return newTemplate;
+        let categoryId: number;
+
+        // Check if we have any categories, if not create one
+        if (categories.value.length > 0) {
+          categoryId = categories.value[0].id;
         } else {
-          const newTemplate = await messagesTemplatesService.createTemplate({
-            text,
+          const newCategory = await messagesTemplatesService.createCategory({
+            name: "Загальна",
           });
-          templates.value.push(newTemplate);
-          return newTemplate;
+          categories.value.push(newCategory);
+          categoryId = newCategory.id;
         }
+
+        const newTemplate = await messagesTemplatesService.createTemplate({
+          category_id: categoryId,
+          message: text,
+        });
+
+        const mappedTemplate = mapApiMessageToTemplate(newTemplate);
+        templates.value.unshift(mappedTemplate);
+
+        // Also update the category in local state to include the new message
+        const categoryIndex = categories.value.findIndex(
+          (c) => c.id === categoryId,
+        );
+        if (categoryIndex !== -1) {
+          if (!categories.value[categoryIndex].messages) {
+            categories.value[categoryIndex].messages = [];
+          }
+          categories.value[categoryIndex].messages.push(newTemplate);
+        }
+
+        return mappedTemplate;
       } catch (err) {
         error.value =
           err instanceof Error ? err.message : "Failed to create template";
@@ -177,31 +118,42 @@ export const useMessagesTemplatesStore = defineStore(
       error.value = null;
 
       try {
-        if (USE_MOCK_DATA) {
-          await new Promise((resolve) => setTimeout(resolve, 300));
-          const index = templates.value.findIndex((t) => t.id === id);
-          if (index !== -1) {
-            templates.value[index] = {
-              ...templates.value[index],
-              text,
-              updated_at: new Date().toISOString(),
-            };
-            return templates.value[index];
-          }
-          throw new Error("Template not found");
-        } else {
-          const updatedTemplate = await messagesTemplatesService.updateTemplate(
-            id,
-            { text },
-          );
-
-          const index = templates.value.findIndex((t) => t.id === id);
-          if (index !== -1) {
-            templates.value[index] = updatedTemplate;
-          }
-
-          return updatedTemplate;
+        const existingTemplate = templates.value.find((t) => t.id === id);
+        if (!existingTemplate || !existingTemplate.category_id) {
+          throw new Error("Template or category_id not found");
         }
+
+        await messagesTemplatesService.updateTemplate(id, {
+          message: text,
+          category_id: existingTemplate.category_id,
+        });
+
+        const updatedTemplate: MessageTemplate = {
+          ...existingTemplate,
+          text: text,
+          updated_at: new Date().toISOString(),
+        };
+
+        const index = templates.value.findIndex((t) => t.id === id);
+        if (index !== -1) {
+          templates.value[index] = updatedTemplate;
+        }
+
+        // Update in categories as well
+        categories.value.forEach((cat) => {
+          if (cat.messages) {
+            const msgIndex = cat.messages.findIndex((m) => m.id === id);
+            if (msgIndex !== -1) {
+              cat.messages[msgIndex] = {
+                ...cat.messages[msgIndex],
+                message: text,
+                updated_at: updatedTemplate.updated_at || "",
+              };
+            }
+          }
+        });
+
+        return updatedTemplate;
       } catch (err) {
         error.value =
           err instanceof Error ? err.message : "Failed to update template";
@@ -221,13 +173,15 @@ export const useMessagesTemplatesStore = defineStore(
       error.value = null;
 
       try {
-        if (USE_MOCK_DATA) {
-          await new Promise((resolve) => setTimeout(resolve, 300));
-          templates.value = templates.value.filter((t) => t.id !== id);
-        } else {
-          await messagesTemplatesService.deleteTemplate(id);
-          templates.value = templates.value.filter((t) => t.id !== id);
-        }
+        await messagesTemplatesService.deleteTemplate(id);
+        templates.value = templates.value.filter((t) => t.id !== id);
+
+        // Remove from categories
+        categories.value.forEach((cat) => {
+          if (cat.messages) {
+            cat.messages = cat.messages.filter((m) => m.id !== id);
+          }
+        });
       } catch (err) {
         error.value =
           err instanceof Error ? err.message : "Failed to delete template";
@@ -240,12 +194,14 @@ export const useMessagesTemplatesStore = defineStore(
 
     const resetState = () => {
       templates.value = [];
+      categories.value = [];
       isLoading.value = false;
       error.value = null;
     };
 
     return {
       templates,
+      categories,
       isLoading,
       error,
 

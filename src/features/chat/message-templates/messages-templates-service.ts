@@ -1,33 +1,24 @@
 import apiClient from "@src/api/axios-instance";
 import type {
-  MessageTemplate,
-  ApiMessageTemplatesResponse,
   CreateMessageTemplateRequest,
   UpdateMessageTemplateRequest,
-  ApiMessageTemplateResponse,
+  CreateMessageCategoryRequest,
 } from "./types";
+import type {
+  ApiDefaultMessage,
+  ApiDefaultMessageCategory,
+} from "@src/api/types";
 
 export class MessagesTemplatesService {
   /**
-   * Get all message templates
-   * @returns Promise with message templates array
+   * Create a new message category
+   * @param data - Category data
    */
-  async getTemplates(): Promise<MessageTemplate[]> {
-    const response =
-      await apiClient.get<ApiMessageTemplatesResponse>("/message-templates");
-    return response.data.data;
-  }
-
-  /**
-   * Get a single message template by ID
-   * @param id - Template ID
-   * @returns Promise with message template
-   */
-  async getTemplate(id: number): Promise<MessageTemplate> {
-    const response = await apiClient.get<ApiMessageTemplateResponse>(
-      `/message-templates/${id}`,
-    );
-    return response.data.data;
+  async createCategory(
+    data: CreateMessageCategoryRequest,
+  ): Promise<ApiDefaultMessageCategory> {
+    const response = await apiClient.post("/default-messages/category", data);
+    return response.data;
   }
 
   /**
@@ -37,38 +28,30 @@ export class MessagesTemplatesService {
    */
   async createTemplate(
     data: CreateMessageTemplateRequest,
-  ): Promise<MessageTemplate> {
-    const response = await apiClient.post<ApiMessageTemplateResponse>(
-      "/message-templates",
-      data,
-    );
-    return response.data.data;
+  ): Promise<ApiDefaultMessage> {
+    const response = await apiClient.post("/default-messages", data);
+    return response.data;
   }
 
   /**
    * Update an existing message template
    * @param id - Template ID
-   * @param data - Updated template data
-   * @returns Promise with updated template
+   * @param data - Updated data
    */
   async updateTemplate(
     id: number,
     data: UpdateMessageTemplateRequest,
-  ): Promise<MessageTemplate> {
-    const response = await apiClient.put<ApiMessageTemplateResponse>(
-      `/message-templates/${id}`,
-      data,
-    );
-    return response.data.data;
+  ): Promise<ApiDefaultMessage> {
+    const response = await apiClient.patch(`/default-messages/${id}`, data);
+    return response.data;
   }
 
   /**
    * Delete a message template
    * @param id - Template ID
-   * @returns Promise<void>
    */
   async deleteTemplate(id: number): Promise<void> {
-    await apiClient.delete(`/message-templates/${id}`);
+    await apiClient.delete(`/default-messages/${id}`);
   }
 }
 

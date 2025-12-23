@@ -3,6 +3,7 @@ export interface MessageTemplate {
   text: string;
   created_at?: string;
   updated_at?: string;
+  category_id?: number;
 }
 
 export interface ApiMessageTemplatesResponse {
@@ -10,13 +11,19 @@ export interface ApiMessageTemplatesResponse {
 }
 
 export interface CreateMessageTemplateRequest {
-  text: string;
+  category_id: number;
+  message: string;
 }
 
 export interface UpdateMessageTemplateRequest {
-  text: string;
+  category_id: number;
+  message: string;
+}
+
+export interface CreateMessageCategoryRequest {
+  name: string;
 }
 
 export interface ApiMessageTemplateResponse {
-  data: MessageTemplate;
+  data: MessageTemplate; // This might need to be ApiDefaultMessage if we don't map it in service
 }
