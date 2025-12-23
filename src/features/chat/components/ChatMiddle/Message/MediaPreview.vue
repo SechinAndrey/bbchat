@@ -46,7 +46,7 @@ const openCarousel = () => {
     />
 
     <!-- Video -->
-    <div v-else-if="isVideo(props.media)" class="w-full">
+    <div v-else-if="isVideo(props.media)" class="w-[260px] max-w-full">
       <VideoPlayer
         :id="`video-${Date.now()}`"
         :url="props.media"
