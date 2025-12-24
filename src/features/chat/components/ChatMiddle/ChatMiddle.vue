@@ -28,12 +28,15 @@ import {
   ClipboardDocumentIcon,
   ArrowUturnLeftIcon,
   BookmarkIcon,
+  PencilIcon,
+  TrashIcon,
 } from "@heroicons/vue/24/outline";
 import { useContextMenu } from "@src/shared/composables/useContextMenu";
 import { ContextMenu } from "@src/ui/navigation/ContextMenu";
 import { DropdownItem } from "@src/ui/navigation/DropdownV3";
 import { useToast } from "@src/shared/composables/useToast";
 import { useMessagesTemplatesStore } from "@src/features/chat/message-templates";
+import ConfirmModal from "@src/ui/modals/ConfirmModal.vue";
 
 const conversationsStore = useConversationsStore();
 const messagesTemplatesStore = useMessagesTemplatesStore();
@@ -42,6 +45,7 @@ const { toastError, toastSuccess } = useToast();
 
 const telegramReplyBus = useEventBus<ApiMessageItem>("reply-message");
 const viberReplyBus = useEventBus<string>("viber-reply-message");
+const editMessageBus = useEventBus<ApiMessageItem>("edit-message");
 
 const container: Ref<HTMLElement | null> = ref(null);
 
@@ -186,6 +190,11 @@ const isImageGalleryOpen = ref(false);
 const galleryImages = ref<string[]>([]);
 const startingImageIndex = ref(0);
 
+// Delete confirmation state
+const isDeleteConfirmOpen = ref(false);
+const messageToDelete = ref<ApiMessageItem | null>(null);
+const isDeletingMessage = ref(false);
+
 // Collect all images from conversation messages
 const collectConversationImages = () => {
   const images: string[] = [];
@@ -312,6 +321,74 @@ const handleSaveAsTemplate = async () => {
   }
 
   closeContextMenu();
+};
+
+const isMessageEditable = (message: ApiMessageItem): boolean => {
+  if (!message.echat_messages?.dialog?.messenger_id) return false;
+  if (message.echat_messages.dialog.messenger_id !== 1) return false;
+  if (message.deleted_at) return false;
+  if (!message.user_id) return false;
+
+  const messageDate = new Date(message.created_at);
+  const now = new Date();
+  const hoursDiff = (now.getTime() - messageDate.getTime()) / (1000 * 60 * 60);
+
+  return hoursDiff < 48;
+};
+
+const isMessageDeletable = (message: ApiMessageItem): boolean => {
+  if (!message.echat_messages?.dialog?.messenger_id) return false;
+  if (message.echat_messages.dialog.messenger_id !== 1) return false;
+  if (message.deleted_at) return false;
+
+  return true;
+};
+
+const handleEditMessage = () => {
+  if (!selectedMessage.value) return;
+
+  editMessageBus.emit(selectedMessage.value);
+  closeContextMenu();
+};
+
+const handleDeleteMessage = () => {
+  if (!selectedMessage.value) return;
+
+  messageToDelete.value = selectedMessage.value;
+  isDeleteConfirmOpen.value = true;
+  closeContextMenu();
+};
+
+const confirmDeleteMessage = async () => {
+  if (!messageToDelete.value) return;
+
+  isDeletingMessage.value = true;
+
+  try {
+    await conversationsStore.deleteMessage(messageToDelete.value.id);
+    toastSuccess("Повідомлення видалено");
+    isDeleteConfirmOpen.value = false;
+    messageToDelete.value = null;
+  } catch (error) {
+    console.error("Failed to delete message:", error);
+    const errorMessage =
+      (
+        error as {
+          response?: { data?: { message?: string } };
+          message?: string;
+        }
+      )?.response?.data?.message ||
+      (error as { message?: string })?.message ||
+      "Помилка видалення повідомлення";
+    toastError(errorMessage);
+  } finally {
+    isDeletingMessage.value = false;
+  }
+};
+
+const cancelDeleteMessage = () => {
+  isDeleteConfirmOpen.value = false;
+  messageToDelete.value = null;
 };
 
 const scrollToBottom = () => {
@@ -509,11 +586,42 @@ watch(
         Відповісти
       </DropdownItem>
 
+      <DropdownItem
+        v-if="selectedMessage && isMessageEditable(selectedMessage)"
+        label="Редагувати"
+        @click="handleEditMessage"
+      >
+        <PencilIcon class="w-5 h-5 mr-3" />
+        Редагувати
+      </DropdownItem>
+
+      <DropdownItem
+        v-if="selectedMessage && isMessageDeletable(selectedMessage)"
+        label="Видалити"
+        @click="handleDeleteMessage"
+      >
+        <TrashIcon class="w-5 h-5 mr-3 text-danger" />
+        Видалити
+      </DropdownItem>
+
       <DropdownItem label="Зберегти шаблон" @click="handleSaveAsTemplate">
         <BookmarkIcon class="w-5 h-5 mr-3" />
         Зберегти шаблон
       </DropdownItem>
     </ContextMenu>
+
+    <!-- Delete Confirmation Modal -->
+    <ConfirmModal
+      :open="isDeleteConfirmOpen"
+      :is-loading="isDeletingMessage"
+      :show-icon="true"
+      title="Видалити повідомлення?"
+      text="Ви впевнені, що хочете видалити це повідомлення? Цю дію неможливо скасувати."
+      confirm-text="Видалити"
+      cancel-text="Скасувати"
+      @confirm="confirmDeleteMessage"
+      @cancel="cancelDeleteMessage"
+    />
   </div>
 </template>
 

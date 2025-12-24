@@ -644,6 +644,37 @@ export const useConversationsStore = defineStore("conversations", () => {
     }
   };
 
+  const updateMessageText = (messageId: number, newText: string) => {
+    if (activeConversation.value?.messages) {
+      const message = activeConversation.value.messages.find(
+        (msg) => msg.id === messageId,
+      );
+      if (message && message.echat_messages) {
+        message.echat_messages.message = newText;
+      }
+    }
+  };
+
+  const editMessage = async (messageId: number, newText: string) => {
+    try {
+      await conversationsService.editMessage(messageId, newText);
+      updateMessageText(messageId, newText);
+    } catch (error) {
+      console.error("Error editing message:", error);
+      throw error;
+    }
+  };
+
+  const deleteMessage = async (messageId: number) => {
+    try {
+      await conversationsService.deleteMessage(messageId);
+      markMessageAsDeleted(messageId);
+    } catch (error) {
+      console.error("Error deleting message:", error);
+      throw error;
+    }
+  };
+
   // Actions to manage UI indicators
   const setManagerIndicator = (userId: number | string, value: boolean) => {
     if (typeof userId === "number") {
@@ -1231,6 +1262,8 @@ export const useConversationsStore = defineStore("conversations", () => {
     // Actions - Message Status
     markMessageAsReadByContact,
     markMessageAsDeleted,
+    editMessage,
+    deleteMessage,
 
     // Actions - Chaport Synchronization
     handleChaportSync,

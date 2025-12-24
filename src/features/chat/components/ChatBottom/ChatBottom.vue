@@ -19,6 +19,7 @@ import EmojiPicker from "@src/ui/inputs/EmojiPicker/EmojiPicker.vue";
 import Textarea from "@src/ui/inputs/Textarea.vue";
 import Select from "@src/ui/inputs/Select.vue";
 import ReplyPreview from "@src/features/chat/components/ChatBottom/ReplyPreview.vue";
+import EditPreview from "@src/features/chat/components/ChatBottom/EditPreview.vue";
 import { useMessageSending } from "@src/features/chat/composables/useMessageSending";
 import { useMessenger } from "@src/features/chat/composables/useMessengerSelection";
 import { useMediaQuery } from "@vueuse/core";
@@ -27,18 +28,24 @@ import { TemplateSelectorModal } from "@src/features/chat/message-templates";
 import { useMessagesTemplatesStore } from "@src/features/chat/message-templates";
 import type { MessageTemplate } from "@src/features/chat/message-templates";
 import { onMounted } from "vue";
+import { useConversationsStore } from "@src/features/conversations/conversations-store";
+import { useToast } from "@src/shared/composables/useToast";
 
 const store = useStore();
 const { sendMessage } = useMessageSending();
 const { messengerId, messengerOptions, currentMessenger, activeContact } =
   useMessenger();
 const templatesStore = useMessagesTemplatesStore();
+const conversationsStore = useConversationsStore();
+const { toastError, toastSuccess } = useToast();
 
 const isMobile = computed(() => useMediaQuery("(max-width: 767px)").value);
 
 const telegramReplyBus = useEventBus<ApiMessageItem>("reply-message");
 const viberReplyBus = useEventBus<string>("viber-reply-message");
+const editMessageBus = useEventBus<ApiMessageItem>("edit-message");
 const telegramReplyingToMessage = ref<ApiMessageItem | null>(null);
+const editingMessage = ref<ApiMessageItem | null>(null);
 
 telegramReplyBus.on((message) => {
   value.value = "";
@@ -62,6 +69,26 @@ viberReplyBus.on((messageText) => {
       const cursorPosition = value.value.length;
       textarea.setSelectionRange(cursorPosition, cursorPosition);
       messengerId.value = 2;
+    }
+  });
+});
+
+editMessageBus.on((message) => {
+  telegramReplyingToMessage.value = null;
+  editingMessage.value = message;
+
+  const messageText =
+    message.echat_messages?.message || message.chaport_messages?.message || "";
+  value.value = messageText;
+
+  messengerId.value = message.echat_messages?.dialog?.messenger_id || 1;
+
+  nextTick(() => {
+    if (textareaRef.value && textareaRef.value.$el) {
+      const textarea = textareaRef.value.$el as HTMLTextAreaElement;
+      textarea.focus();
+      const cursorPosition = value.value.length;
+      textarea.setSelectionRange(cursorPosition, cursorPosition);
     }
   });
 });
@@ -113,6 +140,11 @@ const clearTelegramReply = () => {
   telegramReplyingToMessage.value = null;
 };
 
+const clearEdit = () => {
+  editingMessage.value = null;
+  value.value = "";
+};
+
 const placeholderText = computed(() => {
   if (isMobile.value) {
     return contactName.value;
@@ -142,9 +174,32 @@ async function handleSendMessage() {
 
   const messageText = value.value;
   const replyId = telegramReplyingToMessage.value?.id || null;
+  const editId = editingMessage.value?.id || null;
 
   value.value = "";
   clearTelegramReply();
+
+  if (editId) {
+    try {
+      await conversationsStore.editMessage(editId, messageText);
+      toastSuccess("Повідомлення відредаговано");
+      clearEdit();
+    } catch (error) {
+      console.error("Failed to edit message:", error);
+      const errorMessage =
+        (
+          error as {
+            response?: { data?: { message?: string } };
+            message?: string;
+          }
+        )?.response?.data?.message ||
+        (error as { message?: string })?.message ||
+        "Помилка редагування повідомлення";
+      toastError(errorMessage);
+      value.value = messageText;
+    }
+    return;
+  }
 
   try {
     await sendMessage({
@@ -174,8 +229,17 @@ const handleTemplateSelect = (template: MessageTemplate) => {
 <template>
   <div class="w-full relative">
     <SlideTransition animation="slide-down">
+      <EditPreview
+        v-if="editingMessage"
+        :message="editingMessage"
+        class="absolute bottom-[100%] z-[2]"
+        @close="clearEdit"
+      />
+    </SlideTransition>
+
+    <SlideTransition animation="slide-down">
       <ReplyPreview
-        v-if="telegramReplyingToMessage"
+        v-if="telegramReplyingToMessage && !editingMessage"
         :message="telegramReplyingToMessage"
         class="absolute bottom-[100%] z-[1]"
         @close="clearTelegramReply"

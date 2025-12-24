@@ -341,6 +341,26 @@ export class ConversationsService {
       throw new Error("Failed to fetch unread counts");
     }
   }
+
+  async editMessage(messageId: number, message: string): Promise<void> {
+    try {
+      await apiClient.patch(`/e-chat/dialogs/messages/${messageId}`, {
+        message,
+      });
+    } catch (error) {
+      console.error(`❌ Failed to edit message ${messageId}:`, error);
+      throw error;
+    }
+  }
+
+  async deleteMessage(messageId: number): Promise<void> {
+    try {
+      await apiClient.delete(`/e-chat/dialogs/messages/${messageId}`);
+    } catch (error) {
+      console.error(`❌ Failed to delete message ${messageId}:`, error);
+      throw error;
+    }
+  }
 }
 export const conversationsService = new ConversationsService();
 export default conversationsService;
