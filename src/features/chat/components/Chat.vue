@@ -11,6 +11,7 @@ import ChatTop from "@src/features/chat/components/ChatTop/ChatTop.vue";
 import RightSidebar from "@src/features/right-sidebar/components/RightSidebar.vue";
 import Spinner from "@src/ui/states/loading-states/Spinner.vue";
 import NoChatSelected from "@src/ui/states/empty-states/NoChatSelected.vue";
+import { useDragAndDrop } from "@src/features/chat/composables/useDragAndDrop";
 
 const props = defineProps<{
   id: number;
@@ -25,6 +26,50 @@ provide("contactId", toRef(props, "contactId"));
 const store = useStore();
 const conversationsStore = useConversationsStore();
 conversationsStore.initializeRouteWatchers();
+
+const { isDragging, attachedFiles, removeFile, clearFiles, handleFiles } =
+  useDragAndDrop();
+
+provide("attachedFiles", attachedFiles);
+provide("removeAttachedFile", removeFile);
+provide("clearAttachedFiles", clearFiles);
+
+let dragCounter = 0;
+
+const handleDragEnter = (e: DragEvent) => {
+  e.preventDefault();
+  e.stopPropagation();
+  dragCounter++;
+  isDragging.value = true;
+};
+
+const handleDragLeave = (e: DragEvent) => {
+  e.preventDefault();
+  e.stopPropagation();
+  dragCounter--;
+  if (dragCounter === 0) {
+    isDragging.value = false;
+  }
+};
+
+const handleDragOver = (e: DragEvent) => {
+  e.preventDefault();
+  e.stopPropagation();
+  if (e.dataTransfer) {
+    e.dataTransfer.dropEffect = "copy";
+  }
+};
+
+const handleDrop = (e: DragEvent) => {
+  e.preventDefault();
+  e.stopPropagation();
+  dragCounter = 0;
+  isDragging.value = false;
+
+  if (e.dataTransfer?.files) {
+    handleFiles(e.dataTransfer.files);
+  }
+};
 </script>
 
 <template>
@@ -40,8 +85,26 @@ conversationsStore.initializeRouteWatchers();
 
       <div
         v-else-if="conversationsStore.activeConversation && contactId"
-        class="h-full flex flex-col scrollbar-hidden"
+        class="h-full flex flex-col scrollbar-hidden relative"
+        @dragenter="handleDragEnter"
+        @dragleave="handleDragLeave"
+        @dragover.prevent="handleDragOver"
+        @drop.prevent="handleDrop"
       >
+        <div
+          v-if="isDragging"
+          class="absolute inset-0 z-50 bg-primary/10 border-4 border-dashed border-primary flex items-center justify-center backdrop-blur-sm pointer-events-none"
+        >
+          <div class="text-center">
+            <div class="text-2xl font-bold text-primary mb-2">
+              Перетягніть файли сюди
+            </div>
+            <div class="text-sm text-app-text-secondary">
+              Відпустіть, щоб прикріпити до повідомлення
+            </div>
+          </div>
+        </div>
+
         <ChatTop />
         <ChatMiddle />
         <ChatBottom />

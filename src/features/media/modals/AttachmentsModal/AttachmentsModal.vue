@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch } from "vue";
-import type { IAttachment } from "@src/shared/types/types";
 
 import Attachment from "@src/features/media/modals/AttachmentsModal/Attachment.vue";
 import Button from "@src/ui/inputs/Button.vue";
@@ -9,23 +8,22 @@ import Modal from "@src/ui/modals/Modal.vue";
 import { useMessageSending } from "@src/features/chat/composables/useMessageSending";
 import { useToast } from "@src/shared/composables/useToast";
 import { useMediaQuery } from "@vueuse/core";
+import { validateFile } from "@src/shared/utils";
 import {
-  formatFileSize,
-  getFileType,
-  validateFile,
-  revokeBlobURL,
-} from "@src/shared/utils";
+  MAX_ATTACHMENTS,
+  MAX_FILE_SIZE,
+  ACCEPTED_FILE_TYPES,
+} from "@src/shared/constants/attachments";
+import {
+  createAttachmentFromFile,
+  revokeAttachmentURLs,
+} from "@src/shared/utils/attachment-helpers";
 import {
   CheckCircleIcon,
   ClockIcon,
   ArrowPathIcon,
   XCircleIcon as ErrorIcon,
 } from "@heroicons/vue/24/outline";
-
-const MAX_ATTACHMENTS = 10;
-const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
-const ACCEPTED_FILE_TYPES =
-  "image/*,video/*,audio/*,.pdf,.doc,.docx,.txt,.xlsx,.xls,.zip,.rar";
 
 const props = defineProps<{
   messengerId: number;
@@ -53,25 +51,6 @@ const caption = ref("");
 const fileInputRef = ref<HTMLInputElement>();
 const isDragging = ref(false);
 const isSending = ref(false);
-
-const createAttachmentFromFile = (file: File): IAttachment => {
-  return {
-    id: Date.now() + Math.random(),
-    type: getFileType(file),
-    name: file.name,
-    size: formatFileSize(file.size),
-    url: URL.createObjectURL(file),
-    thumbnail: file.type.startsWith("image/")
-      ? URL.createObjectURL(file)
-      : undefined,
-    file: file,
-  };
-};
-
-const revokeAttachmentURLs = (attachment: IAttachment): void => {
-  revokeBlobURL(attachment.url);
-  revokeBlobURL(attachment.thumbnail);
-};
 
 const handleFileSelect = (event: Event) => {
   const target = event.target as HTMLInputElement;
@@ -190,15 +169,18 @@ const replaceAttachment = (id: number) => {
 
 const handleDragOver = (event: DragEvent) => {
   event.preventDefault();
+  event.stopPropagation();
   isDragging.value = true;
 };
 
-const handleDragLeave = () => {
+const handleDragLeave = (event: DragEvent) => {
+  event.stopPropagation();
   isDragging.value = false;
 };
 
 const handleDrop = (event: DragEvent) => {
   event.preventDefault();
+  event.stopPropagation();
   isDragging.value = false;
 
   if (event.dataTransfer && event.dataTransfer.files) {

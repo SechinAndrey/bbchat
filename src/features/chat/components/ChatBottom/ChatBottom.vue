@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Ref } from "vue";
 import useStore from "@src/shared/store/store";
-import { ref, computed, nextTick } from "vue";
+import { ref, computed, nextTick, inject } from "vue";
 import { useEventBus } from "@vueuse/core";
 import type { ApiMessageItem } from "@src/api/types";
 
@@ -20,6 +20,7 @@ import Textarea from "@src/ui/inputs/Textarea.vue";
 import Select from "@src/ui/inputs/Select.vue";
 import ReplyPreview from "@src/features/chat/components/ChatBottom/ReplyPreview.vue";
 import EditPreview from "@src/features/chat/components/ChatBottom/EditPreview.vue";
+import AttachmentsPreview from "@src/features/chat/components/ChatBottom/AttachmentsPreview.vue";
 import { useMessageSending } from "@src/features/chat/composables/useMessageSending";
 import { useMessenger } from "@src/features/chat/composables/useMessengerSelection";
 import { useMediaQuery } from "@vueuse/core";
@@ -30,6 +31,8 @@ import type { MessageTemplate } from "@src/features/chat/message-templates";
 import { onMounted } from "vue";
 import { useConversationsStore } from "@src/features/conversations/conversations-store";
 import { useToast } from "@src/shared/composables/useToast";
+import type { QueuedFile } from "@src/features/chat/composables/useMessageSending";
+import conversationsService from "@src/features/conversations/conversations-service";
 
 const store = useStore();
 const { sendMessage } = useMessageSending();
@@ -38,6 +41,15 @@ const { messengerId, messengerOptions, currentMessenger, activeContact } =
 const templatesStore = useMessagesTemplatesStore();
 const conversationsStore = useConversationsStore();
 const { toastError, toastSuccess } = useToast();
+
+const attachedFiles = inject<Ref<QueuedFile[]>>("attachedFiles", ref([]));
+const removeAttachedFile = inject<(id: number) => void>(
+  "removeAttachedFile",
+  () => {},
+);
+const clearAttachedFiles = inject<() => void>("clearAttachedFiles", () => {});
+
+const isSendingFiles = ref(false);
 
 const isMobile = computed(() => useMediaQuery("(max-width: 767px)").value);
 
@@ -168,7 +180,7 @@ const handleClickOutside = (event: Event) => {
 };
 
 async function handleSendMessage() {
-  if (!value.value.trim()) {
+  if (!value.value.trim() && attachedFiles.value.length === 0) {
     return;
   }
 
@@ -201,6 +213,46 @@ async function handleSendMessage() {
     return;
   }
 
+  // Handle files if present
+  if (attachedFiles.value.length > 0) {
+    try {
+      isSendingFiles.value = true;
+      const filesToSend = [...attachedFiles.value];
+
+      for (let i = 0; i < filesToSend.length; i++) {
+        const file = filesToSend[i];
+        const fileUrl = await conversationsService.uploadFile(file);
+
+        const caption = i === 0 ? messageText : "";
+
+        await sendMessage({
+          message: caption,
+          messengerId: messengerId.value,
+          fileUrl,
+          replyMessageId: i === 0 ? replyId : null,
+        });
+
+        if (i < filesToSend.length - 1) {
+          await new Promise((resolve) => setTimeout(resolve, 300));
+        }
+      }
+
+      clearAttachedFiles();
+      toastSuccess(
+        filesToSend.length === 1
+          ? "Файл успішно відправлено"
+          : `${filesToSend.length} файлів успішно відправлено`,
+      );
+    } catch (error) {
+      console.error("Error sending files:", error);
+      toastError("Помилка відправки файлів");
+    } finally {
+      isSendingFiles.value = false;
+    }
+    return;
+  }
+
+  // Send text-only message
   try {
     await sendMessage({
       message: messageText,
@@ -228,6 +280,16 @@ const handleTemplateSelect = (template: MessageTemplate) => {
 
 <template>
   <div class="w-full relative">
+    <SlideTransition animation="slide-down">
+      <AttachmentsPreview
+        v-if="attachedFiles.length > 0 && !editingMessage"
+        :files="attachedFiles"
+        class="absolute bottom-[100%] z-[3]"
+        @remove="removeAttachedFile"
+        @clear="clearAttachedFiles"
+      />
+    </SlideTransition>
+
     <SlideTransition animation="slide-down">
       <EditPreview
         v-if="editingMessage"
@@ -352,6 +414,8 @@ const handleTemplateSelect = (template: MessageTemplate) => {
           variant="primary"
           size="sm"
           icon-only
+          :loading="isSendingFiles"
+          :disabled="isSendingFiles"
           title="Відправити повідомлення"
           aria-label="Відправити повідомлення"
           @click="handleSendMessage"

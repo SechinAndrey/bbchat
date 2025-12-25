@@ -248,6 +248,10 @@ watch(
         ]"
         @mousedown="handleBackdropInteraction"
         @touch="handleBackdropInteraction"
+        @dragenter.stop
+        @dragleave.stop
+        @dragover.stop.prevent
+        @drop.stop.prevent
         @keydown.esc.stop.prevent="handleEscKey"
       >
         <!--content container-->
