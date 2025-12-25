@@ -2,6 +2,35 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.6.3 - 2025-12-25
+
+### Bug Fixes
+
+- Mob. Видео превью. [WS-18700430-21257211](https://trp4438.worksection.com/project/257910/18700430/21257211/)
+- Слідкувати за дошками. Список. [WS-18700430-21223317](https://trp4438.worksection.com/project/257910/18700430/21223317/)
+
+### Features
+
+- Прикрепить файл Drag and drop [WS-18700430-21308622](https://trp4438.worksection.com/project/257910/18700430/21308622/)
+- Редактирование/удаление сообщения. Менеджером. [WS-18700430-21111672](https://trp4438.worksection.com/project/257910/18700430/21111672/) [WS-18700430-21235806](https://trp4438.worksection.com/project/257910/18700430/21235806/)
+- Сохраненные ответы [WS-18700430-21020913](https://trp4438.worksection.com/project/257910/18700430/21020913/)
+  - Добавлена возмжность создавать шаблон сообщения из сообщения в чате
+  - Добавлен выбор шаблона в поле чата
+  - Базовые шаблоны сообщений на странице настроек
+  - Добавлена базовая структура страниц настроек
+  - Фронртенд связан с API
+- Вывод непрочитанных сообщений по категориям(лиды, клиенты, поставщики)
+- Chaport. Лид покинул чат. [WS-18700430-21086979](https://trp4438.worksection.com/project/257910/18700430/21086979/)
+- Добавлена обработка события "message-liked" для отображения лайка сообщения из Viver
+- Добавлено отображения лайка для сообщений
+
+### Project Maintenance
+
+- Развернуто стейбл окружение с дев базой данних для тестирования релизов - https://stable.chat.billboards.com.ua
+- Add logs for onBackgroundMessage FCM
+- Add -app-name for deploy srcript
+- Release version 0.6.3
+
 ## 0.6.2 - 2025-12-09
 
 ### Bug Fixes
