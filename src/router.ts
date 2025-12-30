@@ -129,6 +129,10 @@ router.beforeEach((to, from, next) => {
   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
   const isWidgetPage = to.matched.some((record) => record.meta.widget);
   const isAuthenticated = authService.isAuthenticated();
+  const comingFromWidgetAuth = from.path === "/access/widget-auth";
+  const comingFromWidgetPage = from.matched.some(
+    (record) => record.meta.widget,
+  );
 
   if (requiresAuth && !isAuthenticated) {
     if (isWidgetPage) {
@@ -136,6 +140,13 @@ router.beforeEach((to, from, next) => {
     } else {
       next({ path: "/access/sign-in/", query: { redirect: to.fullPath } });
     }
+  } else if (
+    requiresAuth &&
+    isWidgetPage &&
+    !comingFromWidgetAuth &&
+    !comingFromWidgetPage
+  ) {
+    next({ path: "/access/widget-auth", query: { redirect: to.fullPath } });
   } else {
     const entity = to.params.entity as string | undefined;
 

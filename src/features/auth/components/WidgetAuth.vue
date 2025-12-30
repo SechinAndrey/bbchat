@@ -2,6 +2,7 @@
 import { ref, computed } from "vue";
 import { useIframeMessaging } from "@src/shared/composables/useIframeMessaging";
 import { useAuthStore } from "@src/features/auth/store/auth-store";
+import { authService } from "@src/features/auth/services/auth-service";
 import { useRouter } from "vue-router";
 import { CheckIcon, XMarkIcon } from "@heroicons/vue/24/outline";
 import LogoIcon from "@src/shared/icons/logoIcon.vue";
@@ -51,25 +52,24 @@ const statusColor = computed(() => {
 on("bb-widget:auth-by-token", async (data) => {
   console.log("Received token-auth message:", data);
 
-  if (authStore.isAuthenticated) {
+  const savedVerificationToken = authService.getVerificationToken();
+  const isAuthenticated = authStore.isAuthenticated;
+
+  if (isAuthenticated && savedVerificationToken === data.token) {
     authStatus.value = "success";
     router.push({ path: `/widget/${data.entity}/${data.entityId}` });
-  } else {
-    authStatus.value = "authenticating";
+    return;
+  }
+  authStatus.value = "authenticating";
 
-    setTimeout(async () => {
-      try {
-        await authStore.loginWithToken(data.token);
-        authStatus.value = "success";
-        setTimeout(() => {
-          router.push({ path: `/widget/${data.entity}/${data.entityId}` });
-        }, 800);
-      } catch (error) {
-        authStatus.value = "error";
-        errorMessage.value = "Не вдалося авторизуватися";
-        console.error("Authentication error:", error);
-      }
-    }, 800);
+  try {
+    await authStore.loginWithToken(data.token);
+    authStatus.value = "success";
+    router.push({ path: `/widget/${data.entity}/${data.entityId}` });
+  } catch (error) {
+    authStatus.value = "error";
+    errorMessage.value = "Не вдалося авторизуватися";
+    console.error("Authentication error:", error);
   }
 });
 </script>

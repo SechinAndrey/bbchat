@@ -17,6 +17,7 @@ export class AuthService {
 
   private static readonly TOKEN_KEY = "auth_token";
   private static readonly ROLE_ID_KEY = "role_id";
+  private static readonly VERIFICATION_TOKEN_KEY = "verification_token";
 
   constructor() {
     this.baseUrl =
@@ -62,6 +63,7 @@ export class AuthService {
       );
 
       this.saveToken(response.data.token);
+      this.saveVerificationToken(token);
 
       return response.data.token;
     } catch (error) {
@@ -90,6 +92,7 @@ export class AuthService {
   logout(): void {
     localStorage.removeItem(AuthService.TOKEN_KEY);
     localStorage.removeItem(AuthService.ROLE_ID_KEY);
+    localStorage.removeItem(AuthService.VERIFICATION_TOKEN_KEY);
   }
 
   /**
@@ -120,6 +123,22 @@ export class AuthService {
 
   saveRoleId(roleId: number): void {
     localStorage.setItem(AuthService.ROLE_ID_KEY, roleId.toString());
+  }
+
+  /**
+   * Save verification token to localStorage
+   * @param token - verification token to save
+   */
+  saveVerificationToken(token: string): void {
+    localStorage.setItem(AuthService.VERIFICATION_TOKEN_KEY, token);
+  }
+
+  /**
+   * Get verification token from localStorage
+   * @returns verification token or null if not found
+   */
+  getVerificationToken(): string | null {
+    return localStorage.getItem(AuthService.VERIFICATION_TOKEN_KEY);
   }
 
   /**
