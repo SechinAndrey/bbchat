@@ -17,9 +17,10 @@
     "android:build": "yarn build && npx cap sync android"
   },
   "dependencies": {
+    "@capacitor-community/media": "^9.0.0",
     "@capacitor/android": "^7.2.0",
     "@capacitor/app": "^7.1.0",
-    "@capacitor/core": "^npx 7.2.0",
+    "@capacitor/core": "^7.2.0",
     "@capacitor/ios": "^7.2.0",
     "@capacitor/local-notifications": "^7.0.3",
     "@capacitor/push-notifications": "^7.0.3",

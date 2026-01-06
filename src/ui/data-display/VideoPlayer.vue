@@ -8,11 +8,21 @@ import {
   PlayIcon,
   SpeakerWaveIcon,
   SpeakerXMarkIcon,
+  ArrowDownTrayIcon,
 } from "@heroicons/vue/24/solid";
 import RangeSlider from "@src/ui/inputs/RangeSlider.vue";
 import { VideoPlayer } from "@videojs-player/vue";
+import { Capacitor } from "@capacitor/core";
+import { Media } from "@capacitor-community/media";
+import { useToast } from "@src/shared/composables/useToast";
 
 import "video.js/dist/video-js.css";
+
+interface VideoState {
+  playing: boolean;
+  muted: boolean;
+  duration: number;
+}
 
 defineEmits(["videoLoad"]);
 
@@ -22,6 +32,8 @@ const props = defineProps<{
   name?: string;
   thumbnail: string;
 }>();
+
+const { toastSuccess, toastError } = useToast();
 
 // if the fullscreen is toggled or not
 const fullScreen = ref(false);
@@ -38,13 +50,17 @@ const volumeSliderInvisible = ref(false);
 // tells us if the video was started
 const started = ref(false);
 
+// download progress state
+const isDownloading = ref(false);
+const downloadProgress = ref(0);
+
 // (event) mute and unmute the audio of the video
 const handleToggleMute = (player: any) => {
   player.muted(!player.muted());
 };
 
 // (event) increases and decreases volume based on the volume range slider location
-const handleVolumeSliderChange = (value: any, player: any) => {
+const handleVolumeSliderChange = (value: number, player: any) => {
   player.volume(value / 100);
 };
 
@@ -62,17 +78,140 @@ const handleTimeChange = (event: any) => {
 };
 
 // (event) change the current time of the video based on the slider's value
-const handleTrackInput = (value: any, player: any, state: any) => {
+const handleTrackInput = (value: number, player: any, state: VideoState) => {
   player.currentTime((value / 100) * state.duration);
 };
 
 // (event) pause and play the video
-const handleToggleVideo = (state: any, player: any) => {
+const handleToggleVideo = (state: VideoState, player: any) => {
   if (!state.playing && !started.value) {
     started.value = true;
     volume.value = player.volume() * 100;
   }
   state.playing ? player.pause() : player.play();
+};
+
+const handleDownloadVideo = async (event: Event) => {
+  event.preventDefault();
+  event.stopPropagation();
+
+  const isNative = Capacitor.isNativePlatform();
+  isDownloading.value = true;
+  downloadProgress.value = 0;
+
+  try {
+    const blob = await fetchWithProgress(props.url);
+
+    if (isNative) {
+      await downloadFileNative(blob);
+    } else {
+      downloadFileWeb(blob);
+    }
+  } catch (error) {
+    console.error("❌ Download failed:", error);
+    toastError(
+      "Помилка завантаження. Перевірте з'єднання або спробуйте пізніше.",
+    );
+  } finally {
+    isDownloading.value = false;
+    downloadProgress.value = 0;
+  }
+};
+
+const blobToBase64 = (blob: Blob): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64 = reader.result as string;
+      const base64Data = base64.split(",")[1];
+      resolve(base64Data);
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+};
+
+const fetchWithProgress = (url: string): Promise<Blob> => {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", url, true);
+    xhr.responseType = "blob";
+
+    xhr.onprogress = (event) => {
+      if (event.lengthComputable) {
+        downloadProgress.value = Math.round((event.loaded / event.total) * 100);
+      }
+    };
+
+    xhr.onload = () => {
+      if (xhr.status === 200) {
+        resolve(xhr.response);
+      } else {
+        reject(new Error(`HTTP error! status: ${xhr.status}`));
+      }
+    };
+
+    xhr.onerror = () => reject(new Error("Network error"));
+    xhr.send();
+  });
+};
+const downloadFileWeb = (blob: Blob) => {
+  const blobUrl = window.URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = blobUrl;
+  link.download = props.name || "video.mp4";
+  link.style.display = "none";
+
+  document.body.appendChild(link);
+  link.click();
+
+  setTimeout(() => {
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(blobUrl);
+  }, 100);
+};
+
+const downloadFileNative = async (blob: Blob) => {
+  try {
+    const base64Data = await blobToBase64(blob);
+    const fileName = props.name || `video_${Date.now()}.mp4`;
+    const dataUrl = `data:video/mp4;base64,${base64Data}`;
+    let albumIdentifier: string | undefined;
+
+    try {
+      const albumsResponse = await Media.getAlbums();
+      const bbChatAlbum = albumsResponse.albums.find(
+        (album) => album.name === "Billboards комунікації",
+      );
+
+      if (bbChatAlbum) {
+        albumIdentifier = bbChatAlbum.identifier;
+      } else {
+        await Media.createAlbum({ name: "Billboards комунікації" });
+        const updatedAlbums = await Media.getAlbums();
+        const newAlbum = updatedAlbums.albums.find(
+          (album) => album.name === "Billboards комунікації",
+        );
+        albumIdentifier = newAlbum?.identifier;
+      }
+    } catch (albumError) {
+      console.warn(
+        "⚠️ Album handling failed, saving to default location:",
+        albumError,
+      );
+    }
+
+    await Media.saveVideo({
+      path: dataUrl,
+      albumIdentifier: albumIdentifier,
+      fileName: fileName,
+    });
+
+    toastSuccess(`Відео збережено в галереї: ${fileName}`);
+  } catch (error) {
+    console.error("❌ Gallery save failed:", error);
+    toastError("Помилка збереження в галерею. Перевірте дозволи програми.");
+  }
 };
 </script>
 
@@ -88,7 +227,23 @@ const handleToggleVideo = (state: any, player: any) => {
       <div class="overlay-container">
         <!--video title-->
         <div v-if="props.name" class="video-title">
-          <p class="">{{ props.name }}</p>
+          <p class="video-name">{{ props.name }}</p>
+          <button
+            type="button"
+            class="download-button-title"
+            :title="isDownloading ? 'Завантаження...' : 'Завантажити відео'"
+            :disabled="isDownloading"
+            @click.prevent.stop="handleDownloadVideo"
+          >
+            <ArrowDownTrayIcon v-if="!isDownloading" class="icon small" />
+            <div v-else class="download-spinner"></div>
+          </button>
+          <!-- Progress indicator -->
+          <div
+            v-if="isDownloading"
+            class="download-progress"
+            :style="{ width: downloadProgress + '%' }"
+          ></div>
         </div>
 
         <!--pause and start buttons-->
@@ -257,6 +412,47 @@ const handleToggleVideo = (state: any, player: any) => {
       background: rgba(255, 255, 255, 0.2);
       opacity: 0;
       transition: all 200ms ease;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      position: relative;
+
+      .video-name {
+        flex: 1;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .download-button-title {
+        flex-shrink: 0;
+
+        &:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+      }
+
+      .download-spinner {
+        width: 16px;
+        height: 16px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-top-color: white;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+
+      .download-progress {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        height: 3px;
+        background: linear-gradient(90deg, #4ade80, #22c55e);
+        transition: width 0.3s ease;
+        border-radius: 0 0 8px 8px;
+      }
     }
 
     /* pause and start container */
@@ -334,8 +530,18 @@ const handleToggleVideo = (state: any, player: any) => {
     }
   }
 
-  /* show the video title  */
   &:hover .overlay-container .video-title {
+    opacity: 1;
+  }
+
+  @media (max-width: 60.4rem) {
+    .overlay-container .video-title {
+      opacity: 1;
+    }
+  }
+
+  .overlay-container .video-title:has(.download-spinner),
+  .overlay-container .video-title:has(.download-progress) {
     opacity: 1;
   }
 
@@ -347,6 +553,12 @@ const handleToggleVideo = (state: any, player: any) => {
   /** show the controls on the bottom when the user hovers over the video */
   &:hover .overlay-container .controls-container {
     opacity: 1;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
 }
 
