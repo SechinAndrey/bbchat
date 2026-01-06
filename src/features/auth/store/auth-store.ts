@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import { ref, computed, watch } from "vue";
+import axios from "axios";
 import { authService } from "../services/auth-service";
 import { adaptUser } from "@src/api/adapters";
 import type { IUser } from "@src/shared/types/types";
@@ -41,10 +42,34 @@ export const useAuthStore = defineStore("auth", () => {
 
       return true;
     } catch (err) {
-      error.value =
-        err instanceof Error
-          ? err.message
-          : "An error occurred during authentication";
+      if (axios.isAxiosError(err) && err.response) {
+        const { status, data } = err.response;
+
+        if (status === 422 && data.errors) {
+          const firstErrorField = Object.keys(data.errors)[0];
+          const firstErrorMessage = data.errors[firstErrorField]?.[0];
+
+          if (firstErrorMessage?.includes("credentials are incorrect")) {
+            error.value = "Невірний email або пароль.";
+          } else if (firstErrorMessage?.includes("email")) {
+            error.value = "Некоректна електронна пошта.";
+          } else {
+            error.value = firstErrorMessage || "Помилка валідації даних.";
+          }
+        } else if (status === 401) {
+          error.value = "Невірний email або пароль.";
+        } else if (status === 429) {
+          error.value = "Забагато спроб входу. Спробуйте пізніше.";
+        } else if (status >= 500) {
+          error.value = "Помилка сервера. Спробуйте пізніше.";
+        } else {
+          error.value = data.message || "Не вдалося увійти.";
+        }
+      } else if (err instanceof Error) {
+        error.value = err.message;
+      } else {
+        error.value = "Сталася помилка під час входу.";
+      }
       return false;
     } finally {
       loading.value = false;

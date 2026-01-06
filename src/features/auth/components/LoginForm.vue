@@ -29,28 +29,20 @@ const handleLogin = async () => {
   isLoading.value = true;
   loginError.value = "";
 
-  try {
-    const success = await authStore.login({
-      email: email.value,
-      password: password.value,
-    });
+  const success = await authStore.login({
+    email: email.value,
+    password: password.value,
+  });
 
-    if (success) {
-      router.push("/chat/");
-    } else {
-      loginError.value =
-        authStore.error ||
-        "Не вдалося увійти. Будь ласка, перевірте свої облікові дані.";
-    }
-  } catch (error) {
-    if (error instanceof Error) {
-      loginError.value = error.message;
-    } else {
-      loginError.value = "Сталася помилка під час входу.";
-    }
-  } finally {
-    isLoading.value = false;
+  if (success) {
+    router.push("/chat/");
+  } else {
+    loginError.value =
+      authStore.error ||
+      "Не вдалося увійти. Будь ласка, перевірте свої облікові дані.";
   }
+
+  isLoading.value = false;
 };
 </script>
 
