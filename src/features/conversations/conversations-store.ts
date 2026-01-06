@@ -719,7 +719,7 @@ export const useConversationsStore = defineStore("conversations", () => {
     const actualUserId =
       messageUserId !== undefined ? messageUserId : message.user_id;
 
-    if (!isOutgoing) {
+    if (!isOutgoing && message.system_message !== 1) {
       const currentUser = authStore.currentUser;
       if (currentUser) {
         let shouldPlaySound = false;
@@ -762,7 +762,7 @@ export const useConversationsStore = defineStore("conversations", () => {
         }
         conversation.messages.push(message);
 
-        if (!isOutgoing) {
+        if (!isOutgoing && message.system_message !== 1) {
           const wasRead = (conversation.unread || 0) === 0;
           updateUnreadCount(conversation);
           if (wasRead) {
@@ -781,13 +781,13 @@ export const useConversationsStore = defineStore("conversations", () => {
       }
       conversation.messages.push(message);
 
-      if (!isOutgoing) {
+      if (!isOutgoing && message.system_message !== 1) {
         const wasRead = (conversation.unread || 0) === 0;
         updateUnreadCount(conversation);
         if (wasRead) {
           incrementUnreadChats(entityType);
         }
-      } else {
+      } else if (isOutgoing) {
         const prevUnread = conversation.unread || 0;
         conversation.unread = 0;
         if (prevUnread > 0) {
@@ -823,7 +823,7 @@ export const useConversationsStore = defineStore("conversations", () => {
         entityId,
         contactId,
       );
-      if (loadedConversation) {
+      if (loadedConversation && message.system_message !== 1) {
         updateUnreadCount(loadedConversation);
         incrementUnreadChats(entityType);
       }
