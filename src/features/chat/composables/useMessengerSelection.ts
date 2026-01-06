@@ -50,7 +50,7 @@ export function useMessenger() {
   const messengerOptions = computed<MessengerOption[]>(() => {
     const options: MessengerOption[] = [];
 
-    if (activeConversation.value?.chaport_id) {
+    if (activeContact.value?.chaport_id) {
       options.push({
         value: 3,
         label: "Chaport",
