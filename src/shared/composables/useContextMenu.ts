@@ -8,7 +8,7 @@ export interface ContextMenuPosition {
 export interface UseContextMenuOptions {
   edgeOffset?: number;
   menuWidth?: number;
-  minSpaceBelow?: number;
+  menuHeight?: number;
 }
 
 export interface UseContextMenuReturn<T = unknown> {
@@ -52,7 +52,7 @@ export interface UseContextMenuReturn<T = unknown> {
 export function useContextMenu<T = unknown>(
   options: UseContextMenuOptions = {},
 ): UseContextMenuReturn<T> {
-  const { edgeOffset = 10, menuWidth = 200, minSpaceBelow = 150 } = options;
+  const { edgeOffset = 10, menuWidth = 200, menuHeight = 300 } = options;
 
   const isOpen = ref(false);
   const position = ref<ContextMenuPosition>({ x: 0, y: 0 });
@@ -76,10 +76,8 @@ export function useContextMenu<T = unknown>(
       x = edgeOffset;
     }
 
-    const spaceBelow = windowHeight - clientY;
-
-    if (spaceBelow < minSpaceBelow) {
-      y = clientY - 10;
+    if (y + menuHeight > windowHeight - edgeOffset) {
+      y = windowHeight - menuHeight - edgeOffset;
     }
 
     if (y < edgeOffset) {

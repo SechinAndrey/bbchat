@@ -55,7 +55,9 @@ const {
   selectedItem: selectedMessage,
   open: openContextMenu,
   close: closeContextMenu,
-} = useContextMenu<ApiMessageItem>();
+} = useContextMenu<ApiMessageItem>({
+  menuHeight: 250,
+});
 
 const currentEntity = computed(() => route.params.entity as EntityType);
 const currentId = computed(() => Number(route.params.id));
