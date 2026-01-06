@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { IAttachment } from "@src/shared/types/types";
+import { truncateFileName } from "@src/shared/utils/media";
 
 import {
   DocumentIcon,
@@ -22,24 +23,24 @@ const props = defineProps<{
       class="w-8 h-8 mr-4 flex justify-center items-center rounded-full bg-gray-50 dark:bg-gray-500"
     >
       <PhotoIcon
-        class="h-5 w-5 text-gray-500 dark:text-white dark:text-opacity-70"
         v-if="props.attachment.type === 'image'"
+        class="h-5 w-5 text-gray-500 dark:text-white dark:text-opacity-70"
       />
       <DocumentIcon
-        class="h-5 w-5 text-gray-500 dark:text-white dark:text-opacity-70"
         v-else-if="props.attachment.type === 'file'"
+        class="h-5 w-5 text-gray-500 dark:text-white dark:text-opacity-70"
       />
       <VideoCameraIcon
-        class="h-5 w-5 text-gray-500 dark:text-white dark:text-opacity-70"
         v-else-if="props.attachment.type === 'video'"
+        class="h-5 w-5 text-gray-500 dark:text-white dark:text-opacity-70"
       />
     </div>
 
     <!--name, date and size-->
     <div class="grow">
       <div class="flex items-center justify-between mb-3">
-        <p class="">
-          {{ props.attachment.name }}
+        <p class="truncate" :title="props.attachment.name">
+          {{ truncateFileName(props.attachment.name) }}
         </p>
 
         <p class="">

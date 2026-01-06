@@ -8,6 +8,7 @@ import {
   isAudio,
   isTgsSticker,
   getFileName,
+  truncateFileName,
 } from "@src/shared/utils/media";
 
 const props = defineProps<{
@@ -65,15 +66,18 @@ const openCarousel = () => {
 
     <!-- Other Files -->
     <a v-else :href="props.media" target="_blank" download class="block">
-      <div class="flex gap-4">
+      <div class="flex gap-4 items-center">
         <div
-          class="min-w-8 max-w-8 max-h-8 min-h-8 flex justify-center rounded-full outline-none items-center bg-app-bg"
+          class="min-w-8 max-w-8 max-h-8 min-h-8 flex justify-center rounded-full outline-none items-center bg-app-bg flex-shrink-0"
         >
           <ArrowDownTrayIcon class="h-5 w-5 text-primary" />
         </div>
 
-        <div class="break-words text-app-text w-[calc(100%-40px)]">
-          {{ getFileName(props.media) }}
+        <div
+          class="text-app-text min-w-0 flex-1 truncate"
+          :title="getFileName(props.media)"
+        >
+          {{ truncateFileName(getFileName(props.media)) }}
         </div>
       </div>
     </a>

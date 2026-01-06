@@ -283,7 +283,7 @@ const systemMessageText = computed(() => {
         <!-- 1 - чапорт -->
         <div
           v-if="chaport"
-          class="text-[0.8125rem] leading-relaxed relative pr-6 break-all"
+          class="text-[0.8125rem] leading-relaxed relative pr-6 break-words"
         >
           <div
             class="whitespace-pre-line"
@@ -306,7 +306,7 @@ const systemMessageText = computed(() => {
         <!-- message_telegram_id - telegram | viber -->
         <div
           v-if="echat"
-          class="text-[0.8125rem] leading-relaxed relative pr-6 break-all"
+          class="text-[0.8125rem] leading-relaxed relative pr-6 break-words"
         >
           <!-- Reply Message -->
           <ReplyQuote

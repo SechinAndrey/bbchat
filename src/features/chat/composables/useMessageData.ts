@@ -1,6 +1,6 @@
 import { computed, type ComputedRef } from "vue";
 import type { ApiMessageItem, ApiReplyMessageItem } from "@src/api/types";
-import { getFileName } from "@src/shared/utils/media";
+import { getFileName, truncateFileName } from "@src/shared/utils/media";
 
 export function useMessageData(
   message:
@@ -47,7 +47,7 @@ export function useMessageData(
       if (echat.value?.message) {
         text = echat.value.message;
       } else if (media.value) {
-        text = getFileName(media.value);
+        text = truncateFileName(getFileName(media.value));
       } else {
         text = "Повідомлення";
       }

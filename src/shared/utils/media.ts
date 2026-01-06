@@ -48,6 +48,52 @@ export const getFileName = (url: string): string => {
 };
 
 /**
+ * Truncate long file names while preserving extension
+ * @param fileName - Full file name
+ * @param maxLength - Maximum length before truncation (default: 40)
+ * @returns long_file_name.txt => long_fi…me.txt
+ */
+export const truncateFileName = (
+  fileName: string,
+  maxLength: number = 30,
+): string => {
+  if (!fileName || fileName.length <= maxLength) return fileName;
+
+  const lastDotIndex = fileName.lastIndexOf(".");
+  const hasExtension = lastDotIndex > 0 && lastDotIndex < fileName.length - 1;
+
+  if (!hasExtension) {
+    const endChars = 3;
+    const startLength = maxLength - endChars - 1;
+    return (
+      fileName.substring(0, startLength) +
+      "…" +
+      fileName.substring(fileName.length - endChars)
+    );
+  }
+
+  const extension = fileName.substring(lastDotIndex);
+  const nameWithoutExt = fileName.substring(0, lastDotIndex);
+  const availableLength = maxLength - extension.length - 1;
+
+  if (availableLength <= 0) {
+    return fileName.substring(0, maxLength - 1) + "…";
+  }
+
+  const endChars = 3;
+  const startLength = availableLength - endChars;
+
+  if (startLength <= 0) {
+    return nameWithoutExt.substring(0, availableLength) + "…" + extension;
+  }
+
+  const startPart = nameWithoutExt.substring(0, startLength);
+  const endPart = nameWithoutExt.substring(nameWithoutExt.length - endChars);
+
+  return startPart + "…" + endPart + extension;
+};
+
+/**
  * Get file extension from URL
  */
 export const getFileExtension = (url: string): string => {

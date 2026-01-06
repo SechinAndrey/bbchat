@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { IAttachment } from "@src/shared/types/types";
+import { truncateFileName } from "@src/shared/utils/media";
 
 import {
   ArrowPathRoundedSquareIcon,
@@ -45,8 +46,8 @@ const emit = defineEmits<{
     <!--name, date and size-->
     <div class="grow min-w-0 mr-2">
       <div class="flex items-center justify-between mb-2">
-        <p class="truncate" tabindex="0">
-          {{ attachment.name }}
+        <p class="truncate" tabindex="0" :title="attachment.name">
+          {{ truncateFileName(attachment.name) }}
         </p>
       </div>
 

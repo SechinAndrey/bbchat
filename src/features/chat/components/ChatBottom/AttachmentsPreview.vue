@@ -8,6 +8,7 @@ import {
   DocumentIcon,
   MusicalNoteIcon,
 } from "@heroicons/vue/24/outline";
+import { truncateFileName } from "@src/shared/utils/media";
 
 defineProps<{
   files: QueuedFile[];
@@ -67,8 +68,8 @@ const getFileIcon = (type: string) => {
             />
           </div>
 
-          <div class="flex-1 min-w-0 truncate text-app-text">
-            {{ file.name }}
+          <div class="flex-1 min-w-0 truncate text-app-text" :title="file.name">
+            {{ truncateFileName(file.name) }}
           </div>
 
           <div class="text-xs text-app-text-secondary flex-shrink-0">

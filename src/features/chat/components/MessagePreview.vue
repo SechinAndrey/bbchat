@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { IAttachment, IMessage } from "@src/shared/types/types";
+import { truncateFileName } from "@src/shared/utils/media";
 
 import useStore from "@src/shared/store/store";
 import { getFullName, hasAttachments, shorten } from "@src/shared/utils/utils";
@@ -49,8 +50,11 @@ const store = useStore();
     <p
       v-else-if="hasAttachments(props.message)"
       class="text-black opacity-50 dark:text-white dark:opacity-70"
+      :title="(props.message?.attachments as IAttachment[])[0].name"
     >
-      {{ (props.message?.attachments as IAttachment[])[0].name }}
+      {{
+        truncateFileName((props.message?.attachments as IAttachment[])[0].name)
+      }}
     </p>
 
     <!--recording title-->
