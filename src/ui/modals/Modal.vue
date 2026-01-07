@@ -223,15 +223,16 @@ watch(
 </script>
 
 <template>
-  <div
-    role="dialog"
-    class="relative z-[99]"
-    :aria-hidden="!props.open"
-    aria-labelledby="modal-title"
-    aria-modal="true"
-  >
-    <!--modal with overlay-->
-    <Transition name="backdrop-fade">
+  <Teleport to="body">
+    <div
+      role="dialog"
+      class="relative z-[99]"
+      :aria-hidden="!props.open"
+      aria-labelledby="modal-title"
+      aria-modal="true"
+    >
+      <!--modal with overlay-->
+      <Transition name="backdrop-fade">
       <div
         v-show="isBackdropVisible"
         id="close-modal"
@@ -345,7 +346,8 @@ watch(
         </Transition>
       </div>
     </Transition>
-  </div>
+    </div>
+  </Teleport>
 </template>
 
 <style scoped>

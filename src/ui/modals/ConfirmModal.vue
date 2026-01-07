@@ -29,7 +29,9 @@ const handleCancel = () => {
 <template>
   <Modal :open="props.open" :close-modal="handleCancel">
     <template #content>
-      <div class="w-full max-w-md bg-app-bg rounded-lg p-6 shadow-xl">
+      <div
+        class="w-full max-w-md xs:w-full xs:max-w-none bg-app-bg xs:rounded-none md:rounded-lg p-4 xs:p-6 md:p-6 shadow-xl"
+      >
         <!-- Header with Icon -->
         <div class="flex items-center gap-3 mb-4">
           <div v-if="props.showIcon" class="flex-shrink-0">
