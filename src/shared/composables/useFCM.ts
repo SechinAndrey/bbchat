@@ -51,9 +51,14 @@ export function useFCM() {
     if (token.value) return token.value;
 
     try {
-      const permission = await Notification.requestPermission();
+      const currentPermission = Notification.permission;
 
-      if (permission !== "granted") {
+      if (currentPermission === "default") {
+        const permission = await Notification.requestPermission();
+        if (permission !== "granted") {
+          return null;
+        }
+      } else if (currentPermission === "denied") {
         return null;
       }
 
@@ -214,7 +219,18 @@ export function useFCM() {
     }
   };
 
-  ensureToken();
+  // Safari requires user gesture for notification permission
+  // Auto-request on first user interaction
+  if (Notification.permission === "default") {
+    const requestOnInteraction = () => {
+      ensureToken();
+      document.removeEventListener("click", requestOnInteraction);
+    };
+    document.addEventListener("click", requestOnInteraction, { once: true });
+  } else {
+    ensureToken();
+  }
+
   initMessageListener();
 
   logoutEvent.on(() => {
