@@ -72,7 +72,7 @@ onMounted(() => {
     </div>
 
     <!-- Content -->
-    <div class="p-5 flex-1 overflow-y-auto">
+    <div class="p-5 flex-1 overflow-y-auto scrollbar-thin--bg-app-bg">
       <TemplateMessagesForm
         class="mt-4"
         :editing-template="editingTemplate"

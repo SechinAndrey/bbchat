@@ -5,10 +5,9 @@ import { computed } from "vue";
 import { useAvatarInitials } from "@src/shared/composables/useAvatarInitials";
 
 import {
-  ArrowPathIcon,
-  InformationCircleIcon,
   ArrowLeftStartOnRectangleIcon,
   BookmarkIcon,
+  ArrowTopRightOnSquareIcon,
 } from "@heroicons/vue/24/outline";
 import Dropdown from "@src/ui/navigation/Dropdown/Dropdown.vue";
 import { RouterLink } from "vue-router";
@@ -139,6 +138,19 @@ const handleCloseOnClickOutside = (event: Event) => {
         />
         Шаблони повідомлень
       </RouterLink>
+
+      <a
+        href="https://drive.google.com/drive/u/1/folders/16YmpXeKsdviRL4t2OsG86gJZxLHy6uHM"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="flex items-center w-full px-4 py-3 text-sm hover:bg-app-bg-secondary focus:bg-app-bg-secondary focus:outline-none transition-all duration-200"
+        @click="props.handleCloseDropdown"
+      >
+        <ArrowTopRightOnSquareIcon
+          class="w-5 h-5 mr-3 opacity-70 hover:opacity-100 transition-opacity duration-200"
+        />
+        Довідка
+      </a>
 
       <button
         class="flex items-center w-full px-4 py-3 text-sm text-danger hover:bg-app-bg-secondary focus:bg-app-bg-secondary focus:outline-none transition-all duration-200"
