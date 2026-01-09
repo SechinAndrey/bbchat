@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.6.4 - 2026-01-09
+
+### Bug Fixes
+
+- Запрос разрешения на уведомления по клику для Safari(тепрь позволяет получить FCM токен для уведомлений)
+- Моб. Модальное окно. Видалити повідомлення? [WS-18700430-21347691](https://trp4438.worksection.com/project/257910/18700430/21347691/)
+- Контекстное меню. Внизу. [WS-18700430-21342234](https://trp4438.worksection.com/project/257910/18700430/21342234/)
+- Вход. Ошибка доступа. [WS-18700430-21304149](https://trp4438.worksection.com/project/257910/18700430/21304149/)
+- Mob. Файл длинное название. [WS-18700430-21257298](https://trp4438.worksection.com/project/257910/18700430/21257298/)
+- Вывод канала коммуникации Chaport только если он доступен WS-project/257910/18700430/21257487
+
+### Features
+
+- **(iframe)** Улучшен процесс авторизации по токену
+- Add link to user guide
+- Add new logo
+- Нотификация. Відвідувач залишив чат. [WS-18700430-21320130](https://trp4438.worksection.com/project/257910/18700430/21320130/)
+- Добавлена возможность скачивания видео из сообщений на устройство [WS-18700430-21294465](https://trp4438.worksection.com/project/257910/18700430/21294465/)
+
+### Project Maintenance
+
+- Release version 0.6.4
+
 ## 0.6.3 - 2025-12-25
 
 ### Bug Fixes
