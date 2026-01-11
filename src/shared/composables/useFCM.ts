@@ -51,6 +51,11 @@ export function useFCM() {
     if (token.value) return token.value;
 
     try {
+      if (!("Notification" in window)) {
+        console.warn("⚠️ [FCM] Notification API not supported on this device");
+        return null;
+      }
+
       const currentPermission = Notification.permission;
 
       if (currentPermission === "default") {
@@ -221,14 +226,17 @@ export function useFCM() {
 
   // Safari requires user gesture for notification permission
   // Auto-request on first user interaction
-  if (Notification.permission === "default") {
-    const requestOnInteraction = () => {
+  // Skip on iOS where Notification API is not supported
+  if ("Notification" in window) {
+    if (Notification.permission === "default") {
+      const requestOnInteraction = () => {
+        ensureToken();
+        document.removeEventListener("click", requestOnInteraction);
+      };
+      document.addEventListener("click", requestOnInteraction, { once: true });
+    } else {
       ensureToken();
-      document.removeEventListener("click", requestOnInteraction);
-    };
-    document.addEventListener("click", requestOnInteraction, { once: true });
-  } else {
-    ensureToken();
+    }
   }
 
   initMessageListener();
