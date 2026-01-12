@@ -22,6 +22,7 @@ export interface ConversationParams {
   search?: string;
   user_id?: number;
   communication_status_id?: number;
+  unread?: number; // 1 - only unread, 0 - all
 }
 
 export interface MessageParams {

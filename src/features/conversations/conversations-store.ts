@@ -25,6 +25,12 @@ import { usePusher } from "@src/shared/composables/usePusher";
 import contactsService from "@src/api/contacts-service";
 import { useAuthStore } from "@src/features/auth/store/auth-store";
 import { useGlobalDataStore } from "@src/shared/store/global-data-store";
+import {
+  shouldPlayNotificationSound,
+  shouldAddNewConversation,
+  getManagerIndicatorToShow,
+  shouldRemoveConversationOnUserChange,
+} from "./utils/filter-helpers";
 
 export interface TempMessage {
   clientMessageUid: string;
@@ -84,6 +90,8 @@ export const useConversationsStore = defineStore("conversations", () => {
     page: 1,
     search: "",
     user_id: undefined,
+    communication_status_id: undefined,
+    unread: undefined,
   });
 
   const messagesFilters = ref<MessageParams>({
@@ -237,7 +245,13 @@ export const useConversationsStore = defineStore("conversations", () => {
    * @example await resetFilters('leads')
    */
   const resetFilters = async (entity: EntityType) => {
-    filters.value = { page: 1, search: "", user_id: undefined };
+    filters.value = {
+      page: 1,
+      search: "",
+      user_id: undefined,
+      communication_status_id: undefined,
+      unread: undefined,
+    };
     return fetch(entity, filters.value);
   };
 
@@ -721,26 +735,11 @@ export const useConversationsStore = defineStore("conversations", () => {
 
     if (!isOutgoing && message.system_message !== 1) {
       const currentUser = authStore.currentUser;
-      if (currentUser) {
-        let shouldPlaySound = false;
-
-        if (currentUser.roleId !== 1) {
-          shouldPlaySound =
-            actualUserId === currentUser.id ||
-            actualUserId === "user-not-selected";
-        } else {
-          if (filters.value.user_id === undefined) {
-            shouldPlaySound = true;
-          } else {
-            shouldPlaySound =
-              actualUserId === filters.value.user_id ||
-              actualUserId === "user-not-selected";
-          }
-        }
-
-        if (shouldPlaySound) {
-          playNotificationSound(false);
-        }
+      if (
+        currentUser &&
+        shouldPlayNotificationSound(filters.value, currentUser, actualUserId)
+      ) {
+        playNotificationSound(false);
       }
     }
 
@@ -801,31 +800,24 @@ export const useConversationsStore = defineStore("conversations", () => {
     if (!isOutgoing) {
       const currentEntity = route.params.entity as EntityType;
 
-      if (currentEntity !== entityType) {
-        return;
-      }
-
       if (
-        authStore.currentUser?.roleId === 1 &&
-        filters.value.user_id !== undefined
+        shouldAddNewConversation(
+          filters.value,
+          authStore.currentUser,
+          currentEntity,
+          actualUserId,
+          entityType,
+        )
       ) {
-        if (actualUserId !== filters.value.user_id) {
-          return;
+        const loadedConversation = await loadMissingConversation(
+          entityType,
+          entityId,
+          contactId,
+        );
+        if (loadedConversation && message.system_message !== 1) {
+          updateUnreadCount(loadedConversation);
+          incrementUnreadChats(entityType);
         }
-      }
-
-      if (filters.value.search) {
-        return;
-      }
-
-      const loadedConversation = await loadMissingConversation(
-        entityType,
-        entityId,
-        contactId,
-      );
-      if (loadedConversation && message.system_message !== 1) {
-        updateUnreadCount(loadedConversation);
-        incrementUnreadChats(entityType);
       }
     }
   };
@@ -942,63 +934,22 @@ export const useConversationsStore = defineStore("conversations", () => {
     }
   };
 
-  const getEntityIndicatorToShow = (data: {
+  const getManagerIndicator = (data: {
     user_id: number | string;
     contragent_type: ContragentType | null;
-  }): EntityType | null => {
-    const currentUser = authStore.currentUser;
-    if (!currentUser) return null;
+  }): number | string | null => {
     if (!data.contragent_type) return null;
 
     const currentEntity = route.params.entity as EntityType | undefined;
     const messageEntity = CONTRAGENT_TO_ENTITY_MAP[data.contragent_type];
 
-    if (currentEntity === messageEntity) return null;
-
-    if (currentUser.roleId !== 1) {
-      if (data.user_id === currentUser.id) {
-        return messageEntity;
-      }
-      return null;
-    }
-
-    if (
-      filters.value.user_id === undefined ||
-      filters.value.user_id === data.user_id
-    ) {
-      return messageEntity;
-    }
-
-    return null;
-  };
-
-  const getManagerIndicatorToShow = (data: {
-    user_id: number | string;
-    contragent_type: ContragentType | null;
-  }): number | string | null => {
-    const currentUser = authStore.currentUser;
-    if (!currentUser) return null;
-    if (currentUser.roleId !== 1) return null;
-
-    const currentEntity = route.params.entity as EntityType | undefined;
-    const messageEntity = data.contragent_type
-      ? CONTRAGENT_TO_ENTITY_MAP[data.contragent_type]
-      : null;
-
-    if (
-      filters.value.user_id === undefined &&
-      currentEntity === messageEntity
-    ) {
-      return null;
-    }
-
-    if (filters.value.user_id !== undefined) {
-      if (data.user_id !== filters.value.user_id) {
-        return data.user_id;
-      }
-    }
-
-    return null;
+    return getManagerIndicatorToShow(
+      filters.value,
+      authStore.currentUser,
+      currentEntity,
+      data.user_id,
+      messageEntity,
+    );
   };
 
   const handleLeadChangeUser = async (data: {
@@ -1011,23 +962,14 @@ export const useConversationsStore = defineStore("conversations", () => {
 
       const entityType = CONTRAGENT_TO_ENTITY_MAP[data.contragent_type];
       const entityId = data.contragent_id;
-      const isAdmin = authStore.currentUser?.roleId === 1;
-      const currentUserId = authStore.currentUser?.id;
-      const currentUserFilter = filters.value.user_id;
 
-      let shouldRemove = false;
-
-      if (isAdmin) {
-        if (currentUserFilter === undefined) {
-          shouldRemove = false;
-        } else {
-          shouldRemove = data.current_user !== currentUserFilter;
-        }
-      } else {
-        shouldRemove = data.current_user !== currentUserId;
-      }
-
-      if (!shouldRemove) {
+      if (
+        !shouldRemoveConversationOnUserChange(
+          filters.value,
+          authStore.currentUser,
+          data.current_user,
+        )
+      ) {
         return;
       }
 
@@ -1085,7 +1027,7 @@ export const useConversationsStore = defineStore("conversations", () => {
 
       await handleNewMessage(data.id, data.user_id);
 
-      const managerIndicator = getManagerIndicatorToShow(data);
+      const managerIndicator = getManagerIndicator(data);
       if (managerIndicator) {
         setManagerIndicator(managerIndicator, true);
       }

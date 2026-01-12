@@ -60,12 +60,6 @@ const composeOpen = ref(false);
 const newLeadModalOpen = ref(false);
 const openArchive = ref(false);
 
-const TAB = {
-  all: "all",
-  open: "open",
-};
-const activeTab = ref(TAB.all);
-
 const selectedUserUI = computed({
   get: () => conversationsStore.filters.user_id ?? "all",
   set: (val) => {
@@ -118,7 +112,7 @@ const debouncedFetch = useDebounceFn(async () => {
     page: 1,
     search: conversationsStore.filters.search || undefined,
     user_id: conversationsStore.filters.user_id,
-    communication_status_id: activeTab.value === TAB.open ? 1 : undefined,
+    communication_status_id: conversationsStore.filters.communication_status_id,
   };
   await fetchConversations(entity.value, params);
 }, 500);
@@ -126,7 +120,11 @@ const debouncedFetch = useDebounceFn(async () => {
 const switching = ref(false);
 
 watch(
-  [selectedUserUI, entity, activeTab],
+  [
+    selectedUserUI,
+    entity,
+    () => conversationsStore.filters.communication_status_id,
+  ],
   async () => {
     switching.value = true;
     await debouncedFetch();
@@ -157,7 +155,8 @@ watch(
         page: 1,
         search: conversationsStore.filters.search || undefined,
         user_id: conversationsStore.filters.user_id,
-        communication_status_id: activeTab.value === TAB.open ? 1 : undefined,
+        communication_status_id:
+          conversationsStore.filters.communication_status_id,
       };
 
       await fetchConversations(entity.value, params);
@@ -204,15 +203,18 @@ const SLIDE = {
 type SlideType = (typeof SLIDE)[keyof typeof SLIDE];
 const animation = ref<SlideType>(SLIDE.right);
 
-watch(activeTab, (newTab, oldTab) => {
-  const directionMap: Record<string, "LEFT" | "RIGHT"> = {
-    "all->open": "LEFT",
-    "open->all": "RIGHT",
-  };
-  const key = `${oldTab}->${newTab}`;
-  const direction = directionMap[key] ?? "LEFT";
-  animation.value = direction === "LEFT" ? SLIDE.left : SLIDE.right;
-});
+watch(
+  () => conversationsStore.filters.communication_status_id,
+  (newStatus, oldStatus) => {
+    const directionMap: Record<string, "LEFT" | "RIGHT"> = {
+      "undefined->1": "LEFT",
+      "1->undefined": "RIGHT",
+    };
+    const key = `${oldStatus}->${newStatus}`;
+    const direction = directionMap[key] ?? "LEFT";
+    animation.value = direction === "LEFT" ? SLIDE.left : SLIDE.right;
+  },
+);
 
 // Initial data fetch
 globalDataStore.fetchGlobalData();
@@ -305,14 +307,16 @@ const handleNewLeadSuccess = async (newLead: ApiCommunicationLead) => {
 
     <Tabs v-if="!store.isWidget" class="mx-5 mb-4">
       <Tab
-        :active="activeTab === TAB.all"
+        :active="
+          conversationsStore.filters.communication_status_id === undefined
+        "
         name="Всі"
-        @click="activeTab = TAB.all"
+        @click="conversationsStore.filters.communication_status_id = undefined"
       />
       <Tab
-        :active="activeTab === TAB.open"
+        :active="conversationsStore.filters.communication_status_id === 1"
         name="Відкриті"
-        @click="activeTab = TAB.open"
+        @click="conversationsStore.filters.communication_status_id = 1"
       />
     </Tabs>
 
@@ -320,7 +324,7 @@ const handleNewLeadSuccess = async (newLead: ApiCommunicationLead) => {
     <SlideTransition :animation="animation">
       <div
         ref="scrollContainer"
-        :key="activeTab"
+        :key="conversationsStore.filters.communication_status_id"
         role="list"
         aria-label="conversations"
         class="w-full scroll-smooth scrollbar-thin pr-[0.125rem] max-h-[calc(100vh-13.75rem)] md:max-h-[calc(100vh-9.688rem)] overflow-y-auto"
