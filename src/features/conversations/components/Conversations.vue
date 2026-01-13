@@ -20,6 +20,7 @@ import NewLeadModal from "@src/features/conversations/modals/NewLeadModal.vue";
 import Circle2Lines from "@src/ui/states/loading-states/Circle2Lines.vue";
 import Button from "@src/ui/inputs/Button.vue";
 import SearchInput from "@src/ui/inputs/SearchInput.vue";
+import SwitchInput from "@src/ui/inputs/SwitchInput.vue";
 import FadeTransition from "@src/ui/transitions/FadeTransition.vue";
 // import ArchivedButton from "@src/features/conversations/components/ArchivedButton.vue";
 import ConversationsList from "@src/features/conversations/components/ConversationsList.vue";
@@ -74,6 +75,13 @@ const keywordUI = computed({
   },
 });
 
+const showOnlyUnread = computed({
+  get: () => conversationsStore.filters.unread === 1,
+  set: (val) => {
+    conversationsStore.filters.unread = val ? 1 : undefined;
+  },
+});
+
 const fetchConversations = (
   entity: EntityType,
   params?: ConversationParams,
@@ -113,6 +121,7 @@ const debouncedFetch = useDebounceFn(async () => {
     search: conversationsStore.filters.search || undefined,
     user_id: conversationsStore.filters.user_id,
     communication_status_id: conversationsStore.filters.communication_status_id,
+    unread: conversationsStore.filters.unread,
   };
   await fetchConversations(entity.value, params);
 }, 500);
@@ -124,6 +133,7 @@ watch(
     selectedUserUI,
     entity,
     () => conversationsStore.filters.communication_status_id,
+    () => conversationsStore.filters.unread,
   ],
   async () => {
     switching.value = true;
@@ -301,8 +311,18 @@ const handleNewLeadSuccess = async (newLead: ApiCommunicationLead) => {
     </SidebarHeader>
 
     <!--search bar-->
-    <div class="px-5 pb-2">
-      <SearchInput v-model="keywordUI" />
+    <div class="px-5 pb-2 space-y-2">
+      <SearchInput v-model="keywordUI" class="!pb-3" />
+
+      <div class="flex items-center gap-4 pb-2">
+        <SwitchInput v-model="showOnlyUnread" size="sm" />
+        <label
+          class="text-sm text-app-text-secondary cursor-pointer select-none"
+          @click="showOnlyUnread = !showOnlyUnread"
+        >
+          Чати без відповіді
+        </label>
+      </div>
     </div>
 
     <Tabs v-if="!store.isWidget" class="mx-5 mb-4">

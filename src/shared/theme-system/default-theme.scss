@@ -117,6 +117,12 @@ html.theme-default {
   --color-checkbox-bg: transparent;
   --color-checkbox-border: #cdd4d9;
 
+  // Switch
+  --color-switch-track-off: #e5e5ea;
+  --color-switch-track-on: var(--color-primary);
+  --color-switch-thumb-off: #ffffff;
+  --color-switch-thumb-on: #ffffff;
+
   // Skeletons
   --color-skeleton: #c2c5cd;
 
@@ -166,6 +172,13 @@ html.theme-default[data-theme="dark"] {
   --color-input-placeholder: #cbd5e1;
 
   --color-btn-disabled-bg: #2f3644;
+
+  // Switch
+  --color-switch-track-off: #1f2935;
+  --color-switch-track-on: var(--color-primary);
+  --color-switch-thumb-off: #617089;
+  --color-switch-thumb-on: #ffffff;
+
   // Skeletons
   --color-skeleton: #506587;
 
