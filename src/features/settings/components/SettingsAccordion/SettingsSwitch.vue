@@ -29,7 +29,7 @@ const props = defineProps<{
       <SwitchInput
         id="last-seen"
         :value="props.value"
-        @switch-clicked="(value) => props.handleToggleSwitch(value)"
+        @switch-clicked="(value: boolean) => props.handleToggleSwitch(value)"
       />
     </div>
     <!--description or help text-->
