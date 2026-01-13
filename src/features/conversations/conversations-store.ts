@@ -729,6 +729,17 @@ export const useConversationsStore = defineStore("conversations", () => {
       return;
     }
 
+    // Widget mode check - ignore messages from other entities
+    if (store.isWidget && store.widget) {
+      const widgetEntity = store.widget.entity;
+      const widgetEntityId = store.widget.entityId;
+
+      // Check if message belongs to widget entity
+      if (entityType !== widgetEntity || entityId !== widgetEntityId) {
+        return;
+      }
+    }
+
     const isOutgoing = isOutgoingMessage(message);
     const actualUserId =
       messageUserId !== undefined ? messageUserId : message.user_id;
