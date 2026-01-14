@@ -15,12 +15,13 @@ export default defineConfig(({ mode }) => {
       vue(),
       alias(),
       VitePWA({
-        registerType: "autoUpdate",
+        registerType: "prompt",
         // devOptions: {
         //   enabled: true,
         // },
         workbox: {
           globIgnores: ["**/firebase-messaging-sw.js"],
+          cleanupOutdatedCaches: true,
           runtimeCaching: [
             // todo: investigate caching strategies
           ],

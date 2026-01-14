@@ -11,6 +11,8 @@ import { useFCM } from "@src/shared/composables/useFCM";
 import { useAndroidPush } from "@src/shared/composables/useAndroidPush";
 import { Capacitor } from "@capacitor/core";
 import { useEventBus } from "@vueuse/core";
+import { usePWAUpdate } from "@src/shared/composables/usePWAUpdate";
+import PWAUpdatePrompt from "@src/shared/components/PWAUpdatePrompt.vue";
 
 const loginEvent = useEventBus("auth:login");
 
@@ -43,6 +45,8 @@ const authStore = useAuthStore();
 
 setupErrorInterceptor();
 
+const { needRefresh, updateApp, dismissUpdate, isPWA } = usePWAUpdate();
+
 const appInitializing = ref(true);
 const initError = ref<string | null>(null);
 
@@ -71,7 +75,7 @@ onMounted(async () => {
     if (authStore.isAuthenticated) {
       const success = await store.initializeData();
       if (!success) {
-        initError.value = "Не удалось загрузить данные";
+        initError.value = "Не вдалося завантажити дані додатку";
       }
       if (!store.isWidget) {
         const platform = Capacitor.getPlatform();
@@ -84,7 +88,7 @@ onMounted(async () => {
     }
   } catch (error) {
     console.error("Error initializing app:", error);
-    initError.value = "Ошибка инициализации приложения";
+    initError.value = "Помилка ініціалізації додатку";
   } finally {
     appInitializing.value = false;
   }
@@ -137,7 +141,7 @@ onUnmounted(() => {
               class="w-12 h-12 rounded-full border-4 border-primary border-t-transparent animate-spin"
             ></div>
           </div>
-          <p class="text-gray-600 dark:text-gray-400">Загрузка приложения...</p>
+          <p class="text-gray-600 dark:text-gray-400">Завантаження...</p>
         </div>
       </div>
 
@@ -167,7 +171,7 @@ onUnmounted(() => {
             class="mt-4 px-4 py-2 bg-primary text-white rounded hover:bg-primary-hover transition"
             @click="handleReload"
           >
-            Попробовать снова
+            Спробувати ще раз
           </button>
         </div>
       </div>
@@ -177,6 +181,13 @@ onUnmounted(() => {
           <component :is="Component" />
         </FadeTransition>
       </router-view>
+
+      <PWAUpdatePrompt
+        v-if="isPWA"
+        :show="needRefresh"
+        @update="updateApp"
+        @dismiss="dismissUpdate"
+      />
     </div>
   </ThemeProvider>
 </template>
