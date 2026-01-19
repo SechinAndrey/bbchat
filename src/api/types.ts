@@ -791,7 +791,7 @@ export interface ApiSendMessageSuccess {
 }
 
 export interface ApiSendMessageError {
-  status: "Error";
+  status: "Error" | "ERROR";
   description: string;
 }
 
@@ -802,7 +802,10 @@ export type ApiSendMessageResponse =
 export function isApiSendMessageError(
   response: ApiSendMessageResponse,
 ): response is ApiSendMessageError {
-  return "status" in response && response.status === "Error";
+  return (
+    "status" in response &&
+    (response.status === "Error" || response.status === "ERROR")
+  );
 }
 
 export interface CreateLeadRequest {

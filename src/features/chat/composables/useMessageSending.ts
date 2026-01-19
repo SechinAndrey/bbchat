@@ -149,12 +149,10 @@ export function useMessageSending() {
       });
 
       if (isApiSendMessageError(response)) {
-        toastError("Щось пішло не так. Зверніться до технічного відділу.");
-        store.updateTempMessageStatus(
-          clientMessageUid,
-          "error",
-          response.description,
-        );
+        const errorMessage =
+          response.description || "Помилка відправки повідомлення";
+        toastError(errorMessage);
+        store.updateTempMessageStatus(clientMessageUid, "error", errorMessage);
         return;
       }
 
