@@ -279,7 +279,7 @@ const handleTemplateSelect = (template: MessageTemplate) => {
 </script>
 
 <template>
-  <div class="w-full relative">
+  <div class="w-full relative chat-bottom">
     <SlideTransition animation="slide-down">
       <AttachmentsPreview
         v-if="attachedFiles.length > 0 && !editingMessage"
@@ -318,7 +318,7 @@ const handleTemplateSelect = (template: MessageTemplate) => {
         :options="messengerOptions"
         display-mode="icon-only"
         size="sm"
-        class="mr-5 -mb-[0.125rem]"
+        class="mr-5 -mb-[0.125rem] chat-select"
         selected-icon-class="w-8 h-8 rounded-full"
         option-icon-class="w-5 h-5 rounded-full"
       >
@@ -459,5 +459,20 @@ input[placeholder="Search emoji"] {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+@media (max-width: 767px) {
+  .chat-bottom .icon-chevron-down {
+    display: none !important;
+  }
+
+  .chat-bottom .chat-select {
+    margin-right: 8px;
+  }
+
+  .chat-bottom .chat-select button {
+    padding-right: 2px;
+    padding-left: 6px;
+  }
 }
 </style>

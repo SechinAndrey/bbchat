@@ -279,7 +279,7 @@ const handleOptionClick = (option: Option) => {
         >
       </span>
       <ChevronDownIcon
-        class="flex-shrink-0 text-app-text-secondary transition-transform duration-200"
+        class="flex-shrink-0 text-app-text-secondary transition-transform duration-200 icon-chevron-down"
         :class="[{ 'rotate-180': isOpen }, sizeClasses.chevron]"
       />
     </Button>
