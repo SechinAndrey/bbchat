@@ -37,6 +37,7 @@ import { DropdownItem } from "@src/ui/navigation/DropdownV3";
 import { useToast } from "@src/shared/composables/useToast";
 import { useMessagesTemplatesStore } from "@src/features/chat/message-templates";
 import ConfirmModal from "@src/ui/modals/ConfirmModal.vue";
+import { copyToClipboard } from "@src/shared/utils";
 
 const conversationsStore = useConversationsStore();
 const messagesTemplatesStore = useMessagesTemplatesStore();
@@ -273,7 +274,7 @@ const handleCopyMessage = async () => {
   }
 
   try {
-    await navigator.clipboard.writeText(text);
+    await copyToClipboard(text);
   } catch (error) {
     console.error("Failed to copy text:", error);
     toastError("Помилка копіювання");

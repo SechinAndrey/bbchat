@@ -25,6 +25,7 @@ import {
   type UnfollowParams,
 } from "@src/features/selections/selections-service";
 import type { EntityType } from "@src/shared/types/common";
+import { copyToClipboard } from "@src/shared/utils";
 
 const props = defineProps<{
   open: boolean;
@@ -145,7 +146,7 @@ const getLink = async () => {
     );
 
     if (response?.link) {
-      await navigator.clipboard.writeText(response.link);
+      await copyToClipboard(response.link);
       toastSuccess("Посилання скопійовано в буфер обміну");
     }
   } catch (err) {

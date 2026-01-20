@@ -28,6 +28,7 @@ import LeadActionModal from "./LeadActionModal.vue";
 import { useMessenger } from "@src/features/chat/composables/useMessengerSelection";
 import leadActionsService from "@src/shared/services/lead-actions-service";
 import contactsService from "@src/api/contacts-service";
+import { copyToClipboard } from "@src/shared/utils";
 
 const entity = inject<Ref<EntityType>>("entity");
 const id = inject<Ref<number>>("id");
@@ -261,27 +262,7 @@ const openActionModal = (
 const copyLink = async () => {
   try {
     const url = window.location.href;
-
-    if (navigator.clipboard && window.isSecureContext) {
-      await navigator.clipboard.writeText(url);
-    } else {
-      const textArea = document.createElement("textarea");
-      textArea.value = url;
-      textArea.style.position = "fixed";
-      textArea.style.left = "-999999px";
-      textArea.style.top = "-999999px";
-      document.body.appendChild(textArea);
-      textArea.focus();
-      textArea.select();
-
-      const successful = document.execCommand("copy");
-      document.body.removeChild(textArea);
-
-      if (!successful) {
-        throw new Error("Copy command failed");
-      }
-    }
-
+    await copyToClipboard(url);
     toastSuccess("Посилання скопійовано");
     closePopperMenu();
   } catch (error) {
