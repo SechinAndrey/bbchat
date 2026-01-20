@@ -261,7 +261,27 @@ const openActionModal = (
 const copyLink = async () => {
   try {
     const url = window.location.href;
-    await navigator.clipboard.writeText(url);
+
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(url);
+    } else {
+      const textArea = document.createElement("textarea");
+      textArea.value = url;
+      textArea.style.position = "fixed";
+      textArea.style.left = "-999999px";
+      textArea.style.top = "-999999px";
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+
+      const successful = document.execCommand("copy");
+      document.body.removeChild(textArea);
+
+      if (!successful) {
+        throw new Error("Copy command failed");
+      }
+    }
+
     toastSuccess("Посилання скопійовано");
     closePopperMenu();
   } catch (error) {
