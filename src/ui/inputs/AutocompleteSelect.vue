@@ -197,9 +197,14 @@ const updateDropdownPosition = () => {
 
   const selectRect = selectElement.value.getBoundingClientRect();
   const menuHeight = dropdownMenu.value?.offsetHeight || 240;
-  const spaceBelow = window.innerHeight - selectRect.bottom;
 
-  openUpwards.value = spaceBelow < menuHeight && selectRect.top > menuHeight;
+  const viewportHeight = window.visualViewport?.height || window.innerHeight;
+  const viewportOffsetTop = window.visualViewport?.offsetTop || 0;
+
+  const spaceBelow = viewportHeight + viewportOffsetTop - selectRect.bottom;
+  const spaceAbove = selectRect.top - viewportOffsetTop;
+
+  openUpwards.value = spaceBelow < menuHeight && spaceAbove > menuHeight;
 
   const calculatedStyle = {
     top: openUpwards.value
@@ -405,12 +410,34 @@ onMounted(() => {
   document.addEventListener("click", closeDropdown, true);
   window.addEventListener("scroll", debouncedUpdateDropdownPosition, true);
   window.addEventListener("resize", debouncedUpdateDropdownPosition);
+
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener(
+      "resize",
+      debouncedUpdateDropdownPosition,
+    );
+    window.visualViewport.addEventListener(
+      "scroll",
+      debouncedUpdateDropdownPosition,
+    );
+  }
 });
 
 onUnmounted(() => {
   document.removeEventListener("click", closeDropdown, true);
   window.removeEventListener("scroll", debouncedUpdateDropdownPosition, true);
   window.removeEventListener("resize", debouncedUpdateDropdownPosition);
+
+  if (window.visualViewport) {
+    window.visualViewport.removeEventListener(
+      "resize",
+      debouncedUpdateDropdownPosition,
+    );
+    window.visualViewport.removeEventListener(
+      "scroll",
+      debouncedUpdateDropdownPosition,
+    );
+  }
 });
 
 watch(isOpen, (value) => {
