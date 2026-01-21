@@ -435,7 +435,7 @@ watch(modelValue, () => {
 <template>
   <div class="flex flex-col pb-4 relative">
     <!-- Label -->
-    <label v-if="label" class="mb-3 text-left text-sm">
+    <label v-if="label" class="mb-3 text-left text-sm text-app-text">
       {{ label }}
     </label>
 

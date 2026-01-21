@@ -236,13 +236,11 @@ const close = () => {
       >
         <div class="mb-4 xs:mb-6">
           <div class="flex items-center gap-3 mb-2">
-            <h2
-              class="text-lg xs:text-xl font-semibold text-app-text dark:text-white"
-            >
+            <h2 class="text-lg xs:text-xl font-semibold text-app-text">
               {{ actionConfig.title }}
             </h2>
           </div>
-          <p class="text-sm mt-5">
+          <p class="text-sm mt-5 text-app-text-secondary">
             {{ actionConfig.subtitle }}
           </p>
         </div>
