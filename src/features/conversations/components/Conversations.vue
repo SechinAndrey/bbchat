@@ -2,7 +2,7 @@
 import type { ConversationParams } from "../conversations-service";
 import type { ApiCommunicationLead } from "@src/api/types";
 
-import { ref, watch, computed } from "vue";
+import { ref, watch, computed, nextTick, watchEffect } from "vue";
 import { useInfiniteScroll, useDebounceFn } from "@vueuse/core";
 
 import { useGlobalDataStore } from "@src/shared/store/global-data-store";
@@ -192,6 +192,33 @@ const scrollContainer = ref<HTMLElement | null>(null);
 const loadMore = () => {
   loadMoreConversations(entity.value);
 };
+
+const scrollToActiveConversation = async () => {
+  await nextTick();
+  const contactId = route.params.contactId;
+  if (!contactId || !scrollContainer.value) return;
+
+  setTimeout(() => {
+    const activeConversation = scrollContainer.value?.querySelector(
+      `[data-contact-id="${contactId}"]`,
+    );
+    if (activeConversation) {
+      activeConversation.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+      });
+    }
+  }, 150);
+};
+
+watchEffect(() => {
+  const contactId = route.params.contactId;
+  const conversations = conversationsList.value;
+
+  if (contactId && conversations.length > 0 && scrollContainer.value) {
+    scrollToActiveConversation();
+  }
+});
 
 useInfiniteScroll(
   scrollContainer,

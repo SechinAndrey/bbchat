@@ -279,7 +279,7 @@ const showDoubleCheck = computed(() => {
 </script>
 
 <template>
-  <div class="select-none">
+  <div class="select-none" :data-contact-id="contact?.id">
     <!-- @contextmenu.prevent="handleShowContextMenu" -->
     <button
       :aria-label="'Комунікація з ' + getName(props.conversation)"
