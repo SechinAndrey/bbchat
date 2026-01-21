@@ -18,6 +18,8 @@ export interface PusherEventMap {
       contragent_type: ContragentType | null;
       /** target user ID */
       user_id: number;
+      /** system message flag (Pusher sends boolean) */
+      system_message: boolean;
     };
     "message-read-by-contact": {
       /** message ID (can be array from backend) */

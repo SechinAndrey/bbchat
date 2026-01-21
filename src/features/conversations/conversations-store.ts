@@ -704,6 +704,10 @@ export const useConversationsStore = defineStore("conversations", () => {
     unreadByManager.value = {};
   };
 
+  const isSystemMessage = (message: ApiMessageItem): boolean => {
+    return message.system_message === 1 || message.system_message === true;
+  };
+
   const addMessageToConversation = async (
     message: ApiMessageItem,
     messageUserId?: number | string,
@@ -744,7 +748,7 @@ export const useConversationsStore = defineStore("conversations", () => {
     const actualUserId =
       messageUserId !== undefined ? messageUserId : message.user_id;
 
-    if (!isOutgoing && message.system_message !== 1) {
+    if (!isOutgoing && !isSystemMessage(message)) {
       const currentUser = authStore.currentUser;
       if (
         currentUser &&
@@ -772,7 +776,7 @@ export const useConversationsStore = defineStore("conversations", () => {
         }
         conversation.messages.push(message);
 
-        if (!isOutgoing && message.system_message !== 1) {
+        if (!isOutgoing && !isSystemMessage(message)) {
           const wasRead = (conversation.unread || 0) === 0;
           updateUnreadCount(conversation);
           if (wasRead) {
@@ -791,7 +795,7 @@ export const useConversationsStore = defineStore("conversations", () => {
       }
       conversation.messages.push(message);
 
-      if (!isOutgoing && message.system_message !== 1) {
+      if (!isOutgoing && !isSystemMessage(message)) {
         const wasRead = (conversation.unread || 0) === 0;
         updateUnreadCount(conversation);
         if (wasRead) {
@@ -825,7 +829,7 @@ export const useConversationsStore = defineStore("conversations", () => {
           entityId,
           contactId,
         );
-        if (loadedConversation && message.system_message !== 1) {
+        if (loadedConversation && !isSystemMessage(message)) {
           updateUnreadCount(loadedConversation);
           incrementUnreadChats(entityType);
         }

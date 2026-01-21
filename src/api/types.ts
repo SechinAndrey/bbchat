@@ -222,7 +222,7 @@ export interface ApiChaportMessage {
   created_at: string;
   client_message_uid?: string;
   file: string;
-  system_message: number; // 0 - no, 1 - yes
+  system_message: number | boolean; // 0/1 from API, true/false from Pusher
 }
 
 export interface ApiEChatMessage {
@@ -317,7 +317,7 @@ export interface ApiMessageItem {
   viewed: number; // 0 - not viewed, 1 - viewed by user US (current user)
   viewed_by_contact: number; // 0 - not viewed, 1 - viewed by contact(lead/client/supplier)
   liked: number; // 0 - not liked, 1 - liked
-  system_message: number; // 0 - no, 1 - yes
+  system_message: number | boolean; // 0/1 from API, true/false from Pusher
   deleted_at: string | null;
 }
 
