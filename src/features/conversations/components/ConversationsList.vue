@@ -10,7 +10,7 @@ const props = defineProps<{
 <template>
   <Conversation
     v-for="conversation in props.filteredConversations"
-    :key="conversation.id"
+    :key="`${conversation.id}-${conversation.contact.id}`"
     :conversation="conversation"
     role="listitem"
   />
