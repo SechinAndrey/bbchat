@@ -243,7 +243,7 @@ const systemMessageText = computed(() => {
 
     <!-- Message body -->
     <div
-      class="flex flex-col gap-1"
+      class="flex flex-col gap-1 flex-1 relative min-w-1"
       :class="{
         'w-full': call || hasAudio,
         'items-start': !isSelf,
@@ -252,7 +252,7 @@ const systemMessageText = computed(() => {
     >
       <!-- Message content -->
       <div
-        class="relative bg-app-bg-secondary rounded-2xl rounded-tl-sm min-h-[2.313rem] min-w-10 px-4 py-3 pb-6 transition-all duration-300"
+        class="relative bg-app-bg-secondary rounded-2xl rounded-tl-sm w-full min-h-[2.313rem] min-w-10 px-4 py-3 pb-6 transition-all duration-300"
         :class="{
           'opacity-60': isDeleted,
           'max-w-md': !call && !hasAudio,
