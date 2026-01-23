@@ -2,6 +2,42 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.7.0 - 2026-01-23
+
+### Bug Fixes
+
+- **(theme)** Цвет текста в LeadActionModal
+- MessageV2 width for small messages
+- MesageV2 width with replies
+- Чапорт. Чати без ответа. [WS-18700430-21413373](https://trp4438.worksection.com/project/257910/18700430/21413373/)
+- Mob. Передать лида. Список. [WS-18700430-21420417](https://trp4438.worksection.com/project/257910/18700430/21420417/)
+- Key для элемента списка чата в списке чатов
+- Исправлено копирование ссылки на чат в Iframe
+- Улучшен ChatBottom.vue для мобильного
+- Исправлена обработка списка чатов для iframe
+- Notification check for IOS
+
+### Code Refactoring
+
+- CopyToClipboard вынесена helper
+- Filtering logic and extract filter helpers
+
+### Features
+
+- Хантер может передать лид хантеру
+- Сохранение сообщение. [WS-18700430-21062556](https://trp4438.worksection.com/project/257910/18700430/21062556/)
+- Добавить имя менеджера для Админа [WS-18700430-21403575](https://trp4438.worksection.com/project/257910/18700430/21403575/)
+- Копировать часть сообщение. [WS-18700430-21471768](https://trp4438.worksection.com/project/257910/18700430/21471768/)
+- Скролл к выбрану чату при его выборе [WS-18700430-21119823](https://trp4438.worksection.com/project/257910/18700430/21119823/)
+- Вывод сообщений об шибке при отправке сообщени(нет телеграм аккаунта)
+- Настрока обновления PWA
+- Добавлен фильтр для вывода чатов без ответа
+
+### Project Maintenance
+
+- Fix build
+- Release version 0.7.0
+
 ## 0.6.4 - 2026-01-09
 
 ### Bug Fixes
