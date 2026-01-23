@@ -82,6 +82,8 @@ export interface IConversation {
   unread?: number;
   draftMessage: string;
   communicationStatusId: number;
+  userName?: string;
+  userId?: string | number;
 }
 
 export interface IContactGroup {

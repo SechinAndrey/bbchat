@@ -116,5 +116,7 @@ export function adaptApiCommunicationToIConversation(
     draftMessage: "",
     communicationStatusId: entity.communication_status_id || 0,
     unread: entity.unread || 0,
+    userName: entity.user_name,
+    userId: entity.user_id,
   };
 }

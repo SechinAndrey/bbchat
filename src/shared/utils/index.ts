@@ -2,3 +2,4 @@
 export * from "./utils";
 export * from "./media";
 export * from "./clipboard";
+export * from "./userColors";

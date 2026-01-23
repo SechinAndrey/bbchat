@@ -9,12 +9,15 @@ import { computed, ref } from "vue";
 import { convertViberEmoticons } from "@src/shared/utils/viberEmoticons";
 
 import useStore from "@src/shared/store/store";
+import { useAuthStore } from "@src/features/auth/store/auth-store";
+import useTheme from "@src/shared/theme-system/useTheme";
 import {
   getConversationIndex,
   getName,
   shorten,
   formatConversationDate,
-} from "@src/shared/utils/utils";
+  getUserColor,
+} from "@src/shared/utils";
 import router from "@src/router";
 import route from "@src/router";
 import {
@@ -43,6 +46,8 @@ const props = defineProps<{
 }>();
 
 const store = useStore();
+const authStore = useAuthStore();
+const { isDarkMode } = useTheme();
 
 const showContextMenu = ref(false);
 
@@ -276,6 +281,11 @@ const statusColor = computed(() => {
 const showDoubleCheck = computed(() => {
   return isSelfMessage.value;
 });
+
+const userNameColor = computed(() => {
+  if (!props.conversation?.userId) return "text-gray-400";
+  return getUserColor(props.conversation.userId, isDarkMode.value);
+});
 </script>
 
 <template>
@@ -305,7 +315,7 @@ const showDoubleCheck = computed(() => {
       </div>
 
       <div class="w-full flex flex-col min-w-0">
-        <div class="w-full flex items-center gap-2 mb-2 min-w-0">
+        <div class="w-full flex items-start gap-2 mb-2 min-w-0">
           <!--conversation name-->
           <div
             :title="getName(props.conversation)"
@@ -313,9 +323,31 @@ const showDoubleCheck = computed(() => {
           >
             {{ getName(props.conversation) }}
           </div>
-          <!--conversation city-->
+          <!--user name and city (admin only) in two rows-->
           <div
-            v-if="city"
+            v-if="
+              authStore.currentUser?.roleId === 1 &&
+              (props.conversation.userName || city)
+            "
+            class="flex flex-col items-end gap-0.5 flex-shrink-0"
+          >
+            <div
+              v-if="props.conversation.userName"
+              :class="userNameColor"
+              class="text-[0.5625rem] font-medium whitespace-nowrap"
+            >
+              {{ props.conversation.userName }}
+            </div>
+            <div
+              v-if="city"
+              class="text-[0.5625rem] text-app-text-secondary whitespace-nowrap"
+            >
+              {{ city }}
+            </div>
+          </div>
+          <!--city only (for non-admin)-->
+          <div
+            v-else-if="city"
             class="text-[0.5625rem] text-app-text-secondary whitespace-nowrap flex-shrink-0"
           >
             {{ city }}

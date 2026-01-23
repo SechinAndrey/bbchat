@@ -29,6 +29,7 @@ import { useAuthStore } from "@src/features/auth/store/auth-store";
 import useTheme from "@src/shared/theme-system/useTheme";
 import { convertViberEmoticons } from "@src/shared/utils/viberEmoticons";
 import CallTranscription from "@src/features/chat/components/ChatMiddle/Message/CallTranscription.vue";
+import { getUserColor } from "@src/shared/utils";
 
 const props = defineProps<{
   message: ApiMessageItem;
@@ -139,52 +140,7 @@ const authorName = computed(() => {
 });
 
 const authorTextColor = computed(() => {
-  if (!props.message.user_id) return "text-gray-400";
-
-  const colorsLight = [
-    "text-blue-600",
-    "text-green-600",
-    "text-purple-600",
-    "text-pink-600",
-    "text-indigo-600",
-    "text-teal-600",
-    "text-orange-600",
-    "text-cyan-600",
-    "text-red-600",
-    "text-amber-600",
-    "text-lime-600",
-    "text-emerald-600",
-    "text-sky-600",
-    "text-violet-600",
-    "text-fuchsia-600",
-    "text-rose-600",
-  ];
-
-  const colorsDark = [
-    "text-blue-400",
-    "text-green-400",
-    "text-purple-400",
-    "text-pink-400",
-    "text-indigo-400",
-    "text-teal-400",
-    "text-orange-400",
-    "text-cyan-400",
-    "text-red-400",
-    "text-amber-400",
-    "text-lime-400",
-    "text-emerald-400",
-    "text-sky-400",
-    "text-violet-400",
-    "text-fuchsia-400",
-    "text-rose-400",
-  ];
-
-  const colors = isDarkMode.value ? colorsDark : colorsLight;
-
-  const userId = Number(props.message.user_id);
-  const colorIndex = Number.isNaN(userId) ? 0 : userId % colors.length;
-
-  return colors[colorIndex];
+  return getUserColor(props.message.user_id, isDarkMode.value);
 });
 
 const hasAudio = computed(() => {

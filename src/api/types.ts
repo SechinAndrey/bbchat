@@ -361,6 +361,7 @@ export interface ApiCommunicationLead {
   replyMessage: ApiMessageItem | null;
   unread: number;
   draftMessage: string;
+  user_name?: string;
 }
 
 export interface ApiCommunicationClient {
@@ -387,6 +388,7 @@ export interface ApiCommunicationClient {
   replyMessage: ApiMessageItem | null;
   unread: number;
   draftMessage: string | null;
+  user_name?: string;
 }
 
 export interface ApiCommunicationSupplier {
@@ -411,6 +413,7 @@ export interface ApiCommunicationSupplier {
   replyMessage: ApiMessageItem | null;
   unread: number;
   draftMessage: string | null;
+  user_name?: string;
 }
 
 export interface ApiResponseLinks {
