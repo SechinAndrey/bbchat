@@ -28,11 +28,17 @@ import SlideTransition from "@src/ui/transitions/SlideTransition.vue";
 import { TemplateSelectorModal } from "@src/features/chat/message-templates";
 import { useMessagesTemplatesStore } from "@src/features/chat/message-templates";
 import type { MessageTemplate } from "@src/features/chat/message-templates";
-import { onMounted } from "vue";
+import { onMounted, watch } from "vue";
 import { useConversationsStore } from "@src/features/conversations/conversations-store";
 import { useToast } from "@src/shared/composables/useToast";
 import type { QueuedFile } from "@src/features/chat/composables/useMessageSending";
 import conversationsService from "@src/features/conversations/conversations-service";
+import {
+  useDrafts,
+  getDraftKey,
+  type Draft,
+} from "@src/features/chat/composables/useDrafts";
+import { useRoute } from "vue-router";
 
 const store = useStore();
 const { sendMessage } = useMessageSending();
@@ -41,6 +47,8 @@ const { messengerId, messengerOptions, currentMessenger, activeContact } =
 const templatesStore = useMessagesTemplatesStore();
 const conversationsStore = useConversationsStore();
 const { toastError, toastSuccess } = useToast();
+const route = useRoute();
+const { saveDraft, loadDraft, clearDraft, clearOldDrafts } = useDrafts();
 
 const attachedFiles = inject<Ref<QueuedFile[]>>("attachedFiles", ref([]));
 const removeAttachedFile = inject<(id: number) => void>(
@@ -121,10 +129,72 @@ const showTemplateSelector = ref(false);
 
 const textareaRef = ref();
 
+let isRestoringDraft = false;
+
+const getCurrentDraftKey = () => {
+  const entity = route.params.entity as string;
+  const entityId = Number(route.params.id);
+  const contactId = Number(route.params.contactId);
+
+  if (!entity || !entityId || !contactId) return null;
+  return getDraftKey(entity, entityId, contactId);
+};
+
+const saveDraftForCurrentChat = () => {
+  if (isRestoringDraft) return;
+
+  const draftKey = getCurrentDraftKey();
+  if (!draftKey) return;
+
+  if (value.value.trim()) {
+    const draft: Draft = {
+      message: value.value,
+      timestamp: Date.now(),
+    };
+    saveDraft(draftKey, draft);
+  } else {
+    clearDraft(draftKey);
+  }
+};
+
+const restoreDraftForCurrentChat = async () => {
+  const draftKey = getCurrentDraftKey();
+  if (!draftKey) return;
+
+  isRestoringDraft = true;
+  const draft = await loadDraft(draftKey);
+
+  if (draft) {
+    value.value = draft.message;
+  } else {
+    value.value = "";
+  }
+
+  isRestoringDraft = false;
+};
+
+watch(
+  () => [route.params.entity, route.params.id, route.params.contactId],
+  async () => {
+    await restoreDraftForCurrentChat();
+  },
+  { immediate: true },
+);
+
+watch(
+  () => value.value,
+  () => {
+    saveDraftForCurrentChat();
+  },
+);
+
+
 onMounted(() => {
   if (templatesStore.templates.length === 0) {
     templatesStore.fetchTemplates();
   }
+
+  clearOldDrafts();
 });
 
 const handleEmojiSelect = (emoji: string) => {
@@ -188,8 +258,14 @@ async function handleSendMessage() {
   const replyId = telegramReplyingToMessage.value?.id || null;
   const editId = editingMessage.value?.id || null;
 
+  const currentDraftKey = getCurrentDraftKey();
+
   value.value = "";
   clearTelegramReply();
+
+  if (currentDraftKey) {
+    clearDraft(currentDraftKey);
+  }
 
   if (editId) {
     try {
