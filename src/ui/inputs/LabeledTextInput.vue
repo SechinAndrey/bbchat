@@ -45,7 +45,7 @@ const labelTextSize = computed(() => {
     <label
       v-if="props.label"
       :id="props.id"
-      class="mb-3 text-left text-base"
+      class="mb-3 text-left text-base text-app-text-secondary"
       :class="labelTextSize"
     >
       {{ props.label }}

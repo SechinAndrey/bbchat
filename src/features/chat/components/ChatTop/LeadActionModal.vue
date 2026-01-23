@@ -16,6 +16,7 @@ import {
 } from "@src/shared/types/common";
 import { useConversationsStore } from "@src/features/conversations/conversations-store";
 import useStore from "@src/shared/store/store";
+import { useAuthStore } from "@src/features/auth/store/auth-store";
 
 const props = defineProps<{
   open: boolean;
@@ -28,6 +29,7 @@ const props = defineProps<{
 
 const conversationsStore = useConversationsStore();
 const store = useStore();
+const authStore = useAuthStore();
 
 const selectedItemId = ref<string | number>("");
 const isLoading = ref(false);
@@ -105,13 +107,20 @@ const options = computed(() => {
           label: `#${supplier.id} ${supplier.name}`,
         })) || []
       );
-    case "manager":
-      return (
-        globalDataStore.globalData?.users.map((user) => ({
-          value: user.id,
-          label: `#${user.id} ${user.name}`,
-        })) || []
-      );
+    case "manager": {
+      const allUsers = globalDataStore.globalData?.users || [];
+      const isHunter = authStore.currentUser?.roleId === 7;
+
+      // Hunters can only transfer leads to other hunters
+      const filteredUsers = isHunter
+        ? allUsers.filter((user) => user.role_id === 7)
+        : allUsers;
+
+      return filteredUsers.map((user) => ({
+        value: user.id,
+        label: `#${user.id} ${user.name}`,
+      }));
+    }
     default:
       return [];
   }

@@ -497,7 +497,7 @@ const titleContainerClasses = computed(() => {
                   Додати в існуючого постачальника
                 </Button>
               </li>
-              <li v-if="authStore.currentUser?.roleId === 1">
+              <li>
                 <Button
                   block
                   variant="text"
@@ -631,7 +631,7 @@ const titleContainerClasses = computed(() => {
                 Додати в існуючого постачальника
               </Button>
             </li>
-            <li v-if="authStore.currentUser?.roleId === 1">
+            <li>
               <Button block variant="text" @click="openActionModal('manager')">
                 Змінити менеджера
               </Button>
