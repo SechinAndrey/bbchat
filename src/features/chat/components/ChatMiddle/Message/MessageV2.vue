@@ -199,7 +199,7 @@ const systemMessageText = computed(() => {
 
     <!-- Message body -->
     <div
-      class="flex flex-col gap-1 flex-1 relative min-w-1"
+      class="flex flex-col gap-1 flex-1 relative min-w-1 max-w-fit"
       :class="{
         'w-full': call || hasAudio,
         'items-start': !isSelf,
