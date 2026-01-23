@@ -265,16 +265,23 @@ const getMessageText = (message: ApiMessageItem): string => {
 const handleCopyMessage = async () => {
   if (!selectedMessage.value) return;
 
-  const text = getMessageText(selectedMessage.value);
+  const selection = window.getSelection();
+  const selectedText = selection?.toString().trim();
+  let textToCopy = "";
+  if (selectedText) {
+    textToCopy = selectedText;
+  } else {
+    textToCopy = getMessageText(selectedMessage.value);
+  }
 
-  if (!text) {
+  if (!textToCopy) {
     toastError("Немає тексту для копіювання");
     closeContextMenu();
     return;
   }
 
   try {
-    await copyToClipboard(text);
+    await copyToClipboard(textToCopy);
   } catch (error) {
     console.error("Failed to copy text:", error);
     toastError("Помилка копіювання");
