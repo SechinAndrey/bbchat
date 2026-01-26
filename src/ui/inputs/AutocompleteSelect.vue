@@ -199,18 +199,20 @@ const updateDropdownPosition = () => {
   const menuHeight = dropdownMenu.value?.offsetHeight || 240;
 
   const viewportHeight = window.visualViewport?.height || window.innerHeight;
-  const viewportOffsetTop = window.visualViewport?.offsetTop || 0;
 
-  const spaceBelow = viewportHeight + viewportOffsetTop - selectRect.bottom;
-  const spaceAbove = selectRect.top - viewportOffsetTop;
+  const spaceBelow = viewportHeight - selectRect.bottom;
+  const spaceAbove = selectRect.top;
 
   openUpwards.value = spaceBelow < menuHeight && spaceAbove > menuHeight;
 
+  const scrollY = window.scrollY || window.pageYOffset;
+  const scrollX = window.scrollX || window.pageXOffset;
+
   const calculatedStyle = {
     top: openUpwards.value
-      ? `${Math.round(selectRect.top - menuHeight)}px`
-      : `${Math.round(selectRect.bottom)}px`,
-    left: `${Math.round(selectRect.left)}px`,
+      ? `${Math.round(selectRect.top + scrollY - menuHeight)}px`
+      : `${Math.round(selectRect.bottom + scrollY)}px`,
+    left: `${Math.round(selectRect.left + scrollX)}px`,
     minWidth: `${Math.round(selectRect.width)}px`,
     maxWidth: `${Math.round(selectRect.width)}px`,
   };
