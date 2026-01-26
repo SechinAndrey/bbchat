@@ -51,7 +51,7 @@ const { echat, echatMessage, getMessageText } = useMessageData(
 );
 
 const parsedReplyQuote = computed(() => {
-  return parseReplyQuoteText(getMessageText(200).value);
+  return parseReplyQuoteText(echat.value?.message);
 });
 
 const isCallDetailsExpanded = ref(true);
@@ -281,7 +281,9 @@ const systemMessageText = computed(() => {
           >
             <div class="flex items-start gap-2">
               <div class="flex-1 min-w-0">
-                <div class="text-xs text-app-text-secondary truncate">
+                <div
+                  class="text-xs text-app-text-secondary whitespace-pre-line"
+                >
                   {{ parsedReplyQuote?.originalMessageText }}
                 </div>
               </div>

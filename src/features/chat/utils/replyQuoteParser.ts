@@ -1,10 +1,10 @@
 export interface ReplyQuoteContent {
-  originalMessageText: string; // Текст оригинального сообщения (на которое отвечают)
-  replyMessageText: string; // Текст ответа (новое сообщение)
+  originalMessageText: string;
+  replyMessageText: string;
 }
 
 const REPLY_MARKER_REGEX =
-  /^\s*Reply to\s*=>\s*([\s\S]*?)\s*;\s*Quote\s*:\s*([\s\S]+?)\s*$/i;
+  /^\s*Reply\s+to\s*=>\s*([\s\S]*?)\s*;\s*Quote\s*:\s*([\s\S]+)\s*$/i;
 
 export const parseReplyQuoteText = (
   text?: string | null,
@@ -13,7 +13,15 @@ export const parseReplyQuoteText = (
     return null;
   }
 
-  const match = text.match(REPLY_MARKER_REGEX);
+  const normalizedText = text
+    .replace(/\\n/g, "\n")
+    .replace(/\\r/g, "\r")
+    .replace(/\\t/g, "\t")
+    .replace(/\\"/g, '"')
+    .replace(/\\'/g, "'")
+    .replace(/\\\\/g, "\\"); // backslashes (must be last)
+
+  const match = normalizedText.match(REPLY_MARKER_REGEX);
   if (!match) {
     return null;
   }
