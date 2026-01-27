@@ -261,7 +261,19 @@ const openActionModal = (
 
 const copyLink = async () => {
   try {
-    const url = window.location.href;
+    const currentRoute = router.currentRoute.value;
+    const { entity, id, contactId } = currentRoute.params;
+
+    let url = `${window.location.origin}/chat`;
+
+    if (entity && id && contactId) {
+      url = `${window.location.origin}/chat/${entity}/${id}/contact/${contactId}`;
+    } else if (entity && id) {
+      url = `${window.location.origin}/chat/${entity}/${id}`;
+    } else if (entity) {
+      url = `${window.location.origin}/chat/${entity}`;
+    }
+
     await copyToClipboard(url);
     toastSuccess("Посилання скопійовано");
     closePopperMenu();
