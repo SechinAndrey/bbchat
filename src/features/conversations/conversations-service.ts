@@ -1,4 +1,5 @@
 import apiClient from "@src/api/axios-instance";
+import type { AxiosError } from "axios";
 import type {
   ApiCommunicationResponse,
   ApiCommunicationEntityResponse,
@@ -13,6 +14,7 @@ import type {
   ApiResponseMeta,
   ApiSendMessageResponse,
 } from "@src/api/types";
+import { isApiSendMessageError } from "@src/api/types";
 
 import type { IAttachment } from "@src/shared/types/types";
 import type { EntityType } from "@src/shared/types/common";
@@ -220,6 +222,16 @@ export class ConversationsService {
       );
       return response.data;
     } catch (error) {
+      if (error instanceof Error && (error as AxiosError)?.response) {
+        const axiosError = error as AxiosError<ApiSendMessageResponse>;
+        if (axiosError.response?.status === 400 && axiosError.response?.data) {
+          const data = axiosError.response.data;
+          if (isApiSendMessageError(data)) {
+            return data;
+          }
+        }
+      }
+
       console.error("❌ Failed to send message:", error);
       throw new Error("Failed to send message");
     }
