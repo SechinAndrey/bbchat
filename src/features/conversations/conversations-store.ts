@@ -165,6 +165,14 @@ export const useConversationsStore = defineStore("conversations", () => {
       errors.value[entity] = null;
 
       const mergedParams = { ...filters.value, ...params };
+
+      if (authStore.currentUser) {
+        const isAdmin = authStore.currentUser.roleId === 1;
+        if (!isAdmin) {
+          mergedParams.user_id = authStore.currentUser.id;
+        }
+      }
+
       if (params) filters.value = mergedParams;
 
       let response;
@@ -299,6 +307,15 @@ export const useConversationsStore = defineStore("conversations", () => {
 
       const mergedParams = { ...messagesFilters.value, ...params };
       if (params) messagesFilters.value = mergedParams;
+
+      if (authStore.currentUser) {
+        const isAdmin = authStore.currentUser.roleId === 1;
+        if (!isAdmin) {
+          mergedParams.user_id = authStore.currentUser.id;
+        } else if (isAdmin && filters.value.user_id !== undefined) {
+          mergedParams.user_id = filters.value.user_id;
+        }
+      }
 
       const response = await conversationsService.getMessages(
         entity,
@@ -1113,6 +1130,16 @@ export const useConversationsStore = defineStore("conversations", () => {
     }) => {
       await handleLeadChangeUser(data);
     },
+  );
+
+  watch(
+    () => authStore.currentUser,
+    (user) => {
+      if (user && user.roleId !== 1 && filters.value.user_id === undefined) {
+        filters.value.user_id = user.id;
+      }
+    },
+    { immediate: true },
   );
 
   const initializeRouteWatchers = () => {

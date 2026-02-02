@@ -129,19 +129,28 @@ const debouncedFetch = useDebounceFn(async () => {
 const switching = ref(false);
 
 watch(
+  () => authStore.currentUser,
+  async (user) => {
+    if (user) {
+      switching.value = true;
+      await debouncedFetch();
+      switching.value = false;
+    }
+  },
+  { immediate: true },
+);
+
+watch(
   [
     selectedUserUI,
-    entity,
     () => conversationsStore.filters.communication_status_id,
     () => conversationsStore.filters.unread,
   ],
   async () => {
+    if (!authStore.currentUser) return;
     switching.value = true;
     await debouncedFetch();
     switching.value = false;
-  },
-  {
-    immediate: true,
   },
 );
 
@@ -160,6 +169,8 @@ watch(
   async (newEntity) => {
     if (newEntity && newEntity !== entity.value) {
       entity.value = newEntity as EntityType;
+
+      if (!authStore.currentUser) return;
 
       const params: ConversationParams = {
         page: 1,

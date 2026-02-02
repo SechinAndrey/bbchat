@@ -30,6 +30,7 @@ export interface ConversationParams {
 export interface MessageParams {
   page?: number;
   search?: string;
+  user_id?: number;
 }
 
 export interface SendMessageParams {
