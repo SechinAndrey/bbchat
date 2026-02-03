@@ -109,9 +109,11 @@ const hasFile = computed(() => {
       <!-- Message text -->
       <div
         v-if="tempMessage.message"
-        class="text-[0.8125rem] leading-relaxed relative pr-6 break-all"
+        class="text-[0.8125rem] leading-relaxed relative pr-6"
       >
-        <div class="whitespace-pre-line">{{ tempMessage.message }}</div>
+        <div class="whitespace-pre-line">
+          {{ tempMessage.message }}
+        </div>
       </div>
 
       <!-- Messenger icon -->
