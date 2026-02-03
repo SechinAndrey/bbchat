@@ -154,7 +154,14 @@ watch(
   },
 );
 
+let isFirstUserFilterCall = true;
+
 watch(selectedUserUI, () => {
+  if (isFirstUserFilterCall) {
+    isFirstUserFilterCall = false;
+    return;
+  }
+
   router.push({
     name: "EntityChat",
     params: { entity: entity.value },
@@ -199,9 +206,12 @@ watch(
 
 // Infinite scroll
 const scrollContainer = ref<HTMLElement | null>(null);
+const isLoadingMore = ref(false);
 
-const loadMore = () => {
-  loadMoreConversations(entity.value);
+const loadMore = async () => {
+  isLoadingMore.value = true;
+  await loadMoreConversations(entity.value);
+  isLoadingMore.value = false;
 };
 
 const scrollToActiveConversation = async () => {
@@ -222,10 +232,24 @@ const scrollToActiveConversation = async () => {
   }, 150);
 };
 
-watchEffect(() => {
-  const contactId = route.params.contactId;
-  const conversations = conversationsList.value;
+watch(
+  () => route.params.contactId,
+  (contactId) => {
+    if (
+      contactId &&
+      conversationsList.value.length > 0 &&
+      scrollContainer.value
+    ) {
+      scrollToActiveConversation();
+    }
+  },
+  { immediate: true },
+);
 
+watch(conversationsList, (conversations) => {
+  if (isLoadingMore.value) return;
+
+  const contactId = route.params.contactId;
   if (contactId && conversations.length > 0 && scrollContainer.value) {
     scrollToActiveConversation();
   }
