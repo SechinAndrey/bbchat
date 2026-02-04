@@ -63,7 +63,7 @@ on("bb-widget:auth-by-token", async (data) => {
   authStatus.value = "authenticating";
 
   try {
-    await authStore.loginWithToken(data.token);
+    await authStore.loginWithToken(data.token, true);
     authStatus.value = "success";
     router.push({ path: `/widget/${data.entity}/${data.entityId}` });
   } catch (error) {

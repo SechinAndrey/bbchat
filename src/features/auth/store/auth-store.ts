@@ -76,12 +76,12 @@ export const useAuthStore = defineStore("auth", () => {
     }
   }
 
-  async function loginWithToken(loginToken: string) {
+  async function loginWithToken(loginToken: string, fromSite?: boolean) {
     loading.value = true;
     error.value = null;
 
     try {
-      const newToken = await authService.loginWithToken(loginToken);
+      const newToken = await authService.loginWithToken(loginToken, fromSite);
       token.value = newToken;
 
       await fetchCurrentUser();

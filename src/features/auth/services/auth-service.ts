@@ -2,9 +2,11 @@ import type { ApiUser } from "@src/api/types";
 import apiClient, { setAuthToken } from "@src/api/axios-instance";
 
 // Types for authentication
+
 interface LoginCredentials {
   email: string;
   password: string;
+  fromSite?: boolean;
 }
 
 interface AuthResponse {
@@ -50,11 +52,13 @@ export class AuthService {
     }
   }
 
-  async loginWithToken(token: string): Promise<string> {
+  async loginWithToken(token: string, fromSite?: boolean): Promise<string> {
     try {
+      const payload: any = { verification_token: token };
+      if (fromSite) payload.from_site = true;
       const response = await apiClient.post<AuthResponse>(
         `${this.baseUrl}/sanctum/verify`,
-        { verification_token: token },
+        payload,
         {
           headers: {
             "Content-Type": "application/json",
