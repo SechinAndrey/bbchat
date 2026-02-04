@@ -6,7 +6,6 @@ import apiClient, { setAuthToken } from "@src/api/axios-instance";
 interface LoginCredentials {
   email: string;
   password: string;
-  fromSite?: boolean;
 }
 
 interface AuthResponse {
@@ -52,10 +51,9 @@ export class AuthService {
     }
   }
 
-  async loginWithToken(token: string, fromSite?: boolean): Promise<string> {
+  async loginWithToken(token: string): Promise<string> {
     try {
       const payload: any = { verification_token: token };
-      if (fromSite) payload.from_site = true;
       const response = await apiClient.post<AuthResponse>(
         `${this.baseUrl}/sanctum/verify`,
         payload,
@@ -165,10 +163,15 @@ export class AuthService {
   }
 
   postFirebaseMessagingToken(userId: number, firebaseToken: string): void {
-    apiClient.post("/user-firebase-messaging-token", {
+    const isIframe = window.self !== window.top;
+    const payload: { user_id: number; token: string; from_site?: boolean } = {
       user_id: userId,
       token: firebaseToken,
-    });
+    };
+    if (isIframe) {
+      payload.from_site = true;
+    }
+    apiClient.post("/user-firebase-messaging-token", payload);
   }
 }
 
