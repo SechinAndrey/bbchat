@@ -8,6 +8,7 @@ import type {
 } from "./conversations-service";
 import type { EntityType, ContragentType } from "@src/shared/types/common";
 import { CONTRAGENT_TO_ENTITY_MAP } from "@src/shared/types/common";
+import type { PusherEventMap } from "@src/shared/types/pusher-events";
 import type {
   ApiResponseMeta,
   ApiCommunicationEntity,
@@ -1039,22 +1040,23 @@ export const useConversationsStore = defineStore("conversations", () => {
   bindEvent(
     "e-chat-notification",
     "new-message",
-    async (data: {
-      id: number;
-      contragent_contact_id: number | null;
-      contragent_id: number | null;
-      contragent_type: ContragentType | null;
-      user_id: number | string;
-    }) => {
+    async (data: PusherEventMap["e-chat-notification"]["new-message"]) => {
       console.log("📨 Received Pusher new-message event:", data);
 
-      const shouldProcess =
+      const isForMe =
         data.user_id === authStore.currentUser?.id ||
         data.user_id === "user-not-selected" ||
         authStore.currentUser?.roleId === 1;
 
-      if (!shouldProcess) {
+      if (!isForMe) {
         return;
+      }
+
+      if (data.is_chaport) {
+        const userRole = authStore.currentUser?.roleId;
+        if (!userRole || ![1, 7].includes(userRole)) {
+          return;
+        }
       }
 
       await handleNewMessage(data.id, data.user_id);

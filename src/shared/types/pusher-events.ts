@@ -16,10 +16,12 @@ export interface PusherEventMap {
       contragent_id: number | null;
       /** contragent type: lead, client, supplier (singular form from backend) */
       contragent_type: ContragentType | null;
-      /** target user ID */
-      user_id: number;
+      /** target user ID or "user-not-selected" */
+      user_id: number | string;
       /** system message flag (Pusher sends boolean) */
       system_message: boolean;
+      /** Chaport message flag - if true, show only for roles 1 and 7 */
+      is_chaport?: boolean;
     };
     "message-read-by-contact": {
       /** message ID (can be array from backend) */
