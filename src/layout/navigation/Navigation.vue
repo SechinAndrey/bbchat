@@ -14,6 +14,7 @@ import {
   FireIcon,
 } from "@heroicons/vue/24/solid";
 import AccountDropdown from "@src/layout/navigation/AccountDropdown.vue";
+import AccountModal from "@src/layout/navigation/AccountModal.vue";
 import logoIcon from "@src/shared/icons/logoIcon.vue";
 import NavLink from "@src/layout/navigation/NavLink.vue";
 import NavItem from "@src/layout/navigation/NavItem.vue";
@@ -26,6 +27,7 @@ const conversationsStore = useConversationsStore();
 const { toggleDarkMode, isDarkMode } = useTheme();
 
 const showDropdown = ref(false);
+const showAccountModal = ref(false);
 
 onMounted(() => {
   conversationsStore.fetchUnreadCounts();
@@ -134,15 +136,27 @@ const openClients = () => {
           </li> -->
 
           <li class="md:hidden">
-            <!--user avatar PC-->
-            <AccountDropdown
-              id="profile-menu"
-              class="xs:flex md:hidden flex w-full"
-              aria-labelledby="profile-menu-button"
-              :show-dropdown="showDropdown"
-              :handle-show-dropdown="() => (showDropdown = true)"
-              :handle-close-dropdown="() => (showDropdown = false)"
-            />
+            <!--user avatar mobile - opens modal-->
+            <button
+              class="rounded-full active:scale-110 focus:outline-none focus:scale-110 transition duration-200 ease-out flex items-center justify-center"
+              aria-label="toggle profile menu"
+              @click="showAccountModal = true"
+            >
+              <div
+                :style="{
+                  backgroundImage: `url(${authStore.currentUser?.avatar})`,
+                }"
+                class="w-[2.25rem] h-[2.25rem] rounded-full bg-cover bg-center"
+              >
+                <span
+                  v-if="!authStore.currentUser?.avatar"
+                  class="flex items-center justify-center w-full h-full text-sm font-semibold text-primary bg-primary rounded-full"
+                >
+                  {{ authStore.currentUser?.firstName?.[0]
+                  }}{{ authStore.currentUser?.lastName?.[0] }}
+                </span>
+              </div>
+            </button>
           </li>
         </ul>
       </nav>
@@ -179,7 +193,7 @@ const openClients = () => {
         class="border-[var(--color-sidebar-divider)] xs:hidden md:block mb-6"
       />
 
-      <!--user avatar MOBILE-->
+      <!--user avatar PC-->
       <AccountDropdown
         id="profile-menu"
         class="xs:hidden md:flex flex w-full"
@@ -190,6 +204,12 @@ const openClients = () => {
       />
     </div>
   </div>
+
+  <!-- Account modal for mobile -->
+  <AccountModal
+    :open="showAccountModal"
+    :close-modal="() => (showAccountModal = false)"
+  />
 </template>
 
 <style>
