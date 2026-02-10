@@ -300,7 +300,10 @@ const handleReplyMessage = () => {
 const handleReplyMessageViber = () => {
   if (!selectedMessage.value) return;
 
-  const text = getMessageText(selectedMessage.value);
+  const selection = window.getSelection();
+  const selectedText = selection?.toString().trim();
+
+  const text = selectedText || getMessageText(selectedMessage.value);
   if (!text) {
     toastError("Немає тексту для відповіді");
     closeContextMenu();
