@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 
 import useStore from "@src/shared/store/store";
 import { useAuthStore } from "@src/features/auth/store/auth-store";
 import { useConversationsStore } from "@src/features/conversations/conversations-store";
 import useTheme from "@src/shared/theme-system/useTheme";
+import { Capacitor } from "@capacitor/core";
+import { useBreakpoints, breakpointsTailwind } from "@vueuse/core";
 
 import {
   MoonIcon,
@@ -25,6 +27,15 @@ const store = useStore();
 const authStore = useAuthStore();
 const conversationsStore = useConversationsStore();
 const { toggleDarkMode, isDarkMode } = useTheme();
+
+const breakpoints = useBreakpoints(breakpointsTailwind);
+const isMobile = breakpoints.smaller("md");
+
+// Add safe-area-inset-top padding for native mobile (status bar overlay fix)
+const safeAreaStyle = computed(() => {
+  if (!Capacitor.isNativePlatform() || !isMobile.value) return {};
+  return { paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.75rem)" };
+});
 
 const showDropdown = ref(false);
 const showAccountModal = ref(false);
@@ -64,6 +75,7 @@ const openClients = () => {
       'py-[0.75rem] px-5',
       'md:w-[3.75rem] md:h-full md:py-7 md:flex-col',
     ]"
+    :style="safeAreaStyle"
   >
     <!--logo-->
     <logoIcon class="md:mb-6" />
