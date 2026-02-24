@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.7.1 - 2026-02-24
+
+### Bug Fixes
+
+- Исправлен статус бар для Android
+- Call message
+- Scroll to active chat
+- Чужие клиенты [WS-18700430-21488652](https://trp4438.worksection.com/project/257910/18700430/21488652/)
+- Copy link format
+- Process messages send error
+- Reply formatting for viber
+- Исправлено положение списка для AutocompleteSelect
+- Исправлен copyToClipboard хелпер
+
+### Features
+
+- Add AccountModal for better UX instead of AccountDropdown
+- Enhance reply message handling to include selected text
+- Process is_chaport for "new-message" Pusher event
+- Add fromSite param for postFirebaseMessagingToken method
+- Add fromSite param for loginWithToken method
+
+### Project Maintenance
+
+- Release version 0.7.1
+
 ## 0.7.0 - 2026-01-23
 
 ### Bug Fixes
