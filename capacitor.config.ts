@@ -1,3 +1,4 @@
+/// <reference types="@capacitor-community/safe-area" />
 import type { CapacitorConfig } from "@capacitor/cli";
 
 const config: CapacitorConfig = {
@@ -8,11 +9,7 @@ const config: CapacitorConfig = {
     PushNotifications: {
       presentationOptions: [],
     },
-    StatusBar: {
-      backgroundColor: "#3d445c",
-      style: "DARK",
-      overlaysWebView: true,
-    },
+    SafeArea: {},
   },
 };
 

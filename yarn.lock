@@ -813,6 +813,11 @@
   resolved "https://registry.yarnpkg.com/@capacitor-community/media/-/media-9.0.0.tgz#d709364adb526e5ae685144fd9873ffeb9ee96dc"
   integrity sha512-zAkDg3ZsOcFG2KsaiHgVSa1kpL8lovnn++XuQi1MbtuKUixRMoCO64D50VKTUb/MSCoslD55Q7n/ZcFpfAQvEg==
 
+"@capacitor-community/safe-area@^7.0.0":
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/@capacitor-community/safe-area/-/safe-area-7.0.0.tgz#cd99bbadc9f1f678d38ac2072ffb33204de7a46d"
+  integrity sha512-+bze1ChJasYBvLtgp2mFeAHxiOmXqHvb1adtO0MbobZ/5WCrTsOi6ebECJkUpao4MJ4mqCBOus0jOXJXwx3YgA==
+
 "@capacitor/android@^7.2.0":
   version "7.4.4"
   resolved "https://registry.yarnpkg.com/@capacitor/android/-/android-7.4.4.tgz#a14a1e844bd5079982427e247fdd17555b5fbedd"
