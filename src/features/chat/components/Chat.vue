@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref, watch } from "vue";
 import useStore from "@src/shared/store/store";
 import useConversationsStore from "@src/features/conversations/conversations-store";
 import { provide, toRef } from "vue";
@@ -9,9 +10,16 @@ import ChatBottom from "@src/features/chat/components/ChatBottom/ChatBottom.vue"
 import ChatMiddle from "@src/features/chat/components/ChatMiddle/ChatMiddle.vue";
 import ChatTop from "@src/features/chat/components/ChatTop/ChatTop.vue";
 import RightSidebar from "@src/features/right-sidebar/components/RightSidebar.vue";
+import DragDropSurface from "@src/ui/components/DragDropSurface.vue";
 import Spinner from "@src/ui/states/loading-states/Spinner.vue";
 import NoChatSelected from "@src/ui/states/empty-states/NoChatSelected.vue";
-import { useDragAndDrop } from "@src/features/chat/composables/useDragAndDrop";
+import { useDragAndDropAttachments } from "@src/features/chat/composables/useDragAndDropAttachments";
+import PhotoSelectionToolbar from "@src/features/photo-reports/components/PhotoSelectionToolbar.vue";
+import AssignPhotoReportModal from "@src/features/photo-reports/modals/AssignPhotoReportModal.vue";
+import {
+  usePhotoSelection,
+  photoSelectionKey,
+} from "@src/features/photo-reports/composables/usePhotoSelection";
 
 const props = defineProps<{
   id: number;
@@ -27,48 +35,44 @@ const store = useStore();
 const conversationsStore = useConversationsStore();
 conversationsStore.initializeRouteWatchers();
 
-const { isDragging, attachedFiles, removeFile, clearFiles, handleFiles } =
-  useDragAndDrop();
+const {
+  isDragging,
+  attachedFiles,
+  removeFile,
+  clearFiles,
+  handleDragEnter,
+  handleDragLeave,
+  handleDragOver,
+  handleDrop,
+} = useDragAndDropAttachments();
 
 provide("attachedFiles", attachedFiles);
 provide("removeAttachedFile", removeFile);
 provide("clearAttachedFiles", clearFiles);
 
-let dragCounter = 0;
+const photoSelection = usePhotoSelection();
+provide(photoSelectionKey, photoSelection);
 
-const handleDragEnter = (e: DragEvent) => {
-  e.preventDefault();
-  e.stopPropagation();
-  dragCounter++;
-  isDragging.value = true;
+watch(
+  () => [props.id, props.entity, props.contactId],
+  () => {
+    if (photoSelection.isSelectionMode.value) {
+      photoSelection.exitSelectionMode();
+    }
+    if (isAssignModalOpen.value) {
+      closeAssignModal();
+    }
+  },
+);
+
+const isAssignModalOpen = ref(false);
+
+const openAssignModal = () => {
+  isAssignModalOpen.value = true;
 };
 
-const handleDragLeave = (e: DragEvent) => {
-  e.preventDefault();
-  e.stopPropagation();
-  dragCounter--;
-  if (dragCounter === 0) {
-    isDragging.value = false;
-  }
-};
-
-const handleDragOver = (e: DragEvent) => {
-  e.preventDefault();
-  e.stopPropagation();
-  if (e.dataTransfer) {
-    e.dataTransfer.dropEffect = "copy";
-  }
-};
-
-const handleDrop = (e: DragEvent) => {
-  e.preventDefault();
-  e.stopPropagation();
-  dragCounter = 0;
-  isDragging.value = false;
-
-  if (e.dataTransfer?.files) {
-    handleFiles(e.dataTransfer.files);
-  }
+const closeAssignModal = () => {
+  isAssignModalOpen.value = false;
 };
 </script>
 
@@ -91,22 +95,19 @@ const handleDrop = (e: DragEvent) => {
         @dragover.prevent="handleDragOver"
         @drop.prevent="handleDrop"
       >
-        <div
+        <DragDropSurface
           v-if="isDragging"
-          class="absolute inset-0 z-50 bg-primary/10 border-4 border-dashed border-primary flex items-center justify-center backdrop-blur-sm pointer-events-none"
-        >
-          <div class="text-center">
-            <div class="text-2xl font-bold text-primary mb-2">
-              Перетягніть файли сюди
-            </div>
-            <div class="text-sm text-app-text-secondary">
-              Відпустіть, щоб прикріпити до повідомлення
-            </div>
-          </div>
-        </div>
+          variant="overlay"
+          title="Перетягніть файли сюди"
+          subtitle="Відпустіть, щоб прикріпити до повідомлення"
+        />
 
         <ChatTop />
         <ChatMiddle />
+        <PhotoSelectionToolbar
+          v-if="photoSelection.isSelectionMode.value"
+          @open-assign-modal="openAssignModal"
+        />
         <ChatBottom />
       </div>
 
@@ -123,6 +124,13 @@ const handleDrop = (e: DragEvent) => {
       "
       class="xs:absolute md:static"
       @close="store.rightSidebarOpen = false"
+    />
+
+    <AssignPhotoReportModal
+      :open="isAssignModalOpen"
+      :photos="photoSelection.selectedPhotosArray.value"
+      @close="closeAssignModal"
+      @saved="photoSelection.exitSelectionMode()"
     />
   </div>
 </template>

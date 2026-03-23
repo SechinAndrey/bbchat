@@ -1,6 +1,48 @@
 import { computed, type ComputedRef } from "vue";
 import type { ApiMessageItem, ApiReplyMessageItem } from "@src/api/types";
-import { getFileName, truncateFileName } from "@src/shared/utils/media";
+import {
+  getFileName,
+  isImage,
+  truncateFileName,
+} from "@src/shared/utils/media";
+
+export interface ParsedEchatMessage {
+  media?: string;
+  file?: string;
+  files?: string;
+  message?: string;
+  [key: string]: unknown;
+}
+
+export function parseEchatMessageJson(
+  messageJson: string | Record<string, unknown> | undefined | null,
+): ParsedEchatMessage {
+  if (typeof messageJson === "string") {
+    try {
+      return JSON.parse(messageJson);
+    } catch {
+      return {};
+    }
+  }
+  return (messageJson as ParsedEchatMessage) || {};
+}
+
+export function getMessageImageUrl(
+  message: ApiMessageItem,
+): string | undefined {
+  if (message.echat_messages) {
+    const echatMsg = parseEchatMessageJson(message.echat_messages.message_json);
+    const media = echatMsg.media || echatMsg.file;
+    if (media && isImage(media)) return media;
+  }
+  if (
+    message.chaport_messages?.file &&
+    isImage(message.chaport_messages.file)
+  ) {
+    return message.chaport_messages.file;
+  }
+  return undefined;
+}
 
 export function useMessageData(
   message:
@@ -17,10 +59,7 @@ export function useMessageData(
   });
 
   const echatMessage = computed(() => {
-    if (typeof echat.value?.message_json === "string") {
-      return JSON.parse(echat.value.message_json);
-    }
-    return echat.value?.message_json || {};
+    return parseEchatMessageJson(echat.value?.message_json);
   });
 
   const media = computed(() => {

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Ref } from "vue";
 
-import { onMounted, ref, watch, nextTick, computed } from "vue";
+import { inject, onMounted, ref, watch, nextTick, computed } from "vue";
 import {
   useInfiniteScroll,
   useResizeObserver,
@@ -13,8 +13,8 @@ import MessageV2 from "@src/features/chat/components/ChatMiddle/Message/MessageV
 import TempMessageV2 from "@src/features/chat/components/ChatMiddle/Message/TempMessageV2.vue";
 import NewMessagesDivider from "@src/features/chat/components/ChatMiddle/NewMessagesDivider.vue";
 import SimpleMediaModal from "@src/ui/data-display/SimpleMediaModal.vue";
-import { isImage } from "@src/shared/utils/media";
 import { useConversationsStore } from "@src/features/conversations/conversations-store";
+import { getMessageImageUrl } from "@src/features/chat/composables/useMessageData";
 import Spinner from "@src/ui/states/loading-states/Spinner.vue";
 import EmptyState from "@src/ui/states/empty-states/EmptyState.vue";
 import LoadingState from "@src/ui/states/loading-states/LoadingState.vue";
@@ -30,7 +30,12 @@ import {
   BookmarkIcon,
   PencilIcon,
   TrashIcon,
+  CameraIcon,
 } from "@heroicons/vue/24/outline";
+import {
+  photoSelectionKey,
+  type PhotoSelectionContext,
+} from "@src/features/photo-reports/composables/usePhotoSelection";
 import { useContextMenu } from "@src/shared/composables/useContextMenu";
 import { ContextMenu } from "@src/ui/navigation/ContextMenu";
 import { DropdownItem } from "@src/ui/navigation/DropdownV3";
@@ -43,6 +48,11 @@ const conversationsStore = useConversationsStore();
 const messagesTemplatesStore = useMessagesTemplatesStore();
 const route = useRoute();
 const { toastError, toastSuccess } = useToast();
+
+const photoSelection = inject<PhotoSelectionContext | null>(
+  photoSelectionKey,
+  null,
+);
 
 const telegramReplyBus = useEventBus<ApiMessageItem>("reply-message");
 const viberReplyBus = useEventBus<string>("viber-reply-message");
@@ -198,36 +208,17 @@ const isDeleteConfirmOpen = ref(false);
 const messageToDelete = ref<ApiMessageItem | null>(null);
 const isDeletingMessage = ref(false);
 
-// Collect all images from conversation messages
 const collectConversationImages = () => {
-  const images: string[] = [];
+  if (!conversationsStore.activeConversation) return [];
 
-  if (conversationsStore.activeConversation) {
-    for (const message of conversationsStore.activeConversation.messages) {
-      // Check echat messages for media
-      if (message.echat_messages) {
-        const echatMessage =
-          typeof message.echat_messages.message_json === "string"
-            ? JSON.parse(message.echat_messages.message_json)
-            : message.echat_messages.message_json || {};
-
-        const img = echatMessage.media || echatMessage.file;
-
-        if (img && isImage(img)) {
-          images.push(img);
-        }
-      }
-      if (message.chaport_messages) {
-        const img = message.chaport_messages.file;
-
-        if (img && isImage(img)) {
-          images.push(img);
-        }
-      }
-    }
-  }
-
-  return images;
+  return conversationsStore.activeConversation.messages.reduce<string[]>(
+    (images, message) => {
+      const url = getMessageImageUrl(message);
+      if (url) images.push(url);
+      return images;
+    },
+    [],
+  );
 };
 
 const openImageGallery = (clickedImageUrl: string) => {
@@ -333,6 +324,20 @@ const handleSaveAsTemplate = async () => {
     toastError("Помилка збереження шаблону");
   }
 
+  closeContextMenu();
+};
+
+const handleSelectForPhotoReport = () => {
+  if (!selectedMessage.value || !photoSelection) return;
+
+  const mediaUrl = getMessageImageUrl(selectedMessage.value);
+  if (!mediaUrl) return;
+
+  photoSelection.enterSelectionMode(
+    mediaUrl,
+    mediaUrl,
+    selectedMessage.value.id,
+  );
   closeContextMenu();
 };
 
@@ -620,6 +625,15 @@ watch(
       <DropdownItem label="Зберегти шаблон" @click="handleSaveAsTemplate">
         <BookmarkIcon class="w-5 h-5 mr-3" />
         Зберегти шаблон
+      </DropdownItem>
+
+      <DropdownItem
+        v-if="selectedMessage && getMessageImageUrl(selectedMessage)"
+        label="Обрати для фотозвіту"
+        @click="handleSelectForPhotoReport"
+      >
+        <CameraIcon class="w-5 h-5 mr-3" />
+        Обрати для фотозвіту
       </DropdownItem>
     </ContextMenu>
 

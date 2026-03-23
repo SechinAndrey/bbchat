@@ -1,5 +1,6 @@
 import { ref, onUnmounted } from "vue";
 import type { QueuedFile } from "@src/features/chat/composables/useMessageSending";
+import { useDragDropZone } from "@src/shared/composables/useDragDropZone";
 import { validateFile } from "@src/shared/utils";
 import { useToast } from "@src/shared/composables/useToast";
 import {
@@ -11,10 +12,9 @@ import {
   revokeAttachmentURLs,
 } from "@src/shared/utils/attachment-helpers";
 
-export function useDragAndDrop() {
+export function useDragAndDropAttachments() {
   const { toastError } = useToast();
 
-  const isDragging = ref(false);
   const attachedFiles = ref<QueuedFile[]>([]);
 
   const handleFiles = (files: FileList | null) => {
@@ -60,11 +60,25 @@ export function useDragAndDrop() {
     clearFiles();
   });
 
+  const {
+    isDragging,
+    handleDragEnter,
+    handleDragLeave,
+    handleDragOver,
+    handleDrop,
+  } = useDragDropZone({
+    onFilesDrop: (files) => handleFiles(files),
+  });
+
   return {
     isDragging,
     attachedFiles,
     handleFiles,
     removeFile,
     clearFiles,
+    handleDragEnter,
+    handleDragLeave,
+    handleDragOver,
+    handleDrop,
   };
 }

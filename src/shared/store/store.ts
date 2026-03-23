@@ -35,6 +35,7 @@ const useStore = defineStore("chat", () => {
     calls: false,
   });
   const rightSidebarOpen = useStorage("rightSidebarOpen", false);
+  const singleColumn = useStorage("photoReportsSingleColumn", false);
 
   const setLoadingState = (
     resource: keyof typeof loadingStates.value,
@@ -190,6 +191,7 @@ const useStore = defineStore("chat", () => {
     rightSidebarOpen,
     isWidget,
     widget,
+    singleColumn,
 
     // actions
     sendMessage,

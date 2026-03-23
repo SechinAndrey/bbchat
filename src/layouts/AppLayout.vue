@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useRoute } from "vue-router";
 import { computed } from "vue";
-import { useBreakpoints, breakpointsTailwind } from "@vueuse/core";
+import { useBreakpoints } from "@vueuse/core";
 
 import Navigation from "@src/layout/navigation/Navigation.vue";
 import Sidebar from "@src/layout/sidebar/Sidebar.vue";
@@ -9,7 +9,7 @@ import { getActiveConversationId } from "@src/shared/utils/utils";
 
 const route = useRoute();
 
-const breakpoints = useBreakpoints(breakpointsTailwind);
+const breakpoints = useBreakpoints({ md: 968 });
 const isMobile = breakpoints.smaller("md");
 
 const isSettingsPageActive = computed(() => {

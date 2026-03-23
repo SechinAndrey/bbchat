@@ -40,6 +40,7 @@ import Dropdown from "@src/ui/navigation/Dropdown/Dropdown.vue";
 import ConversationAvatar from "@src/shared/components/ConversationAvatar.vue";
 import { parseReplyQuoteText } from "@src/features/chat/utils/replyQuoteParser";
 import { getMediaType, isTgsSticker } from "@src/shared/utils/media";
+import { parseEchatMessageJson } from "@src/features/chat/composables/useMessageData";
 
 const props = defineProps<{
   conversation: IConversation;
@@ -103,15 +104,7 @@ const echat = computed(() => {
 });
 
 const echatMessage = computed(() => {
-  if (typeof echat.value?.message_json === "string") {
-    try {
-      const parsed = JSON.parse(echat.value.message_json);
-      return parsed;
-    } catch {
-      return {};
-    }
-  }
-  return echat.value?.message_json || {};
+  return parseEchatMessageJson(echat.value?.message_json);
 });
 
 const call = computed<ApiCommunicationCallInfo | null>(() => {

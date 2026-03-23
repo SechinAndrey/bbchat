@@ -64,6 +64,7 @@ const isMobile = computed(() => useMediaQuery("(max-width: 767px)").value);
 const telegramReplyBus = useEventBus<ApiMessageItem>("reply-message");
 const viberReplyBus = useEventBus<string>("viber-reply-message");
 const editMessageBus = useEventBus<ApiMessageItem>("edit-message");
+const photoReportInsertBus = useEventBus<string>("photo-report-insert-message");
 const telegramReplyingToMessage = ref<ApiMessageItem | null>(null);
 const editingMessage = ref<ApiMessageItem | null>(null);
 
@@ -82,15 +83,8 @@ telegramReplyBus.on((message) => {
 viberReplyBus.on((messageText) => {
   telegramReplyingToMessage.value = null;
   value.value = `"${messageText}"\n\n`;
-  nextTick(() => {
-    if (textareaRef.value && textareaRef.value.$el) {
-      const textarea = textareaRef.value.$el as HTMLTextAreaElement;
-      textarea.focus();
-      const cursorPosition = value.value.length;
-      textarea.setSelectionRange(cursorPosition, cursorPosition);
-      messengerId.value = 2;
-    }
-  });
+  messengerId.value = 2;
+  focusTextareaAtEnd();
 });
 
 editMessageBus.on((message) => {
@@ -103,18 +97,16 @@ editMessageBus.on((message) => {
 
   messengerId.value = message.echat_messages?.dialog?.messenger_id || 1;
 
-  nextTick(() => {
-    if (textareaRef.value && textareaRef.value.$el) {
-      const textarea = textareaRef.value.$el as HTMLTextAreaElement;
-      textarea.focus();
-      const cursorPosition = value.value.length;
-      textarea.setSelectionRange(cursorPosition, cursorPosition);
-    }
-  });
+  focusTextareaAtEnd();
 });
 
 // the content of the message.
 const value: Ref<string> = ref("");
+
+photoReportInsertBus.on((text) => {
+  value.value = text;
+  focusTextareaAtEnd();
+});
 
 // determines whether the app is recording or not.
 const recording = ref(false);
@@ -187,7 +179,6 @@ watch(
     saveDraftForCurrentChat();
   },
 );
-
 
 onMounted(() => {
   if (templatesStore.templates.length === 0) {
@@ -340,9 +331,7 @@ async function handleSendMessage() {
   }
 }
 
-const handleTemplateSelect = (template: MessageTemplate) => {
-  value.value = template.text;
-  showTemplateSelector.value = false;
+const focusTextareaAtEnd = () => {
   nextTick(() => {
     if (textareaRef.value && textareaRef.value.$el) {
       const textarea = textareaRef.value.$el as HTMLTextAreaElement;
@@ -351,6 +340,12 @@ const handleTemplateSelect = (template: MessageTemplate) => {
       textarea.setSelectionRange(cursorPosition, cursorPosition);
     }
   });
+};
+
+const handleTemplateSelect = (template: MessageTemplate) => {
+  value.value = template.text;
+  showTemplateSelector.value = false;
+  focusTextareaAtEnd();
 };
 </script>
 

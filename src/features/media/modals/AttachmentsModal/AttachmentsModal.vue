@@ -2,6 +2,8 @@
 import { ref, computed, onMounted, onUnmounted, watch } from "vue";
 
 import Attachment from "@src/features/media/modals/AttachmentsModal/Attachment.vue";
+import { useDragDropZone } from "@src/shared/composables/useDragDropZone";
+import DragDropSurface from "@src/ui/components/DragDropSurface.vue";
 import Button from "@src/ui/inputs/Button.vue";
 import TextInput from "@src/ui/inputs/TextInput.vue";
 import Modal from "@src/ui/modals/Modal.vue";
@@ -49,7 +51,6 @@ const isMobile = computed(() => useMediaQuery("(max-width: 767px)").value);
 
 const caption = ref("");
 const fileInputRef = ref<HTMLInputElement>();
-const isDragging = ref(false);
 const isSending = ref(false);
 
 const handleFileSelect = (event: Event) => {
@@ -167,41 +168,34 @@ const replaceAttachment = (id: number) => {
   input.click();
 };
 
-const handleDragOver = (event: DragEvent) => {
-  event.preventDefault();
-  event.stopPropagation();
-  isDragging.value = true;
+const addDroppedFiles = (files: FileList) => {
+  Array.from(files).forEach((file) => {
+    if (queue.value.length >= MAX_ATTACHMENTS) {
+      toastError(`Максимум ${MAX_ATTACHMENTS} файлів за раз`);
+      return;
+    }
+
+    const validation = validateFile(file, MAX_FILE_SIZE);
+
+    if (!validation.valid) {
+      toastError(validation.error || "Помилка валідації файлу");
+      return;
+    }
+
+    const attachment = createAttachmentFromFile(file);
+    addToQueue(attachment, caption.value);
+  });
 };
 
-const handleDragLeave = (event: DragEvent) => {
-  event.stopPropagation();
-  isDragging.value = false;
-};
-
-const handleDrop = (event: DragEvent) => {
-  event.preventDefault();
-  event.stopPropagation();
-  isDragging.value = false;
-
-  if (event.dataTransfer && event.dataTransfer.files) {
-    Array.from(event.dataTransfer.files).forEach((file) => {
-      if (queue.value.length >= MAX_ATTACHMENTS) {
-        toastError(`Максимум ${MAX_ATTACHMENTS} файлів за раз`);
-        return;
-      }
-
-      const validation = validateFile(file, MAX_FILE_SIZE);
-
-      if (!validation.valid) {
-        toastError(validation.error || "Помилка валідації файлу");
-        return;
-      }
-
-      const attachment = createAttachmentFromFile(file);
-      addToQueue(attachment, caption.value);
-    });
-  }
-};
+const {
+  isDragging,
+  handleDragEnter,
+  handleDragLeave,
+  handleDragOver,
+  handleDrop,
+} = useDragDropZone({
+  onFilesDrop: (files) => addDroppedFiles(files),
+});
 
 const handleKeyDown = (event: KeyboardEvent) => {
   if (
@@ -291,7 +285,7 @@ onUnmounted(() => {
         <!-- modal title -->
         <h3
           :class="[
-            'text-lg font-semibold mb-4',
+            'text-lg font-semibold mb-4 text-app-text',
             isMobile ? 'px-4' : 'px-5 mb-5',
           ]"
         >
@@ -350,28 +344,31 @@ onUnmounted(() => {
         </div>
 
         <!-- Drag and drop area -->
-        <div
+        <DragDropSurface
           v-else
-          :class="[
-            'border-2 border-dashed rounded-md cursor-pointer transition-all duration-200',
-            isMobile ? 'px-4 py-6 mx-4' : 'px-5 py-8 mx-5',
-            isDragging ? 'border-primary bg-primary/10' : 'border-app-border',
-          ]"
+          variant="box"
+          :active="isDragging"
+          title="Перетягніть файли сюди"
+          subtitle="Відпустіть, щоб додати файли"
+          :class="[isMobile ? 'px-4 py-6 mx-4' : 'px-5 py-8 mx-5']"
           @click="openFileDialog"
+          @dragenter="handleDragEnter"
           @dragover.prevent="handleDragOver"
           @dragleave="handleDragLeave"
           @drop.prevent="handleDrop"
         >
-          <p v-if="!isMobile" class="text-app-text-secondary text-center">
-            Перетягніть файли сюди або
-            <span class="font-semibold text-primary"> оберіть файли </span>
-            с комп'ютера
-          </p>
-          <p v-else class="text-app-text-secondary text-center">
-            <span class="font-semibold text-primary">Оберіть файли</span>
-            з пристрою
-          </p>
-        </div>
+          <div class="text-center">
+            <p v-if="!isMobile" class="text-app-text-secondary">
+              Перетягніть файли сюди або
+              <span class="font-semibold text-primary"> оберіть файли </span>
+              з комп'ютера
+            </p>
+            <p v-else class="text-app-text-secondary">
+              <span class="font-semibold text-primary">Оберіть файли</span>
+              з пристрою
+            </p>
+          </div>
+        </DragDropSurface>
 
         <!--Caption input-->
         <TextInput

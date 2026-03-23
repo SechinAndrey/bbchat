@@ -1,18 +1,30 @@
 <script setup lang="ts">
+import { computed, inject, type Ref } from "vue";
 import AnimatedTabs from "@src/ui/navigation/AnimatedTabs/AnimatedTabs.vue";
 import CommonInfoTab from "./CommonInfoTab.vue";
 import CallsTab from "./CallsTab.vue";
 import SetsTab from "./SetsTab.vue";
+import ReportsTab from "./ReportsTab.vue";
 import Button from "@src/ui/inputs/Button.vue";
 import { ChevronLeftIcon } from "@heroicons/vue/24/outline";
 
 defineEmits(["close"]);
 
-const tabsConfig = [
-  { key: "common", name: "Загальна інформація", compact: true },
-  { key: "calls", name: "Дзвінки", compact: true },
-  { key: "sets", name: "Добірки", compact: true },
-];
+const entity = inject<Ref<"leads" | "clients" | "suppliers">>("entity");
+
+const tabsConfig = computed(() => {
+  const tabs = [
+    { key: "common", name: "Загальне", compact: true },
+    { key: "calls", name: "Дзвінки", compact: true },
+    { key: "sets", name: "Добірки", compact: true },
+  ];
+
+  if (entity?.value === "clients") {
+    tabs.push({ key: "reports", name: "Звіти", compact: true });
+  }
+
+  return tabs;
+});
 </script>
 
 <template>
@@ -43,6 +55,10 @@ const tabsConfig = [
 
       <template #sets>
         <SetsTab />
+      </template>
+
+      <template #reports>
+        <ReportsTab />
       </template>
     </AnimatedTabs>
   </div>
