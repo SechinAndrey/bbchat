@@ -306,7 +306,7 @@ const systemMessageText = computed(() => {
           <!--media preview-->
           <MediaPreview
             v-if="echatMessage.media || echatMessage.file || chaport?.file"
-            :media="echatMessage.media || echatMessage.file || chaport?.file"
+            :media="(echatMessage.media || echatMessage.file || chaport?.file)!"
             :attachment-id="props.message.id"
             @open-image-gallery="
               (imageUrl) => {
