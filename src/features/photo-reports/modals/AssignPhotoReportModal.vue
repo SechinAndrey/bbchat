@@ -86,7 +86,7 @@ const contactOptions = computed(() => {
   if (!selectedClient.value?.contacts?.length) return [];
   return selectedClient.value.contacts.map((c) => ({
     value: c.id,
-    label: c.fio,
+    label: c.name,
   }));
 });
 

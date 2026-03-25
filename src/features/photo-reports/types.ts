@@ -16,7 +16,7 @@ export interface SelectedPhoto {
 
 export interface ClientContact {
   id: number;
-  fio: string;
+  name: string;
   phone?: string;
 }
 
