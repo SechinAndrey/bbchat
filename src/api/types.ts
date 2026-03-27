@@ -703,6 +703,7 @@ export interface ApiDefaultMessage {
   id: number;
   message: string;
   category_id: number;
+  disable_delete?: number;
   created_at: string;
   updated_at: string;
 }

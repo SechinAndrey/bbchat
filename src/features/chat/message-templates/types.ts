@@ -4,6 +4,8 @@ export interface MessageTemplate {
   created_at?: string;
   updated_at?: string;
   category_id?: number;
+  category_name?: string;
+  disable_delete?: boolean;
 }
 
 export interface ApiMessageTemplatesResponse {

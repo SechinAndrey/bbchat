@@ -56,6 +56,7 @@ const handleDelete = (templateId: number) => {
         </Button>
 
         <Button
+          v-if="!template.disable_delete"
           variant="text"
           icon-only
           size="sm"

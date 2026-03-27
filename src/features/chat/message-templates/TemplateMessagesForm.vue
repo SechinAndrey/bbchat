@@ -7,6 +7,7 @@ import type { MessageTemplate } from "./types";
 interface Props {
   editingTemplate?: MessageTemplate | null;
   loading?: boolean;
+  showAddButton?: boolean;
 }
 
 interface Emits {
@@ -14,7 +15,10 @@ interface Emits {
   cancel: [];
 }
 
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), {
+  editingTemplate: null,
+  showAddButton: true,
+});
 const emit = defineEmits<Emits>();
 
 const isFormVisible = ref(false);
@@ -65,7 +69,12 @@ const isEditing = () => {
 <template>
   <div class="w-full">
     <!-- Initial state: btn -->
-    <Button v-if="!isFormVisible" variant="text" size="sm" @click="showForm">
+    <Button
+      v-if="!isFormVisible && props.showAddButton"
+      variant="text"
+      size="sm"
+      @click="showForm"
+    >
       + Додати збережене повідомлення
     </Button>
 
