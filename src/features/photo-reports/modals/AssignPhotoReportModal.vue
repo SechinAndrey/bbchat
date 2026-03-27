@@ -19,6 +19,8 @@ import type {
   BoardSlotChange,
 } from "../types";
 import { XMarkIcon } from "@heroicons/vue/24/outline";
+import SimpleMediaModal from "@src/ui/data-display/SimpleMediaModal.vue";
+import { useEventBus } from "@vueuse/core";
 
 const props = defineProps<{
   open: boolean;
@@ -285,6 +287,19 @@ const forceClose = () => {
   store.reset();
   emit("close");
 };
+
+// imgs preview
+
+const showMediaModal = ref(false);
+
+const openImgsModalEvent = useEventBus<string>("photoreport:open-imgs-modal");
+
+const imgs = ref<string[]>([]);
+
+openImgsModalEvent.on((photoUrl: string) => {
+  imgs.value = [photoUrl];
+  showMediaModal.value = true;
+});
 </script>
 
 <template>
@@ -494,4 +509,10 @@ const forceClose = () => {
       Фото ще зберігаються. Якщо закрити зараз, збереження буде перервано.
     </template>
   </ConfirmModal>
+
+  <SimpleMediaModal
+    :open="showMediaModal"
+    :image-urls="imgs"
+    @close="showMediaModal = false"
+  />
 </template>

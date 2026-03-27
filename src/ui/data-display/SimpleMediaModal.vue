@@ -6,11 +6,18 @@ import {
   ChevronRightIcon,
 } from "@heroicons/vue/24/solid";
 
-const props = defineProps<{
-  open: boolean;
-  imageUrls: string[];
-  startingIndex?: number;
-}>();
+const props = withDefaults(
+  defineProps<{
+    open: boolean;
+    imageUrls: string[];
+    startingIndex?: number;
+    showArrows?: boolean;
+  }>(),
+  {
+    startingIndex: 0,
+    showArrows: true,
+  },
+);
 
 const emit = defineEmits<{
   close: [];
@@ -70,60 +77,62 @@ watch(
 </script>
 
 <template>
-  <!-- Modal Overlay -->
-  <div
-    v-if="open && imageUrls.length > 0"
-    class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90"
-    @click="emit('close')"
-  >
-    <!-- Close Button -->
-    <button
-      class="absolute top-4 right-4 z-60 p-2 text-white hover:text-gray-300 transition-colors"
-      aria-label="Закрити"
+  <Teleport to="body">
+    <!-- Modal Overlay -->
+    <div
+      v-if="open && imageUrls.length > 0"
+      class="fixed inset-0 z-[200] flex items-center justify-center bg-black bg-opacity-90"
       @click="emit('close')"
     >
-      <XMarkIcon class="h-6 w-6" />
-    </button>
+      <!-- Close Button -->
+      <button
+        class="absolute top-4 right-4 z-[201] p-2 text-white hover:text-gray-300 transition-colors"
+        aria-label="Закрити"
+        @click="emit('close')"
+      >
+        <XMarkIcon class="h-6 w-6" />
+      </button>
 
-    <!-- Navigation Buttons -->
-    <button
-      v-if="canGoPrevious"
-      class="absolute left-4 top-1/2 transform -translate-y-1/2 z-60 p-3 text-white hover:text-gray-300 hover:bg-black hover:bg-opacity-50 rounded-full transition-all"
-      aria-label="Попереднє зображення"
-      @click.stop="goToPrevious"
-    >
-      <ChevronLeftIcon class="h-8 w-8" />
-    </button>
+      <!-- Navigation Buttons -->
+      <button
+        v-if="canGoPrevious && props.showArrows"
+        class="absolute left-4 top-1/2 transform -translate-y-1/2 z-[201] p-3 text-white hover:text-gray-300 hover:bg-black hover:bg-opacity-50 rounded-full transition-all"
+        aria-label="Попереднє зображення"
+        @click.stop="goToPrevious"
+      >
+        <ChevronLeftIcon class="h-8 w-8" />
+      </button>
 
-    <button
-      v-if="canGoNext"
-      class="absolute right-4 top-1/2 transform -translate-y-1/2 z-60 p-3 text-white hover:text-gray-300 hover:bg-black hover:bg-opacity-50 rounded-full transition-all"
-      aria-label="Наступне зображення"
-      @click.stop="goToNext"
-    >
-      <ChevronRightIcon class="h-8 w-8" />
-    </button>
+      <button
+        v-if="canGoNext && props.showArrows"
+        class="absolute right-4 top-1/2 transform -translate-y-1/2 z-[201] p-3 text-white hover:text-gray-300 hover:bg-black hover:bg-opacity-50 rounded-full transition-all"
+        aria-label="Наступне зображення"
+        @click.stop="goToNext"
+      >
+        <ChevronRightIcon class="h-8 w-8" />
+      </button>
 
-    <!-- Image Content -->
-    <div
-      class="max-w-[90vw] max-h-[90vh] flex items-center justify-center"
-      @click.stop
-    >
-      <img
-        :src="currentImageUrl"
-        alt="Зображення"
-        class="max-w-[90vw] max-h-[85vh] object-contain rounded-lg"
-        style="opacity: 0; transition: opacity 0.3s ease"
-        @load="($event.target as HTMLImageElement).style.opacity = '1'"
-      />
+      <!-- Image Content -->
+      <div
+        class="max-w-[90vw] max-h-[90vh] flex items-center justify-center"
+        @click.stop
+      >
+        <img
+          :src="currentImageUrl"
+          alt="Зображення"
+          class="max-w-[90vw] max-h-[85vh] object-contain rounded-lg"
+          style="opacity: 0; transition: opacity 0.3s ease"
+          @load="($event.target as HTMLImageElement).style.opacity = '1'"
+        />
+      </div>
+
+      <!-- Image Counter -->
+      <div
+        v-if="imageUrls.length > 1"
+        class="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-50 text-white px-3 py-1 rounded-full text-sm"
+      >
+        {{ currentIndex + 1 }} / {{ imageUrls.length }}
+      </div>
     </div>
-
-    <!-- Image Counter -->
-    <div
-      v-if="imageUrls.length > 1"
-      class="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-50 text-white px-3 py-1 rounded-full text-sm"
-    >
-      {{ currentIndex + 1 }} / {{ imageUrls.length }}
-    </div>
-  </div>
+  </Teleport>
 </template>

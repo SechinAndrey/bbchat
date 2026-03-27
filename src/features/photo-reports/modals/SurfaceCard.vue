@@ -5,6 +5,9 @@ import Select from "@src/ui/inputs/Select.vue";
 import SlotStatusBadge from "../components/SlotStatusBadge.vue";
 import type { Board, PhotoSlotType, SlotStatus } from "../types";
 import { SLOT_TYPES, PHOTO_SLOT_LABELS } from "../types";
+import { useEventBus } from "@vueuse/core";
+
+const openImgsModalEvent = useEventBus<string>("photoreport:open-imgs-modal");
 
 const props = defineProps<{
   board: Board;
@@ -53,6 +56,10 @@ const getSlotTypeValue = (slotType: PhotoSlotType): PhotoSlotType => {
   if (assignment) return assignment.type;
   return props.selectedSlotTypes.get(assignmentKey(slotType)) || slotType;
 };
+
+const openImg = (photoUrl: string) => {
+  openImgsModalEvent.emit(photoUrl);
+};
 </script>
 
 <template>
@@ -69,7 +76,8 @@ const getSlotTypeValue = (slotType: PhotoSlotType): PhotoSlotType => {
           v-if="board.board_photo"
           :src="board.board_photo"
           alt=""
-          class="w-full h-full object-cover"
+          class="w-full h-full object-cover cursor-pointer"
+          @click="openImg(board.board_photo)"
         />
         <PhotoIcon v-else class="w-6 h-6 text-app-text-secondary" />
       </div>
