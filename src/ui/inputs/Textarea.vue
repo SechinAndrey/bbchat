@@ -71,8 +71,12 @@ const adjustHeight = () => {
   const paddingTop = parseInt(style.paddingTop);
   const paddingBottom = parseInt(style.paddingBottom);
 
+  const minHeight = lineHeight * props.rows + paddingTop + paddingBottom;
   const maxHeight = lineHeight * props.maxRows + paddingTop + paddingBottom;
-  const newHeight = Math.min(textarea.scrollHeight, maxHeight);
+  const newHeight = Math.min(
+    Math.max(textarea.scrollHeight, minHeight),
+    maxHeight,
+  );
   textarea.style.height = `${newHeight}px`;
 
   textarea.style.overflowY =

@@ -6,10 +6,9 @@ import {
   useSwipe,
   useWindowSize,
 } from "@vueuse/core";
-import { PhotoIcon } from "@heroicons/vue/24/outline";
 import PhotoSlotPickerContent from "./PhotoSlotPickerContent.vue";
 import type { SelectedPhoto } from "../types";
-import { PHOTO_SLOT_LABELS, type PhotoSlotType } from "../types";
+import type { PhotoSlotType } from "../types";
 
 const props = defineProps<{
   open: boolean;
@@ -22,6 +21,7 @@ const props = defineProps<{
   etalonPhoto?: string | null;
   showNavigation?: boolean;
   anchorEl?: HTMLElement | null;
+  supplierWarning?: string | null;
 }>();
 
 const emit = defineEmits<{
@@ -286,6 +286,7 @@ watch(
               :current-photo-url="currentPhotoUrl"
               :show-navigation="showNavigation"
               :grid-class="desktopGridCols"
+              :supplier-warning="supplierWarning"
               show-slot-label
               @select="handleSelect"
               @clear="emit('clear')"
@@ -330,39 +331,21 @@ watch(
               @click.stop
             >
               <!-- Etalon + type label above sheet -->
-              <div class="mb-5 pointer-events-none">
+              <div v-if="etalonPhoto" class="mb-5 pointer-events-none">
                 <div class="relative flex flex-col items-center">
                   <div
-                    class="absolute -bottom-2 h-7 w-28 rounded-full bg-primary blur-xl"
-                  />
-
-                  <div
-                    class="relative w-[8.5rem] h-[8.5rem] rounded-2xl border border-app-border bg-app-bg p-1 shadow-lg"
+                    class="relative w-[8.5rem] h-[8.5rem] rounded-2xl border border-app-border bg-app-bg p-1"
                   >
                     <div
                       class="w-full h-full rounded-xl overflow-hidden bg-app-bg flex items-center justify-center"
                     >
                       <img
-                        v-if="etalonPhoto"
                         :src="etalonPhoto"
                         alt="Еталон"
                         class="w-full h-full object-cover"
                       />
-                      <div
-                        v-else
-                        class="w-full h-full flex flex-col items-center justify-center gap-1 text-app-text-secondary"
-                      >
-                        <PhotoIcon class="w-8 h-8" />
-                        <span class="text-[11px] font-medium">Еталон</span>
-                      </div>
                     </div>
                   </div>
-
-                  <span
-                    class="relative -mt-3 inline-flex items-center rounded-full border border-app-border bg-app-bg px-3 py-1 text-xs font-semibold text-app-text shadow-sm"
-                  >
-                    {{ PHOTO_SLOT_LABELS[slotType] }}
-                  </span>
                 </div>
               </div>
 
@@ -390,6 +373,8 @@ watch(
                     :available-photos="availablePhotos"
                     :current-photo-url="currentPhotoUrl"
                     :show-navigation="showNavigation"
+                    :supplier-warning="supplierWarning"
+                    show-slot-label
                     photo-rounding="rounded-lg"
                     @select="handleSelect"
                     @clear="emit('clear')"

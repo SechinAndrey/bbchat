@@ -23,6 +23,7 @@ export const usePhotoReportsStore = defineStore("photoReports", () => {
   const clients = ref<ClientSearchResult[]>([]);
   const periods = ref<ClientPeriod[]>([]);
   const boards = ref<Board[]>([]);
+  const allBoards = ref<Board[]>([]);
 
   const isLoadingClients = ref(false);
   const isLoadingPeriods = ref(false);
@@ -62,11 +63,15 @@ export const usePhotoReportsStore = defineStore("photoReports", () => {
     }
   };
 
-  const loadBoards = async (clientId: number, ym: string) => {
+  const loadBoards = async (clientId: number, ym: string, supplierId?: number) => {
     isLoadingBoards.value = true;
     currentYm.value = ym;
     try {
-      boards.value = await photoReportsService.getBoards(clientId, ym);
+      boards.value = await photoReportsService.getBoards(clientId, ym, supplierId);
+      // Keep unfiltered list for supplier options (only when no filter applied)
+      if (supplierId === undefined) {
+        allBoards.value = boards.value;
+      }
       const ids = new Map<number, number>();
       for (const board of boards.value) {
         if (board.photoreport_id !== null) {
@@ -171,6 +176,7 @@ export const usePhotoReportsStore = defineStore("photoReports", () => {
 
   const reset = () => {
     boards.value = [];
+    allBoards.value = [];
     currentYm.value = null;
     boardPhotoreportIds.value = new Map();
     saveProgress.value = null;
@@ -180,6 +186,7 @@ export const usePhotoReportsStore = defineStore("photoReports", () => {
     clients,
     periods,
     boards,
+    allBoards,
     isLoadingClients,
     isLoadingPeriods,
     isLoadingBoards,

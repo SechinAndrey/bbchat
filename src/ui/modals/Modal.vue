@@ -233,70 +233,98 @@ watch(
     >
       <!--modal with overlay-->
       <Transition name="backdrop-fade">
-      <div
-        v-show="isBackdropVisible"
-        id="close-modal"
-        ref="modal"
-        :class="[
-          'fixed inset-0 z-[99] h-full flex text-center modal-backdrop',
-          props.fullscreen
-            ? 'bg-black bg-opacity-20'
-            : 'bg-black bg-opacity-60',
-          isMobile
-            ? 'items-end justify-center overflow-hidden'
-            : 'items-center justify-center sm:items-center overflow-hidden',
-          { 'p-4 sm:p-0': !props.noPadding && !isMobile && !props.fullscreen },
-        ]"
-        @mousedown="handleBackdropInteraction"
-        @touch="handleBackdropInteraction"
-        @dragenter.stop
-        @dragleave.stop
-        @dragover.stop.prevent
-        @drop.stop.prevent
-        @keydown.esc.stop.prevent="handleEscKey"
-      >
-        <!--content container-->
-        <Transition
-          :name="isMobile ? 'modal-slide-mobile' : 'modal-slide-desktop'"
+        <div
+          v-show="isBackdropVisible"
+          id="close-modal"
+          ref="modal"
+          :class="[
+            'fixed inset-0 z-[99] h-full flex text-center modal-backdrop',
+            props.fullscreen
+              ? 'bg-black bg-opacity-20'
+              : 'bg-black bg-opacity-60',
+            isMobile
+              ? 'items-end justify-center overflow-hidden'
+              : 'items-center justify-center sm:items-center overflow-hidden',
+            {
+              'p-4 sm:p-0': !props.noPadding && !isMobile && !props.fullscreen,
+            },
+          ]"
+          @mousedown="handleBackdropInteraction"
+          @touch="handleBackdropInteraction"
+          @dragenter.stop
+          @dragleave.stop
+          @dragover.stop.prevent
+          @drop.stop.prevent
+          @keydown.esc.stop.prevent="handleEscKey"
         >
-          <div
-            v-show="isContentVisible"
-            ref="contentContainer"
-            :class="[
-              'relative bg-app-bg z-[99]',
-              props.fullscreen
-                ? 'w-full h-full'
-                : isMobile
-                  ? 'w-full max-h-[90vh] rounded-t-lg shadow-xl'
-                  : 'rounded-[8px] max-h-[90vh] shadow-2xl border-0 outline-none',
-            ]"
-            :style="contentStyle"
-            @click.stop
+          <!--content container-->
+          <Transition
+            :name="isMobile ? 'modal-slide-mobile' : 'modal-slide-desktop'"
           >
-            <!-- iOS-style handle for mobile (not in fullscreen) -->
             <div
-              v-if="isMobile && !props.fullscreen"
-              ref="handleRef"
-              class="flex justify-center py-3 cursor-grab active:cursor-grabbing touch-none"
-              style="touch-action: none"
+              v-show="isContentVisible"
+              ref="contentContainer"
+              :class="[
+                'relative bg-app-bg z-[99]',
+                props.fullscreen
+                  ? 'w-full h-full'
+                  : isMobile
+                    ? 'w-full max-h-[90vh] rounded-t-lg shadow-xl'
+                    : 'rounded-[8px] max-h-[90vh] shadow-2xl border-0 outline-none',
+              ]"
+              :style="contentStyle"
+              @click.stop
             >
+              <!-- iOS-style handle for mobile (not in fullscreen) -->
               <div
-                class="w-10 h-1 bg-gray-300 dark:bg-gray-600 rounded-full"
-              ></div>
-            </div>
-
-            <div
-              v-if="!props.fullscreen && !props.disableScroll"
-              :class="['flex flex-col', { 'pb-safe': isMobile }]"
-              :style="{
-                maxHeight: isMobile ? 'calc(90vh - 3rem)' : 'calc(90vh - 2rem)',
-                minHeight: '0',
-              }"
-            >
-              <div
-                ref="scrollContainer"
-                class="flex-1 overflow-y-auto overscroll-contain modal-content-scroll"
+                v-if="isMobile && !props.fullscreen"
+                ref="handleRef"
+                class="flex justify-center py-3 cursor-grab active:cursor-grabbing touch-none"
+                style="touch-action: none"
               >
+                <div
+                  class="w-10 h-1 bg-gray-300 dark:bg-gray-600 rounded-full"
+                ></div>
+              </div>
+
+              <div
+                v-if="!props.fullscreen && !props.disableScroll"
+                :class="['flex flex-col', { 'pb-safe': isMobile }]"
+                :style="{
+                  maxHeight: isMobile
+                    ? 'calc(90vh - 3rem)'
+                    : 'calc(90vh - 2rem)',
+                  minHeight: '0',
+                }"
+              >
+                <div
+                  ref="scrollContainer"
+                  class="flex-1 overflow-y-auto overscroll-contain modal-content-scroll"
+                >
+                  <span ref="initialFocusEl" tabindex="-1"></span>
+
+                  <div
+                    v-if="$slots.header || $slots.body || $slots.footer"
+                    class="p-6"
+                  >
+                    <div v-if="$slots.header" class="text-center mb-6">
+                      <slot name="header"></slot>
+                    </div>
+
+                    <div v-if="$slots.body" class="mb-6">
+                      <slot name="body"></slot>
+                    </div>
+
+                    <div v-if="$slots.footer" class="flex gap-3">
+                      <slot name="footer"></slot>
+                    </div>
+                  </div>
+
+                  <slot v-else name="content"></slot>
+                </div>
+              </div>
+
+              <div v-else :class="props.fullscreen ? 'w-full h-full' : ''">
                 <span ref="initialFocusEl" tabindex="-1"></span>
 
                 <div
@@ -319,33 +347,9 @@ watch(
                 <slot v-else name="content"></slot>
               </div>
             </div>
-
-            <div v-else :class="props.fullscreen ? 'w-full h-full' : ''">
-              <span ref="initialFocusEl" tabindex="-1"></span>
-
-              <div
-                v-if="$slots.header || $slots.body || $slots.footer"
-                class="p-6"
-              >
-                <div v-if="$slots.header" class="text-center mb-6">
-                  <slot name="header"></slot>
-                </div>
-
-                <div v-if="$slots.body" class="mb-6">
-                  <slot name="body"></slot>
-                </div>
-
-                <div v-if="$slots.footer" class="flex gap-3">
-                  <slot name="footer"></slot>
-                </div>
-              </div>
-
-              <slot v-else name="content"></slot>
-            </div>
-          </div>
-        </Transition>
-      </div>
-    </Transition>
+          </Transition>
+        </div>
+      </Transition>
     </div>
   </Teleport>
 </template>

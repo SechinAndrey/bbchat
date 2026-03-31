@@ -13,14 +13,14 @@ import SurfacePhotoMapper from "./SurfacePhotoMapper.vue";
 import { usePhotoReportsStore } from "../photo-reports-store";
 import type { SaveProgressCallback } from "../photo-reports-store";
 import { useToast } from "@src/shared/composables/useToast";
-import type {
-  SelectedPhoto,
-  CommunicationChannel,
-  BoardSlotChange,
-} from "../types";
+import type { SelectedPhoto, BoardSlotChange } from "../types";
 import { XMarkIcon } from "@heroicons/vue/24/outline";
 import SimpleMediaModal from "@src/ui/data-display/SimpleMediaModal.vue";
 import { useEventBus } from "@vueuse/core";
+import {
+  useSendMessageModal,
+  SendMessageModal,
+} from "@src/features/chat/modals/SendMessageModal";
 
 const props = defineProps<{
   open: boolean;
@@ -38,11 +38,11 @@ const emit = defineEmits<{
 
 const store = usePhotoReportsStore();
 const { toastSuccess, toastError } = useToast();
+const sendMessageModal = useSendMessageModal();
 
 const selectedClientId = ref<string | number>("");
 const selectedYm = ref<string>("");
-const selectedContactId = ref<string | number>("");
-const selectedChannelId = ref<string | number>("");
+const selectedSupplierId = ref<string | number>("");
 const sendToClient = ref(false);
 const mapperRef = ref<InstanceType<typeof SurfacePhotoMapper> | null>(null);
 const internalMode = ref<"create" | "view" | "edit">(props.mode ?? "create");
@@ -74,39 +74,19 @@ const periodOptions = computed(() =>
   })),
 );
 
-const selectedClient = computed(() =>
-  store.clients.find((c) => c.id === Number(selectedClientId.value)),
-);
-
-const selectedContact = computed(() =>
-  selectedClient.value?.contacts?.find(
-    (c) => c.id === Number(selectedContactId.value),
-  ),
-);
-
-const contactOptions = computed(() => {
-  if (!selectedClient.value?.contacts?.length) return [];
-  return selectedClient.value.contacts.map((c) => ({
-    value: c.id,
-    label: c.name,
-  }));
-});
-
-const channelOptions = computed(
-  (): { value: CommunicationChannel; label: string }[] => {
-    const contact = selectedContact.value;
-    if (!contact) return [];
-    const options: { value: CommunicationChannel; label: string }[] = [];
-    if (contact.phone) {
-      options.push({ value: "viber", label: `Viber • ${contact.phone}` });
-      options.push({
-        value: "telegram",
-        label: `Telegram • ${contact.phone}`,
-      });
-    }
-    return options;
-  },
-);
+const supplierOptions = computed(() => [
+  ...new Map(
+    store.allBoards
+      .filter((b) => b.supplier_id != null)
+      .map((b) => [
+        b.supplier_id,
+        {
+          value: b.supplier_id as number,
+          label: b.supplier_name ?? String(b.supplier_id),
+        },
+      ]),
+  ).values(),
+]);
 
 const showMapper = computed(() => {
   if (internalMode.value !== "create") return store.boards.length > 0;
@@ -141,8 +121,6 @@ whenever(
 
 watch(selectedClientId, async (clientId) => {
   selectedYm.value = "";
-  selectedContactId.value = "";
-  selectedChannelId.value = "";
   store.boards = [];
 
   if (clientId) {
@@ -150,14 +128,25 @@ watch(selectedClientId, async (clientId) => {
   }
 });
 
-watch(selectedContactId, () => {
-  selectedChannelId.value = "";
-});
-
 watch(selectedYm, async (ym) => {
   if (ym && selectedClientId.value) {
+    selectedSupplierId.value = "";
     await store.loadBoards(Number(selectedClientId.value), ym);
   }
+});
+
+watch(selectedSupplierId, async (supplierId) => {
+  const clientId =
+    internalMode.value === "create"
+      ? Number(selectedClientId.value)
+      : props.clientId;
+  const ym = internalMode.value === "create" ? selectedYm.value : props.ym;
+  if (!clientId || !ym) return;
+  await store.loadBoards(
+    clientId,
+    ym,
+    supplierId ? Number(supplierId) : undefined,
+  );
 });
 
 const createProgressCallback = (): SaveProgressCallback => {
@@ -177,25 +166,15 @@ const handleSave = async () => {
     return;
   }
 
-  if (
-    sendToClient.value &&
-    (!selectedContactId.value || !selectedChannelId.value)
-  ) {
-    toastError("Оберіть контакт і канал зв'язку");
-    return;
-  }
+  const effectiveClientId =
+    internalMode.value === "create"
+      ? Number(selectedClientId.value)
+      : props.clientId;
 
   try {
-    const sendParams = sendToClient.value
-      ? {
-          contact_id: Number(selectedContactId.value),
-          channel: selectedChannelId.value as CommunicationChannel,
-        }
-      : undefined;
-
     const { failedItems: failed } = await store.processSaveQueue(
       changedSlots,
-      sendParams,
+      undefined,
       createProgressCallback(),
     );
 
@@ -206,12 +185,28 @@ const handleSave = async () => {
       return;
     }
 
-    const message = sendToClient.value
-      ? "Фотозвіт збережено та надіслано клієнту"
-      : "Фотозвіт збережено";
-    toastSuccess(message);
+    if (sendToClient.value) {
+      const ym =
+        internalMode.value === "create" ? selectedYm.value : props.ym ?? "";
+      let messageTemplate: string | undefined;
+      try {
+        const templateResponse = await store.getMessageTemplate(
+          effectiveClientId!,
+          ym,
+        );
+        messageTemplate = templateResponse.message;
+      } catch {
+      }
+      sendMessageModal.open({
+        entityType: "client",
+        entityId: effectiveClientId,
+        messageTemplate,
+      });
+      return;
+    }
+
+    toastSuccess("Фотозвіт збережено");
     emit("saved");
-    // Small delay so the last slot's checkmark animation is visible before closing
     setTimeout(() => forceClose(), 2200);
   } catch (error) {
     console.error("Error saving photo report:", error);
@@ -280,8 +275,7 @@ const handleCloseConfirm = () => {
 const forceClose = () => {
   selectedClientId.value = "";
   selectedYm.value = "";
-  selectedContactId.value = "";
-  selectedChannelId.value = "";
+  selectedSupplierId.value = "";
   sendToClient.value = false;
   failedItems.value = [];
   store.reset();
@@ -367,7 +361,7 @@ openImgsModalEvent.on((photoUrl: string) => {
           <div class="space-y-4">
             <div
               v-if="internalMode === 'create'"
-              class="grid grid-cols-1 md:grid-cols-2 gap-4"
+              class="grid grid-cols-1 md:grid-cols-3 gap-4"
             >
               <AutocompleteSelect
                 v-model="selectedClientId"
@@ -387,13 +381,32 @@ openImgsModalEvent.on((photoUrl: string) => {
                 variant="bordered"
                 searchable
               />
+
+              <AutocompleteSelect
+                v-model="selectedSupplierId"
+                :options="supplierOptions"
+                placeholder="Підрядник"
+                :disabled="
+                  !selectedYm || store.isSaving || store.isLoadingBoards
+                "
+                variant="bordered"
+              />
             </div>
 
-            <div v-if="store.isLoadingBoards" class="py-8 flex justify-center">
+            <div
+              v-if="store.isLoadingBoards && !showMapper"
+              class="py-8 flex justify-center"
+            >
               <Spinner />
             </div>
 
-            <div v-if="showMapper">
+            <div v-if="showMapper" class="relative">
+              <div
+                v-if="store.isLoadingBoards"
+                class="absolute inset-0 z-10 flex items-center justify-center bg-app-bg/60 rounded"
+              >
+                <Spinner />
+              </div>
               <SurfacePhotoMapper
                 ref="mapperRef"
                 :photos="photos"
@@ -411,25 +424,6 @@ openImgsModalEvent.on((photoUrl: string) => {
         >
           <!-- create mode -->
           <template v-if="internalMode === 'create'">
-            <div
-              v-if="sendToClient && selectedClientId"
-              class="grid grid-cols-1 md:grid-cols-2 gap-3"
-            >
-              <AutocompleteSelect
-                v-model="selectedContactId"
-                :options="contactOptions"
-                placeholder="Контакт"
-                :disabled="store.isSaving"
-                variant="bordered"
-              />
-              <AutocompleteSelect
-                v-model="selectedChannelId"
-                :options="channelOptions"
-                placeholder="Канал зв'язку"
-                :disabled="!selectedContactId || store.isSaving"
-                variant="bordered"
-              />
-            </div>
             <div class="flex items-center justify-between">
               <Checkbox v-model="sendToClient" label="Надіслати звіт клієнту" />
               <div class="flex items-center gap-3">
@@ -515,4 +509,6 @@ openImgsModalEvent.on((photoUrl: string) => {
     :image-urls="imgs"
     @close="showMediaModal = false"
   />
+
+  <SendMessageModal />
 </template>

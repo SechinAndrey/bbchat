@@ -29,10 +29,13 @@ class PhotoReportsService {
   }
 
   async getClientPeriods(clientId: number): Promise<ClientPeriod[]> {
+    const now = new Date();
+    const maxYm =
+      String(now.getFullYear()) + String(now.getMonth() + 1).padStart(2, "0");
     try {
       const response = await apiClient.get<{ data: ClientPeriod[] }>(
         "/communicator/photoreports/periods",
-        { params: { client_id: clientId } },
+        { params: { client_id: clientId, max_ym: maxYm } },
       );
       const data = response.data.data.map((p) => ({ ...p, ym: String(p.ym) }));
       console.log("[photoreports/periods]", data);
@@ -43,11 +46,23 @@ class PhotoReportsService {
     }
   }
 
-  async getBoards(clientId: number, ym: string): Promise<Board[]> {
+  async getBoards(
+    clientId: number,
+    ym: string,
+    supplierId?: number,
+  ): Promise<Board[]> {
     try {
+      const params: Record<string, unknown> = {
+        client_id: clientId,
+        ym,
+        per_page: 100,
+      };
+      if (supplierId !== undefined) {
+        params.supplier_id = supplierId;
+      }
       const response = await apiClient.get<{ data: Board[] }>(
         "/communicator/photoreports/boards",
-        { params: { client_id: clientId, ym, per_page: 100 } },
+        { params },
       );
       console.log("[photoreports/boards]", response.data.data);
       return response.data.data;

@@ -19,6 +19,8 @@ import {
 const props = defineProps<{
   media: string;
   attachmentId?: number;
+  supplierId?: number | null;
+  supplierName?: string | null;
 }>();
 
 const emit = defineEmits<{
@@ -36,7 +38,7 @@ const handleImageClick = () => {
     isImage(props.media) &&
     props.attachmentId
   ) {
-    photoSelection.togglePhoto(props.media, props.media, props.attachmentId);
+    photoSelection.togglePhoto(props.media, props.media, props.attachmentId, props.supplierId, props.supplierName);
     return;
   }
 

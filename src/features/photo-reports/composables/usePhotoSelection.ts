@@ -7,12 +7,14 @@ export interface PhotoSelectionContext {
   selectedPhotos: Ref<Map<string, SelectedPhoto>>;
   selectedPhotosArray: ComputedRef<SelectedPhoto[]>;
   selectedCount: ComputedRef<number>;
-  togglePhoto: (url: string, thumbnail: string, messageId: number) => void;
+  togglePhoto: (url: string, thumbnail: string, messageId: number, supplierId?: number | null, supplierName?: string | null) => void;
   isPhotoSelected: (url: string) => boolean;
   enterSelectionMode: (
     url: string,
     thumbnail: string,
     messageId: number,
+    supplierId?: number | null,
+    supplierName?: string | null,
   ) => void;
   exitSelectionMode: () => void;
 }
@@ -31,12 +33,12 @@ export function usePhotoSelection(): PhotoSelectionContext {
 
   const selectedCount = computed(() => selectedPhotos.value.size);
 
-  const togglePhoto = (url: string, thumbnail: string, messageId: number) => {
+  const togglePhoto = (url: string, thumbnail: string, messageId: number, supplierId?: number | null, supplierName?: string | null) => {
     const map = new Map(selectedPhotos.value);
     if (map.has(url)) {
       map.delete(url);
     } else {
-      map.set(url, { url, thumbnail, messageId });
+      map.set(url, { url, thumbnail, messageId, supplier_id: supplierId, supplier_name: supplierName });
     }
     selectedPhotos.value = map;
   };
@@ -49,10 +51,12 @@ export function usePhotoSelection(): PhotoSelectionContext {
     url: string,
     thumbnail: string,
     messageId: number,
+    supplierId?: number | null,
+    supplierName?: string | null,
   ) => {
     isSelectionMode.value = true;
     const map = new Map<string, SelectedPhoto>();
-    map.set(url, { url, thumbnail, messageId });
+    map.set(url, { url, thumbnail, messageId, supplier_id: supplierId, supplier_name: supplierName });
     selectedPhotos.value = map;
   };
 

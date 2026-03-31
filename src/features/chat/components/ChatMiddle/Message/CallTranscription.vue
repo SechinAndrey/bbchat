@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import DOMPurify from "dompurify";
 import { ref } from "vue";
 import Button from "@src/ui/inputs/Button.vue";
 import callService from "@src/shared/services/call-service";
@@ -57,9 +58,10 @@ const getTranscription = async () => {
     <CollapseTransition>
       <div v-if="unfoldedSummary" class="w-full">
         <hr class="w-full my-4 border-app-border" />
+        <!-- eslint-disable-next-line vue/no-v-html -->
         <div
           class="markdown-content text-[0.813rem] leading-relaxed"
-          v-html="formattedSummary"
+          v-html="DOMPurify.sanitize(formattedSummary)"
         ></div>
 
         <!-- Full Transcription Section -->
@@ -69,7 +71,11 @@ const getTranscription = async () => {
             <div class="text-app-text-secondary text-[0.813rem] mb-2">
               Повна транскрипція:
             </div>
-            <div class="text-[0.813rem]" v-html="formattedTranscription"></div>
+            <!-- eslint-disable-next-line vue/no-v-html -->
+            <div
+              class="text-[0.813rem]"
+              v-html="DOMPurify.sanitize(formattedTranscription)"
+            ></div>
           </div>
         </CollapseTransition>
 

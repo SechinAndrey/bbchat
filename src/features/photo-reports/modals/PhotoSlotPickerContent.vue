@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import DOMPurify from "dompurify";
 import { ArrowUpTrayIcon, XMarkIcon } from "@heroicons/vue/24/outline";
 import Button from "@src/ui/inputs/Button.vue";
 import type { SelectedPhoto, PhotoSlotType } from "../types";
@@ -15,6 +16,7 @@ defineProps<{
   gridClass?: string;
   photoRounding?: string;
   showSlotLabel?: boolean;
+  supplierWarning?: string | null;
 }>();
 
 const emit = defineEmits<{
@@ -66,6 +68,14 @@ const emit = defineEmits<{
         </template>
       </Button>
     </div>
+  </div>
+
+  <div
+    v-if="supplierWarning"
+    class="bg-secondary-lighter text-app-text mb-3 flex items-start gap-2 rounded-md px-3 py-2 text-xs"
+  >
+    <!-- eslint-disable-next-line vue/no-v-html -->
+    <span v-html="DOMPurify.sanitize(supplierWarning ?? '')"></span>
   </div>
 
   <div v-if="availablePhotos.length === 0" class="py-6 text-center">

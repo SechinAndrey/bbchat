@@ -26,5 +26,41 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "prettier.requireConfig": false,
-  "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact", "vue"]
+  "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact", "vue"],
+  "kiroAgent.configureMCP": "Disabled",
+
+  "workbench.colorCustomizations": {
+    // Activity Bar
+    // "activityBar.background": "#12131f",
+    // "activityBar.foreground": "#99a5ff",
+    // "activityBar.inactiveForeground": "#4a4f70",
+    // "activityBar.activeBorder": "#99a5ff",
+    // "activityBar.activeBackground": "#1c1e30",
+    // "activityBarBadge.background": "#8e99f3",
+    // "activityBarBadge.foreground": "#12131f",
+
+    // Title Bar
+    // "titleBar.activeBackground": "#181a2a",
+    // "titleBar.activeForeground": "#c8cdee",
+    // "titleBar.inactiveBackground": "#12131f",
+    // "titleBar.inactiveForeground": "#5a5f80",
+    // "titleBar.border": "#282c45",
+
+    // Command Center
+    // "commandCenter.foreground": "#a8b0d4",
+    // "commandCenter.background": "#1c1e30",
+    // "commandCenter.border": "#363a55",
+    // "commandCenter.activeBackground": "#262a42",
+    // "commandCenter.activeForeground": "#99a5ff",
+    // "commandCenter.activeBorder": "#99a5ff",
+
+    // Toolbar icons (кнопки агента/чата/сессий рядом с Command Center)
+    // "toolbar.hoverBackground": "#262a42",
+    // "toolbar.hoverOutline": "#99a5ff",
+    // "toolbar.activeBackground": "#1c1e30",
+
+    "statusBar.background": "#22253e",
+    // statusBar text
+    "statusBar.foreground": "#a8b1fc"
+  }
 }

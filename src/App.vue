@@ -13,6 +13,7 @@ import { Capacitor } from "@capacitor/core";
 import { useEventBus } from "@vueuse/core";
 import { usePWAUpdate } from "@src/shared/composables/usePWAUpdate";
 import PWAUpdatePrompt from "@src/shared/components/PWAUpdatePrompt.vue";
+import { SendMessageModal } from "@src/features/chat/modals/SendMessageModal";
 
 const loginEvent = useEventBus("auth:login");
 
@@ -188,6 +189,8 @@ onUnmounted(() => {
         @update="updateApp"
         @dismiss="dismissUpdate"
       />
+
+      <SendMessageModal />
     </div>
   </ThemeProvider>
 </template>

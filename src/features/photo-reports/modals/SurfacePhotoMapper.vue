@@ -569,6 +569,23 @@ const pickerAvailablePhotos = computed(() => {
   return available;
 });
 
+// Warning shown when the open slot's board supplier differs from the photo pool supplier
+const supplierWarning = computed((): string | null => {
+  if (!isPickerOpen.value) return null;
+  const board = props.boards.find((b) => b.board_id === pickerBoardId.value);
+  if (!board?.supplier_id) return null;
+
+  const mismatchedPhoto = pickerAvailablePhotos.value.find(
+    (p) => p.supplier_id != null && p.supplier_id !== board.supplier_id,
+  );
+  if (!mismatchedPhoto) return null;
+
+  const suplierFromSpan = `<span class="font-semibold text-secondary">${mismatchedPhoto.supplier_name}</span>`;
+  const suplierToSpan = `<span class="font-semibold text-info">${board.supplier_name}</span>`;
+
+  return `Зверніть увагу в пул додано фото від підрядника ${suplierFromSpan} а обрана дошка від ${suplierToSpan}?`;
+});
+
 // Build diff: only changed/deleted slots
 const getChangedSlots = (): BoardSlotChange[] => {
   const changes: BoardSlotChange[] = [];
@@ -811,6 +828,7 @@ defineExpose({
       :etalon-photo="pickerEtalonPhoto"
       :show-navigation="showPickerNavigation"
       :anchor-el="pickerAnchorEl"
+      :supplier-warning="supplierWarning"
       @close="finishSequential"
       @select="handlePhotoSelect"
       @clear="handleClearSlot"

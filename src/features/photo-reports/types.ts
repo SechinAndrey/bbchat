@@ -10,6 +10,8 @@ export interface SelectedPhoto {
   thumbnail: string;
   messageId: number;
   file?: File;
+  supplier_id?: number | null;
+  supplier_name?: string | null;
 }
 
 // --- API types ---
@@ -40,10 +42,10 @@ export interface ClientPeriod {
 export type PhotoSlotType = "design" | "near" | "far" | "night";
 
 export const SLOT_TYPES: readonly PhotoSlotType[] = [
-  "design",
   "near",
   "far",
   "night",
+  "design",
 ] as const;
 
 export const PHOTO_SLOT_LABELS: Record<PhotoSlotType, string> = {
@@ -68,6 +70,8 @@ export interface Board {
   board_address: string;
   board_city: string | null;
   board_photo: string | null;
+  supplier_id: number | null;
+  supplier_name: string | null;
   photos: Record<PhotoSlotType, BoardPhoto>;
 }
 

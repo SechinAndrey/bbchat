@@ -337,6 +337,8 @@ const handleSelectForPhotoReport = () => {
     mediaUrl,
     mediaUrl,
     selectedMessage.value.id,
+    selectedMessage.value.supplier_id,
+    selectedMessage.value.supplier?.name ?? null,
   );
   closeContextMenu();
 };

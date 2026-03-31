@@ -6,7 +6,8 @@ import {
   ChevronUpIcon,
   TrashIcon,
 } from "@heroicons/vue/24/solid";
-import { CheckIcon, InformationCircleIcon } from "@heroicons/vue/24/outline";
+import { CheckIcon } from "@heroicons/vue/24/outline";
+import DOMPurify from "dompurify";
 import linkifyStr from "linkify-string";
 import MediaPreview from "@src/features/chat/components/ChatMiddle/Message/MediaPreview.vue";
 import ConversationAvatar from "@src/shared/components/ConversationAvatar.vue";
@@ -46,9 +47,7 @@ const conversationsStore = useConversationsStore();
 const authStore = useAuthStore();
 const { isDarkMode } = useTheme();
 
-const { echat, echatMessage, getMessageText } = useMessageData(
-  computed(() => props.message),
-);
+const { echat, echatMessage } = useMessageData(computed(() => props.message));
 
 const parsedReplyQuote = computed(() => {
   return parseReplyQuoteText(echat.value?.message);
@@ -111,7 +110,7 @@ const formatMessageText = (text: string, convertEmoticons = false) => {
 
   const processedText = convertEmoticons ? convertViberEmoticons(text) : text;
 
-  return linkifyStr(processedText, {
+  const linked = linkifyStr(processedText, {
     className: isSelf.value
       ? "text-black opacity-50"
       : "text-primary dark:text-primary",
@@ -120,6 +119,7 @@ const formatMessageText = (text: string, convertEmoticons = false) => {
     },
     target: "_blank",
   });
+  return DOMPurify.sanitize(linked);
 };
 
 const replyToText = computed(() => {
@@ -243,6 +243,7 @@ const systemMessageText = computed(() => {
           v-if="chaport"
           class="text-[0.8125rem] leading-relaxed relative pr-6 break-words"
         >
+          <!-- eslint-disable-next-line vue/no-v-html -->
           <div
             class="whitespace-pre-line"
             v-html="formatMessageText(chaport.message)"
@@ -252,6 +253,8 @@ const systemMessageText = computed(() => {
             v-if="chaport?.file"
             :media="chaport?.file"
             :attachment-id="props.message.id"
+            :supplier-id="props.message.supplier_id"
+            :supplier-name="props.message.supplier?.name ?? null"
             @open-image-gallery="
               (imageUrl) => {
                 emit('openImageGallery', imageUrl);
@@ -293,6 +296,7 @@ const systemMessageText = computed(() => {
           </div>
 
           <div v-if="echat.message">
+            <!-- eslint-disable-next-line vue/no-v-html -->
             <div
               class="whitespace-pre-line"
               v-html="
@@ -308,6 +312,8 @@ const systemMessageText = computed(() => {
             v-if="echatMessage.media || echatMessage.file || chaport?.file"
             :media="(echatMessage.media || echatMessage.file || chaport?.file)!"
             :attachment-id="props.message.id"
+            :supplier-id="props.message.supplier_id"
+            :supplier-name="props.message.supplier?.name ?? null"
             @open-image-gallery="
               (imageUrl) => {
                 emit('openImageGallery', imageUrl);
