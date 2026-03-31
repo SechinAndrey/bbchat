@@ -11,7 +11,7 @@ export function useMdFormatting(rawText: Ref<string>) {
         gfm: true,
       });
 
-      return marked.parse(rawText.value);
+      return marked.parse(rawText.value, { async: false });
     } catch (error) {
       console.error("Error parsing markdown:", error);
       return rawText.value.replace(/\n/g, "<br>");
