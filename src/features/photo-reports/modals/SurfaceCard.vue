@@ -104,10 +104,19 @@ const openImg = (photoUrl: string) => {
           <span class="text-app-text-secondary text-lg">·</span>
           <span class="text-[0.7rem]">
             <span class="text-[0.7rem] text-app-text-secondary"
-              >Код підрядника</span
+              >Код підрядника:</span
             >
             {{ board.board_code }}
           </span>
+          <template v-if="board.supplier_name">
+            <span class="text-app-text-secondary text-lg">·</span>
+            <span class="text-[0.7rem]">
+              <span class="text-[0.7rem] text-app-text-secondary"
+                >Підрядник:</span
+              >
+              {{ board.supplier_name }}
+            </span>
+          </template>
         </div>
       </div>
     </div>
@@ -127,10 +136,17 @@ const openImg = (photoUrl: string) => {
       <span class="text-app-text-secondary text-lg">·</span>
       <span class="text-[0.7rem]">
         <span class="text-[0.7rem] text-app-text-secondary"
-          >Код підрядника</span
+          >Код підрядника:</span
         >
         {{ board.board_code }}
       </span>
+      <template v-if="board.supplier_name">
+        <span class="text-app-text-secondary text-lg">·</span>
+        <span class="text-[0.7rem]">
+          <span class="text-[0.7rem] text-app-text-secondary">Підрядник:</span>
+          {{ board.supplier_name }}
+        </span>
+      </template>
     </div>
 
     <!-- Photo slots -->
