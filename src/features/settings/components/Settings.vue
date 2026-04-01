@@ -90,7 +90,7 @@ const isActiveRoute = (routeName: string) => {
     </div>
 
     <div class="text-xs text-app-text-secondary p-5 text-center">
-      Version 0.7.1
+      Version 0.8.0
     </div>
   </div>
 </template>

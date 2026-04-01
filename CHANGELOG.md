@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.8.0 - 2026-03-31
+
+### Bug Fixes
+
+- **(android)** Перекрытие UI статус-баром
+- **(useMdFormatting)** Disable async parsing in marked.parse
+- Accaunt dropdown in photoreport
+- MessageV2 media preeview
+
+### Features
+
+- **(chat)** Add system message templates with categorization
+- **(chat)** Add new message modal
+- **(photo-reports)** Add supplier_name to SurfaceCard.vue
+- **(photo-reports)** Add image preview functionality for main board photo
+- **(photo-reports)** Implement photo reports
+
+### Project Maintenance
+
+- Release version 0.8.0
+
 ## 0.7.1 - 2026-02-24
 
 ### Bug Fixes
