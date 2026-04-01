@@ -88,6 +88,20 @@ const supplierOptions = computed(() => [
   ).values(),
 ]);
 
+const modalTitle = computed(() =>
+  internalMode.value === "view"
+    ? "Перегляд фотозвіту"
+    : internalMode.value === "edit"
+      ? "Редагування фотозвіту"
+      : "Присвоїти фотозвіт",
+);
+
+const modalSubtitle = computed(() =>
+  internalMode.value !== "create" && props.periodLabel
+    ? props.periodLabel
+    : `Обрано ${props.photos.length} фото для розподілу по площинах`,
+);
+
 const showMapper = computed(() => {
   if (internalMode.value !== "create") return store.boards.length > 0;
   return !!(
@@ -187,7 +201,7 @@ const handleSave = async () => {
 
     if (sendToClient.value) {
       const ym =
-        internalMode.value === "create" ? selectedYm.value : props.ym ?? "";
+        internalMode.value === "create" ? selectedYm.value : (props.ym ?? "");
       let messageTemplate: string | undefined;
       try {
         const templateResponse = await store.getMessageTemplate(
@@ -195,7 +209,12 @@ const handleSave = async () => {
           ym,
         );
         messageTemplate = templateResponse.message;
-      } catch {
+      } catch (e) {
+        console.error("Error fetching message template:", e);
+        toastError(
+          "Звіт збережено, але не вдалося отримати шаблон повідомлення для клієнта",
+        );
+        return;
       }
       sendMessageModal.open({
         entityType: "client",
@@ -332,21 +351,9 @@ openImgsModalEvent.on((photoUrl: string) => {
           class="flex items-center justify-between p-[1.25rem] border-b border-app-border shrink-0"
         >
           <div class="text-center w-full">
-            <h2 class="text-xl font-semibold">
-              {{
-                internalMode === "view"
-                  ? "Перегляд фотозвіту"
-                  : internalMode === "edit"
-                    ? "Редагування фотозвіту"
-                    : "Присвоїти фотозвіт"
-              }}
-            </h2>
+            <h2 class="text-xl font-semibold">{{ modalTitle }}</h2>
             <p class="text-sm mt-1 text-app-text-secondary">
-              {{
-                internalMode !== "create" && periodLabel
-                  ? periodLabel
-                  : `Обрано ${photos.length} фото для розподілу по площинах`
-              }}
+              {{ modalSubtitle }}
             </p>
           </div>
           <Button variant="ghost" icon-only @click="close">

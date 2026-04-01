@@ -10,6 +10,7 @@ import {
   ArrowUpTrayIcon,
   QueueListIcon,
   Squares2X2Icon,
+  PlayIcon,
 } from "@heroicons/vue/24/outline";
 import type {
   SelectedPhoto,
@@ -760,9 +761,13 @@ defineExpose({
             v-if="hasEmptySlots && availablePhotos.length > 0"
             variant="outline"
             size="xs"
+            title="Продовжити заповнення"
             @click="startSequentialFill"
           >
-            Продовжити заповнення
+            <template #icon>
+              <PlayIcon class="w-4 h-4 sm:hidden" />
+            </template>
+            <span class="hidden sm:inline">Продовжити заповнення</span>
           </Button>
           <Button
             variant="ghost"
