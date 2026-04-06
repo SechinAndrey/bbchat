@@ -73,6 +73,7 @@ const openAssignModal = () => {
 
 const closeAssignModal = () => {
   isAssignModalOpen.value = false;
+  photoSelection.exitSelectionMode();
 };
 </script>
 
