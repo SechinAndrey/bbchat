@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, watch } from "vue";
-import { useDebounceFn, whenever } from "@vueuse/core";
+import { useDebounceFn, whenever, useStorage } from "@vueuse/core";
 import { useDragDropZone } from "@src/shared/composables/useDragDropZone";
 import DragDropSurface from "@src/ui/components/DragDropSurface.vue";
 import Modal from "@src/ui/modals/Modal.vue";
@@ -15,6 +15,7 @@ import type { SaveProgressCallback } from "../photo-reports-store";
 import { useToast } from "@src/shared/composables/useToast";
 import type { SelectedPhoto, BoardSlotChange } from "../types";
 import { XMarkIcon } from "@heroicons/vue/24/outline";
+import { XCircleIcon } from "@heroicons/vue/24/solid";
 import SimpleMediaModal from "@src/ui/data-display/SimpleMediaModal.vue";
 import { useEventBus } from "@vueuse/core";
 import {
@@ -44,6 +45,10 @@ const selectedClientId = ref<string | number>("");
 const selectedYm = ref<string>("");
 const selectedSupplierId = ref<string | number>("");
 const sendToClient = ref(false);
+const afterSendOption = useStorage<"redirect-to-chat" | number>(
+  "photoReportAfterSendOption",
+  "redirect-to-chat",
+);
 const mapperRef = ref<InstanceType<typeof SurfacePhotoMapper> | null>(null);
 const internalMode = ref<"create" | "view" | "edit">(props.mode ?? "create");
 const showCloseConfirm = ref(false);
@@ -220,6 +225,24 @@ const handleSave = async () => {
         entityType: "client",
         entityId: effectiveClientId,
         messageTemplate,
+        ui: {
+          afterSendActivator: {
+            showChevron: false,
+            showLabel: false,
+          },
+        },
+        afterSendOptions: [
+          "redirect-to-chat",
+          {
+            icon: XCircleIcon,
+            label: "Закрити вікно",
+            action: () => forceClose(),
+          },
+        ],
+        defaultAfterSendOption: afterSendOption.value,
+        onAfterSendOptionChange: (opt) => {
+          afterSendOption.value = opt;
+        },
       });
       return;
     }

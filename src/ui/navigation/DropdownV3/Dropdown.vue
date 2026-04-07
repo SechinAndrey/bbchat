@@ -35,9 +35,6 @@ const hoverTimeout = ref<number | null>(null);
 const dropdownPosition = computed(() => {
   if (!activatorRef.value || !dropdownRef.value) return {};
 
-  const activatorRect = activatorRef.value.getBoundingClientRect();
-  const dropdownRect = dropdownRef.value.getBoundingClientRect();
-
   // Позиционирование в соответствии с указанным направлением
   const positions: Record<string, any> = {
     top: {
@@ -188,13 +185,17 @@ defineExpose({
         :id="id"
         ref="dropdownRef"
         :style="handleClickOutside ? {} : dropdownPosition"
-        class="absolute z-[100] w-[12.5rem] rounded-sm bg-app-bg dark:bg-gray-800 shadow-lg border border-app-border focus:outline-none"
+        class="absolute z-[100] w-[12.5rem] rounded-sm bg-app-bg dark:bg-gray-800 shadow-lg border border-app-border focus:outline-none overflow-hidden"
         role="menu"
         aria-orientation="vertical"
         tabindex="-1"
       >
-        <div role="none" class="flex flex-col gap-2">
-          <slot @dropdown-item-click="handleItemClick"></slot>
+        <div
+          role="none"
+          class="flex flex-col gap-1"
+          @dropdown-item-click="handleItemClick"
+        >
+          <slot></slot>
         </div>
       </div>
     </Transition>

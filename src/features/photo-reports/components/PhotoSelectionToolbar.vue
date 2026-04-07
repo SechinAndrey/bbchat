@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { inject } from "vue";
 import Button from "@src/ui/inputs/Button.vue";
-import { XMarkIcon, CameraIcon } from "@heroicons/vue/24/outline";
+import { XMarkIcon } from "@heroicons/vue/24/outline";
+import { CameraIcon } from "@heroicons/vue/24/solid";
 import {
   photoSelectionKey,
   type PhotoSelectionContext,

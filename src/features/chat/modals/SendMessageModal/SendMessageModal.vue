@@ -1,16 +1,21 @@
 <script setup lang="ts">
 import { ref, computed, watch } from "vue";
+import { useRouter } from "vue-router";
 import Modal from "@src/ui/modals/Modal.vue";
 import Select from "@src/ui/inputs/Select.vue";
 import AutocompleteSelect from "@src/ui/inputs/AutocompleteSelect.vue";
 import Textarea from "@src/ui/inputs/Textarea.vue";
 import Button from "@src/ui/inputs/Button.vue";
 import Spinner from "@src/ui/states/loading-states/Spinner.vue";
+import { Dropdown, DropdownItem } from "@src/ui/navigation/DropdownV3";
 import {
   BookmarkIcon,
   XMarkIcon,
   MagnifyingGlassIcon,
+  ChevronDownIcon,
 } from "@heroicons/vue/24/outline";
+import { ChatBubbleLeftRightIcon } from "@heroicons/vue/24/solid";
+import useStore from "@src/shared/store/store";
 import {
   TemplateSelectorModal,
   useMessagesTemplatesStore,
@@ -30,6 +35,8 @@ const { isOpen, params, close } = useSendMessageModal();
 const globalDataStore = useGlobalDataStore();
 const templatesStore = useMessagesTemplatesStore();
 const { toastError, toastSuccess } = useToast();
+const router = useRouter();
+const store = useStore();
 
 // Internal state
 const selectedEntityType = ref<ContragentType | null>(null);
@@ -49,6 +56,27 @@ const validationErrors = ref<{
   messenger?: string;
   message?: string;
 }>({});
+const selectedAfterSendOption = ref<string | number | null>(null);
+
+const resolvedAfterSendOptions = computed(() =>
+  (params.value?.afterSendOptions ?? []).map((opt, index) => {
+    if (opt === "redirect-to-chat") {
+      return {
+        icon: ChatBubbleLeftRightIcon,
+        key: "redirect-to-chat" as const,
+        label: "Перейти в чат",
+      };
+    }
+    return { key: index, label: opt.label, icon: opt.icon };
+  }),
+);
+
+const selectedOptionLabel = computed(
+  () =>
+    resolvedAfterSendOptions.value.find(
+      (o) => o.key === selectedAfterSendOption.value,
+    )?.label ?? "",
+);
 
 // Refs for textarea DOM access
 const textareaRef = ref<InstanceType<typeof Textarea> | null>(null);
@@ -142,6 +170,7 @@ const resetState = () => {
   showEmojiPicker.value = false;
   showTemplateSelector.value = false;
   validationErrors.value = {};
+  selectedAfterSendOption.value = null;
 };
 
 // Reset state when modal closes
@@ -157,6 +186,12 @@ watch(
   (newParams) => {
     resetState();
     messageText.value = newParams?.messageTemplate || "";
+    const opts = newParams?.afterSendOptions;
+    if (opts?.length) {
+      const firstKey = opts[0] === "redirect-to-chat" ? "redirect-to-chat" : 0;
+      selectedAfterSendOption.value =
+        newParams?.defaultAfterSendOption ?? firstKey;
+    }
   },
   { immediate: false },
 );
@@ -313,13 +348,37 @@ const handleSend = async () => {
     }
 
     toastSuccess("Повідомлення відправлено");
+    const afterOption = selectedAfterSendOption.value;
+    const afterSendOptions = params.value?.afterSendOptions;
+    const entityType = effectiveEntityType.value;
+    const entityId = effectiveEntityId.value;
+    const contactId = selectedContactId.value;
     params.value?.onSent?.({
-      contactId: selectedContactId.value!,
+      contactId: contactId!,
       messengerId,
       message,
     });
+    params.value?.onAfterSendOptionChange?.(
+      afterOption as "redirect-to-chat" | number,
+    );
     close();
-  } catch {
+
+    if (afterOption === "redirect-to-chat") {
+      const entity = CONTRAGENT_TO_ENTITY_MAP[entityType!];
+      router.push({
+        name: store.isWidget ? "Widget-Chat" : "Chat",
+        params: {
+          entity,
+          id: entityId!.toString(),
+          contactId: contactId!.toString(),
+        },
+      });
+    } else if (typeof afterOption === "number" && afterSendOptions) {
+      const opt = afterSendOptions[afterOption];
+      if (opt && typeof opt === "object") opt.action();
+    }
+  } catch (error) {
+    console.error("Error sending message:", error);
     toastError("Помилка відправки повідомлення");
   } finally {
     isSending.value = false;
@@ -598,25 +657,68 @@ const handleSend = async () => {
 
         <!-- Footer -->
         <div
-          class="flex items-center justify-end gap-3 px-5 py-4 border-t border-app-border"
+          class="flex items-center justify-between px-5 py-4 border-t border-app-border"
         >
-          <Button variant="text" :disabled="isSending" @click="close">
-            Скасувати
-          </Button>
-          <Button
-            variant="primary"
-            :loading="isSending"
-            :disabled="
-              isSending ||
-              isLoadingContacts ||
-              !selectedContactId ||
-              !selectedMessengerId ||
-              !messageText.trim()
-            "
-            @click="handleSend"
+          <!-- After-send action dropdown -->
+          <Dropdown
+            v-if="resolvedAfterSendOptions.length"
+            position="top"
+            trigger="click"
           >
-            Надіслати
-          </Button>
+            <template #activator>
+              <Button variant="text" :ring="false">
+                <component
+                  :is="
+                    resolvedAfterSendOptions.find(
+                      (o) => o.key === selectedAfterSendOption,
+                    )?.icon
+                  "
+                  v-if="params?.ui?.afterSendActivator?.showIcon !== false"
+                  class="w-5 h-5 mr-1"
+                />
+                <span
+                  v-if="params?.ui?.afterSendActivator?.showLabel !== false"
+                >
+                  {{ selectedOptionLabel || "Після відправки" }}
+                </span>
+                <ChevronDownIcon
+                  v-if="params?.ui?.afterSendActivator?.showChevron !== false"
+                  class="w-3.5 h-3.5"
+                />
+              </Button>
+            </template>
+            <DropdownItem
+              v-for="opt in resolvedAfterSendOptions"
+              :key="opt.key"
+              :active="selectedAfterSendOption === opt.key"
+              @click="selectedAfterSendOption = opt.key"
+            >
+              <component :is="opt.icon" class="w-5 h-5 mr-2 flex-shrink-0" />
+
+              {{ opt.label }}
+            </DropdownItem>
+          </Dropdown>
+          <div v-else />
+
+          <div class="flex items-center gap-3">
+            <Button variant="text" :disabled="isSending" @click="close">
+              Скасувати
+            </Button>
+            <Button
+              variant="primary"
+              :loading="isSending"
+              :disabled="
+                isSending ||
+                isLoadingContacts ||
+                !selectedContactId ||
+                !selectedMessengerId ||
+                !messageText.trim()
+              "
+              @click="handleSend"
+            >
+              Надіслати
+            </Button>
+          </div>
         </div>
       </div>
     </template>
