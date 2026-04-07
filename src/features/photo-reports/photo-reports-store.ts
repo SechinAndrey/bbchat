@@ -11,6 +11,7 @@ import type {
   CommunicationChannel,
   SlotStatus,
   PhotoSlotType,
+  WorkType,
 } from "./types";
 
 export type SaveProgressCallback = (
@@ -24,6 +25,7 @@ export const usePhotoReportsStore = defineStore("photoReports", () => {
   const periods = ref<ClientPeriod[]>([]);
   const boards = ref<Board[]>([]);
   const allBoards = ref<Board[]>([]);
+  const workTypes = ref<WorkType[]>([]);
 
   const isLoadingClients = ref(false);
   const isLoadingPeriods = ref(false);
@@ -36,6 +38,15 @@ export const usePhotoReportsStore = defineStore("photoReports", () => {
   const saveProgress = ref<{ current: number; total: number } | null>(null);
 
   const boardPhotoreportIds = ref<Map<number, number>>(new Map());
+
+  const loadWorkTypes = async () => {
+    if (workTypes.value.length > 0) return;
+    try {
+      workTypes.value = await photoReportsService.getWorkTypes();
+    } catch (error) {
+      console.error("Error loading work types:", error);
+    }
+  };
 
   const searchClients = async (query: string) => {
     isLoadingClients.value = true;
@@ -128,6 +139,7 @@ export const usePhotoReportsStore = defineStore("photoReports", () => {
                 }),
             slotType: item.slotType,
             value: item.value,
+            work_id: item.work_id,
             sendToClient: isLast ? sendToClient : undefined,
           });
 
@@ -187,6 +199,7 @@ export const usePhotoReportsStore = defineStore("photoReports", () => {
     periods,
     boards,
     allBoards,
+    workTypes,
     isLoadingClients,
     isLoadingPeriods,
     isLoadingBoards,
@@ -195,6 +208,7 @@ export const usePhotoReportsStore = defineStore("photoReports", () => {
     currentYm,
     saveProgress,
     searchClients,
+    loadWorkTypes,
     loadPeriods,
     loadBoards,
     processSaveQueue,

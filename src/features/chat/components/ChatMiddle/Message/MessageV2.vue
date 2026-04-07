@@ -111,9 +111,7 @@ const formatMessageText = (text: string, convertEmoticons = false) => {
   const processedText = convertEmoticons ? convertViberEmoticons(text) : text;
 
   const linked = linkifyStr(processedText, {
-    className: isSelf.value
-      ? "text-black opacity-50"
-      : "text-primary dark:text-primary",
+    className: "text-app-text-link hover:underline",
     format: {
       url: (value) => (value.length > 50 ? value.slice(0, 50) + `…` : value),
     },

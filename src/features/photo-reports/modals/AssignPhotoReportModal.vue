@@ -129,6 +129,7 @@ whenever(
   async (isOpen) => {
     if (isOpen) {
       internalMode.value = props.mode ?? "create";
+      await store.loadWorkTypes();
       if (internalMode.value === "create") {
         await store.searchClients("");
       } else if (props.ym && props.clientId) {
@@ -442,6 +443,7 @@ openImgsModalEvent.on((photoUrl: string) => {
                 :photos="photos"
                 :boards="store.boards"
                 :readonly="internalMode === 'view'"
+                :work-types="store.workTypes"
                 @badge-retry="handleBadgeRetry"
               />
             </div>

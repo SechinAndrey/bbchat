@@ -18,6 +18,7 @@ import type {
   PhotoSlotType,
   BoardSlotChange,
   SlotStatus,
+  WorkType,
 } from "../types";
 import { SLOT_TYPES } from "../types";
 
@@ -28,6 +29,7 @@ const props = defineProps<{
   photos: SelectedPhoto[];
   boards: Board[];
   readonly?: boolean;
+  workTypes?: WorkType[];
 }>();
 
 const assignmentKey = (boardId: number, slotType: PhotoSlotType) =>
@@ -41,6 +43,10 @@ const assignments = ref(
   new Map<string, { type: PhotoSlotType; photo_url: string }>(),
 );
 const selectedSlotTypes = ref(new Map<string, PhotoSlotType>());
+
+const selectedWorkIds = ref(new Map<number, number>());
+
+const originalWorkIds = ref(new Map<number, number | null>());
 
 // Photos pre-loaded from existing board slots (for view/edit modes)
 const initialPhotos = ref<SelectedPhoto[]>([]);
@@ -86,6 +92,10 @@ watch(
     localPhotos.value = [];
     slotStatusOverrides.value = new Map();
     selectedSlotTypes.value = new Map();
+    selectedWorkIds.value = new Map();
+    originalWorkIds.value = new Map(
+      newBoards.map((b) => [b.board_id, b.work_id]),
+    );
 
     const init = new Map<string, { type: PhotoSlotType; photo_url: string }>();
     const original = new Map<string, string | null>();
@@ -474,6 +484,12 @@ const handleTypeChange = (
   assignments.value = map;
 };
 
+const handleWorkChange = (boardId: number, workId: number) => {
+  const map = new Map(selectedWorkIds.value);
+  map.set(boardId, workId);
+  selectedWorkIds.value = map;
+};
+
 const handleSurfaceClearSlot = (boardId: number, slotType: PhotoSlotType) => {
   const key = assignmentKey(boardId, slotType);
   if (!assignments.value.has(key)) return;
@@ -592,6 +608,14 @@ const getChangedSlots = (): BoardSlotChange[] => {
   const changes: BoardSlotChange[] = [];
 
   for (const board of props.boards) {
+    const selectedWorkId = selectedWorkIds.value.get(board.board_id);
+    const originalWorkId = originalWorkIds.value.get(board.board_id) ?? null;
+    const workIdChanged =
+      selectedWorkId !== undefined && selectedWorkId !== originalWorkId;
+    const effectiveWorkId = selectedWorkId ?? board.work_id ?? undefined;
+
+    let boardHasSlotChange = false;
+
     for (const slotType of SLOT_TYPES) {
       const key = assignmentKey(board.board_id, slotType);
       const originalUrl = originalAssignments.value.get(key) || null;
@@ -610,11 +634,12 @@ const getChangedSlots = (): BoardSlotChange[] => {
             slotType: current.type,
             value: localPhoto?.file || current.photo_url,
             photo_url: current.photo_url,
+            work_id: effectiveWorkId,
           });
+          boardHasSlotChange = true;
         }
       } else if (originalUrl) {
         // Assignment removed but original existed → delete
-        // photo_url is kept so the store can call onProgress() for this slot
         changes.push({
           board_id: board.board_id,
           contract_board_id: board.contract_board_id,
@@ -622,6 +647,30 @@ const getChangedSlots = (): BoardSlotChange[] => {
           slotType,
           value: "",
           photo_url: originalUrl,
+          work_id: effectiveWorkId,
+        });
+        boardHasSlotChange = true;
+      }
+    }
+
+    // If only work_id changed (no slot changes) and board has a photoreport,
+    // send a no-op update with the first existing slot to trigger work_id update
+    if (workIdChanged && !boardHasSlotChange && board.photoreport_id !== null) {
+      const firstFilledSlot = SLOT_TYPES.find((slotType) => {
+        const key = assignmentKey(board.board_id, slotType);
+        return assignments.value.has(key);
+      });
+      if (firstFilledSlot) {
+        const key = assignmentKey(board.board_id, firstFilledSlot);
+        const existing = assignments.value.get(key)!;
+        changes.push({
+          board_id: board.board_id,
+          contract_board_id: board.contract_board_id,
+          photoreport_id: board.photoreport_id,
+          slotType: existing.type,
+          value: existing.photo_url,
+          photo_url: existing.photo_url,
+          work_id: effectiveWorkId,
         });
       }
     }
@@ -706,6 +755,8 @@ onBeforeUnmount(() => {
   slotStatusOverrides.value = new Map();
   assignments.value = new Map();
   selectedSlotTypes.value = new Map();
+  selectedWorkIds.value = new Map();
+  originalWorkIds.value = new Map();
 });
 
 const emit = defineEmits<{
@@ -813,11 +864,14 @@ defineExpose({
         :active-slot-key="activeSlotKey"
         :readonly="readonly"
         :slot-statuses="slotStatusMap"
+        :work-types="workTypes"
+        :selected-work-id="selectedWorkIds.get(board.board_id) ?? board.work_id"
         @slot-click="handleSlotClick"
         @type-change="handleTypeChange"
         @clear-slot="handleSurfaceClearSlot"
         @badge-retry="(url: string) => emit('badge-retry', url)"
         @slot-done="handleSlotDone"
+        @work-change="handleWorkChange"
       />
     </div>
 

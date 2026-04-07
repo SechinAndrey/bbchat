@@ -61,6 +61,11 @@ export interface BoardPhoto {
   date: string | null;
 }
 
+export interface WorkType {
+  id: number;
+  name: string;
+}
+
 export interface Board {
   photoreport_id: number | null;
   board_id: number;
@@ -72,6 +77,8 @@ export interface Board {
   board_photo: string | null;
   supplier_id: number | null;
   supplier_name: string | null;
+  work_id: number | null;
+  work_name: string | null;
   photos: Record<PhotoSlotType, BoardPhoto>;
 }
 
@@ -82,6 +89,7 @@ export interface BoardSlotChange {
   slotType: PhotoSlotType;
   value: File | string;
   photo_url?: string;
+  work_id?: number;
 }
 
 export interface SaveResponse {

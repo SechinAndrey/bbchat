@@ -7,6 +7,7 @@ import type {
   MessageTemplateResponse,
   PhotoSlotType,
   CommunicationChannel,
+  WorkType,
 } from "./types";
 
 class PhotoReportsService {
@@ -72,12 +73,25 @@ class PhotoReportsService {
     }
   }
 
+  async getWorkTypes(): Promise<WorkType[]> {
+    try {
+      const response = await apiClient.get<{ data: WorkType[] }>(
+        "/communicator/photoreports/work-types",
+      );
+      return response.data.data;
+    } catch (error) {
+      console.error("❌ Failed to load work types:", error);
+      throw error;
+    }
+  }
+
   async savePhoto(params: {
     photoreport_id?: number;
     contract_board_id?: number;
     ym?: string;
     slotType: PhotoSlotType;
     value: File | string;
+    work_id?: number;
     sendToClient?: { contact_id: number; channel: CommunicationChannel };
   }): Promise<SaveResponse> {
     const formData = new FormData();
@@ -100,6 +114,10 @@ class PhotoReportsService {
       formData.append(fieldName, params.value);
     } else {
       formData.append(fieldName, params.value);
+    }
+
+    if (params.work_id !== undefined) {
+      formData.append("reports[0][work_id]", String(params.work_id));
     }
 
     if (params.sendToClient) {

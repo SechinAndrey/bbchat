@@ -48,7 +48,7 @@ watch(
           uploadedPhase.value = null;
           t3 = setTimeout(() => emit("done"), 500);
         }, 1600);
-      }, 380);
+      }, 550);
     }
   },
   { immediate: true },
@@ -249,24 +249,28 @@ onBeforeUnmount(clearTimers);
   }
 }
 
-/* ── Uploaded: overlay scales to 0 at center (contracts) ── */
+/* ── Uploaded: overlay contracts to a circle in the center ── */
+/* clip-path: circle() always produces a true circle regardless of element dimensions */
 .overlay-contract {
   background: rgba(0, 0, 0, 0.42);
-  transform-origin: center;
-  animation: contract-overlay 0.38s cubic-bezier(0.4, 0, 1, 1) forwards;
+  animation: contract-overlay 0.55s cubic-bezier(0.4, 0, 1, 1) forwards;
 }
 
 @keyframes contract-overlay {
   0% {
-    transform: scale(1);
+    clip-path: circle(71% at 50% 50%);
+    opacity: 0.9;
+  }
+  30% {
+    clip-path: circle(45% at 50% 50%);
     opacity: 0.9;
   }
   70% {
-    transform: scale(0.12);
+    clip-path: circle(7% at 50% 50%);
     opacity: 0.5;
   }
   100% {
-    transform: scale(0);
+    clip-path: circle(0% at 50% 50%);
     opacity: 0;
   }
 }

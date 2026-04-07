@@ -39,6 +39,7 @@ module.exports = {
         },
         "app-text": {
           DEFAULT: "var(--color-text-primary)",
+          link: "var(--color-text-link)",
           secondary: "var(--color-text-secondary)",
         },
         "app-bg": {

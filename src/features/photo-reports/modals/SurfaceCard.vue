@@ -2,8 +2,9 @@
 import { computed } from "vue";
 import { PlusIcon, PhotoIcon, XCircleIcon } from "@heroicons/vue/24/outline";
 import Select from "@src/ui/inputs/Select.vue";
+import Radio from "@src/ui/inputs/Radio.vue";
 import SlotStatusBadge from "../components/SlotStatusBadge.vue";
-import type { Board, PhotoSlotType, SlotStatus } from "../types";
+import type { Board, PhotoSlotType, SlotStatus, WorkType } from "../types";
 import { SLOT_TYPES, PHOTO_SLOT_LABELS } from "../types";
 import { useEventBus } from "@vueuse/core";
 
@@ -16,6 +17,8 @@ const props = defineProps<{
   activeSlotKey?: string;
   readonly?: boolean;
   slotStatuses?: Map<string, SlotStatus>;
+  workTypes?: WorkType[];
+  selectedWorkId?: number | null;
 }>();
 
 const emit = defineEmits<{
@@ -28,6 +31,7 @@ const emit = defineEmits<{
   clearSlot: [boardId: number, slotType: PhotoSlotType];
   badgeRetry: [photoUrl: string];
   slotDone: [boardId: number, slotType: PhotoSlotType];
+  workChange: [boardId: number, workId: number];
 }>();
 
 const slotTypeOptions = Object.entries(PHOTO_SLOT_LABELS).map(
@@ -56,6 +60,18 @@ const getSlotTypeValue = (slotType: PhotoSlotType): PhotoSlotType => {
   if (assignment) return assignment.type;
   return props.selectedSlotTypes.get(assignmentKey(slotType)) || slotType;
 };
+
+const currentWorkId = computed(
+  () => props.selectedWorkId ?? props.board.work_id,
+);
+
+const currentWorkName = computed(() => {
+  if (!props.workTypes) return props.board.work_name;
+  return (
+    props.workTypes.find((w) => w.id === currentWorkId.value)?.name ??
+    props.board.work_name
+  );
+});
 
 const openImg = (photoUrl: string) => {
   openImgsModalEvent.emit(photoUrl);
@@ -146,6 +162,28 @@ const openImg = (photoUrl: string) => {
           <span class="text-[0.7rem] text-app-text-secondary">Підрядник:</span>
           {{ board.supplier_name }}
         </span>
+      </template>
+    </div>
+
+    <!-- Work type -->
+    <div v-if="workTypes" class="flex items-center gap-3 px-5 pb-3 mt-3">
+      <span class="text-[0.7rem] text-app-text-secondary shrink-0"
+        >Тип роботи:</span
+      >
+      <template v-if="readonly">
+        <span class="text-[0.7rem] font-medium">{{
+          currentWorkName ?? "—"
+        }}</span>
+      </template>
+      <template v-else>
+        <Radio
+          v-for="wt in workTypes"
+          :key="wt.id"
+          :model-value="currentWorkId"
+          :value="wt.id"
+          :label="wt.name"
+          @update:model-value="emit('workChange', board.board_id, wt.id)"
+        />
       </template>
     </div>
 
