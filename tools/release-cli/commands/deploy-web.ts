@@ -5,7 +5,7 @@ import {
   runWrite,
   fail,
   logSuccess,
-  logInfo,
+  logKeyValue,
 } from "../utils/runner.js";
 import { parseEnvFile } from "../utils/env.js";
 import { getPackageVersion } from "../utils/version.js";
@@ -30,11 +30,11 @@ export function runDeployWeb(options: DeployOptions): void {
   const releaseName = `${version}-${timestamp}`;
   const releasesPath = `${deployPath}/releases`;
 
-  logSection("🚀 Web deploy");
-  logInfo(`Host: ${host}`);
-  logInfo(`Path: ${deployPath}`);
-  logInfo(`Mode: ${options.mode}`);
-  logInfo(`Release: ${releaseName}`);
+  logSection("Web deploy");
+  logKeyValue("Host", host);
+  logKeyValue("Path", deployPath);
+  logKeyValue("Mode", options.mode);
+  logKeyValue("Release", releaseName);
 
   runWrite("yarn", ["vue-tsc", "--noEmit"]);
   runWrite("yarn", ["vite", "build", "--mode", options.mode]);

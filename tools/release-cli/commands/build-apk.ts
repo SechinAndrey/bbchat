@@ -6,7 +6,7 @@ import {
   runWrite,
   fail,
   logSuccess,
-  logInfo,
+  logKeyValue,
   logWarning,
 } from "../utils/runner.js";
 import { parseEnvFile } from "../utils/env.js";
@@ -26,10 +26,10 @@ export function runBuildApk(options: BuildApkOptions): void {
   const targetApk = resolve(outputDir, apkName);
   const uploadUrl = options.uploadUrl ?? envVars.APK_UPLOAD_URL;
 
-  logSection("📦 Сборка APK");
-  logInfo(`Окружение: ${options.env}`);
-  logInfo(`Vite mode: ${viteMode}`);
-  logInfo(`APK: ${targetApk}`);
+  logSection("Сборка APK");
+  logKeyValue("Окружение", options.env);
+  logKeyValue("Vite mode", viteMode);
+  logKeyValue("APK output", targetApk);
 
   runWrite("yarn", ["vue-tsc", "--noEmit"]);
   runWrite("yarn", ["vite", "build", "--mode", viteMode]);

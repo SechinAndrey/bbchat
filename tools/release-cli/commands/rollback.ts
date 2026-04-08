@@ -1,6 +1,6 @@
 import { resolve } from "node:path";
 import type { RollbackOptions } from "../types.js";
-import { logSection, fail, logInfo } from "../utils/runner.js";
+import { logSection, fail, logKeyValue } from "../utils/runner.js";
 import { parseEnvFile } from "../utils/env.js";
 import { runRemoteScript } from "../utils/remote.js";
 
@@ -15,11 +15,11 @@ export function runRollback(options: RollbackOptions): void {
 
   const releasesPath = `${deployPath}/releases`;
 
-  logSection("⏮️  Rollback");
-  logInfo(`Host: ${host}`);
-  logInfo(`Path: ${deployPath}`);
+  logSection("Rollback");
+  logKeyValue("Host", host);
+  logKeyValue("Path", deployPath);
   if (options.version) {
-    logInfo(`Target: ${options.version}`);
+    logKeyValue("Target", options.version);
   }
 
   const remoteScript = `

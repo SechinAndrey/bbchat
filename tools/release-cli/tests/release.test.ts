@@ -12,6 +12,7 @@ const mocks = vi.hoisted(() => {
     logSuccess: vi.fn(),
     logInfo: vi.fn(),
     logWarning: vi.fn(),
+    logKeyValue: vi.fn(),
     warnIfWorktreeNotClean: vi.fn(),
     ensureTagDoesNotExist: vi.fn(),
     getCurrentBranch: vi.fn(),
@@ -41,6 +42,7 @@ vi.mock("../utils/runner.js", () => ({
   logSuccess: mocks.logSuccess,
   logInfo: mocks.logInfo,
   logWarning: mocks.logWarning,
+  logKeyValue: mocks.logKeyValue,
   fail: mocks.fail,
 }));
 

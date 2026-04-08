@@ -1,4 +1,5 @@
 import { readFileSync, writeFileSync, existsSync, unlinkSync } from "node:fs";
+import chalk from "chalk";
 import {
   RELEASE_STATE_PATH,
   RELEASE_WHITELIST,
@@ -18,6 +19,7 @@ import {
   logSuccess,
   logInfo,
   logWarning,
+  logKeyValue,
 } from "../utils/runner.js";
 import { validateVersion } from "../utils/validators.js";
 import { bumpVersionInFiles, getPackageVersion } from "../utils/version.js";
@@ -50,6 +52,8 @@ function parseLines(output: string): string[] {
 }
 
 function printRecentGitContext(limit = 5): void {
+  logSection("Git контекст");
+
   const tagsOutput = runRead("git", ["tag", "--sort=-creatordate"], {
     capture: true,
   });
@@ -71,34 +75,49 @@ function printRecentGitContext(limit = 5): void {
     ? `Коммитов с момента ${latestTag}`
     : "Коммитов в текущей ветке";
 
-  logInfo(`${caption}: ${Number.isNaN(commitsCount) ? "n/a" : commitsCount}`);
+  logKeyValue(
+    caption,
+    String(Number.isNaN(commitsCount) ? "n/a" : commitsCount),
+  );
   if (recent.length === 0) {
-    logInfo("Последние коммиты: (нет)");
+    logKeyValue("Последние коммиты", "(нет)");
     return;
   }
 
-  console.log("\nПоследние коммиты:");
+  console.log(chalk.bold("\nПоследние коммиты"));
   for (const commit of recent) {
-    console.log(`  • ${commit}`);
+    console.log(`  ${chalk.gray("•")} ${commit}`);
   }
 }
 
 function printReleasePreview(version: string, previousVersion?: string): void {
   logSection("Preview релиза");
+
   if (previousVersion && previousVersion !== version) {
-    logInfo(`Версия: ${previousVersion} -> ${version}`);
+    logKeyValue("Версия", `${previousVersion} -> ${version}`);
   } else {
-    logInfo(`Версия: ${version}`);
+    logKeyValue("Версия", version);
   }
-  logInfo(`Commit message: chore: release version ${version}`);
+  logKeyValue("Commit message", `chore: release version ${version}`);
 
   const changedFiles = getChangedWhitelistFiles();
+  const leftWidth = 28;
 
-  console.log("\nРелизные файлы:");
+  console.log(chalk.bold("\nРелизные файлы"));
+  console.log(
+    `  ${chalk.gray("Статус".padEnd(10, " "))}${chalk.gray("Файл".padEnd(leftWidth, " "))}${chalk.gray("Комментарий")}`,
+  );
   for (const file of RELEASE_WHITELIST) {
-    const marker = changedFiles.includes(file) ? "✓" : "-";
+    const markerText = changedFiles.includes(file)
+      ? "changed   "
+      : "clean     ";
+    const marker = changedFiles.includes(file)
+      ? chalk.green(markerText)
+      : chalk.gray(markerText);
     const status = changedFiles.includes(file) ? "изменён" : "без изменений";
-    console.log(`  ${marker} ${file} (${status})`);
+    console.log(
+      `  ${marker}${file.padEnd(leftWidth, " ")}${chalk.gray(status)}`,
+    );
   }
 
   printRecentGitContext(5);
@@ -160,11 +179,18 @@ export function runReleasePrepare(options: ReleasePrepareOptions): void {
   validateVersion(options.version);
   const previousVersion = getPackageVersion();
 
+  logSection("Release prepare");
+  logKeyValue("Целевая версия", options.version);
+  logKeyValue(
+    "Changelog",
+    options.skipChangelog ? "пропустить" : "генерировать",
+  );
+
   logSection("Проверки");
   ensureTagDoesNotExist(options.version);
   warnIfWorktreeNotClean("release prepare");
   const branch = getCurrentBranch();
-  logInfo(`Ветка: ${branch}`);
+  logKeyValue("Ветка", branch);
 
   if (!options.skipChangelog) {
     generateChangelogForVersion(options.version);
@@ -176,13 +202,17 @@ export function runReleasePrepare(options: ReleasePrepareOptions): void {
 
   logSection("✅ Готово");
   logSuccess("release prepare завершён");
-  logInfo(`Следующий шаг: yarn release apply ${options.version}`);
+  logKeyValue("Следующий шаг", `yarn release apply ${options.version}`);
 }
 
 export async function runReleaseApply(
   options: ReleaseApplyOptions,
 ): Promise<void> {
   validateVersion(options.version);
+
+  logSection("Release apply");
+  logKeyValue("Версия", options.version);
+  logKeyValue("Push", options.push ? "да" : "нет");
 
   logSection("Проверки");
   ensureTagDoesNotExist(options.version);
@@ -208,7 +238,7 @@ export async function runReleaseApply(
     confirmCommit = await askYesNo("Продолжить: создать commit и tag?");
   }
   if (!confirmCommit) {
-    logInfo("Операция отменена");
+    logWarning("Операция отменена пользователем");
     return;
   }
 
@@ -228,6 +258,7 @@ export async function runReleaseApply(
 
   if (shouldPush) {
     const branch = getCurrentBranch();
+    logKeyValue("Push branch", branch);
     runWrite("git", [
       "push",
       "--atomic",
@@ -236,7 +267,7 @@ export async function runReleaseApply(
       `v${options.version}`,
     ]);
   } else {
-    logInfo("Push пропущен");
+    logWarning("Push пропущен");
   }
 
   clearReleaseState();
@@ -248,13 +279,13 @@ export async function runReleaseApply(
 export async function runReleaseRollbackPrepare(
   options: ReleaseRollbackPrepareOptions,
 ): Promise<void> {
-  logSection("↩ Rollback release prepare");
+  logSection("Rollback release prepare");
 
   const state = loadReleaseState();
   const changed = getChangedWhitelistFiles();
 
   if (changed.length === 0) {
-    logInfo("Изменений в release whitelist нет");
+    logKeyValue("Изменения whitelist", "не обнаружены");
 
     if (state) {
       clearReleaseState();
@@ -263,7 +294,7 @@ export async function runReleaseRollbackPrepare(
     return;
   }
 
-  logInfo("Будут откатаны локальные изменения файлов:");
+  logSection("К откату");
   for (const file of changed) {
     logInfo(file);
   }
@@ -274,7 +305,7 @@ export async function runReleaseRollbackPrepare(
   }
 
   if (!shouldRollback) {
-    logInfo("Операция отменена");
+    logWarning("Операция отменена пользователем");
     return;
   }
 
