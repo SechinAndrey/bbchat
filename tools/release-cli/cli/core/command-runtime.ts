@@ -4,7 +4,12 @@ import { spawnSync } from "node:child_process";
 import { RELEASE_STATE_PATH, RELEASE_WHITELIST } from "../../constants.js";
 import { getPackageVersion } from "../../utils/version.js";
 import { parseEnvFile } from "../../utils/env.js";
-import type { CommandMeta, EventBlock, LogEvent, RuntimeStep } from "./types.js";
+import type {
+  CommandMeta,
+  EventBlock,
+  LogEvent,
+  RuntimeStep,
+} from "./types.js";
 
 type RuntimeData = {
   steps: RuntimeStep[];
@@ -140,10 +145,7 @@ function buildSummaryLines(command: CommandMeta, version: string): string[] {
     ];
   }
 
-  return [
-    `Команда: ${command.title}`,
-    `Версія: ${version}`,
-  ];
+  return [`Команда: ${command.title}`, `Версія: ${version}`];
 }
 
 function buildChecksLines(command: CommandMeta): string[] {
@@ -159,7 +161,9 @@ function buildChecksLines(command: CommandMeta): string[] {
     lines.push(`warn: Змінено файлів: ${changedFiles.length}`);
   }
 
-  lines.push(`ok: Whitelist файлів: ${changedWhitelist.length}/${RELEASE_WHITELIST.length}`);
+  lines.push(
+    `ok: Whitelist файлів: ${changedWhitelist.length}/${RELEASE_WHITELIST.length}`,
+  );
 
   if (command.id === "deploy-web" || command.id === "rollback") {
     const env = parseEnvFile(resolve(process.cwd(), ".env"));
@@ -179,9 +183,13 @@ function buildChecksLines(command: CommandMeta): string[] {
 
 function buildFilesLines(command: CommandMeta): string[] {
   const changedFiles = getChangedFiles();
-  if (command.id === "release-apply" || command.id === "release-rollback-prepare") {
-    return RELEASE_WHITELIST.map((file) =>
-      `${changedFiles.includes(file) ? "changed" : "clean"}   ${file}`,
+  if (
+    command.id === "release-apply" ||
+    command.id === "release-rollback-prepare"
+  ) {
+    return RELEASE_WHITELIST.map(
+      (file) =>
+        `${changedFiles.includes(file) ? "changed" : "clean"}   ${file}`,
     );
   }
 
@@ -193,7 +201,7 @@ function buildFilesLines(command: CommandMeta): string[] {
     ];
   }
 
-  return ["clean     Немає файлових змін для цього кроку"]; 
+  return ["clean     Немає файлових змін для цього кроку"];
 }
 
 function buildResultLines(command: CommandMeta, version: string): string[] {
@@ -226,10 +234,7 @@ function buildResultLines(command: CommandMeta, version: string): string[] {
   }
 
   if (command.id === "rollback") {
-    return [
-      "Готово до rollback",
-      "Наступний крок: yarn rollback",
-    ];
+    return ["Готово до rollback", "Наступний крок: yarn rollback"];
   }
 
   if (command.id === "bump-version") {
@@ -239,13 +244,16 @@ function buildResultLines(command: CommandMeta, version: string): string[] {
     ];
   }
 
-  return ["Крок підготовлено", "Готово до виконання"]; 
+  return ["Крок підготовлено", "Готово до виконання"];
 }
 
-export function buildStaticRuntimeForCommand(command: CommandMeta): RuntimeData {
+export function buildStaticRuntimeForCommand(
+  command: CommandMeta,
+): RuntimeData {
   const version = getPackageVersion();
   const branch = safeGit(["branch", "--show-current"]) || "n/a";
-  const latestTag = safeGit(["tag", "--sort=-creatordate"]).split("\n")[0] || "n/a";
+  const latestTag =
+    safeGit(["tag", "--sort=-creatordate"]).split("\n")[0] || "n/a";
   const now = new Date().toTimeString().slice(0, 8);
 
   const blocks: EventBlock[] = [
