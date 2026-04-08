@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.8.2 - 2026-04-08
+
+### Project Maintenance
+
+- **(release:cli)** Fix bump version
+- **(release:cli)** Improve tui
+- **(release:cli)** Fix prepare
+- **(release:cli)** Fix prepare and rollback prepare
+- Add new release:cli
+- Release version 0.8.2
+
 ## 0.8.1 - 2026-04-07
 
 ### Bug Fixes
