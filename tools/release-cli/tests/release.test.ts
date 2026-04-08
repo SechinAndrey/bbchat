@@ -111,7 +111,7 @@ describe("runReleasePrepare", () => {
     expect(mocks.warnIfWorktreeNotClean).toHaveBeenCalledWith(
       "release prepare",
     );
-    expect(mocks.bumpVersionInFiles).toHaveBeenCalledWith("1.2.3", true);
+    expect(mocks.bumpVersionInFiles).toHaveBeenCalledWith("1.2.3", false);
     expect(mocks.writeFileSync).toHaveBeenCalledTimes(1);
 
     expect(mocks.runWrite).toHaveBeenNthCalledWith(1, "git", ["tag", "v1.2.3"]);

@@ -196,7 +196,7 @@ export function runReleasePrepare(options: ReleasePrepareOptions): void {
     generateChangelogForVersion(options.version);
   }
 
-  bumpVersionInFiles(options.version, true);
+  bumpVersionInFiles(options.version, false);
   printReleasePreview(options.version, previousVersion);
   saveReleaseState(options.version);
 
