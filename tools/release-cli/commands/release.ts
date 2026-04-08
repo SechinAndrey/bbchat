@@ -12,6 +12,7 @@ import type {
 } from "../types.js";
 import {
   logSection,
+  runRead,
   runWrite,
   fail,
   logSuccess,
@@ -19,7 +20,7 @@ import {
   logWarning,
 } from "../utils/runner.js";
 import { validateVersion } from "../utils/validators.js";
-import { bumpVersionInFiles } from "../utils/version.js";
+import { bumpVersionInFiles, getPackageVersion } from "../utils/version.js";
 import {
   getCurrentBranch,
   warnIfWorktreeNotClean,
@@ -41,24 +42,66 @@ function generateChangelogForVersion(version: string): void {
   }
 }
 
-function printReleasePreview(version: string): void {
-  logSection("Preview релиза");
-  logInfo(`Версия: ${version}`);
-  logInfo(`Commit message: chore: release version ${version}`);
-  console.log("\nWhitelist релиз-файлов:");
-  for (const file of RELEASE_WHITELIST) {
-    console.log(`  • ${file}`);
+function parseLines(output: string): string[] {
+  return output
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean);
+}
+
+function printRecentGitContext(limit = 5): void {
+  const tagsOutput = runRead("git", ["tag", "--sort=-creatordate"], {
+    capture: true,
+  });
+  const latestTag = parseLines(tagsOutput)[0] ?? null;
+
+  const commitsCountRaw = latestTag
+    ? runRead("git", ["rev-list", "--count", `${latestTag}..HEAD`], {
+        capture: true,
+      })
+    : runRead("git", ["rev-list", "--count", "HEAD"], { capture: true });
+
+  const commitsCount = Number.parseInt(commitsCountRaw.trim(), 10);
+  const recentRaw = runRead("git", ["log", "--oneline", "-n", String(limit)], {
+    capture: true,
+  });
+  const recent = parseLines(recentRaw);
+
+  const caption = latestTag
+    ? `Коммитов с момента ${latestTag}`
+    : "Коммитов в текущей ветке";
+
+  logInfo(`${caption}: ${Number.isNaN(commitsCount) ? "n/a" : commitsCount}`);
+  if (recent.length === 0) {
+    logInfo("Последние коммиты: (нет)");
+    return;
   }
 
-  const changedFiles = getChangedWhitelistFiles();
-  console.log("\nФайлы из whitelist с изменениями:");
-  if (changedFiles.length === 0) {
-    console.log("  (нет изменений)");
-  } else {
-    for (const file of changedFiles) {
-      console.log(`  • ${file}`);
-    }
+  console.log("\nПоследние коммиты:");
+  for (const commit of recent) {
+    console.log(`  • ${commit}`);
   }
+}
+
+function printReleasePreview(version: string, previousVersion?: string): void {
+  logSection("Preview релиза");
+  if (previousVersion && previousVersion !== version) {
+    logInfo(`Версия: ${previousVersion} -> ${version}`);
+  } else {
+    logInfo(`Версия: ${version}`);
+  }
+  logInfo(`Commit message: chore: release version ${version}`);
+
+  const changedFiles = getChangedWhitelistFiles();
+
+  console.log("\nРелизные файлы:");
+  for (const file of RELEASE_WHITELIST) {
+    const marker = changedFiles.includes(file) ? "✓" : "-";
+    const status = changedFiles.includes(file) ? "изменён" : "без изменений";
+    console.log(`  ${marker} ${file} (${status})`);
+  }
+
+  printRecentGitContext(5);
 }
 
 function saveReleaseState(version: string): void {
@@ -115,6 +158,7 @@ function clearReleaseState(): void {
 
 export function runReleasePrepare(options: ReleasePrepareOptions): void {
   validateVersion(options.version);
+  const previousVersion = getPackageVersion();
 
   logSection("Проверки");
   ensureTagDoesNotExist(options.version);
@@ -127,7 +171,7 @@ export function runReleasePrepare(options: ReleasePrepareOptions): void {
   }
 
   bumpVersionInFiles(options.version, true);
-  printReleasePreview(options.version);
+  printReleasePreview(options.version, previousVersion);
   saveReleaseState(options.version);
 
   logSection("✅ Готово");

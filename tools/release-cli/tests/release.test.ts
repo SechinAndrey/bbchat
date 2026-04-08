@@ -19,6 +19,7 @@ const mocks = vi.hoisted(() => {
     ensureNoStagedChangesOutsideWhitelist: vi.fn(),
     askYesNo: vi.fn(),
     bumpVersionInFiles: vi.fn(),
+    getPackageVersion: vi.fn(),
     validateVersion: vi.fn(),
     fail: vi.fn((message: string) => {
       throw new Error(message);
@@ -58,6 +59,7 @@ vi.mock("../utils/prompts.js", () => ({
 
 vi.mock("../utils/version.js", () => ({
   bumpVersionInFiles: mocks.bumpVersionInFiles,
+  getPackageVersion: mocks.getPackageVersion,
 }));
 
 vi.mock("../utils/validators.js", () => ({
@@ -77,6 +79,26 @@ beforeEach(() => {
   mocks.askYesNo.mockResolvedValue(false);
   mocks.existsSync.mockReturnValue(false);
   mocks.readFileSync.mockReturnValue("");
+  mocks.getPackageVersion.mockReturnValue("1.2.2");
+  mocks.runRead.mockImplementation((command: string, args: string[]) => {
+    if (command !== "git") {
+      return "";
+    }
+
+    if (args[0] === "tag") {
+      return "v1.2.2\n";
+    }
+
+    if (args[0] === "rev-list") {
+      return "3\n";
+    }
+
+    if (args[0] === "log") {
+      return "abc1111 feat: one\ndef2222 fix: two\n";
+    }
+
+    return "";
+  });
 });
 
 describe("runReleasePrepare", () => {
