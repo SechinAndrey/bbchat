@@ -1,17 +1,10 @@
 <script setup lang="ts">
 import { useRoute } from "vue-router";
-import { computed } from "vue";
 import SidebarHeader from "@src/layout/sidebar/SidebarHeader.vue";
-import {
-  UserCircleIcon,
-  DocumentTextIcon,
-  BellIcon,
-  ShieldCheckIcon,
-  PaintBrushIcon,
-  BookmarkIcon,
-} from "@heroicons/vue/24/solid";
+import { UserCircleIcon, BookmarkIcon } from "@heroicons/vue/24/solid";
 
 const route = useRoute();
+const appVersion = __APP_VERSION__;
 
 const settingsLinks = [
   {
@@ -24,22 +17,6 @@ const settingsLinks = [
     label: "Шаблони",
     icon: BookmarkIcon,
   },
-  // Add more settings pages here
-  // {
-  //   name: "SettingsNotifications",
-  //   label: "Сповіщення",
-  //   icon: BellIcon,
-  // },
-  // {
-  //   name: "SettingsPrivacy",
-  //   label: "Приватність",
-  //   icon: ShieldCheckIcon,
-  // },
-  // {
-  //   name: "SettingsAppearance",
-  //   label: "Вигляд",
-  //   icon: PaintBrushIcon,
-  // },
 ];
 
 const isActiveRoute = (routeName: string) => {
@@ -90,7 +67,7 @@ const isActiveRoute = (routeName: string) => {
     </div>
 
     <div class="text-xs text-app-text-secondary p-5 text-center">
-      Version 0.8.1
+      Version {{ appVersion }}
     </div>
   </div>
 </template>

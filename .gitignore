@@ -2,6 +2,9 @@ node_modules/
 package-lock.json
 dist/
 .env
+.env.*
+!.env.example
+apk-output/
 .github/
 todo.md
 todo.txt

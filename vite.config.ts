@@ -2,15 +2,20 @@ import { defineConfig, loadEnv } from "vite";
 import alias from "@rollup/plugin-alias";
 import vue from "@vitejs/plugin-vue";
 import { resolve } from "path";
+import { readFileSync } from "fs";
 import { VitePWA } from "vite-plugin-pwa";
 
 const rootDir = resolve(__dirname);
+const pkg = JSON.parse(readFileSync("./package.json", "utf-8"));
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
 
   return {
+    define: {
+      __APP_VERSION__: JSON.stringify(pkg.version),
+    },
     plugins: [
       vue(),
       alias(),

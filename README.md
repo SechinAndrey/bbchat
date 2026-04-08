@@ -29,114 +29,223 @@ git clone https://github.com/demon-bixia/Avian-Template.git
 <p>2. Install dependencies.</p>
 
 ```bash
-npm install
+yarn install
 ```
 
 <p>3. Run the development server.</p>
 
 ```bash
-npm run dev
+yarn dev
 ```
 
 <br/>
 
-## Deployment 🚀
+## Release & Deployment 🚀
 
-This project includes scripts for versioned deployment and rollback functionality.
+This project uses a TypeScript-based CLI for managing versioned releases, deployments, and rollbacks.
 
-<p>1. Make deployment scripts executable (only once after cloning):</p>
+Legacy shell scripts in [scripts/release.sh](scripts/release.sh), [scripts/bump-version.sh](scripts/bump-version.sh), [scripts/deploy-web.sh](scripts/deploy-web.sh), [scripts/build-apk.sh](scripts/build-apk.sh), and [scripts/rollback.sh](scripts/rollback.sh) are deprecated and kept only for temporary backward compatibility.
 
-```bash
-# Option 1: Make the prepare script executable first
-chmod +x prepare-scripts.sh
-./prepare-scripts.sh
+### Prerequisites
 
-# Option 2: Use bash to run without changing permissions
-bash prepare-scripts.sh
-```
-
-<p>2. Run the setup script to prepare your environment (only once per server):</p>
+Add required environment variables to `.env`:
 
 ```bash
-./setup.sh
+# Server deployment config
+DEPLOY_HOST=user@your-server
+DEPLOY_PATH=/var/www/bb-chat
+
+# Optional: APK upload endpoint
+APK_UPLOAD_URL=https://your-dashboard/api/upload-apk
 ```
 
-<p>3. Build your project:</p>
+`DEPLOY_HOST` and `DEPLOY_PATH` are present in [.env.example](.env.example).
+`APK_UPLOAD_URL` is optional and can be added manually if you need APK upload.
+
+### Quick Start: Release & Deploy
+
+#### 1. Prepare Release
+
+Generates changelog, bumps versions, shows preview. No commit yet.
 
 ```bash
-npm run build
+yarn release prepare 0.9.0
+yarn release prepare 0.9.0 --skip-changelog  # Skip changelog generation
 ```
 
-<p>4. Deploy a new version:</p>
+**Output:**
+
+- Shows what will be in the commit
+- Prints diff of whitelist files
+- Saves state for apply step
+- Warns if the worktree already contains local changes before the release commit
+
+#### 2. Review & Apply Release
+
+After reviewing the preview, create commit and tag:
 
 ```bash
-./deploy.sh
+yarn release apply 0.9.0
+yarn release apply 0.9.0 --push  # Auto-push after commit
+yarn release apply 0.9.0 --yes   # Skip interactive confirmation
 ```
 
-This will:
+**Output:**
 
-- Create a new versioned release (e.g., `1-20230701`)
-- Copy files from the `dist` directory to the release folder
-- Update the symbolic link to point to the new version
-- Keep only the 5 most recent versions
+- Commits whitelist files (`package.json`, `android/app/build.gradle`, `CHANGELOG.md`)
+- Creates tag v0.9.0 on release commit
+- Optionally pushes to origin
 
-<p>5. If needed, rollback to a previous version:</p>
+`release prepare` intentionally does not freeze the worktree. You can still manually clean up `CHANGELOG.md` or other release files before `release apply`.
+
+#### 3. Deploy Web (Stable or Production)
+
+Builds and deploys to your server:
 
 ```bash
-# Rollback to the previous version
-./rollback.sh
+# Deploy stable version (for testing)
+yarn deploy:web --mode stable
 
-# Rollback to a specific version by number
-./rollback.sh 2
+# Deploy production
+yarn deploy:web --mode production
 
-# Rollback to a specific version by full name
-./rollback.sh 2-20230620
+# Custom server/path
+yarn deploy:web --host user@other-server --path /var/www/other-app --mode production
+
+# Keep last 10 releases instead of 5
+yarn deploy:web --keep 10
 ```
 
-<p>6. Configure Nginx for web access:</p>
+**What it does:**
+
+- Builds with vite (mode: stable|production)
+- Creates versioned release dir on server
+- Updates symlink to latest
+- Cleans up old releases
+
+#### 4. Build Android APK
+
+Assembles debug APK for stable/prod environments:
 
 ```bash
-# Configure with your IP address (for testing)
-./create-nginx-config.sh --ip 192.168.1.100
+# Build stable APK, upload if APK_UPLOAD_URL set
+yarn build:apk stable
 
-# Configure with your domain name
-./create-nginx-config.sh --name your-domain.com
+# Build prod APK without upload
+yarn build:apk prod --no-upload
 
-# Configure with custom port (useful when multiple sites on same server)
-./create-nginx-config.sh --ip 192.168.1.100 --port 8080
-
-# Get help
-./create-nginx-config.sh --help
+# Specify custom upload endpoint
+yarn build:apk stable --upload-url https://your-upload.example.com/apk
 ```
 
-This will create and install an Nginx configuration file, allowing you to access your application through a web browser. You can start with an IP address for testing and later switch to a domain name when it's available.
+**Output:**
+
+- APK saved to `apk-output/stable-0.9.0.apk` or `apk-output/prod-0.9.0.apk`
+- Uploaded if URL configured
+
+#### 5. Rollback Web
+
+Revert to previous release or specific version:
+
+```bash
+# Rollback to previous version
+yarn rollback
+
+# Rollback to specific version
+yarn rollback 0.8.2
+
+# Specify custom deployment server
+yarn rollback --host user@other-server --path /var/www/other-app
+```
+
+### Full Release Workflow Example
+
+```bash
+# 1. Prepare (review changes locally)
+yarn release prepare 0.9.0
+
+# 2. Apply (create commit and tag)
+yarn release apply 0.9.0 --push
+
+# 3. Deploy to stable for testing
+yarn deploy:web --mode stable
+
+# 4. Build and upload stable APK
+yarn build:apk stable
+
+# 5. After testing, deploy to production
+yarn deploy:web --mode production
+
+# 6. Build and upload production APK
+yarn build:apk prod
+```
+
+### Advanced: TUI Mode
+
+Interactive terminal UI for releases:
+
+```bash
+yarn release:tui
+```
+
+Menu options:
+
+- Справка по командам (Help)
+- release prepare
+- release apply
+- deploy-web
+- build-apk
+- rollback
+
+### Direct CLI Commands
+
+All commands also available as raw CLI:
+
+```bash
+yarn release:cli release prepare <version>
+yarn release:cli release apply <version>
+yarn release:cli deploy-web [--host ...] [--mode ...]
+yarn release:cli build-apk <stable|prod>
+yarn release:cli rollback [version]
+yarn release:cli bump-version <version> [--bump-code]
+yarn release:cli help
+```
 
 <br/>
 <br/>
 
 ## Development Workflow 🔄
 
-This project follows structured development practices:
+This project uses a TypeScript release CLI and Yarn-based scripts.
 
-### Commit Conventions
-
-We use [Conventional Commits](https://www.conventionalcommits.org/) for standardized commit messages. To make a commit:
+### Useful Script Reference
 
 ```bash
-npm run commit
+yarn release prepare <version> [--skip-changelog]
+yarn release apply <version> [--push] [--yes]
+yarn deploy:web [--mode stable|production] [--host ...] [--path ...] [--keep 5]
+yarn build:apk <stable|prod> [--no-upload] [--upload-url URL]
+yarn rollback [version] [--host ...] [--path ...]
+yarn bump-version <version> [--bump-code]
+yarn release:tui
+yarn release:cli help
+yarn test:release-cli
 ```
 
-This will guide you through creating a properly formatted commit message.
-
-### Versioning
-
-For versioning and changelog generation:
+### Changelog Commands
 
 ```bash
-npm run release
+yarn changelog
+yarn changelog:full
 ```
 
-This automatically determines the next version based on your commits, updates package.json, and generates a CHANGELOG.md file.
+`yarn changelog` uses git-cliff with [cliff.toml](cliff.toml) and updates the short changelog in `CHANGELOG.md`.
+
+`yarn changelog:full` uses git-cliff with [cliff.full.toml](cliff.full.toml) and writes the extended changelog to `CHANGELOG.full.md` when you run it manually.
+
+In release flow, only `yarn changelog` is executed during `yarn release prepare <version>` unless `--skip-changelog` is used.
+
+Release versioning is handled explicitly through `release prepare/apply` and `bump-version` commands.
 
 ## Resources 📙
 
@@ -149,5 +258,3 @@ This automatically determines the next version based on your commits, updates pa
 - <a href="https://vueuse.org/">vueuse</a>
 - <a href="https://wavesurfer-js.org/">Wavesurfer-js</a>
 - <a href="https://github.com/Akryum/floating-vue">floating-vue</a>
-- <a href="https://commitizen.github.io/cz-cli/">Commitizen</a>
-- <a href="https://github.com/conventional-changelog/standard-version">Standard-version</a>
