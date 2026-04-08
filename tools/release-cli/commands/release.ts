@@ -12,7 +12,6 @@ import type {
 } from "../types.js";
 import {
   logSection,
-  runRead,
   runWrite,
   fail,
   logSuccess,
@@ -60,12 +59,6 @@ function printReleasePreview(version: string): void {
       console.log(`  • ${file}`);
     }
   }
-
-  logSection("git diff --stat");
-  runRead("git", ["--no-pager", "diff", "--stat", "--", ...RELEASE_WHITELIST]);
-
-  logSection("git diff (whitelist)");
-  runRead("git", ["--no-pager", "diff", "--", ...RELEASE_WHITELIST]);
 }
 
 function saveReleaseState(version: string): void {

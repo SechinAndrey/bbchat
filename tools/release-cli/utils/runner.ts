@@ -42,7 +42,12 @@ function execute(
     fail(`Команда завершилась с ошибкой (${result.status}): ${cmdString}`);
   }
 
-  return options.capture ? (result.stdout ?? "").trim() : "";
+  if (!options.capture) {
+    return "";
+  }
+
+  // Keep leading spaces intact because git porcelain output uses them as status markers.
+  return (result.stdout ?? "").replace(/[\r\n]+$/, "");
 }
 
 export function runRead(
