@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.8.1 - 2026-04-07
+
+### Bug Fixes
+
+- Photoreport mobile
+- Мелкие UI улучшения
+
+### Features
+
+- Добавлен тип работ на карточку плоскости фотоотчета [WS-257910/18700430/21908395](https://trp4438.worksection.com/project/257910/18700430/21908395/)
+- Добавлены afterSendOptions для SendMessageModal [WS-257910/18700430/21912961](https://trp4438.worksection.com/project/257910/18700430/21912961/)
+- Отменить выбор всех фото при выходе из модального окна фотоотчетов [WS-257910/18700430/21913072](https://trp4438.worksection.com/project/257910/18700430/21913072/)
+
+### Project Maintenance
+
+- Release version 0.8.1
+
 ## 0.8.0 - 2026-03-31
 
 ### Bug Fixes
