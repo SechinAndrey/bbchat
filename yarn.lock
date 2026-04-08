@@ -2515,6 +2515,13 @@
   resolved "https://registry.yarnpkg.com/@tsconfig/node16/-/node16-1.0.4.tgz#0b92dcc0cc1c81f6f306a381f28e31b1a56536e9"
   integrity sha512-vxhUy4J8lyeyinH7Azl1pdd43GJhZH/tP2weN8TntQblOY+A0XbT8DJk1/oCPuOOyg/Ja757rG0CgHcWC8OfMA==
 
+"@types/blessed@^0.1.27":
+  version "0.1.27"
+  resolved "https://registry.yarnpkg.com/@types/blessed/-/blessed-0.1.27.tgz#ad5b917e3b0f7c4b724354a0ca29358ca51cad1e"
+  integrity sha512-ZOQGjLvWDclAXp0rW5iuUBXeD6Gr1PkitN7tj7/G8FCoSzTsij6OhXusOzMKhwrZ9YlL2Pmu0d6xJ9zVvk+Hsg==
+  dependencies:
+    "@types/node" "*"
+
 "@types/chai@^5.2.2":
   version "5.2.3"
   resolved "https://registry.yarnpkg.com/@types/chai/-/chai-5.2.3.tgz#8e9cd9e1c3581fa6b341a5aed5588eb285be0b4a"
@@ -3492,6 +3499,11 @@ bl@^4.0.3:
     buffer "^5.5.0"
     inherits "^2.0.4"
     readable-stream "^3.4.0"
+
+blessed@^0.1.81:
+  version "0.1.81"
+  resolved "https://registry.yarnpkg.com/blessed/-/blessed-0.1.81.tgz#f962d687ec2c369570ae71af843256e6d0ca1129"
+  integrity sha512-LoF5gae+hlmfORcG1M5+5XZi4LBmvlXTzwJWzUlPryN/SJdSflZvROM2TwkT0GMpq7oqT48NRd4GS7BiVBc5OQ==
 
 boolbase@^1.0.0:
   version "1.0.0"
@@ -5343,7 +5355,7 @@ git-cliff-windows-x64@2.12.0:
   resolved "https://registry.yarnpkg.com/git-cliff-windows-x64/-/git-cliff-windows-x64-2.12.0.tgz#73986a9a99cdc576b37f2b762f6c19cfd9ed6e81"
   integrity sha512-jskb3nyVGr4dekHSCDM/J6iho45t37wnmMGkPNq42kOoUp04JS96yMBrNRdXfXV9ViZsaZq3NaNu1e3QkhFlyA==
 
-git-cliff@v2.12.0:
+git-cliff@^2.10.1:
   version "2.12.0"
   resolved "https://registry.yarnpkg.com/git-cliff/-/git-cliff-2.12.0.tgz#c6481c8d62a788838c8ecfff5eb210c18e5ae2fc"
   integrity sha512-kjTm5439LsvMs/xRxndWBUetrA4aQfLE8DTbR/ER5H7fGn7ioeFG9YNAK1V7dpTtNi6k2uKYY4f3EvT8J1d+1Q==
