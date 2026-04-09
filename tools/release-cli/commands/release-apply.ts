@@ -37,10 +37,6 @@ async function askConfirmation(message: string): Promise<boolean> {
 export async function runReleaseApply(input: ReleaseApplyInput): Promise<void> {
   logStart("release apply");
 
-  logStep("validate input");
-  assertSemver(input.version);
-  ensureTagMissing(input.version);
-
   logStep("validate release state");
   const state = loadReleaseState();
   if (!state) {
@@ -48,7 +44,13 @@ export async function runReleaseApply(input: ReleaseApplyInput): Promise<void> {
       "Release prepare state is missing. Run release prepare first.",
     );
   }
-  if (state.version !== input.version) {
+
+  logStep("resolve target version");
+  const version = input.version ?? state.version;
+  assertSemver(version);
+  ensureTagMissing(version);
+
+  if (input.version && state.version !== input.version) {
     throw new AppError(
       `State version mismatch. Expected ${state.version}, got ${input.version}`,
     );
@@ -63,7 +65,7 @@ export async function runReleaseApply(input: ReleaseApplyInput): Promise<void> {
 
   if (!input.yes) {
     const allowed = await askConfirmation(
-      `Create commit and tag for ${input.version}?`,
+      `Create commit and tag for ${version}?`,
     );
     if (!allowed) {
       throw new AppError("Operation cancelled by user.");
@@ -72,17 +74,17 @@ export async function runReleaseApply(input: ReleaseApplyInput): Promise<void> {
 
   logStep("create commit and tag");
   addFiles(state.files);
-  commitOnly(`chore: release version ${input.version}`, state.files);
-  createTag(input.version);
+  commitOnly(`chore: release version ${version}`, state.files);
+  createTag(version);
   logOk("release commit/tag created");
 
   if (input.push) {
     logStep("push branch and tag");
     const branch = getCurrentBranch();
-    pushBranchAndTag(branch, input.version);
-    logOk(`pushed ${branch} + v${input.version}`);
+    pushBranchAndTag(branch, version);
+    logOk(`pushed ${branch} + v${version}`);
   }
 
   clearReleaseState();
-  logResult(`release ${input.version} applied`);
+  logResult(`release ${version} applied`);
 }

@@ -4,7 +4,7 @@ export function printHelp(): void {
   console.log("Commands:");
   console.log("  yarn release:cli release prepare <version>");
   console.log("  yarn release:cli release prepare-revert <version>");
-  console.log("  yarn release:cli release apply <version> [--push] [--yes]");
+  console.log("  yarn release:cli release apply [version] [--push] [--yes]");
   console.log(
     "  yarn release:cli deploy-web --mode stable|production [--host ...] [--path ...] [--keep ...]",
   );

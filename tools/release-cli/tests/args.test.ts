@@ -24,6 +24,14 @@ describe("cli arg parser", () => {
     });
   });
 
+  it("parses release apply without version", () => {
+    expect(parseReleaseApply(["--push"])).toEqual({
+      version: undefined,
+      push: true,
+      yes: false,
+    });
+  });
+
   it("parses deploy-web", () => {
     expect(
       parseDeployWeb([

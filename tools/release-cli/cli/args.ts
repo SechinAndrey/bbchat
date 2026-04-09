@@ -63,9 +63,6 @@ export function parseReleasePrepareRevert(
 export function parseReleaseApply(args: string[]): ReleaseApplyInput {
   ensureNoUnknownFlags(args, ["--push", "--yes"]);
   const version = args.find((value) => !value.startsWith("-"));
-  if (!version) {
-    throw new AppError("Usage: release apply <version> [--push] [--yes]");
-  }
 
   return {
     version,

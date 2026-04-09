@@ -11,7 +11,7 @@ export type ReleasePrepareRevertInput = {
 };
 
 export type ReleaseApplyInput = {
-  version: string;
+  version?: string;
   push: boolean;
   yes: boolean;
 };
