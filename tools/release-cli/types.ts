@@ -1,56 +1,43 @@
-export type RunReadOptions = {
-  cwd?: string;
-  capture?: boolean;
-  inputText?: string;
+export type CliGlobalOptions = {
+  verbose: boolean;
 };
 
-export type RunWriteOptions = {
-  cwd?: string;
-  capture?: boolean;
-  inputText?: string;
-};
-
-export type ReleasePrepareOptions = {
+export type ReleasePrepareInput = {
   version: string;
-  skipChangelog: boolean;
 };
 
-export type ReleaseApplyOptions = {
+export type ReleasePrepareRevertInput = {
+  version: string;
+};
+
+export type ReleaseApplyInput = {
   version: string;
   push: boolean;
   yes: boolean;
 };
 
-export type ReleaseRollbackPrepareOptions = {
-  yes: boolean;
-};
-
-export type DeployOptions = {
+export type DeployWebInput = {
+  mode: "stable" | "production";
   host?: string;
   path?: string;
-  mode: string;
   keep: number;
 };
 
-export type BuildApkOptions = {
+export type BuildApkInput = {
   env: "stable" | "prod";
   noUpload: boolean;
   uploadUrl?: string;
 };
 
-export type RollbackOptions = {
+export type RollbackInput = {
   version?: string;
   host?: string;
   path?: string;
 };
 
-export type BumpVersionOptions = {
-  version: string;
-  bumpCode: boolean;
-};
-
 export type ReleaseState = {
   version: string;
+  files: string[];
+  baseline: Record<string, string | null>;
   createdAt: string;
-  whitelist: string[];
 };

@@ -1,86 +1,85 @@
-import { resolve } from "node:path";
-import type { DeployOptions } from "../types.js";
-import {
-  logSection,
-  runWrite,
-  fail,
-  logSuccess,
-  logKeyValue,
-} from "../utils/runner.js";
-import { parseEnvFile } from "../utils/env.js";
-import { getPackageVersion } from "../utils/version.js";
-import { runRemoteScript } from "../utils/remote.js";
+import { ENV_PATH, PACKAGE_JSON_PATH } from "../config.js";
+import { parseEnvFile } from "../infra/env.js";
+import { readText } from "../infra/fs.js";
+import { q, runRemote, runRemoteCapture } from "../infra/remote.js";
+import { run } from "../infra/run.js";
+import { AppError } from "../shared/errors.js";
+import { logOk, logResult, logStart, logStep } from "../shared/logger.js";
+import type { DeployWebInput } from "../types.js";
 
-export function runDeployWeb(options: DeployOptions): void {
-  const env = parseEnvFile(resolve(process.cwd(), ".env"));
-  const host = options.host ?? env.DEPLOY_HOST;
-  const deployPath = options.path ?? env.DEPLOY_PATH ?? "/var/www/bb-chat";
+function parseList(value: string): string[] {
+  return value
+    .split("\n")
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
 
-  if (!host) {
-    fail("DEPLOY_HOST не задан. Укажи --host или добавь DEPLOY_HOST в .env");
-  }
+function getVersion(): string {
+  const pkg = JSON.parse(readText(PACKAGE_JSON_PATH)) as { version: string };
+  return pkg.version;
+}
 
-  const version = getPackageVersion();
-  const timestamp = new Date()
+function nowStamp(): string {
+  return new Date()
     .toISOString()
     .replace(/[-:]/g, "")
     .replace(/\.\d{3}Z$/, "")
     .replace("T", "");
+}
 
-  const releaseName = `${version}-${timestamp}`;
+export function runDeployWeb(input: DeployWebInput): void {
+  logStart("deploy-web");
+
+  const env = parseEnvFile(ENV_PATH);
+  const host = input.host ?? env.DEPLOY_HOST;
+  const deployPath = input.path ?? env.DEPLOY_PATH ?? "/var/www/bb-chat";
+
+  if (!host) {
+    throw new AppError(
+      "DEPLOY_HOST is required. Set it in .env or pass --host",
+    );
+  }
+
+  const version = getVersion();
+  const releaseName = `${version}-${nowStamp()}`;
   const releasesPath = `${deployPath}/releases`;
+  const releasePath = `${releasesPath}/${releaseName}`;
+  const deployHtmlPath = `${deployPath}/html`;
 
-  logSection("Web deploy");
-  logKeyValue("Host", host);
-  logKeyValue("Path", deployPath);
-  logKeyValue("Mode", options.mode);
-  logKeyValue("Release", releaseName);
+  logStep("build web");
+  run("yarn", ["vue-tsc", "--noEmit"]);
+  run("yarn", ["vite", "build", "--mode", input.mode]);
+  logOk("web build completed");
 
-  runWrite("yarn", ["vue-tsc", "--noEmit"]);
-  runWrite("yarn", ["vite", "build", "--mode", options.mode]);
+  logStep("create remote release directory");
+  runRemote(host, `mkdir -p ${q(releasePath)}`);
 
-  runRemoteScript(
-    host,
-    `
-set -euo pipefail
-mkdir -p "$1/$2"
-`,
-    [releasesPath, releaseName],
-  );
-
-  runWrite("rsync", [
+  logStep("upload dist");
+  run("rsync", [
     "-az",
     "--delete",
     "dist/",
     `${host}:${releasesPath}/${releaseName}/`,
   ]);
 
-  const remoteScript = `
-set -euo pipefail
-DEPLOY_PATH="$1"
-RELEASES_PATH="$2"
-RELEASE_NAME="$3"
-KEEP_RELEASES="$4"
+  logStep("switch symlink");
+  runRemote(host, `ln -sfn ${q(releasePath)} ${q(deployHtmlPath)}`);
 
-chown -R "$(whoami)":www-data "$RELEASES_PATH/$RELEASE_NAME" 2>/dev/null || true
-chmod -R 775 "$RELEASES_PATH/$RELEASE_NAME" 2>/dev/null || true
-ln -sfn "$RELEASES_PATH/$RELEASE_NAME" "$DEPLOY_PATH/html"
+  logStep("prune old releases");
+  const releaseListRaw = runRemoteCapture(
+    host,
+    `find ${q(releasesPath)} -mindepth 1 -maxdepth 1 -type d -printf '%f\\n' | sort -V`,
+  );
+  const releases = parseList(releaseListRaw);
 
-COUNT=$(find "$RELEASES_PATH" -mindepth 1 -maxdepth 1 -type d | wc -l)
-if [[ "$COUNT" -gt "$KEEP_RELEASES" ]]; then
-  TO_DELETE=$((COUNT - KEEP_RELEASES))
-  find "$RELEASES_PATH" -mindepth 1 -maxdepth 1 -type d | sort -V | head -n "$TO_DELETE" | while read -r rel; do
-    rm -rf "$rel"
-  done
-fi
-`;
+  if (releases.length > input.keep) {
+    const deleteCount = releases.length - input.keep;
+    const toDelete = releases.slice(0, deleteCount);
 
-  runRemoteScript(host, remoteScript, [
-    deployPath,
-    releasesPath,
-    releaseName,
-    String(options.keep),
-  ]);
+    for (const release of toDelete) {
+      runRemote(host, `rm -rf ${q(`${releasesPath}/${release}`)}`);
+    }
+  }
 
-  logSuccess("Деплой завершлен");
+  logResult(`deployed ${releaseName} to ${host}`);
 }

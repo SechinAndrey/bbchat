@@ -1,89 +1,74 @@
-import { resolve } from "node:path";
-import type { RollbackOptions } from "../types.js";
-import { logSection, fail, logKeyValue } from "../utils/runner.js";
-import { parseEnvFile } from "../utils/env.js";
-import { runRemoteScript } from "../utils/remote.js";
+import { ENV_PATH } from "../config.js";
+import { parseEnvFile } from "../infra/env.js";
+import { q, runRemote, runRemoteCapture } from "../infra/remote.js";
+import { AppError } from "../shared/errors.js";
+import { logResult, logStart, logStep } from "../shared/logger.js";
+import type { RollbackInput } from "../types.js";
 
-export function runRollback(options: RollbackOptions): void {
-  const env = parseEnvFile(resolve(process.cwd(), ".env"));
-  const host = options.host ?? env.DEPLOY_HOST;
-  const deployPath = options.path ?? env.DEPLOY_PATH ?? "/var/www/bb-chat";
+function parseList(value: string): string[] {
+  return value
+    .split("\n")
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
 
-  if (!host) {
-    fail("DEPLOY_HOST не задан. Укажи --host или добавь DEPLOY_HOST в .env");
-  }
+export function runRollback(input: RollbackInput): void {
+  logStart("rollback");
 
+  const env = parseEnvFile(ENV_PATH);
+  const host = input.host ?? env.DEPLOY_HOST;
+  const deployPath = input.path ?? env.DEPLOY_PATH ?? "/var/www/bb-chat";
   const releasesPath = `${deployPath}/releases`;
 
-  logSection("Rollback");
-  logKeyValue("Host", host);
-  logKeyValue("Path", deployPath);
-  if (options.version) {
-    logKeyValue("Target", options.version);
+  if (!host) {
+    throw new AppError(
+      "DEPLOY_HOST is required. Set it in .env or pass --host",
+    );
   }
 
-  const remoteScript = `
-set -euo pipefail
-DEPLOY_PATH="$1"
-RELEASES_PATH="$2"
-VERSION_PARAM="$3"
+  const htmlPath = `${deployPath}/html`;
 
-if [[ ! -d "$RELEASES_PATH" ]]; then
-  echo "Ошибка: директория релизов не найдена: $RELEASES_PATH"
-  exit 1
-fi
+  logStep("validate remote release paths");
+  runRemote(host, `test -d ${q(releasesPath)}`);
+  runRemote(host, `test -L ${q(htmlPath)}`);
 
-if [[ ! -L "$DEPLOY_PATH/html" ]]; then
-  echo "Ошибка: symlink html не найден"
-  exit 1
-fi
+  logStep("load current release and release list");
+  const current = runRemoteCapture(
+    host,
+    `basename "$(readlink -f ${q(htmlPath)})"`,
+  ).trim();
 
-CURRENT="$(basename "$(readlink -f "$DEPLOY_PATH/html")")"
-RELEASES=$(find "$RELEASES_PATH" -mindepth 1 -maxdepth 1 -type d | sort -V)
+  const releaseListRaw = runRemoteCapture(
+    host,
+    `find ${q(releasesPath)} -mindepth 1 -maxdepth 1 -type d -printf '%f\\n' | sort -V`,
+  );
+  const releases = parseList(releaseListRaw);
 
-if [[ -z "$RELEASES" ]]; then
-  echo "Ошибка: релизы отсутствуют"
-  exit 1
-fi
+  if (releases.length === 0) {
+    throw new AppError("No releases found on remote host.");
+  }
 
-TARGET=""
-if [[ -n "$VERSION_PARAM" ]]; then
-  while IFS= read -r rel; do
-    name="$(basename "$rel")"
-    if [[ "$name" == "$VERSION_PARAM" || "$name" == "$VERSION_PARAM"-* ]]; then
-      TARGET="$name"
-    fi
-  done <<< "$RELEASES"
-  
-  if [[ -z "$TARGET" ]]; then
-    echo "Ошибка: релиз '$VERSION_PARAM' не найден"
-    exit 1
-  fi
-else
-  PREV=""
-  while IFS= read -r rel; do
-    name="$(basename "$rel")"
-    if [[ "$name" == "$CURRENT" ]]; then
-      break
-    fi
-    PREV="$name"
-  done <<< "$RELEASES"
-  
-  if [[ -z "$PREV" ]]; then
-    echo "Ошибка: предыдущая версия не найдена"
-    exit 1
-  fi
-  
-  TARGET="$PREV"
-fi
+  let target: string | undefined;
+  if (input.version) {
+    const matchingReleases = releases.filter(
+      (name) => name === input.version || name.startsWith(`${input.version}-`),
+    );
+    target = matchingReleases[matchingReleases.length - 1];
 
-ln -sfn "$RELEASES_PATH/$TARGET" "$DEPLOY_PATH/html"
-echo "Откат завершён: $CURRENT -> $TARGET"
-`;
+    if (!target) {
+      throw new AppError(`Target release not found: ${input.version}`);
+    }
+  } else {
+    const currentIndex = releases.findIndex((name) => name === current);
+    if (currentIndex <= 0) {
+      throw new AppError("Previous release was not found.");
+    }
 
-  runRemoteScript(host, remoteScript, [
-    deployPath,
-    releasesPath,
-    options.version ?? "",
-  ]);
+    target = releases[currentIndex - 1];
+  }
+
+  logStep("switch active release");
+  runRemote(host, `ln -sfn ${q(`${releasesPath}/${target}`)} ${q(htmlPath)}`);
+
+  logResult("rollback completed");
 }

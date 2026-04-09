@@ -70,7 +70,6 @@ Generates changelog, bumps versions, shows preview. No commit yet.
 
 ```bash
 yarn release prepare 0.9.0
-yarn release prepare 0.9.0 --skip-changelog  # Skip changelog generation
 ```
 
 **Output:**
@@ -96,7 +95,13 @@ yarn release apply 0.9.0 --yes   # Skip interactive confirmation
 - Creates tag v0.9.0 on release commit
 - Optionally pushes to origin
 
-`release prepare` intentionally does not freeze the worktree. You can still manually clean up `CHANGELOG.md` or other release files before `release apply`.
+#### 2.1 Revert Prepared Release
+
+If you need to discard prepared changes before apply:
+
+```bash
+yarn release prepare-revert 0.9.0
+```
 
 #### 3. Deploy Web (Stable or Production)
 
@@ -180,34 +185,17 @@ yarn deploy:web --mode production
 yarn build:apk prod
 ```
 
-### Advanced: TUI Mode
-
-Interactive terminal UI for releases:
-
-```bash
-yarn release:tui
-```
-
-Menu options:
-
-- Справка по командам (Help)
-- release prepare
-- release apply
-- deploy-web
-- build-apk
-- rollback
-
 ### Direct CLI Commands
 
 All commands also available as raw CLI:
 
 ```bash
 yarn release:cli release prepare <version>
+yarn release:cli release prepare-revert <version>
 yarn release:cli release apply <version>
 yarn release:cli deploy-web [--host ...] [--mode ...]
 yarn release:cli build-apk <stable|prod>
 yarn release:cli rollback [version]
-yarn release:cli bump-version <version> [--bump-code]
 yarn release:cli help
 ```
 
@@ -221,13 +209,12 @@ This project uses a TypeScript release CLI and Yarn-based scripts.
 ### Useful Script Reference
 
 ```bash
-yarn release prepare <version> [--skip-changelog]
+yarn release prepare <version>
+yarn release prepare-revert <version>
 yarn release apply <version> [--push] [--yes]
 yarn deploy:web [--mode stable|production] [--host ...] [--path ...] [--keep 5]
 yarn build:apk <stable|prod> [--no-upload] [--upload-url URL]
 yarn rollback [version] [--host ...] [--path ...]
-yarn bump-version <version> [--bump-code]
-yarn release:tui
 yarn release:cli help
 yarn test:release-cli
 ```
@@ -243,9 +230,9 @@ yarn changelog:full
 
 `yarn changelog:full` uses git-cliff with [cliff.full.toml](cliff.full.toml) and writes the extended changelog to `CHANGELOG.full.md` when you run it manually.
 
-In release flow, only `yarn changelog` is executed during `yarn release prepare <version>` unless `--skip-changelog` is used.
+In release flow, `yarn changelog` is executed during `yarn release prepare <version>`.
 
-Release versioning is handled explicitly through `release prepare/apply` and `bump-version` commands.
+Release versioning is handled explicitly through `release prepare`, `release prepare-revert`, and `release apply` commands.
 
 ## Resources 📙
 

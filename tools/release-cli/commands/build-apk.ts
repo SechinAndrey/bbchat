@@ -1,56 +1,65 @@
 import { resolve } from "node:path";
-import { existsSync } from "node:fs";
-import type { BuildApkOptions } from "../types.js";
+import { ENV_PATH, PACKAGE_JSON_PATH } from "../config.js";
+import { parseEnvFile } from "../infra/env.js";
+import { copyFile, ensureDir, fileExists, readText } from "../infra/fs.js";
+import { run } from "../infra/run.js";
+import { AppError } from "../shared/errors.js";
 import {
-  logSection,
-  runWrite,
-  fail,
-  logSuccess,
-  logKeyValue,
-  logWarning,
-} from "../utils/runner.js";
-import { parseEnvFile } from "../utils/env.js";
-import { getPackageVersion } from "../utils/version.js";
-import { ensureDirectory, copyFile } from "../utils/file-writer.js";
+  logOk,
+  logResult,
+  logStart,
+  logStep,
+  logWarn,
+} from "../shared/logger.js";
+import type { BuildApkInput } from "../types.js";
 
-export function runBuildApk(options: BuildApkOptions): void {
-  const envVars = parseEnvFile(resolve(process.cwd(), ".env"));
-  const version = getPackageVersion();
-  const viteMode = options.env === "stable" ? "stable" : "production";
+function getVersion(): string {
+  const pkg = JSON.parse(readText(PACKAGE_JSON_PATH)) as { version: string };
+  return pkg.version;
+}
+
+export function runBuildApk(input: BuildApkInput): void {
+  logStart("build-apk");
+
+  const env = parseEnvFile(ENV_PATH);
+  const mode = input.env === "stable" ? "stable" : "production";
+  const version = getVersion();
   const outputDir = resolve(process.cwd(), "apk-output");
-  const apkName = `${options.env}-${version}.apk`;
+  const targetName = `${input.env}-${version}.apk`;
   const sourceApk = resolve(
     process.cwd(),
     "android/app/build/outputs/apk/debug/app-debug.apk",
   );
-  const targetApk = resolve(outputDir, apkName);
-  const uploadUrl = options.uploadUrl ?? envVars.APK_UPLOAD_URL;
+  const targetApk = resolve(outputDir, targetName);
+  const uploadUrl = input.uploadUrl ?? env.APK_UPLOAD_URL;
 
-  logSection("Сборка APK");
-  logKeyValue("Окружение", options.env);
-  logKeyValue("Vite mode", viteMode);
-  logKeyValue("APK output", targetApk);
-
-  runWrite("yarn", ["vue-tsc", "--noEmit"]);
-  runWrite("yarn", ["vite", "build", "--mode", viteMode]);
-  runWrite("npx", ["cap", "sync", "android"]);
-  runWrite("./gradlew", ["clean", "assembleDebug"], {
+  logStep("build web + android");
+  run("yarn", ["vue-tsc", "--noEmit"]);
+  run("yarn", ["vite", "build", "--mode", mode]);
+  run("npx", ["cap", "sync", "android"]);
+  run("./gradlew", ["clean", "assembleDebug"], {
     cwd: resolve(process.cwd(), "android"),
   });
+  logOk("android build completed");
 
-  if (!existsSync(sourceApk)) {
-    fail(`APK не найден: ${sourceApk}`);
+  if (!fileExists(sourceApk)) {
+    throw new AppError(`APK file not found: ${sourceApk}`);
   }
 
-  ensureDirectory(outputDir);
+  logStep("archive apk");
+  ensureDir(outputDir);
   copyFile(sourceApk, targetApk);
+  logOk(`apk saved to ${targetApk}`);
 
-  if (!options.noUpload && uploadUrl) {
-    runWrite("curl", ["-sS", "-f", "-F", `file=@${targetApk}`, uploadUrl]);
-    logSuccess("APK загружен");
-  } else if (options.noUpload) {
-    logWarning("Загрузка пропущена (флаг --no-upload)");
+  if (!input.noUpload && uploadUrl) {
+    logStep("upload apk");
+    run("curl", ["-sS", "-f", "-F", `file=@${targetApk}`, uploadUrl]);
+    logOk("apk uploaded");
+  } else if (input.noUpload) {
+    logWarn("upload skipped: --no-upload flag");
   } else {
-    logWarning("APK_UPLOAD_URL не задан, загрузка пропущена");
+    logWarn("upload skipped: APK_UPLOAD_URL is not set");
   }
+
+  logResult(`apk ready: ${targetName}`);
 }
