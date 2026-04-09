@@ -65,7 +65,14 @@ export function runReleasePrepare(input: ReleasePrepareInput): void {
   logOk(`android versionCode -> ${gradleUpdate.versionCode}`);
 
   logStep("generate changelog");
-  run("yarn", ["changelog"]);
+  run("npx", [
+    "git-cliff",
+    "--unreleased",
+    "--tag",
+    input.version,
+    "--prepend",
+    "CHANGELOG.md",
+  ]);
   logOk("changelog updated");
 
   logStep("build release draft state");
