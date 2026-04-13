@@ -33,3 +33,12 @@ export function parseEnvFile(filePath: string): Record<string, string> {
 
   return env;
 }
+
+export function parseEnvFiles(filePaths: string[]): Record<string, string> {
+  return filePaths.reduce<Record<string, string>>((acc, filePath) => {
+    return {
+      ...acc,
+      ...parseEnvFile(filePath),
+    };
+  }, {});
+}

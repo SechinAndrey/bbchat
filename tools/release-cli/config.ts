@@ -4,6 +4,11 @@ export const PROJECT_ROOT = resolve(process.cwd());
 export const PACKAGE_JSON_PATH = resolve(PROJECT_ROOT, "package.json");
 export const GRADLE_PATH = resolve(PROJECT_ROOT, "android/app/build.gradle");
 export const ENV_PATH = resolve(PROJECT_ROOT, ".env");
+
+export function getModeEnvPath(mode: string): string {
+  return resolve(PROJECT_ROOT, `.env.${mode}`);
+}
+
 export const RELEASE_STATE_PATH = resolve(
   PROJECT_ROOT,
   ".git/release-cli-state.json",

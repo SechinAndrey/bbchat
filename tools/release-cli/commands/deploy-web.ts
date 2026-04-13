@@ -1,7 +1,12 @@
-import { ENV_PATH, PACKAGE_JSON_PATH } from "../config.js";
-import { parseEnvFile } from "../infra/env.js";
+import { ENV_PATH, PACKAGE_JSON_PATH, getModeEnvPath } from "../config.js";
+import { parseEnvFiles } from "../infra/env.js";
 import { readText } from "../infra/fs.js";
-import { q, runRemote, runRemoteCapture } from "../infra/remote.js";
+import {
+  canWriteRemote,
+  q,
+  runRemote,
+  runRemoteCapture,
+} from "../infra/remote.js";
 import { run } from "../infra/run.js";
 import { AppError } from "../shared/errors.js";
 import { logOk, logResult, logStart, logStep } from "../shared/logger.js";
@@ -30,13 +35,19 @@ function nowStamp(): string {
 export function runDeployWeb(input: DeployWebInput): void {
   logStart("deploy-web");
 
-  const env = parseEnvFile(ENV_PATH);
+  const env = parseEnvFiles([ENV_PATH, getModeEnvPath(input.mode)]);
   const host = input.host ?? env.DEPLOY_HOST;
-  const deployPath = input.path ?? env.DEPLOY_PATH ?? "/var/www/bb-chat";
+  const deployPath = input.path ?? env.DEPLOY_PATH;
 
   if (!host) {
     throw new AppError(
       "DEPLOY_HOST is required. Set it in .env or pass --host",
+    );
+  }
+
+  if (!deployPath) {
+    throw new AppError(
+      "DEPLOY_PATH is required. Set it in .env or pass --path",
     );
   }
 
@@ -45,6 +56,17 @@ export function runDeployWeb(input: DeployWebInput): void {
   const releasesPath = `${deployPath}/releases`;
   const releasePath = `${releasesPath}/${releaseName}`;
   const deployHtmlPath = `${deployPath}/html`;
+
+  logStep("check remote write access");
+  if (
+    !canWriteRemote(host, deployPath) ||
+    !canWriteRemote(host, releasesPath)
+  ) {
+    throw new AppError(
+      `No write access to ${deployPath} on ${host}.\n` +
+        `Fix with: sudo chown deploy:deploy ${deployPath} && sudo chown deploy:deploy ${releasesPath}`,
+    );
+  }
 
   logStep("build web");
   run("yarn", ["vue-tsc", "--noEmit"]);

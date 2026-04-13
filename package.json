@@ -23,7 +23,8 @@
     "release:prepare": "tsx tools/release-cli.ts release prepare",
     "release:apply": "tsx tools/release-cli.ts release apply",
     "release:prepare-revert": "tsx tools/release-cli.ts release prepare-revert",
-    "deploy:web": "tsx tools/release-cli.ts deploy-web",
+    "deploy:stable": "tsx tools/release-cli.ts deploy-web --mode stable",
+    "deploy:prod": "tsx tools/release-cli.ts deploy-web --mode production",
     "build:apk": "tsx tools/release-cli.ts build-apk",
     "rollback": "tsx tools/release-cli.ts rollback",
     "test:release-cli": "vitest run --config vitest.config.ts"

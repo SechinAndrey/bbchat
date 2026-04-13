@@ -17,8 +17,7 @@ export function runRollback(input: RollbackInput): void {
 
   const env = parseEnvFile(ENV_PATH);
   const host = input.host ?? env.DEPLOY_HOST;
-  const deployPath = input.path ?? env.DEPLOY_PATH ?? "/var/www/bb-chat";
-  const releasesPath = `${deployPath}/releases`;
+  const deployPath = input.path ?? env.DEPLOY_PATH;
 
   if (!host) {
     throw new AppError(
@@ -26,6 +25,13 @@ export function runRollback(input: RollbackInput): void {
     );
   }
 
+  if (!deployPath) {
+    throw new AppError(
+      "DEPLOY_PATH is required. Set it in .env or pass --path",
+    );
+  }
+
+  const releasesPath = `${deployPath}/releases`;
   const htmlPath = `${deployPath}/html`;
 
   logStep("validate remote release paths");
