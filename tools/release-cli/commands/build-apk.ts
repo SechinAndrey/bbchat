@@ -32,11 +32,15 @@ export function runBuildApk(input: BuildApkInput): void {
   );
   const targetApk = resolve(outputDir, targetName);
   const uploadUrl = input.uploadUrl ?? env.APK_UPLOAD_URL;
+  const uploadToken = env.APK_UPLOAD_TOKEN;
 
   logStep("build web + android");
   run("yarn", ["vue-tsc", "--noEmit"]);
   run("yarn", ["vite", "build", "--mode", mode]);
   run("npx", ["cap", "sync", "android"]);
+  run("./gradlew", ["--stop"], {
+    cwd: resolve(process.cwd(), "android"),
+  });
   run("./gradlew", ["clean", "assembleDebug"], {
     cwd: resolve(process.cwd(), "android"),
   });
@@ -52,8 +56,24 @@ export function runBuildApk(input: BuildApkInput): void {
   logOk(`apk saved to ${targetApk}`);
 
   if (!input.noUpload && uploadUrl) {
+    if (!uploadToken) {
+      throw new AppError("APK_UPLOAD_TOKEN is not set");
+    }
+
     logStep("upload apk");
-    run("curl", ["-sS", "-f", "-F", `file=@${targetApk}`, uploadUrl]);
+    run("curl", [
+      "-sS",
+      "-f",
+      "-H",
+      `Authorization: Bearer ${uploadToken}`,
+      "-F",
+      `name=${targetName}`,
+      "-F",
+      `version=${version}`,
+      "-F",
+      `file=@${targetApk}`,
+      uploadUrl,
+    ]);
     logOk("apk uploaded");
   } else if (input.noUpload) {
     logWarn("upload skipped: --no-upload flag");

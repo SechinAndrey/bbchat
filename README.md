@@ -57,10 +57,11 @@ DEPLOY_PATH=/var/www/bb-chat
 
 # Optional: APK upload endpoint
 APK_UPLOAD_URL=https://your-dashboard/api/upload-apk
+APK_UPLOAD_TOKEN=your-long-upload-token
 ```
 
 `DEPLOY_HOST` and `DEPLOY_PATH` are present in [.env.example](.env.example).
-`APK_UPLOAD_URL` is optional and can be added manually if you need APK upload.
+`APK_UPLOAD_URL` and `APK_UPLOAD_TOKEN` are optional and can be added manually if you need APK upload.
 
 ### Quick Start: Release & Deploy
 
@@ -133,7 +134,7 @@ yarn deploy:web --keep 10
 Assembles debug APK for stable/prod environments:
 
 ```bash
-# Build stable APK, upload if APK_UPLOAD_URL set
+# Build stable APK, upload if APK_UPLOAD_URL and APK_UPLOAD_TOKEN set
 yarn build:apk stable
 
 # Build prod APK without upload
@@ -146,7 +147,7 @@ yarn build:apk stable --upload-url https://your-upload.example.com/apk
 **Output:**
 
 - APK saved to `apk-output/stable-0.9.0.apk` or `apk-output/prod-0.9.0.apk`
-- Uploaded if URL configured
+- Uploaded if URL and token are configured
 
 #### 5. Rollback Web
 
