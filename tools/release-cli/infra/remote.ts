@@ -1,6 +1,6 @@
 import { run } from "./run.js";
 
-function shellQuote(value: string): string {
+export function q(value: string): string {
   return `'${value.replace(/'/g, `'"'"'`)}'`;
 }
 
@@ -14,13 +14,9 @@ export function runRemoteCapture(host: string, command: string): string {
 
 export function canWriteRemote(host: string, path: string): boolean {
   try {
-    run("ssh", [host, `test -w ${shellQuote(path)}`], { capture: true });
+    run("ssh", [host, `test -w ${q(path)}`], { capture: true });
     return true;
   } catch {
     return false;
   }
-}
-
-export function q(value: string): string {
-  return shellQuote(value);
 }

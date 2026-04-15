@@ -24,12 +24,13 @@ export type DeployWebInput = {
 };
 
 export type BuildApkInput = {
-  env: "stable" | "prod";
+  env: "stable" | "production";
   noUpload: boolean;
   uploadUrl?: string;
 };
 
 export type RollbackInput = {
+  mode: "stable" | "production";
   version?: string;
   host?: string;
   path?: string;

@@ -53,8 +53,8 @@ describe("cli arg parser", () => {
   });
 
   it("parses build-apk", () => {
-    expect(parseBuildApk(["prod", "--no-upload"])).toEqual({
-      env: "prod",
+    expect(parseBuildApk(["production", "--no-upload"])).toEqual({
+      env: "production",
       noUpload: true,
       uploadUrl: undefined,
     });

@@ -1,6 +1,5 @@
-import { ENV_PATH, PACKAGE_JSON_PATH, getModeEnvPath } from "../config.js";
-import { parseEnvFiles } from "../infra/env.js";
-import { readText } from "../infra/fs.js";
+import { getVersion } from "../domain/version.js";
+import { loadEnv } from "../infra/env.js";
 import {
   canWriteRemote,
   q,
@@ -19,11 +18,6 @@ function parseList(value: string): string[] {
     .filter(Boolean);
 }
 
-function getVersion(): string {
-  const pkg = JSON.parse(readText(PACKAGE_JSON_PATH)) as { version: string };
-  return pkg.version;
-}
-
 function nowStamp(): string {
   return new Date()
     .toISOString()
@@ -35,7 +29,7 @@ function nowStamp(): string {
 export function runDeployWeb(input: DeployWebInput): void {
   logStart("deploy-web");
 
-  const env = parseEnvFiles([ENV_PATH, getModeEnvPath(input.mode)]);
+  const env = loadEnv(input.mode);
   const host = input.host ?? env.DEPLOY_HOST;
   const deployPath = input.path ?? env.DEPLOY_PATH;
 

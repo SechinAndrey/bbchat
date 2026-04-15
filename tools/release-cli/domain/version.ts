@@ -1,4 +1,11 @@
+import { PACKAGE_JSON_PATH } from "../config.js";
+import { readText } from "../infra/fs.js";
 import { AppError } from "../shared/errors.js";
+
+export function getVersion(): string {
+  const pkg = JSON.parse(readText(PACKAGE_JSON_PATH)) as { version: string };
+  return pkg.version;
+}
 
 export function assertSemver(version: string): void {
   if (!/^\d+\.\d+\.\d+$/.test(version)) {

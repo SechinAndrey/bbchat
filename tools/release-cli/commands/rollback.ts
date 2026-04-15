@@ -1,5 +1,4 @@
-import { ENV_PATH } from "../config.js";
-import { parseEnvFile } from "../infra/env.js";
+import { loadEnv } from "../infra/env.js";
 import { q, runRemote, runRemoteCapture } from "../infra/remote.js";
 import { AppError } from "../shared/errors.js";
 import { logResult, logStart, logStep } from "../shared/logger.js";
@@ -15,7 +14,7 @@ function parseList(value: string): string[] {
 export function runRollback(input: RollbackInput): void {
   logStart("rollback");
 
-  const env = parseEnvFile(ENV_PATH);
+  const env = loadEnv(input.mode);
   const host = input.host ?? env.DEPLOY_HOST;
   const deployPath = input.path ?? env.DEPLOY_PATH;
 

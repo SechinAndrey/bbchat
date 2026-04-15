@@ -1,0 +1,12 @@
+{
+  "json-comments": {
+    "tips": "Install JsonComments, to view comments in your JSON. See: https://github.com/zhangfisher/json_comments_extension",
+    "package.json": {
+      "scripts.dev": "------------------ VITE -------------------",
+      "scripts.format": "------------------ CODE STYLE -------------------",
+      "scripts.changelog": "------------------ GIT CLIFF CHANGELOG -------------------",
+      "scripts.android:build": "------------------ CAPACITOR ANDROID ------------------ ",
+      "scripts.release:cli": "------------------ RELEASE:CLI -------------------"
+    }
+  }
+}

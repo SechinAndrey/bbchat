@@ -9,9 +9,9 @@ export function printHelp(): void {
     "  yarn release:cli deploy-web --mode stable|production [--host ...] [--path ...] [--keep ...]",
   );
   console.log(
-    "  yarn release:cli build-apk stable|prod [--no-upload] [--upload-url ...]",
+    "  yarn release:cli build-apk stable|production [--no-upload] [--upload-url ...]",
   );
   console.log(
-    "  yarn release:cli rollback [version] [--host ...] [--path ...]",
+    "  yarn release:cli rollback --mode stable|production [version] [--host ...] [--path ...]",
   );
 }

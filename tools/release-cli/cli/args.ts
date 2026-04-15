@@ -96,10 +96,12 @@ export function parseDeployWeb(args: string[]): DeployWebInput {
 
 export function parseBuildApk(args: string[]): BuildApkInput {
   ensureNoUnknownFlags(args, ["--no-upload", "--upload-url"]);
-  const envRaw = args.find((value) => value === "stable" || value === "prod");
+  const envRaw = args.find(
+    (value) => value === "stable" || value === "production",
+  );
   if (!envRaw) {
     throw new AppError(
-      "Usage: build-apk stable|prod [--no-upload] [--upload-url ...]",
+      "Usage: build-apk stable|production [--no-upload] [--upload-url ...]",
     );
   }
 
@@ -111,8 +113,16 @@ export function parseBuildApk(args: string[]): BuildApkInput {
 }
 
 export function parseRollback(args: string[]): RollbackInput {
-  ensureNoUnknownFlags(args, ["--host", "--path"]);
+  ensureNoUnknownFlags(args, ["--mode", "--host", "--path"]);
+  const modeRaw = getOption(args, "--mode");
+  if (!modeRaw || (modeRaw !== "stable" && modeRaw !== "production")) {
+    throw new AppError(
+      "Usage: rollback --mode stable|production [version] [--host ...] [--path ...]",
+    );
+  }
+
   return {
+    mode: modeRaw,
     version: args.find((value) => !value.startsWith("-")),
     host: getOption(args, "--host"),
     path: getOption(args, "--path"),

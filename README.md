@@ -57,7 +57,7 @@ DEPLOY_PATH=/var/www/bb-chat
 
 # Optional: APK upload endpoint
 APK_UPLOAD_URL=https://your-dashboard/api/upload-apk
-APK_UPLOAD_TOKEN=your-long-upload-token
+APK_UPLOAD_TOKEN=your-upload-token
 ```
 
 `DEPLOY_HOST` and `DEPLOY_PATH` are present in [.env.example](.env.example).

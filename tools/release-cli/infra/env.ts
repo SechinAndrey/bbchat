@@ -1,4 +1,5 @@
 import { existsSync, readFileSync } from "node:fs";
+import { ENV_PATH, getModeEnvPath } from "../config.js";
 
 export function parseEnvFile(filePath: string): Record<string, string> {
   if (!existsSync(filePath)) {
@@ -41,4 +42,12 @@ export function parseEnvFiles(filePaths: string[]): Record<string, string> {
       ...parseEnvFile(filePath),
     };
   }, {});
+}
+
+export function loadEnv(mode?: string): Record<string, string> {
+  const paths = [ENV_PATH];
+  if (mode) {
+    paths.push(getModeEnvPath(mode));
+  }
+  return parseEnvFiles(paths);
 }
