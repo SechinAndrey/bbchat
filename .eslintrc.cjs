@@ -16,6 +16,9 @@ module.exports = {
     sourceType: "module",
   },
   plugins: ["@typescript-eslint"],
+  globals: {
+    __APP_VERSION__: "readonly",
+  },
   rules: {
     "no-unused-vars": "off",
     "vue/multi-word-component-names": "off",
