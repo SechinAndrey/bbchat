@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.8.2 - 2026-04-16
+
+### Project Maintenance
+
+- **(release:cli)** Add build, release, deploy ts scrips with simpe tui
+- Release version 0.8.2
+
 ## 0.8.1 - 2026-04-07
 
 ### Bug Fixes
