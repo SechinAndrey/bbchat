@@ -3,20 +3,25 @@ import { GRADLE_PATH, PACKAGE_JSON_PATH, RELEASE_FILES } from "../config.js";
 import { saveReleaseState } from "../domain/release-state.js";
 import {
   assertSemver,
+  getVersion,
   updateGradleVersion,
   updatePackageVersion,
 } from "../domain/version.js";
 import { readText, writeText } from "../infra/fs.js";
-import { ensureTagMissing, getChangedFiles } from "../infra/git.js";
+import {
+  ensureTagMissing,
+  getChangedFiles,
+  getCurrentBranch,
+} from "../infra/git.js";
 import { run } from "../infra/run.js";
 import {
-  logInfo,
-  logOk,
-  logResult,
-  logStart,
-  logStep,
-  logWarn,
-} from "../shared/logger.js";
+  tuiDone,
+  tuiList,
+  tuiStatus,
+  tuiStep,
+  tuiBanner,
+  ICONS,
+} from "../shared/tui.js";
 import type { ReleasePrepareInput } from "../types.js";
 
 function getReleaseBaseline(): Record<string, string | null> {
@@ -35,24 +40,31 @@ function getReleaseBaseline(): Record<string, string | null> {
 }
 
 export function runReleasePrepare(input: ReleasePrepareInput): void {
-  logStart("release prepare");
+  tuiBanner("Release CLI", "release prepare", {
+    from: getVersion(),
+    to: input.version,
+    branch: getCurrentBranch(),
+  });
 
-  logStep("inspect current working tree state");
+  tuiStep("inspect current working tree state");
   const preExistingChanges = getChangedFiles();
   if (preExistingChanges.length > 0) {
-    logWarn(
-      `pre-existing changes detected (not blocking): ${preExistingChanges.join(", ")}`,
+    tuiStatus(
+      "pre-existing changes detected (not blocking):",
+      "warning",
+      ICONS.fileChanged,
     );
+    tuiList(preExistingChanges);
   }
 
-  logStep("validate input");
+  tuiStep("validate input");
   assertSemver(input.version);
   ensureTagMissing(input.version);
-  logOk(`version ${input.version} is valid`);
+  tuiStatus(`version ${input.version} is valid`, "success");
 
   const baseline = getReleaseBaseline();
 
-  logStep("update versions in files");
+  tuiStep("update versions in files");
   const packageContent = readText(PACKAGE_JSON_PATH);
   const gradleContent = readText(GRADLE_PATH);
 
@@ -62,9 +74,9 @@ export function runReleasePrepare(input: ReleasePrepareInput): void {
   );
   const gradleUpdate = updateGradleVersion(gradleContent, input.version);
   writeText(GRADLE_PATH, gradleUpdate.content);
-  logOk(`android versionCode -> ${gradleUpdate.versionCode}`);
+  tuiStatus(`android versionCode -> ${gradleUpdate.versionCode}`, "success");
 
-  logStep("generate changelog");
+  tuiStep("generate changelog");
   run("npx", [
     "git-cliff",
     "--unreleased",
@@ -73,20 +85,19 @@ export function runReleasePrepare(input: ReleasePrepareInput): void {
     "--prepend",
     "CHANGELOG.md",
   ]);
-  logOk("changelog updated");
+  tuiStatus("changelog updated", "success");
 
-  logStep("build release draft state");
+  tuiStep("build release draft state");
   const changedReleaseFiles = getChangedFiles(RELEASE_FILES);
   saveReleaseState(input.version, RELEASE_FILES, baseline);
-  logOk("state saved");
+  tuiStatus("state saved", "success");
 
   if (changedReleaseFiles.length > 0) {
-    logInfo(`changed files: ${changedReleaseFiles.join(", ")}`);
+    tuiStatus("changed files:", "accent", ICONS.fileDone);
+    tuiList(changedReleaseFiles);
   } else {
-    logInfo("no changed files detected in release scope");
+    tuiStatus("no changed files detected in release scope", "accent");
   }
 
-  logResult(
-    `prepared ${input.version}; next: yarn release apply ${input.version}`,
-  );
+  tuiDone(`prepared ${input.version}`, `yarn release apply ${input.version}`);
 }

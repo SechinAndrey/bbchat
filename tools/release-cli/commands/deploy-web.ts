@@ -1,5 +1,6 @@
 import { getVersion } from "../domain/version.js";
 import { loadEnv } from "../infra/env.js";
+import { getCurrentBranch } from "../infra/git.js";
 import {
   canWriteRemote,
   q,
@@ -8,7 +9,7 @@ import {
 } from "../infra/remote.js";
 import { run } from "../infra/run.js";
 import { AppError } from "../shared/errors.js";
-import { logOk, logResult, logStart, logStep } from "../shared/logger.js";
+import { tuiDone, tuiStatus, tuiStep, tuiBanner } from "../shared/tui.js";
 import type { DeployWebInput } from "../types.js";
 
 function parseList(value: string): string[] {
@@ -27,7 +28,10 @@ function nowStamp(): string {
 }
 
 export function runDeployWeb(input: DeployWebInput): void {
-  logStart("deploy-web");
+  tuiBanner("Release CLI", "deploy-web", {
+    version: getVersion(),
+    branch: getCurrentBranch(),
+  });
 
   const env = loadEnv(input.mode);
   const host = input.host ?? env.DEPLOY_HOST;
@@ -51,7 +55,7 @@ export function runDeployWeb(input: DeployWebInput): void {
   const releasePath = `${releasesPath}/${releaseName}`;
   const deployHtmlPath = `${deployPath}/html`;
 
-  logStep("check remote write access");
+  tuiStep("check remote write access");
   if (
     !canWriteRemote(host, deployPath) ||
     !canWriteRemote(host, releasesPath)
@@ -62,15 +66,15 @@ export function runDeployWeb(input: DeployWebInput): void {
     );
   }
 
-  logStep("build web");
+  tuiStep("build web");
   run("yarn", ["vue-tsc", "--noEmit"]);
   run("yarn", ["vite", "build", "--mode", input.mode]);
-  logOk("web build completed");
+  tuiStatus("web build completed", "success");
 
-  logStep("create remote release directory");
+  tuiStep("create remote release directory");
   runRemote(host, `mkdir -p ${q(releasePath)}`);
 
-  logStep("upload dist");
+  tuiStep("upload dist");
   run("rsync", [
     "-az",
     "--delete",
@@ -78,10 +82,10 @@ export function runDeployWeb(input: DeployWebInput): void {
     `${host}:${releasesPath}/${releaseName}/`,
   ]);
 
-  logStep("switch symlink");
+  tuiStep("switch symlink");
   runRemote(host, `ln -sfn ${q(releasePath)} ${q(deployHtmlPath)}`);
 
-  logStep("prune old releases");
+  tuiStep("prune old releases");
   const releaseListRaw = runRemoteCapture(
     host,
     `find ${q(releasesPath)} -mindepth 1 -maxdepth 1 -type d -printf '%f\\n' | sort -V`,
@@ -97,5 +101,5 @@ export function runDeployWeb(input: DeployWebInput): void {
     }
   }
 
-  logResult(`deployed ${releaseName} to ${host}`);
+  tuiDone(`deployed ${releaseName} to ${host}`);
 }

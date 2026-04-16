@@ -5,19 +5,23 @@ import {
 } from "../domain/release-state.js";
 import { assertSemver } from "../domain/version.js";
 import { deleteFile, writeText } from "../infra/fs.js";
+import { getCurrentBranch } from "../infra/git.js";
 import { AppError } from "../shared/errors.js";
-import { logOk, logResult, logStart, logStep } from "../shared/logger.js";
+import { tuiDone, tuiStatus, tuiStep, tuiBanner } from "../shared/tui.js";
 import type { ReleasePrepareRevertInput } from "../types.js";
 
 export function runReleasePrepareRevert(
   input: ReleasePrepareRevertInput,
 ): void {
-  logStart("release prepare-revert");
+  tuiBanner("Release CLI", "release prepare-revert", {
+    version: input.version,
+    branch: getCurrentBranch(),
+  });
 
-  logStep("validate input");
+  tuiStep("validate input");
   assertSemver(input.version);
 
-  logStep("load prepare state");
+  tuiStep("load prepare state");
   const state = loadReleaseState();
   if (!state) {
     throw new AppError("Release prepare state is missing. Nothing to revert.");
@@ -35,7 +39,7 @@ export function runReleasePrepareRevert(
     );
   }
 
-  logStep("restore prepared files");
+  tuiStep("restore prepared files");
   for (const file of state.files) {
     const absolutePath = resolve(process.cwd(), file);
     const baselineContent = state.baseline[file];
@@ -48,7 +52,7 @@ export function runReleasePrepareRevert(
   }
 
   clearReleaseState();
-  logOk("prepare state cleared");
+  tuiStatus("prepare state cleared", "success");
 
-  logResult(`prepare reverted for ${input.version}`);
+  tuiDone(`prepare reverted for ${input.version}`);
 }

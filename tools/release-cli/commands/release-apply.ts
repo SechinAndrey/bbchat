@@ -14,13 +14,7 @@ import {
   pushBranchAndTag,
 } from "../infra/git.js";
 import { AppError } from "../shared/errors.js";
-import {
-  logInfo,
-  logOk,
-  logResult,
-  logStart,
-  logStep,
-} from "../shared/logger.js";
+import { tuiDone, tuiStatus, tuiStep, tuiBanner } from "../shared/tui.js";
 import type { ReleaseApplyInput } from "../types.js";
 
 async function askConfirmation(message: string): Promise<boolean> {
@@ -35,9 +29,12 @@ async function askConfirmation(message: string): Promise<boolean> {
 }
 
 export async function runReleaseApply(input: ReleaseApplyInput): Promise<void> {
-  logStart("release apply");
+  tuiBanner("Release CLI", "release apply", {
+    version: input.version,
+    branch: getCurrentBranch(),
+  });
 
-  logStep("validate release state");
+  tuiStep("validate release state");
   const state = loadReleaseState();
   if (!state) {
     throw new AppError(
@@ -45,7 +42,7 @@ export async function runReleaseApply(input: ReleaseApplyInput): Promise<void> {
     );
   }
 
-  logStep("resolve target version");
+  tuiStep("resolve target version");
   const version = input.version ?? state.version;
   assertSemver(version);
   ensureTagMissing(version);
@@ -61,7 +58,7 @@ export async function runReleaseApply(input: ReleaseApplyInput): Promise<void> {
     throw new AppError("No changes found in release files. Nothing to apply.");
   }
 
-  logInfo(`will commit files: ${state.files.join(", ")}`);
+  tuiStatus(`will commit files: ${state.files.join(", ")}`, "accent");
 
   if (!input.yes) {
     const allowed = await askConfirmation(
@@ -72,19 +69,19 @@ export async function runReleaseApply(input: ReleaseApplyInput): Promise<void> {
     }
   }
 
-  logStep("create commit and tag");
+  tuiStep("create commit and tag");
   addFiles(state.files);
   commitOnly(`chore: release version ${version}`, state.files);
   createTag(version);
-  logOk("release commit/tag created");
+  tuiStatus("release commit/tag created", "success");
 
   if (input.push) {
-    logStep("push branch and tag");
+    tuiStep("push branch and tag");
     const branch = getCurrentBranch();
     pushBranchAndTag(branch, version);
-    logOk(`pushed ${branch} + v${version}`);
+    tuiStatus(`pushed ${branch} + v${version}`, "success");
   }
 
   clearReleaseState();
-  logResult(`release ${version} applied`);
+  tuiDone(`release ${version} applied`);
 }

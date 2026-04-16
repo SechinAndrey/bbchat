@@ -1,5 +1,6 @@
 import { spawnSync } from "node:child_process";
 import { AppError } from "../shared/errors.js";
+import { tuiStatus } from "../shared/tui.js";
 
 type RunOptions = {
   cwd?: string;
@@ -32,7 +33,7 @@ export function run(
   }
 
   if (options.verbose) {
-    console.log(`INFO: command ok -> ${commandText}`);
+    tuiStatus(`command ok -> ${commandText}`, "accent");
   }
 
   if (!options.capture) {

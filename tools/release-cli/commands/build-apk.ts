@@ -2,19 +2,17 @@ import { resolve } from "node:path";
 import { getVersion } from "../domain/version.js";
 import { loadEnv } from "../infra/env.js";
 import { copyFile, ensureDir, fileExists } from "../infra/fs.js";
+import { getCurrentBranch } from "../infra/git.js";
 import { run } from "../infra/run.js";
 import { AppError } from "../shared/errors.js";
-import {
-  logOk,
-  logResult,
-  logStart,
-  logStep,
-  logWarn,
-} from "../shared/logger.js";
+import { tuiDone, tuiStatus, tuiStep, tuiBanner } from "../shared/tui.js";
 import type { BuildApkInput } from "../types.js";
 
 export function runBuildApk(input: BuildApkInput): void {
-  logStart("build-apk");
+  tuiBanner("Release CLI", "build-apk", {
+    version: getVersion(),
+    branch: getCurrentBranch(),
+  });
 
   const env = loadEnv(input.env);
   const version = getVersion();
@@ -28,7 +26,7 @@ export function runBuildApk(input: BuildApkInput): void {
   const uploadUrl = input.uploadUrl ?? env.APK_UPLOAD_URL;
   const uploadToken = env.APK_UPLOAD_TOKEN;
 
-  logStep("build web + android");
+  tuiStep("build web + android");
   run("yarn", ["vue-tsc", "--noEmit"]);
   run("yarn", ["vite", "build", "--mode", input.env]);
   run("npx", ["cap", "sync", "android"]);
@@ -38,23 +36,23 @@ export function runBuildApk(input: BuildApkInput): void {
   run("./gradlew", ["clean", "assembleDebug"], {
     cwd: resolve(process.cwd(), "android"),
   });
-  logOk("android build completed");
+  tuiStatus("android build completed", "success");
 
   if (!fileExists(sourceApk)) {
     throw new AppError(`APK file not found: ${sourceApk}`);
   }
 
-  logStep("archive apk");
+  tuiStep("archive apk");
   ensureDir(outputDir);
   copyFile(sourceApk, targetApk);
-  logOk(`apk saved to ${targetApk}`);
+  tuiStatus(`apk saved to ${targetApk}`, "success");
 
   if (!input.noUpload && uploadUrl) {
     if (!uploadToken) {
       throw new AppError("APK_UPLOAD_TOKEN is not set");
     }
 
-    logStep("upload apk");
+    tuiStep("upload apk");
     run("curl", [
       "-sS",
       "-f",
@@ -68,12 +66,12 @@ export function runBuildApk(input: BuildApkInput): void {
       `communicator_file=@${targetApk}`,
       uploadUrl,
     ]);
-    logOk("apk uploaded");
+    tuiStatus("apk uploaded", "success");
   } else if (input.noUpload) {
-    logWarn("upload skipped: --no-upload flag");
+    tuiStatus("upload skipped: --no-upload flag", "warning");
   } else {
-    logWarn("upload skipped: APK_UPLOAD_URL is not set");
+    tuiStatus("upload skipped: APK_UPLOAD_URL is not set", "warning");
   }
 
-  logResult(`apk ready: ${targetName}`);
+  tuiDone(`apk ready: ${targetName}`);
 }

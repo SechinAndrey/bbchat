@@ -1,11 +1,12 @@
 #!/usr/bin/env node
 import { runCli } from "./release-cli/cli/index.js";
+import { tuiFail } from "./release-cli/shared/tui.js";
 
 runCli(process.argv.slice(2)).catch((error: unknown) => {
   if (error instanceof Error) {
-    console.error(`FAIL: ${error.message}`);
+    tuiFail(error.message);
   } else {
-    console.error("FAIL: Unknown error");
+    tuiFail("Unknown error");
   }
   process.exit(1);
 });

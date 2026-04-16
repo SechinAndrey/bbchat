@@ -1,7 +1,8 @@
 import { loadEnv } from "../infra/env.js";
+import { getCurrentBranch } from "../infra/git.js";
 import { q, runRemote, runRemoteCapture } from "../infra/remote.js";
 import { AppError } from "../shared/errors.js";
-import { logResult, logStart, logStep } from "../shared/logger.js";
+import { tuiDone, tuiStep, tuiBanner } from "../shared/tui.js";
 import type { RollbackInput } from "../types.js";
 
 function parseList(value: string): string[] {
@@ -12,7 +13,9 @@ function parseList(value: string): string[] {
 }
 
 export function runRollback(input: RollbackInput): void {
-  logStart("rollback");
+  tuiBanner("Release CLI", "rollback", {
+    branch: getCurrentBranch(),
+  });
 
   const env = loadEnv(input.mode);
   const host = input.host ?? env.DEPLOY_HOST;
@@ -33,11 +36,11 @@ export function runRollback(input: RollbackInput): void {
   const releasesPath = `${deployPath}/releases`;
   const htmlPath = `${deployPath}/html`;
 
-  logStep("validate remote release paths");
+  tuiStep("validate remote release paths");
   runRemote(host, `test -d ${q(releasesPath)}`);
   runRemote(host, `test -L ${q(htmlPath)}`);
 
-  logStep("load current release and release list");
+  tuiStep("load current release and release list");
   const current = runRemoteCapture(
     host,
     `basename "$(readlink -f ${q(htmlPath)})"`,
@@ -72,8 +75,8 @@ export function runRollback(input: RollbackInput): void {
     target = releases[currentIndex - 1];
   }
 
-  logStep("switch active release");
+  tuiStep("switch active release");
   runRemote(host, `ln -sfn ${q(`${releasesPath}/${target}`)} ${q(htmlPath)}`);
 
-  logResult("rollback completed");
+  tuiDone("rollback completed");
 }
