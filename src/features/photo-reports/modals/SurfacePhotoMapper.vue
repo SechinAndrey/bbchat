@@ -6,6 +6,8 @@ import Button from "@src/ui/inputs/Button.vue";
 import SwitchInput from "@src/ui/inputs/SwitchInput.vue";
 import SurfaceCard from "./SurfaceCard.vue";
 import PhotoSlotPicker from "./PhotoSlotPicker.vue";
+import PhotoViewerEditorModal from "./PhotoViewerEditorModal.vue";
+import { usePhotoViewerEditorSession } from "../composables/usePhotoViewerEditorSession";
 import {
   ArrowUpTrayIcon,
   QueueListIcon,
@@ -499,6 +501,21 @@ const handleSurfaceClearSlot = (boardId: number, slotType: PhotoSlotType) => {
   assignments.value = map;
 };
 
+// ─── Photo viewer / editor ────────────────────────────────────────────────
+const {
+  photoEditorOpen,
+  photoEditorUrl,
+  photoEditorEditable,
+  openPhotoEditor,
+  closePhotoEditor,
+  applyEditedPhoto,
+} = usePhotoViewerEditorSession({
+  isReadonly: () => props.readonly,
+  localPhotos,
+  assignments,
+  assignmentKey,
+});
+
 const advanceTo = (nextIdx: number) => {
   currentSequentialIndex.value = nextIdx;
   const slot = allSlots.value[nextIdx];
@@ -867,6 +884,7 @@ defineExpose({
         :work-types="workTypes"
         :selected-work-id="selectedWorkIds.get(board.board_id) ?? board.work_id"
         @slot-click="handleSlotClick"
+        @open-photo="openPhotoEditor"
         @type-change="handleTypeChange"
         @clear-slot="handleSurfaceClearSlot"
         @badge-retry="(url: string) => emit('badge-retry', url)"
@@ -896,6 +914,14 @@ defineExpose({
       @cancel="handleCancelSequential"
       @upload="handlePickerUpload"
       @remove-photo="handleRemoveFromPool"
+    />
+
+    <PhotoViewerEditorModal
+      :open="photoEditorOpen"
+      :image-url="photoEditorUrl"
+      :editable="photoEditorEditable"
+      @close="closePhotoEditor"
+      @saved="applyEditedPhoto"
     />
   </div>
 </template>

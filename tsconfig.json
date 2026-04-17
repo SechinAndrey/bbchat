@@ -18,7 +18,7 @@
       "@custom_types/*": ["./src/@custom_types/*"]
     }
   },
-  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],
+  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue", "node_modules/unplugin-icons/types/vue3.d.ts"],
   "references": [
     {
       "path": "./tsconfig.node.json"

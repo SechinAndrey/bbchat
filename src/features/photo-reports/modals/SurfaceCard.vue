@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { PlusIcon, PhotoIcon, XCircleIcon } from "@heroicons/vue/24/outline";
+import Button from "@src/ui/inputs/Button.vue";
 import Select from "@src/ui/inputs/Select.vue";
 import Radio from "@src/ui/inputs/Radio.vue";
 import SlotStatusBadge from "../components/SlotStatusBadge.vue";
@@ -23,6 +24,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   slotClick: [boardId: number, slotType: PhotoSlotType];
+  openPhoto: [boardId: number, slotType: PhotoSlotType, photoUrl: string];
   typeChange: [
     boardId: number,
     slotType: PhotoSlotType,
@@ -189,7 +191,7 @@ const openImg = (photoUrl: string) => {
 
     <!-- Photo slots -->
     <div
-      class="grid grid-cols-4 gap-2 border-t border-app-border bg-app-bg-secondary px-3 py-3"
+      class="grid grid-cols-2 sm:grid-cols-4 gap-2 border-t border-app-border bg-app-bg-secondary px-3 py-3"
     >
       <div v-for="slotType in SLOT_TYPES" :key="slotType" class="flex flex-col">
         <!-- Slot type label / select -->
@@ -230,7 +232,17 @@ const openImg = (photoUrl: string) => {
               ? 'ring-2 ring-primary ring-offset-2 ring-offset-app-bg'
               : '',
           ]"
-          @click="!readonly && emit('slotClick', board.board_id, slotType)"
+          @click="
+            !readonly &&
+            (slotAssignments[slotType]
+              ? emit(
+                  'openPhoto',
+                  board.board_id,
+                  slotType,
+                  slotAssignments[slotType]!.photo_url,
+                )
+              : emit('slotClick', board.board_id, slotType))
+          "
         >
           <img
             v-if="slotAssignments[slotType]"
@@ -250,19 +262,18 @@ const openImg = (photoUrl: string) => {
             <PlusIcon class="w-6 h-6" />
           </div>
 
-          <!-- Hover overlay with remove button (non-readonly only) -->
-          <div
+          <Button
             v-if="slotAssignments[slotType] && !readonly"
-            class="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity"
-            @click.stop
+            variant="ghost"
+            icon-only
+            class="absolute top-1 right-1 z-10 rounded-full !bg-black/20 !text-white opacity-100"
+            aria-label="Видалити фото"
+            @click.stop="emit('clearSlot', board.board_id, slotType)"
           >
-            <button
-              class="text-white/80 hover:text-white transition-colors"
-              @click.stop="emit('clearSlot', board.board_id, slotType)"
-            >
-              <XCircleIcon class="w-6 h-6 drop-shadow" />
-            </button>
-          </div>
+            <template #icon>
+              <XCircleIcon class="w-6 h-6" />
+            </template>
+          </Button>
 
           <SlotStatusBadge
             :status="slotStatuses?.get(`${board.board_id}-${slotType}`)"

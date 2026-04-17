@@ -104,13 +104,17 @@ const emit = defineEmits<{
         >
           <ArrowUpTrayIcon class="w-3 h-3 text-white" />
         </div>
-        <button
+        <Button
           v-if="photo.file"
-          class="absolute top-0.5 right-0.5 z-10 text-white/70 hover:text-white transition-colors"
+          variant="ghost"
+          icon-only
+          class="absolute top-0.5 right-0.5 z-10"
           @click.stop="emit('removePhoto', photo.url)"
         >
-          <XMarkIcon class="w-3.5 h-3.5 drop-shadow" />
-        </button>
+          <template #icon>
+            <XMarkIcon class="w-3.5 h-3.5 text-white" />
+          </template>
+        </Button>
       </div>
     </div>
   </div>

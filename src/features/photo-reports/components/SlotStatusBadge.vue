@@ -63,7 +63,7 @@ onBeforeUnmount(clearTimers);
     <Transition name="badge-pop">
       <div
         v-if="status === 'modified'"
-        class="absolute top-1.5 right-1.5 flex items-center justify-center"
+        class="absolute top-1.5 left-1.5 flex items-center justify-center"
       >
         <span
           class="absolute w-3.5 h-3.5 rounded-full bg-info opacity-60 animate-ping"

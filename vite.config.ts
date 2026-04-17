@@ -1,6 +1,7 @@
 import { defineConfig, loadEnv } from "vite";
 import alias from "@rollup/plugin-alias";
 import vue from "@vitejs/plugin-vue";
+import Icons from "unplugin-icons/vite";
 import { resolve } from "path";
 import { readFileSync } from "fs";
 import { VitePWA } from "vite-plugin-pwa";
@@ -18,6 +19,7 @@ export default defineConfig(({ mode }) => {
     },
     plugins: [
       vue(),
+      Icons({ compiler: "vue3", autoInstall: false }),
       alias(),
       VitePWA({
         registerType: "prompt",
@@ -160,6 +162,14 @@ export default defineConfig(({ mode }) => {
     },
     server: {
       allowedHosts: [env.VITE_ALLOWED_HOSTS],
+      proxy: {
+        // Proxy for photo editor: bypasses CORS when loading external images onto canvas
+        "/__img_proxy__": {
+          target: env.VITE_CRM_BASE ?? "https://dev4.billboards.com.ua",
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/__img_proxy__/, ""),
+        },
+      },
     },
   };
 });
