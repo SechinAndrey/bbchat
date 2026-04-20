@@ -1,6 +1,13 @@
 # Changelog
 
 All notable changes to this project will be documented in this file.
+## 0.8.3 - 2026-04-20
+
+### Features
+
+- Add photo editor for photoreport
+
+
 
 ## 0.8.2 - 2026-04-16
 
