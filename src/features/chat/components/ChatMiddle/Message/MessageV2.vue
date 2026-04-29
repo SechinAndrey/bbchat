@@ -117,7 +117,9 @@ const formatMessageText = (text: string, convertEmoticons = false) => {
     },
     target: "_blank",
   });
-  return DOMPurify.sanitize(linked);
+  return DOMPurify.sanitize(linked, {
+    ALLOWED_ATTR: ["href", "target", "class"],
+  });
 };
 
 const replyToText = computed(() => {
