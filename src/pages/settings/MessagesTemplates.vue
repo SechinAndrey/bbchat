@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
+import { useAuthStore } from "@src/features/auth/store/auth-store";
 import {
   useMessagesTemplatesStore,
   TemplateMessagesForm,
@@ -14,10 +15,12 @@ import { ChevronLeftIcon } from "@heroicons/vue/24/outline";
 
 const router = useRouter();
 const templatesStore = useMessagesTemplatesStore();
+const authStore = useAuthStore();
 
 const editingTemplate = ref<MessageTemplate | null>(null);
 const isSaving = ref(false);
 const deletingTemplateId = ref<number | null>(null);
+const isAdmin = computed(() => authStore.currentUser?.roleId === 1);
 
 type TabKey = "general" | "system";
 const activeTab = ref<TabKey>("general");
@@ -115,6 +118,7 @@ onMounted(() => {
           class="mt-8"
           :templates="templatesStore.generalTemplates"
           :deleting-template-id="deletingTemplateId"
+          :is-admin="isAdmin"
           @edit="handleEdit"
           @delete="handleDelete"
         />
@@ -136,6 +140,7 @@ onMounted(() => {
           class="mt-4"
           :templates="templatesStore.systemTemplates"
           :deleting-template-id="deletingTemplateId"
+          :is-admin="isAdmin"
           @edit="handleEdit"
           @delete="handleDelete"
         />

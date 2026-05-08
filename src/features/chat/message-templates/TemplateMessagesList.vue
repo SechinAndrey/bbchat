@@ -7,6 +7,7 @@ import type { MessageTemplate } from "./types";
 interface Props {
   templates: MessageTemplate[];
   deletingTemplateId?: number | null;
+  isAdmin?: boolean;
 }
 
 interface Emits {
@@ -27,6 +28,11 @@ const handleDelete = (templateId: number) => {
   if (props.deletingTemplateId !== null) return;
   emit("delete", templateId);
 };
+
+const canEditTemplate = (template: MessageTemplate) => {
+  if (!template.disable_delete) return true;
+  return Boolean(props.isAdmin);
+};
 </script>
 
 <template>
@@ -44,6 +50,7 @@ const handleDelete = (templateId: number) => {
         class="absolute top-3 right-3 flex items-center gap-2 xs:opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-200"
       >
         <Button
+          v-if="canEditTemplate(template)"
           variant="text"
           icon-only
           size="sm"
