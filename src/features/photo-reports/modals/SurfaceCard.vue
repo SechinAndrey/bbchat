@@ -78,6 +78,36 @@ const currentWorkName = computed(() => {
 const openImg = (photoUrl: string) => {
   openImgsModalEvent.emit(photoUrl);
 };
+
+const handleSlotClick = (slotType: PhotoSlotType) => {
+  const assignment = slotAssignments.value[slotType];
+
+  if (assignment) {
+    emit("openPhoto", props.board.board_id, slotType, assignment.photo_url);
+    return;
+  }
+
+  if (!props.readonly) {
+    emit("slotClick", props.board.board_id, slotType);
+  }
+};
+
+const getSlotCardClasses = (slotType: PhotoSlotType) => {
+  const hasAssignment = Boolean(slotAssignments.value[slotType]);
+
+  return [
+    props.readonly
+      ? hasAssignment
+        ? "border-2 border-app-border cursor-pointer"
+        : "border-2 border-app-border"
+      : hasAssignment
+        ? "border-2 border-primary cursor-pointer"
+        : "border-2 border-dashed border-app-border cursor-pointer hover:border-primary",
+    !props.readonly && props.activeSlotKey === assignmentKey(slotType)
+      ? "ring-2 ring-primary ring-offset-2 ring-offset-app-bg"
+      : "",
+  ];
+};
 </script>
 
 <template>
@@ -220,29 +250,10 @@ const openImg = (photoUrl: string) => {
 
         <!-- Slot image area -->
         <div
-          :data-slot-key="`${board.board_id}-${slotType}`"
+          :data-slot-key="assignmentKey(slotType)"
           class="group relative aspect-[4/3] rounded-xl overflow-hidden transition-all bg-app-bg"
-          :class="[
-            readonly
-              ? 'border-2 border-app-border'
-              : slotAssignments[slotType]
-                ? 'border-2 border-primary cursor-pointer'
-                : 'border-2 border-dashed border-app-border cursor-pointer hover:border-primary',
-            !readonly && activeSlotKey === `${board.board_id}-${slotType}`
-              ? 'ring-2 ring-primary ring-offset-2 ring-offset-app-bg'
-              : '',
-          ]"
-          @click="
-            !readonly &&
-            (slotAssignments[slotType]
-              ? emit(
-                  'openPhoto',
-                  board.board_id,
-                  slotType,
-                  slotAssignments[slotType]!.photo_url,
-                )
-              : emit('slotClick', board.board_id, slotType))
-          "
+          :class="getSlotCardClasses(slotType)"
+          @click="handleSlotClick(slotType)"
         >
           <img
             v-if="slotAssignments[slotType]"
